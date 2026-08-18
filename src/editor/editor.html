@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GoFully Editor</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:        #0C1018;
+      --bar:       #161C28;
+      --bar-bd:    #1F2738;
+      --hover:     #1F2738;
+      --blue:      #1667F2;
+      --blue-h:    #1257D8;
+      --text:      #C8D4E3;
+      --muted:     #4F5F74;
+      --border:    #1F2738;
+      --green:     #10B981;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    svg { display: block; }
+
+    /* ─── TOP TOOLBAR ─── */
+    .toolbar {
+      height: 44px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      background: var(--bar);
+      border-bottom: 1px solid var(--bar-bd);
+      padding: 0 8px;
+      gap: 0;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Logical sections */
+    .tbar-group {
+      display: flex;
+      align-items: center;
+      gap: 1px;
+      padding: 0 4px;
+    }
+
+    .tbar-sep {
+      width: 1px;
+      height: 20px;
+      background: var(--bar-bd);
+      margin: 0 4px;
+      flex-shrink: 0;
+    }
+
+    .tbar-spacer { flex: 1; }
+
+    /* Tool button */
+    .tool-btn {
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      border: none; background: transparent; cursor: pointer;
+      color: var(--muted);
+      position: relative;
+      transition: color .1s, background .1s;
+    }
+    .tool-btn:hover { background: var(--hover); color: var(--text); }
+    .tool-btn.active { background: var(--blue); color: #fff; }
+    .tool-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
+    .tool-btn svg { width: 16px; height: 16px; }
+
+    /* Tooltip */
+    .tool-btn .tip {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0A0E16;
+      border: 1px solid var(--bar-bd);
+      color: var(--text);
+      font-size: 10px;
+      font-weight: 500;
+      padding: 3px 7px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .12s;
+      z-index: 100;
+    }
+    .tool-btn:hover .tip { opacity: 1; }
+
+    /* Color swatches */
+    .color-group {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 0 8px;
+    }
+
+    .color-swatch {
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      transition: border-color .1s, transform .1s;
+    }
+    .color-swatch:hover { transform: scale(1.2); }
+    .color-swatch.active { border-color: #fff; }
+
+    /* Stroke width */
+    .stroke-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 8px;
+    }
+    .stroke-label { font-size: 10px; font-weight: 500; color: var(--muted); }
+    .stroke-group input[type="range"] {
+      width: 56px;
+      height: 2px;
+      accent-color: var(--blue);
+      cursor: pointer;
+    }
+
+    /* Export action buttons */
+    .export-btn {
+      height: 28px;
+      padding: 0 12px;
+      border: none;
+      font-size: 11px; font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background .1s, color .1s;
+      white-space: nowrap;
+      display: flex; align-items: center; gap: 5px;
+    }
+
+    .export-btn.ghost {
+      background: transparent;
+      border: 1px solid var(--bar-bd);
+      color: var(--text);
+    }
+    .export-btn.ghost:hover { background: var(--hover); border-color: #2E3A4E; }
+
+    .export-btn.done {
+      background: var(--blue);
+      color: #fff;
+      border: 1px solid var(--blue);
+    }
+    .export-btn.done:hover { background: var(--blue-h); border-color: var(--blue-h); }
+
+    .export-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0 4px;
+    }
+
+    #exportQuality {
+      height: 28px;
+      padding: 0 6px;
+      background: var(--bar);
+      border: 1px solid var(--bar-bd);
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      outline: none;
+    }
+    #exportQuality:hover { background: var(--hover); }
+    #exportQuality option { background: var(--bar); color: var(--text); }
+
+    /* ─── CANVAS AREA ─── */
+    .canvas-wrap {
+      flex: 1;
+      min-height: 0;        /* required: lets flex item shrink below content size */
+      overflow: auto;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      background: var(--bg);
+      background-image:
+        linear-gradient(45deg, #111820 25%, transparent 25%),
+        linear-gradient(-45deg, #111820 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #111820 75%),
+        linear-gradient(-45deg, transparent 75%, #111820 75%);
+      background-size: 24px 24px;
+      background-position: 0 0, 0 12px, 12px -12px, -12px 0;
+      padding: 32px;
+    }
+
+    /* Fabric.js wraps the canvas in .canvas-container; we need it flex-centered */
+    .canvas-wrap > .canvas-container {
+      flex-shrink: 0;
+      margin: auto;
+    }
+
+    #editorCanvas {
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.06),
+        0 12px 48px rgba(0,0,0,.7);
+      display: block;
+      /* transform-origin set by JS; width/height are canvas attributes */
+    }
+
+    /* ─── STATUS BAR ─── */
+    .status-bar {
+      height: 28px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      background: var(--bar);
+      border-top: 1px solid var(--bar-bd);
+      font-size: 10.5px;
+      font-weight: 500;
+    }
+
+    .status-left  { display: flex; align-items: center; gap: 8px; color: var(--muted); }
+    .status-sep   { color: var(--bar-bd); }
+    .status-center { color: var(--muted); }
+    .status-right { display: flex; align-items: center; gap: 2px; }
+
+    .zoom-btn {
+      width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      border: none; background: transparent; cursor: pointer;
+      color: var(--muted); font-size: 14px; line-height: 1;
+      transition: color .1s, background .1s;
+    }
+    .zoom-btn:hover { background: var(--hover); color: var(--text); }
+
+    /* ─── TOAST ─── */
+    .toast {
+      position: fixed;
+      bottom: 44px; left: 50%;
+      transform: translateX(-50%) translateY(12px);
+      background: #0A0E16;
+      border: 1px solid var(--bar-bd);
+      color: var(--text);
+      padding: 6px 14px;
+      font-size: 11.5px; font-weight: 600;
+      box-shadow: 0 4px 20px rgba(0,0,0,.5);
+      opacity: 0; pointer-events: none;
+      transition: opacity .18s, transform .18s;
+      white-space: nowrap; z-index: 999;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+<!-- ── TOOLBAR ── -->
+<div class="toolbar">
+
+  <!-- Drawing tools -->
+  <div class="tbar-group">
+
+    <button class="tool-btn active" data-tool="select" id="tool-select">
+      <!-- Cursor / Select -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 3L19 12L12 13.5L9.5 20L5 3Z"/>
+      </svg>
+      <span class="tip">Select  V</span>
+    </button>
+
+    <button class="tool-btn" data-tool="arrow" id="tool-arrow">
+      <!-- Arrow -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 19L19 5M19 5H12M19 5V12"/>
+      </svg>
+      <span class="tip">Arrow  A</span>
+    </button>
+
+    <button class="tool-btn" data-tool="rectangle" id="tool-rectangle">
+      <!-- Rectangle -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="4" y="5" width="16" height="14"/>
+      </svg>
+      <span class="tip">Rectangle  R</span>
+    </button>
+
+    <button class="tool-btn" data-tool="ellipse" id="tool-ellipse">
+      <!-- Ellipse -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <ellipse cx="12" cy="12" rx="9" ry="6.5"/>
+      </svg>
+      <span class="tip">Ellipse  E</span>
+    </button>
+
+    <button class="tool-btn" data-tool="line" id="tool-line">
+      <!-- Line -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+        <line x1="5" y1="19" x2="19" y2="5"/>
+      </svg>
+      <span class="tip">Line  L</span>
+    </button>
+
+    <button class="tool-btn" data-tool="freedraw" id="tool-freedraw">
+      <!-- Pen -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+        <path d="M15 5L19 9"/>
+      </svg>
+      <span class="tip">Pen  P</span>
+    </button>
+
+  </div>
+
+  <div class="tbar-sep"></div>
+
+  <!-- Annotation tools -->
+  <div class="tbar-group">
+
+    <button class="tool-btn" data-tool="text" id="tool-text">
+      <!-- Text -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 7V5H20V7M12 5V19M9 19H15"/>
+      </svg>
+      <span class="tip">Text  T</span>
+    </button>
+
+    <button class="tool-btn" data-tool="highlight" id="tool-highlight">
+      <!-- Highlight -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 20H5M15 20H11M12 4L17 9L9 17L4 12L12 4Z"/>
+        <path d="M9 17L7 19"/>
+      </svg>
+      <span class="tip">Highlight  H</span>
+    </button>
+
+    <button class="tool-btn" data-tool="blur" id="tool-blur">
+      <!-- Blur -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="5" width="18" height="14" stroke-dasharray="3 2"/>
+        <path d="M7 9H17M7 12H17M7 15H13"/>
+      </svg>
+      <span class="tip">Blur  B</span>
+    </button>
+
+    <button class="tool-btn" data-tool="step" id="tool-step">
+      <!-- Step number -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"/>
+        <path d="M11 8.5V15.5" stroke-width="1.8"/>
+      </svg>
+      <span class="tip">Step  N</span>
+    </button>
+
+    <button class="tool-btn" data-tool="crop" id="tool-crop">
+      <!-- Crop -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 2V18H22M2 6H18V22"/>
+      </svg>
+      <span class="tip">Crop  C</span>
+    </button>
+
+  </div>
+
+  <div class="tbar-sep"></div>
+
+  <!-- Color swatches -->
+  <div class="color-group">
+    <div class="color-swatch active" data-color="#EF4444" style="background:#EF4444" title="Red"></div>
+    <div class="color-swatch" data-color="#1667F2" style="background:#1667F2" title="Blue"></div>
+    <div class="color-swatch" data-color="#10B981" style="background:#10B981" title="Green"></div>
+    <div class="color-swatch" data-color="#F59E0B" style="background:#F59E0B" title="Amber"></div>
+    <div class="color-swatch" data-color="#A855F7" style="background:#A855F7" title="Purple"></div>
+    <div class="color-swatch" data-color="#FFFFFF" style="background:#FFFFFF" title="White"></div>
+    <div class="color-swatch" data-color="#101828" style="background:#101828; border-color:#4F5F74" title="Black"></div>
+  </div>
+
+  <div class="tbar-sep"></div>
+
+  <!-- Stroke width -->
+  <div class="stroke-group">
+    <span class="stroke-label">W</span>
+    <input type="range" id="strokeWidth" min="1" max="10" value="3">
+  </div>
+
+  <div class="tbar-spacer"></div>
+
+  <!-- History -->
+  <div class="tbar-group">
+    <button class="tool-btn" id="undo-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 7H13C16.866 7 20 10.134 20 14C20 17.866 16.866 21 13 21H7"/>
+        <path d="M7 3L3 7L7 11"/>
+      </svg>
+      <span class="tip">Undo  ⌘Z</span>
+    </button>
+    <button class="tool-btn" id="redo-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 7H11C7.134 7 4 10.134 4 14C4 17.866 7.134 21 11 21H17"/>
+        <path d="M17 3L21 7L17 11"/>
+      </svg>
+      <span class="tip">Redo  ⌘Y</span>
+    </button>
+    <button class="tool-btn" id="delete-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 6H21M8 6V4H16V6M19 6L18 20H6L5 6"/>
+        <path d="M10 11V17M14 11V17"/>
+      </svg>
+      <span class="tip">Delete  ⌫</span>
+    </button>
+  </div>
+
+  <div class="tbar-sep"></div>
+
+  <!-- Quality + Export -->
+  <div class="export-group">
+    <select id="exportQuality" title="Export resolution">
+      <option value="native">Native</option>
+      <option value="hd" selected>1080p HD</option>
+      <option value="4k">4K UHD</option>
+    </select>
+    <button class="export-btn ghost" id="copy-btn">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="9" width="13" height="13"/>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+      </svg>
+      Copy
+    </button>
+    <button class="export-btn ghost" id="save-btn">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V15"/>
+        <path d="M7 10L12 15L17 10M12 15V3"/>
+      </svg>
+      Save PNG
+    </button>
+    <button class="export-btn ghost" id="pdf-btn">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/>
+        <path d="M14 2V8H20M9 13H15M9 17H12"/>
+      </svg>
+      PDF
+    </button>
+    <button class="export-btn done" id="done-btn">
+      Done
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 6L9 17L4 12"/>
+      </svg>
+    </button>
+  </div>
+
+</div>
+
+<!-- ── CANVAS ── -->
+<div class="canvas-wrap" id="canvasContainer">
+  <canvas id="editorCanvas"></canvas>
+</div>
+
+<!-- ── STATUS BAR ── -->
+<div class="status-bar">
+  <div class="status-left">
+    <span id="dimensions">– × –</span>
+    <span class="status-sep">·</span>
+    <span id="zoom">100%</span>
+  </div>
+  <div class="status-center">
+    <span id="toolName">Select</span>
+  </div>
+  <div class="status-right">
+    <button class="zoom-btn" id="zoom-out-btn" title="Zoom out">−</button>
+    <button class="zoom-btn" id="zoom-in-btn" title="Zoom in">+</button>
+  </div>
+</div>
+
+<!-- ── TOAST ── -->
+<div class="toast" id="toast"></div>
+
+<script src="canvas-editor.ts" type="module"></script>
+</body>
+</html>

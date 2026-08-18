@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=600">
+  <title>GoFully Settings</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      padding: 32px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h1 .logo {
+      width: 28px;
+      height: 28px;
+      background: #3b82f6;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .subtitle {
+      color: #64748b;
+      font-size: 13px;
+      margin-bottom: 28px;
+    }
+
+    .section {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .section h2 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #1e293b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .field {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .field:last-child { border-bottom: none; }
+
+    .field-label {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .field-desc {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    select, input[type="number"] {
+      padding: 6px 10px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: inherit;
+      background: white;
+      color: #0f172a;
+      cursor: pointer;
+    }
+
+    select:focus, input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+
+    /* Toggle switch */
+    .toggle {
+      position: relative;
+      width: 42px;
+      height: 24px;
+    }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #cbd5e1;
+      border-radius: 24px;
+      transition: 0.3s;
+    }
+
+    .toggle .slider:before {
+      content: "";
+      position: absolute;
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+
+    .toggle input:checked + .slider {
+      background: #3b82f6;
+    }
+
+    .toggle input:checked + .slider:before {
+      transform: translateX(18px);
+    }
+
+    .footer {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 11px;
+      margin-top: 24px;
+    }
+
+    .footer a {
+      color: #3b82f6;
+      text-decoration: none;
+    }
+
+    .saved-toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1e293b;
+      color: white;
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease;
+    }
+
+    .saved-toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .shortcut-list {
+      font-size: 12px;
+    }
+
+    .shortcut-list .shortcut-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .shortcut-list .shortcut-row:last-child { border-bottom: none; }
+
+    kbd {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-family: monospace;
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+  <h1>
+    <span class="logo">SF</span>
+    GoFully Settings
+  </h1>
+  <p class="subtitle">Configure your screenshot and export preferences</p>
+
+  <!-- Capture Settings -->
+  <div class="section">
+    <h2>Capture</h2>
+
+    <div class="field">
+      <div>
+        <div class="field-label">Default action after capture</div>
+        <div class="field-desc">What happens when a screenshot is taken</div>
+      </div>
+      <select id="defaultAction">
+        <option value="result-bar">Show result bar</option>
+        <option value="auto-copy">Auto-copy to clipboard</option>
+        <option value="auto-save-png">Auto-save as PNG</option>
+        <option value="auto-pdf">Auto-download as PDF</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <div>
+        <div class="field-label">Capture delay</div>
+        <div class="field-desc">Wait time between scroll frames (ms)</div>
+      </div>
+      <input type="number" id="captureDelay" min="50" max="1000" step="50" value="150" style="width:80px">
+    </div>
+
+    <div class="field">
+      <div>
+        <div class="field-label">Lazy-load wait time</div>
+        <div class="field-desc">Max time to wait for lazy content (ms)</div>
+      </div>
+      <input type="number" id="lazyLoadWait" min="500" max="10000" step="500" value="2000" style="width:80px">
+    </div>
+  </div>
+
+  <!-- Export Settings -->
+  <div class="section">
+    <h2>Export</h2>
+
+    <div class="field">
+      <div>
+        <div class="field-label">PNG save location</div>
+        <div class="field-desc">Where to save PNG files</div>
+      </div>
+      <select id="pngSaveAs">
+        <option value="false">Downloads folder</option>
+        <option value="true">Ask each time</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <div>
+        <div class="field-label">PDF page size</div>
+        <div class="field-desc">Page format for PDF exports</div>
+      </div>
+      <select id="pdfPageSize">
+        <option value="a4">A4</option>
+        <option value="letter">Letter</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <div>
+        <div class="field-label">Include URL in PDF footer</div>
+        <div class="field-desc">Add page URL as watermark</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="pdfWatermark">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Keyboard Shortcuts -->
+  <div class="section">
+    <h2>Keyboard Shortcuts</h2>
+    <div class="shortcut-list">
+      <div class="shortcut-row"><span>Open GoFully</span><kbd>Alt+S</kbd></div>
+      <div class="shortcut-row"><span>Capture full page</span><kbd>Alt+Shift+F</kbd></div>
+      <div class="shortcut-row"><span>Capture visible area</span><kbd>Alt+Shift+V</kbd></div>
+      <div class="shortcut-row" style="padding-top:12px;border-top:1px solid #e2e8f0">
+        <span style="color:#64748b;font-size:11px">Customize shortcuts at chrome://extensions/shortcuts</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- About -->
+  <div class="section">
+    <h2>About</h2>
+    <div class="field">
+      <div>
+        <div class="field-label">GoFully v1.0.0</div>
+        <div class="field-desc">100% offline. Zero data leaves your device.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    GoFully
+  </div>
+
+  <div class="saved-toast" id="savedToast">Settings saved</div>
+
+  <script src="settings.ts" type="module"></script>
+</body>
+</html>

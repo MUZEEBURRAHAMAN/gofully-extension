@@ -1,0 +1,30 @@
+{
+  "name": "snapforge",
+  "version": "1.0.0",
+  "description": "Full page screenshot Chrome extension with 5 capture modes, built-in editor, and PDF export",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "node build.mjs",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "chrome-extension",
+    "screenshot",
+    "full-page",
+    "capture"
+  ],
+  "author": "SnapForge",
+  "license": "MIT",
+  "devDependencies": {
+    "@crxjs/vite-plugin": "^2.0.0-beta.33",
+    "@types/chrome": "^0.2.6",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.1"
+  },
+  "dependencies": {
+    "@phosphor-icons/core": "^2.1.1",
+    "fabric": "^7.4.0",
+    "jspdf": "^4.2.1"
+  }
+}

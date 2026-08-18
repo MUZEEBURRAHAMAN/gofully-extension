@@ -1,0 +1,34 @@
+import { defineConfig } from "vite";
+import { resolve } from "path";
+
+// Content scripts and service worker are built separately via build.mjs
+// This config handles the ES module entries (popup, settings, editor, service-worker)
+export default defineConfig({
+  build: {
+    outDir: "dist",
+    emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        "service-worker": resolve(__dirname, "src/background/service-worker.ts"),
+        popup: resolve(__dirname, "src/popup/popup.ts"),
+        settings: resolve(__dirname, "src/settings/settings.ts"),
+        "canvas-editor": resolve(__dirname, "src/editor/canvas-editor.ts"),
+      },
+      output: {
+        entryFileNames: "[name].js",
+        chunkFileNames: "chunks/[name]-[hash].js",
+        assetFileNames: "assets/[name][extname]",
+        format: "es",
+        inlineDynamicImports: false,
+      },
+    },
+    target: "esnext",
+    minify: false,
+    sourcemap: false,
+  },
+  resolve: {
+    alias: {
+      "@": resolve(__dirname, "src"),
+    },
+  },
+});
