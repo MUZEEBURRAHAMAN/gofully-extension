@@ -423,9 +423,14 @@
     }
 
     /* ─── PRIVACY BANNER ─── */
-    .privacy-banner {
+    .privacy-section {
+      padding: 80px 24px;
       max-width: 1080px;
-      margin: 0 auto 88px;
+      margin: 0 auto;
+    }
+
+    .privacy-banner {
+      width: 100%;
       padding: 48px;
       background: var(--blue-50);
       border: 1px solid var(--blue-bd);
@@ -434,6 +439,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 32px;
+      box-shadow: var(--shadow-xs);
     }
 
     .privacy-banner-text h3 {
@@ -890,7 +896,7 @@
     </section>
 
     <!-- PRIVACY BANNER -->
-    <section class="container">
+    <section class="privacy-section">
       <div class="privacy-banner">
         <div class="privacy-banner-text">
           <h3>Your captures stay under your control.</h3>
