@@ -3,10 +3,14 @@ let bar: HTMLDivElement | null = null;
 function playShutterSound(): void {
   try {
     const url = chrome.runtime.getURL("assets/shutter.mp3");
-    const audio = new Audio(url);
-    audio.volume = 0.5;
-    audio.play().catch(() => {});
-  } catch { /* ignore */ }
+    if (url) {
+      const audio = new Audio(url);
+      audio.volume = 0.4;
+      audio.play().catch(() => {});
+    }
+  } catch {
+    // Ignore audio playback failure in restrictive pages
+  }
 }
 
 async function copyImageFromDataUrl(dataUrl: string): Promise<void> {
@@ -26,16 +30,16 @@ async function convertToPng(blob: Blob): Promise<Blob> {
   return new Promise((res) => canvas.toBlob((b) => res(b!), "image/png"));
 }
 
-// Phosphor icon SVG strings (256×256 viewBox, fill="currentColor")
+// Hugeicons SVG strings (24×24 viewBox, stroke-width="1.5")
 const PH = {
-  check: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" style="width:15px;height:15px;display:block;flex-shrink:0"><path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34Z"/></svg>`,
-  x: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" style="width:13px;height:13px;display:block;flex-shrink:0"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/></svg>`,
-  ruler: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" style="width:11px;height:11px;display:block;flex-shrink:0"><path d="M235.32,73.37,182.63,20.69a16,16,0,0,0-22.63,0L20.68,160a16,16,0,0,0,0,22.63l52.69,52.68a16,16,0,0,0,22.63,0L235.32,96A16,16,0,0,0,235.32,73.37ZM84.68,224,32,171.31l32-32,26.34,26.35a8,8,0,0,0,11.32-11.32L75.31,128,96,107.31l26.34,26.35a8,8,0,0,0,11.32-11.32L107.31,96,128,75.31l26.34,26.35a8,8,0,0,0,11.32-11.32L139.31,64l32-32L224,84.69Z"/></svg>`,
-  lightning: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" style="width:11px;height:11px;display:block;flex-shrink:0"><path d="M215.79,118.17a8,8,0,0,0-5-5.66L153.18,90.9l14.66-73.33a8,8,0,0,0-13.69-7l-112,120a8,8,0,0,0,3,13l57.63,21.61L88.16,238.43a8,8,0,0,0,13.69,7l112-120A8,8,0,0,0,215.79,118.17ZM109.37,214l10.47-52.38a8,8,0,0,0-5-9.06L62,132.71l84.62-90.66L136.16,94.43a8,8,0,0,0,5,9.06l52.8,19.8Z"/></svg>`,
-  copy: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" style="width:13px;height:13px;display:block;flex-shrink:0"><path d="M216,32H88a8,8,0,0,0-8,8V80H40a8,8,0,0,0-8,8V216a8,8,0,0,0,8,8H168a8,8,0,0,0,8-8V176h40a8,8,0,0,0,8-8V40A8,8,0,0,0,216,32ZM160,208H48V96H160Zm48-48H176V88a8,8,0,0,0-8-8H96V48H208Z"/></svg>`,
-  downloadSimple: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" style="width:13px;height:13px;display:block;flex-shrink:0"><path d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"/></svg>`,
-  filePdf: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" style="width:13px;height:13px;display:block;flex-shrink:0"><path d="M224,152a8,8,0,0,1-8,8H192v16h16a8,8,0,0,1,0,16H192v16a8,8,0,0,1-16,0V152a8,8,0,0,1,8-8h32A8,8,0,0,1,224,152ZM92,172a28,28,0,0,1-28,28H56v8a8,8,0,0,1-16,0V152a8,8,0,0,1,8-8H64A28,28,0,0,1,92,172Zm-16,0a12,12,0,0,0-12-12H56v24h8A12,12,0,0,0,76,172Zm88,8a36,36,0,0,1-36,36H112a8,8,0,0,1-8-8V152a8,8,0,0,1,8-8h16A36,36,0,0,1,164,180Zm-16,0a20,20,0,0,0-20-20h-8v40h8A20,20,0,0,0,148,180ZM40,112V40A16,16,0,0,1,56,24h96a8,8,0,0,1,5.66,2.34l56,56A8,8,0,0,1,216,88v24a8,8,0,0,1-16,0V96H152a8,8,0,0,1-8-8V40H56v72a8,8,0,0,1-16,0ZM160,80h28.69L160,51.31Z"/></svg>`,
-  pencil: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" style="width:13px;height:13px;display:block;flex-shrink:0"><path d="M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z"/></svg>`,
+  check: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>`,
+  x: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;flex-shrink:0"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+  ruler: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;flex-shrink:0"><path d="M21.3 8.7L15.3 2.7C14.9 2.3 14.3 2.3 13.9 2.7L2.7 13.9C2.3 14.3 2.3 14.9 2.7 15.3L8.7 21.3C9.1 21.7 9.7 21.7 10.1 21.3L21.3 10.1C21.7 9.7 21.7 9.1 21.3 8.7Z"/><path d="M6 10.5L9 13.5"/><path d="M9 7.5L12 10.5"/><path d="M12 4.5L15 7.5"/><path d="M15 1.5L18 4.5"/></svg>`,
+  lightning: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;flex-shrink:0"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+  copy: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;flex-shrink:0"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`,
+  downloadSimple: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;flex-shrink:0"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`,
+  filePdf: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;flex-shrink:0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13h6"/><path d="M9 17h3"/></svg>`,
+  pencil: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;flex-shrink:0"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/><path d="M15 5l4 4"/></svg>`,
 };
 
 export function showResultBar(info: {
@@ -43,51 +47,44 @@ export function showResultBar(info: {
   height: number;
   mode: string;
   method: string;
+  dataUrl?: string;
 }): void {
   removeResultBar();
   playShutterSound();
 
   bar = document.createElement("div");
   bar.id = "snapforge-result-bar";
+  bar.style.position = "fixed";
+  bar.style.top = "0";
+  bar.style.left = "0";
+  bar.style.width = "100vw";
+  bar.style.height = "100vh";
+  bar.style.zIndex = "2147483647";
+  bar.style.pointerEvents = "none";
+
   const shadow = bar.attachShadow({ mode: "closed" });
 
   const style = document.createElement("style");
   style.textContent = `
-    @import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap');
-
-    :host {
-      all: initial;
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      z-index: 2147483647;
-      pointer-events: none;
-      font-family: 'Geist', -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    .backdrop {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(15, 23, 42, 0.45);
-      pointer-events: all;
-      animation: fadeIn 0.15s ease;
-      backdrop-filter: blur(2px);
-    }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     .popup {
-      position: fixed; top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 360px;
+      position: fixed; top: 16px; right: 16px;
+      width: 320px;
       background: #ffffff;
       border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      box-shadow: 0 20px 60px rgba(15,23,42,0.15), 0 4px 16px rgba(15,23,42,0.08);
-      pointer-events: all;
-      animation: popIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      border-radius: 0px;
+      box-shadow: 0 10px 30px rgba(15,23,42,0.18), 0 2px 8px rgba(15,23,42,0.08);
+      pointer-events: auto;
+      animation: slideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
       overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      z-index: 2147483647;
     }
-    @keyframes popIn {
-      from { transform: translate(-50%, -53%) scale(0.96); opacity: 0; }
-      to   { transform: translate(-50%, -50%) scale(1);    opacity: 1; }
+    @keyframes slideIn {
+      from { transform: translateY(-16px); opacity: 0; }
+      to   { transform: translateY(0); opacity: 1; }
     }
 
     /* Success strip */
@@ -99,7 +96,7 @@ export function showResultBar(info: {
     }
     .check-circle {
       width: 32px; height: 32px;
-      background: #22c55e; border-radius: 50%;
+      background: #22c55e; border-radius: 0px;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0; color: #fff;
     }
@@ -117,7 +114,7 @@ export function showResultBar(info: {
     .dismiss-btn {
       width: 28px; height: 28px;
       border: none; background: none; cursor: pointer;
-      color: #4ade80; border-radius: 6px;
+      color: #4ade80; border-radius: 0px;
       display: flex; align-items: center; justify-content: center;
       transition: background 0.1s, color 0.1s; flex-shrink: 0;
     }
@@ -139,6 +136,54 @@ export function showResultBar(info: {
       font-family: 'Geist', -apple-system, sans-serif;
     }
     .meta-sep { width: 1px; height: 14px; background: #e2e8f0; }
+    /* Image Preview Container */
+    .preview-container {
+      position: relative;
+      width: 100%;
+      height: 140px;
+      background: #f1f5f9;
+      border-top: 1px solid #e2e8f0;
+      border-bottom: 1px solid #e2e8f0;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+    .preview-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+      object-position: top center;
+    }
+    /* Blur & Gradient Fade overlay for long / full-page screenshots */
+    .preview-fade {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      background: linear-gradient(to bottom, rgba(241, 245, 249, 0) 0%, rgba(241, 245, 249, 0.92) 80%, rgba(241, 245, 249, 1) 100%);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 6px;
+      pointer-events: none;
+    }
+    .preview-pill {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: #475569;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid #cbd5e1;
+      padding: 2px 8px;
+      border-radius: 0px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
 
     /* Actions */
     .actions { padding: 12px; display: flex; flex-direction: column; gap: 7px; }
@@ -146,7 +191,7 @@ export function showResultBar(info: {
 
     .btn {
       flex: 1; height: 38px;
-      border-radius: 8px;
+      border-radius: 0px;
       border: 1.5px solid #e2e8f0;
       background: #ffffff;
       cursor: pointer;
@@ -168,9 +213,9 @@ export function showResultBar(info: {
     /* Toast */
     .toast {
       position: fixed; bottom: 20px; left: 50%;
-      transform: translateX(-50%) translateY(60px);
+      transform: translateX(-50%) translateY(20px);
       background: #0f172a; color: #fff;
-      padding: 8px 16px; border-radius: 8px;
+      padding: 8px 16px; border-radius: 0px;
       font-size: 12px; font-weight: 600;
       box-shadow: 0 4px 20px rgba(15,23,42,0.2);
       transition: transform 0.22s cubic-bezier(0.16,1,0.3,1), opacity 0.22s;
@@ -188,8 +233,10 @@ export function showResultBar(info: {
     "visible-area": "Visible Area",
     "selected-area": "Selected Area",
     "scrolling-area": "Scrolling Area",
-    "scrollable-element": "Scrollable Element",
+    "capture-text": "Capture Text (OCR)",
   };
+
+  const isLongCapture = info.mode === "full-page" || info.mode === "scrolling-area" || h > 800;
 
   const backdrop = document.createElement("div");
   backdrop.className = "backdrop";
@@ -220,6 +267,25 @@ export function showResultBar(info: {
       </div>
     </div>
 
+    ${
+      info.dataUrl
+        ? `
+      <div class="preview-container">
+        <img class="preview-img" src="${info.dataUrl}" alt="Capture Preview" />
+        ${
+          isLongCapture
+            ? `
+          <div class="preview-fade">
+            <span class="preview-pill">Full Page View</span>
+          </div>
+        `
+            : ""
+        }
+      </div>
+    `
+        : ""
+    }
+
     <div class="actions">
       <div class="btn-row">
         <button class="btn btn-primary" id="sf-copy">
@@ -247,7 +313,8 @@ export function showResultBar(info: {
   shadow.appendChild(backdrop);
   shadow.appendChild(popup);
   shadow.appendChild(toastEl);
-  document.body.appendChild(bar);
+  document.querySelectorAll("#snapforge-result-bar").forEach((el) => el.remove());
+  (document.body || document.documentElement || document.firstElementChild)?.appendChild(bar);
 
   function showToast(msg: string) {
     toastEl.textContent = msg;
@@ -288,15 +355,22 @@ export function showResultBar(info: {
 }
 
 function removeResultBar(): void {
+  document.querySelectorAll("#snapforge-result-bar").forEach((el) => el.remove());
   bar?.remove();
   bar = null;
 }
 
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-  if (message.type === "SHOW_RESULT_BAR") {
-    showResultBar(message.payload);
-    sendResponse({ shown: true });
-    return true;
-  }
-  return false;
-});
+// Make globally accessible on window for direct script invocation
+(window as any).__snapforge_show_result_bar = showResultBar;
+
+if (!(window as any).__snapforge_result_bar_listener_registered) {
+  (window as any).__snapforge_result_bar_listener_registered = true;
+  chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+    if (message.type === "SHOW_RESULT_BAR") {
+      showResultBar(message.payload);
+      sendResponse({ shown: true });
+      return true;
+    }
+    return false;
+  });
+}

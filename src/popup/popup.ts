@@ -122,60 +122,32 @@ chrome.runtime.onMessage.addListener((message) => {
 });
 
 async function startCapture(mode: CaptureMode): Promise<void> {
-  // Modes that need the page visible — close popup, inject UI into page
+  // For all capture modes, close the popup and let the sleek upper confirmation HUD appear on the page!
+  const [tab] = await chrome.tabs.query({
+    active: true,
+    currentWindow: true,
+  });
+  if (!tab?.id) return;
+
   if (
     mode === "selected-area" ||
     mode === "scrolling-area" ||
-    mode === "scrollable-element"
+    mode === "capture-text"
   ) {
-    const [tab] = await chrome.tabs.query({
-      active: true,
-      currentWindow: true,
-    });
-    if (!tab?.id) return;
-
-    // Send message to service worker to initiate the interactive mode
     chrome.runtime.sendMessage({
       type: "INIT_INTERACTIVE_MODE",
       payload: { mode, tabId: tab.id },
     });
-
-    // Close popup so the page is visible for interaction
     window.close();
     return;
   }
 
-  // Full page and visible area — capture immediately
-  showProgress();
-
-  try {
-    const response = await chrome.runtime.sendMessage({
-      type: "START_CAPTURE",
-      payload: { mode },
-    });
-
-    if (response?.type === "CAPTURE_ERROR") {
-      showError(response.payload.message);
-      return;
-    }
-
-    if (response?.type === "CAPTURE_COMPLETE") {
-      captureMetadata = response.payload;
-      currentUrl = response.payload.url;
-
-      // Get blob URL
-      const blobResp = await chrome.runtime.sendMessage({
-        type: "GET_CAPTURE_BLOB_URL",
-      });
-      if (blobResp?.url) {
-        currentBlobUrl = blobResp.url;
-      }
-
-      showResult(response.payload);
-    }
-  } catch (e) {
-    showError((e as Error).message);
-  }
+  // Full page and visible area — trigger capture and close popup
+  chrome.runtime.sendMessage({
+    type: "START_CAPTURE",
+    payload: { mode, tabId: tab.id },
+  });
+  window.close();
 }
 
 function showProgress(): void {
@@ -216,6 +188,20 @@ function showResult(result: any): void {
   const h = Math.round(result.height);
   const method = result.method === "cdp" ? "CDP" : "Scroll-Stitch";
   resultText.textContent = `${w}×${h}px captured via ${method}`;
+
+  const previewContainer = document.getElementById("popupPreviewContainer");
+  const previewImg = document.getElementById("popupPreviewImg") as HTMLImageElement;
+  const previewFade = document.getElementById("popupPreviewFade");
+
+  if (currentBlobUrl && previewContainer && previewImg) {
+    previewImg.src = currentBlobUrl;
+    previewContainer.style.display = "flex";
+    const isLongCapture = result.mode === "full-page" || result.mode === "scrolling-area" || h > 800;
+    if (previewFade) {
+      previewFade.style.display = isLongCapture ? "flex" : "none";
+    }
+  }
+
   playCaptureSound();
 }
 

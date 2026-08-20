@@ -13,6 +13,7 @@ export default defineConfig({
         popup: resolve(__dirname, "src/popup/popup.ts"),
         settings: resolve(__dirname, "src/settings/settings.ts"),
         "canvas-editor": resolve(__dirname, "src/editor/canvas-editor.ts"),
+        offscreen: resolve(__dirname, "src/offscreen/canvas-stitcher.ts"),
       },
       output: {
         entryFileNames: "[name].js",

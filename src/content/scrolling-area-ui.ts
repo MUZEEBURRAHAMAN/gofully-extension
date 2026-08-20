@@ -7,10 +7,19 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 
     startScrollingAreaUI({
       onRegionSelected: (region) => {
-        // Region selected, wait for user to pick auto/manual
+        // Region selected
       },
       onCaptureFrame: () => {
-        // Manual frame capture — handled by the service worker
+        if (currentRegion) {
+          chrome.runtime.sendMessage({
+            type: "MANUAL_CAPTURE_FRAME",
+            payload: { region: currentRegion },
+          }, (resp) => {
+            if (resp?.count && frameCounter) {
+              frameCounter.textContent = `${resp.count} frames`;
+            }
+          });
+        }
       },
       onAutoScrollStart: (speed) => {
         // Get the region from the current selection
@@ -22,6 +31,12 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
         }
       },
       onDone: () => {
+        if (currentRegion) {
+          chrome.runtime.sendMessage({
+            type: "FINISH_MANUAL_CAPTURE",
+            payload: { region: currentRegion },
+          });
+        }
         stopScrollingAreaUI();
       },
       onCancel: () => {
@@ -135,12 +150,12 @@ function createSelectionBox(x: number, y: number, w: number, h: number): void {
       position: "absolute",
       top: "-26px",
       left: "0",
-      backgroundColor: "#3b82f6",
+      backgroundColor: "#2563eb",
       color: "white",
       fontSize: "11px",
       fontFamily: "system-ui, sans-serif",
       padding: "2px 8px",
-      borderRadius: "3px",
+      borderRadius: "0px",
       whiteSpace: "nowrap",
       pointerEvents: "none",
     });
@@ -154,6 +169,7 @@ function createSelectionBox(x: number, y: number, w: number, h: number): void {
     top: `${y}px`,
     width: `${w}px`,
     height: `${h}px`,
+    borderRadius: "0px",
   });
 
   const badgeEl = selectionBox.querySelector("#snapforge-selection-badge") as HTMLDivElement;
@@ -162,49 +178,38 @@ function createSelectionBox(x: number, y: number, w: number, h: number): void {
 
 function createToolbar(): void {
   toolbar = document.createElement("div");
-  toolbar.id = "snapforge-toolbar";
+  toolbar.id = "snapforge-scrolling-toolbar";
   Object.assign(toolbar.style, {
     position: "fixed",
-    zIndex: "2147483642",
-    backgroundColor: "#1e293b",
-    borderRadius: "10px",
-    padding: "8px 12px",
+    zIndex: "2147483645",
+    backgroundColor: "#ffffff",
+    border: "1px solid #cbd5e1",
+    borderRadius: "0px",
+    padding: "8px 14px",
     display: "flex",
     alignItems: "center",
-    gap: "8px",
-    fontFamily: "system-ui, sans-serif",
+    gap: "10px",
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
     fontSize: "12px",
-    color: "white",
-    boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+    color: "#0f172a",
+    boxShadow: "0 10px 30px rgba(15, 23, 42, 0.15)",
   });
 
   if (currentRegion) {
-    const top = currentRegion.y - 48;
-    toolbar.style.top = `${top > 10 ? top : currentRegion.y + currentRegion.height + 10}px`;
-    toolbar.style.left = `${currentRegion.x}px`;
+    const top = currentRegion.y - 56;
+    toolbar.style.top = `${top > 10 ? top : currentRegion.y + currentRegion.height + 14}px`;
+    toolbar.style.left = `${Math.max(10, Math.min(window.innerWidth - 340, currentRegion.x))}px`;
   }
 
   // Auto-scroll button
-  const autoBtn = makeButton("Auto-Scroll", "#22c55e", () => {
+  const autoBtn = makeButton("Auto-Scroll", "#10B981", () => {
     callbacks?.onAutoScrollStart("medium");
     showCapturingUI();
   });
 
-  // Manual button
-  const manualBtn = makeButton("Manual", "#f59e0b", () => {
+  // Manual scroll capture button
+  const manualBtn = makeButton("Manual Capture", "#2563eb", () => {
     showManualUI();
-  });
-
-  // Done button
-  const doneBtn = makeButton("Done", "#3b82f6", () => {
-    callbacks?.onDone();
-  });
-  doneBtn.id = "snapforge-done-btn";
-
-  // Cancel button
-  const cancelBtn = makeButton("Cancel", "#64748b", () => {
-    callbacks?.onCancel();
-    cleanup();
   });
 
   // Speed selector
@@ -212,9 +217,9 @@ function createToolbar(): void {
   Object.assign(speedGroup.style, {
     display: "flex",
     gap: "4px",
-    marginLeft: "4px",
-    borderLeft: "1px solid #475569",
-    paddingLeft: "8px",
+    background: "#f1f5f9",
+    padding: "2px",
+    borderRadius: "0px",
   });
 
   const speeds: Array<{ label: string; value: "slow" | "medium" | "fast" }> = [
@@ -227,34 +232,39 @@ function createToolbar(): void {
     const btn = document.createElement("button");
     btn.textContent = s.label;
     Object.assign(btn.style, {
-      background: s.value === "medium" ? "#475569" : "transparent",
-      border: "1px solid #475569",
-      color: "white",
-      borderRadius: "4px",
-      padding: "2px 6px",
+      background: s.value === "medium" ? "#2563eb" : "transparent",
+      border: "none",
+      color: s.value === "medium" ? "#ffffff" : "#475569",
+      borderRadius: "0px",
+      padding: "4px 8px",
       cursor: "pointer",
-      fontSize: "10px",
+      fontSize: "11px",
+      fontWeight: "600",
     });
     btn.addEventListener("click", () => {
       speedGroup.querySelectorAll("button").forEach((b) => {
         (b as HTMLElement).style.background = "transparent";
+        (b as HTMLElement).style.color = "#475569";
       });
-      btn.style.background = "#475569";
+      btn.style.background = "#2563eb";
+      btn.style.color = "#ffffff";
       callbacks?.onAutoScrollStart(s.value);
       showCapturingUI();
     });
     speedGroup.appendChild(btn);
   });
 
+  // Cancel button
+  const cancelBtn = makeButton("Cancel", "transparent", () => {
+    callbacks?.onCancel();
+    cleanup();
+  });
+  cancelBtn.style.color = "#64748b";
+  cancelBtn.style.border = "1px solid #cbd5e1";
+
   toolbar.appendChild(autoBtn);
-  toolbar.appendChild(manualBtn);
   toolbar.appendChild(speedGroup);
-
-  const spacer = document.createElement("div");
-  spacer.style.flex = "1";
-  toolbar.appendChild(spacer);
-
-  toolbar.appendChild(doneBtn);
+  toolbar.appendChild(manualBtn);
   toolbar.appendChild(cancelBtn);
 
   document.body.appendChild(toolbar);
@@ -273,8 +283,8 @@ function showCapturingUI(): void {
       left: "0",
       right: "0",
       height: "3px",
-      backgroundColor: "#334155",
-      borderRadius: "0 0 10px 10px",
+      backgroundColor: "#e2e8f0",
+      borderRadius: "0px",
       overflow: "hidden",
     });
 
@@ -292,7 +302,7 @@ function showCapturingUI(): void {
     frameCounter.textContent = "0 frames";
     Object.assign(frameCounter.style, {
       fontSize: "10px",
-      color: "#94a3b8",
+      color: "#64748b",
     });
     toolbar.insertBefore(frameCounter, toolbar.querySelector("#snapforge-done-btn"));
   }
@@ -302,13 +312,36 @@ function showManualUI(): void {
   phase = "capturing";
   showCapturingUI();
 
-  // Add a "Capture Frame" button
+  // Add "Capture Frame" and "Finish / Done" buttons
   if (toolbar) {
-    const captureBtn = makeButton("Capture Frame", "#ec4899", () => {
+    toolbar.innerHTML = "";
+    const captureBtn = makeButton("📸 Capture Frame", "#ec4899", () => {
       callbacks?.onCaptureFrame();
     });
-    captureBtn.style.animation = "none";
-    toolbar.insertBefore(captureBtn, toolbar.querySelector("#snapforge-done-btn"));
+
+    frameCounter = document.createElement("span");
+    frameCounter.textContent = "0 frames";
+    Object.assign(frameCounter.style, {
+      fontSize: "11px",
+      color: "#64748b",
+      padding: "0 6px",
+    });
+
+    const doneBtn = makeButton("✓ Finish & Save", "#10b981", () => {
+      callbacks?.onDone();
+    });
+
+    const cancelBtn = makeButton("Cancel", "transparent", () => {
+      callbacks?.onCancel();
+      cleanup();
+    });
+    cancelBtn.style.color = "#64748b";
+    cancelBtn.style.border = "1px solid #cbd5e1";
+
+    toolbar.appendChild(captureBtn);
+    toolbar.appendChild(frameCounter);
+    toolbar.appendChild(doneBtn);
+    toolbar.appendChild(cancelBtn);
   }
 }
 
@@ -319,7 +352,7 @@ function makeButton(text: string, color: string, onClick: () => void): HTMLButto
     background: color,
     border: "none",
     color: "white",
-    borderRadius: "6px",
+    borderRadius: "0px",
     padding: "6px 12px",
     cursor: "pointer",
     fontSize: "12px",

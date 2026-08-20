@@ -3,7 +3,7 @@ export type CaptureMode =
   | "visible-area"
   | "selected-area"
   | "scrolling-area"
-  | "scrollable-element";
+  | "capture-text";
 
 export type CaptureMethod = "cdp" | "scroll-stitch";
 
@@ -21,6 +21,14 @@ export interface StickyElement {
   selector: string;
   originalPosition: string;
   originalDisplay: string;
+}
+
+export interface StepItem {
+  id: string;
+  number: number;
+  x: number;
+  y: number;
+  color: string;
 }
 
 export interface CaptureFrame {

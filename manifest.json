@@ -76,7 +76,7 @@
       "resources": [
         "offscreen.html",
         "editor.html",
-        "assets/shutter.mp3",
+        "assets/*",
         "scrolling-area-ui.js",
         "scrollable-detector.js",
         "element-selector.js",
@@ -85,6 +85,7 @@
         "sticky-manager.js",
         "lazy-loader.js",
         "result-bar.js",
+        "ocr-overlay.js",
         "chunks/*.js"
       ],
       "matches": ["<all_urls>"]

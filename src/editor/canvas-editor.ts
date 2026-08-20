@@ -2,22 +2,29 @@ import {
   Canvas, FabricImage, Rect, Ellipse, Line, IText, Path, Group,
   Circle, FabricText, PencilBrush,
 } from "fabric";
+import Cropper from "cropperjs";
+import { canvasRGBA } from "stackblur-canvas";
+import { generatePDF } from "../export/pdf-generator";
 
 type ToolType =
-  | "select" | "arrow" | "rectangle" | "ellipse" | "line"
-  | "freedraw" | "text" | "highlight" | "blur" | "step" | "crop";
+  | "select" | "arrow" | "rectangle" | "ellipse" | "callout" | "line"
+  | "freedraw" | "text" | "spotlight" | "blur" | "step" | "crop";
+
+type ArrowType = "straight" | "curved";
+type BlurType = "glass" | "pixel" | "redact";
 
 // ─── State ───────────────────────────────────────────────────────────────────
 
 let canvas: Canvas;
 let currentTool: ToolType = "select";
-let currentColor = "#ef4444";
-let strokeWidth = 3;
+let currentArrowType: ArrowType = "straight";
+let currentBlurType: BlurType = "glass";
+let currentColor = "#EF4444";
+let strokeWidth = 4;
 let stepCounter = 1;
 let drawStartX = 0, drawStartY = 0;
 let isDrawing = false;
 let tempShape: any = null;
-let cropShape: Rect | null = null;
 let undoStack: string[] = [];
 let redoStack: string[] = [];
 let backgroundImage: FabricImage | null = null;
@@ -25,6 +32,7 @@ let fitScale = 1;
 let imgNativeW = 0, imgNativeH = 0;
 let dispW = 0, dispH = 0;
 let cssZoom = 1;
+let cropperInstance: Cropper | null = null;
 
 const dimensionsEl = document.getElementById("dimensions")!;
 const zoomEl        = document.getElementById("zoom")!;
@@ -43,14 +51,14 @@ async function init(): Promise<void> {
   });
 
   setupTools();
+  setupDropdownMenus();
   setupColorPicker();
   setupStrokeControl();
   setupExportButtons();
   setupKeyboardShortcuts();
   setupCanvasEvents();
 
-  // Fetch the screenshot from service worker (avoids putting multi-MB data URL
-  // in the browser URL bar / history).
+  // Fetch the screenshot from service worker
   try {
     const resp = await chrome.runtime.sendMessage({ type: "GET_CAPTURE_BLOB_URL" });
     const url: string | null = resp?.url ?? null;
@@ -66,10 +74,84 @@ async function init(): Promise<void> {
   saveState();
 }
 
+function setupDropdownMenus(): void {
+  // Arrow dropdown toggle
+  const arrowExpand = document.getElementById("arrow-expand");
+  const arrowMenu = document.getElementById("arrow-menu");
+  arrowExpand?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    blurMenu?.classList.remove("show");
+    arrowMenu?.classList.toggle("show");
+  });
+
+  // Blur dropdown toggle
+  const blurExpand = document.getElementById("blur-expand");
+  const blurMenu = document.getElementById("blur-menu");
+  blurExpand?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    arrowMenu?.classList.remove("show");
+    blurMenu?.classList.toggle("show");
+  });
+
+  // Close menus on click outside
+  document.addEventListener("click", () => {
+    arrowMenu?.classList.remove("show");
+    blurMenu?.classList.remove("show");
+  });
+
+  // Arrow type selection
+  document.querySelectorAll("[data-arrow-type]").forEach((item) => {
+    item.addEventListener("click", (e) => {
+      e.stopPropagation();
+      document.querySelectorAll("[data-arrow-type]").forEach((i) => i.classList.remove("active"));
+      item.classList.add("active");
+      currentArrowType = (item as HTMLElement).dataset.arrowType as ArrowType;
+      arrowMenu?.classList.remove("show");
+      setTool("arrow");
+      showToast(currentArrowType === "curved" ? "Curved Arrow selected" : "Straight Arrow selected");
+    });
+  });
+
+  // Blur type selection
+  document.querySelectorAll("[data-blur-type]").forEach((item) => {
+    item.addEventListener("click", (e) => {
+      e.stopPropagation();
+      document.querySelectorAll("[data-blur-type]").forEach((i) => i.classList.remove("active"));
+      item.classList.add("active");
+      currentBlurType = (item as HTMLElement).dataset.blurType as BlurType;
+      blurMenu?.classList.remove("show");
+      setTool("blur");
+      showToast(
+        currentBlurType === "pixel"
+          ? "Pixelate mode selected"
+          : currentBlurType === "redact"
+          ? "Redact Blackout selected"
+          : "Glass Blur selected"
+      );
+    });
+  });
+}
+
+function applyCleanShotStyle(obj: any): void {
+  try {
+    obj.set({
+      cornerColor: "#FFFFFF",
+      cornerStrokeColor: "#1667F2",
+      borderColor: "#1667F2",
+      cornerStyle: "circle",
+      cornerSize: 8,
+      transparentCorners: false,
+      borderScaleFactor: 1.5,
+      padding: 6,
+    });
+  } catch (e) {
+    // ignore
+  }
+}
+
 // ─── Screenshot loading ───────────────────────────────────────────────────────
 
-async function loadScreenshot(url: string): Promise<void> {
-  // Security: only accept data:image/ URIs, never external URLs.
+async function loadScreenshot(url: string, resetAnnotations = false): Promise<void> {
   if (!url.startsWith("data:image/")) {
     console.error("loadScreenshot: rejected non-image URL");
     showToast("Invalid image source");
@@ -83,7 +165,7 @@ async function loadScreenshot(url: string): Promise<void> {
     imgNativeW = nw; imgNativeH = nh;
 
     const avW = window.innerWidth  - 80;
-    const avH = window.innerHeight - 44 - 28 - 80;
+    const avH = window.innerHeight - 48 - 28 - 80;
     fitScale = Math.max(0.05, Math.min(1, avW / nw, avH / nh));
     cssZoom  = 1;
     dispW    = Math.round(nw * fitScale);
@@ -97,13 +179,22 @@ async function loadScreenshot(url: string): Promise<void> {
       selectable: false, evented: false, erasable: false,
       originX: "left", originY: "top",
     });
+
+    if (resetAnnotations) {
+      canvas.clear();
+    } else if (backgroundImage) {
+      canvas.remove(backgroundImage);
+    }
+
     canvas.add(img);
     canvas.sendObjectToBack(img);
     canvas.renderAll();
 
     backgroundImage = img;
-    dimensionsEl.textContent = `${nw} × ${nh}`;
+    dimensionsEl.textContent = `${nw} × ${nh} px`;
     zoomEl.textContent = "100%";
+    const hdrZoomVal = document.getElementById("hdr-zoom-val");
+    if (hdrZoomVal) hdrZoomVal.textContent = "100%";
 
     applyContainerZoom(1);
   } catch (e) {
@@ -114,11 +205,12 @@ async function loadScreenshot(url: string): Promise<void> {
 
 function applyContainerZoom(z: number): void {
   cssZoom = z;
-  const canvasEl  = canvas.getElement();
-  const container = canvasEl.parentElement as HTMLElement | null;
-  if (!container) return;
-  canvasEl.style.transform = "";
-  container.style.zoom = String(z);
+  canvas.setDimensions({
+    width: Math.round(dispW * z),
+    height: Math.round(dispH * z),
+  });
+  canvas.setZoom(z);
+  canvas.renderAll();
 }
 
 // ─── Tool setup ──────────────────────────────────────────────────────────────
@@ -130,18 +222,18 @@ function setupTools(): void {
 }
 
 function setTool(tool: ToolType): void {
-  // Re-clicking crop while a selection exists → apply
-  if (tool === "crop" && currentTool === "crop" && cropShape) {
-    applyCrop();
+  if (tool === "crop") {
+    if (!backgroundImage) { showToast("No image to crop"); return; }
+    openCropModal();
     return;
   }
 
-  // Cancel any in-progress draw when switching tools
+  if (cropperInstance) closeCropModal(false);
+
   if (isDrawing) {
     if (tempShape) { canvas.remove(tempShape); tempShape = null; }
     isDrawing = false;
   }
-  if (currentTool === "crop" && tool !== "crop") cancelCrop();
 
   currentTool = tool;
 
@@ -150,15 +242,21 @@ function setTool(tool: ToolType): void {
   });
 
   const names: Record<ToolType, string> = {
-    select: "Select", arrow: "Arrow", rectangle: "Rectangle", ellipse: "Ellipse",
-    line: "Line", freedraw: "Pen", text: "Text", highlight: "Highlight",
-    blur: "Blur / Redact", step: "Step Number",
-    crop: "Crop — drag area, press Enter or click Crop again to apply",
+    select: "Select & Transform",
+    arrow: "CleanShot Arrow",
+    rectangle: "CleanShot Rounded Rectangle",
+    ellipse: "Ellipse",
+    callout: "Callout Speech Bubble",
+    line: "Straight Line",
+    freedraw: "Pen / Marker",
+    text: "Text Annotation",
+    spotlight: "CleanShot Spotlight",
+    blur: "Blur / Redaction",
+    step: "Step Number Counter",
+    crop: "Crop & Resize Image",
   };
   toolNameEl.textContent = names[tool] || tool;
 
-  // Non-select modes: disable interaction on all annotation objects so
-  // Fabric.js cannot accidentally move them while drawing.
   const isSelect = tool === "select";
   canvas.getObjects().forEach((obj) => {
     if (obj === backgroundImage) return;
@@ -167,9 +265,8 @@ function setTool(tool: ToolType): void {
   });
   if (!isSelect) canvas.discardActiveObject();
 
-  canvas.selection     = isSelect;
+  canvas.selection = isSelect;
 
-  // Pencil brush must exist before setting isDrawingMode = true
   if (tool === "freedraw") {
     if (!canvas.freeDrawingBrush) {
       canvas.freeDrawingBrush = new PencilBrush(canvas);
@@ -189,6 +286,15 @@ function setTool(tool: ToolType): void {
 // ─── Canvas events ────────────────────────────────────────────────────────────
 
 function setupCanvasEvents(): void {
+  canvas.on("mouse:wheel", (opt: any) => {
+    const evt = opt.e as WheelEvent;
+    if (evt.ctrlKey || evt.metaKey) {
+      evt.preventDefault();
+      evt.stopPropagation();
+      const delta = evt.deltaY > 0 ? -0.08 : 0.08;
+      adjustZoom(delta);
+    }
+  });
 
   canvas.on("mouse:down", (e: any) => {
     if (currentTool === "select" || currentTool === "freedraw") return;
@@ -198,10 +304,15 @@ function setupCanvasEvents(): void {
     drawStartY = pt.y;
     isDrawing  = true;
 
-    if (currentTool === "text")  { addText(pt.x, pt.y);       isDrawing = false; return; }
-    if (currentTool === "step")  { addStepNumber(pt.x, pt.y); isDrawing = false; return; }
-    if (currentTool === "crop")  {
-      if (cropShape) { canvas.remove(cropShape); cropShape = null; }
+    if (currentTool === "text") {
+      addText(pt.x, pt.y);
+      isDrawing = false;
+      return;
+    }
+    if (currentTool === "step") {
+      addStepNumber(pt.x, pt.y);
+      isDrawing = false;
+      return;
     }
 
     tempShape = createShape(currentTool, pt.x, pt.y);
@@ -226,17 +337,20 @@ function setupCanvasEvents(): void {
     const w = Math.abs((tempShape.width  || 0) * (tempShape.scaleX || 1));
     const h = Math.abs((tempShape.height || 0) * (tempShape.scaleY || 1));
 
-    if (currentTool === "crop") {
-      if (w < 4 || h < 4) { canvas.remove(tempShape); tempShape = null; return; }
-      cropShape = tempShape as Rect;
+    if (currentTool === "arrow") {
+      finaliseArrow(tempShape as Line);
       tempShape = null;
-      showToast("Crop: press Enter or click Crop again to apply, Esc to cancel");
-      canvas.renderAll();
       return;
     }
 
-    if (currentTool === "arrow") {
-      finaliseArrow(tempShape as Line);
+    if (currentTool === "callout") {
+      finaliseCallout(tempShape);
+      tempShape = null;
+      return;
+    }
+
+    if (currentTool === "spotlight") {
+      finaliseSpotlight(tempShape);
       tempShape = null;
       return;
     }
@@ -254,120 +368,101 @@ function setupCanvasEvents(): void {
       return;
     }
 
+    applyCleanShotStyle(tempShape);
     tempShape.setCoords();
     canvas.renderAll();
     saveState();
     tempShape = null;
   });
 
-  canvas.on("path:created",    saveState);
-  canvas.on("object:modified", saveState);
-
-  // ── Crop overlay: darken the area outside the crop selection ──────────────
-  // Drawn directly onto the lower canvas after each render pass so it never
-  // appears in exported images (crop shape is removed before toDataURL).
-  canvas.on("after:render", () => {
-    const shape = cropShape ?? (currentTool === "crop" && isDrawing ? tempShape : null);
-    if (!shape) return;
-
-    const dpr = canvas.getRetinaScaling();
-    const el  = canvas.getElement() as HTMLCanvasElement;
-    const ctx = el.getContext("2d");
-    if (!ctx) return;
-
-    // After Fabric.js calls ctx.restore(), the context is back to identity
-    // transform (device pixel coordinates = logical * dpr).
-    const cw = el.width;
-    const ch = el.height;
-
-    const l = (shape.left ?? 0) * dpr;
-    const t = (shape.top  ?? 0) * dpr;
-    const w = (shape.width  ?? 0) * (shape.scaleX ?? 1) * dpr;
-    const h = (shape.height ?? 0) * (shape.scaleY ?? 1) * dpr;
-
-    // Clamp to canvas bounds
-    const x0 = Math.max(0, l);
-    const y0 = Math.max(0, t);
-    const x1 = Math.min(l + w, cw);
-    const y1 = Math.min(t + h, ch);
-
-    ctx.save();
-    ctx.fillStyle = "rgba(0,0,0,0.52)";
-    ctx.fillRect(0,  0,  cw, y0);            // top strip
-    ctx.fillRect(0,  y1, cw, ch - y1);       // bottom strip
-    ctx.fillRect(0,  y0, x0, y1 - y0);       // left strip
-    ctx.fillRect(x1, y0, cw - x1, y1 - y0); // right strip
-
-    // Rule-of-thirds guide lines inside the crop
-    ctx.strokeStyle = "rgba(255,255,255,0.28)";
-    ctx.lineWidth   = 1;
-    ctx.setLineDash([]);
-    const sw = x1 - x0, sh = y1 - y0;
-    for (let i = 1; i < 3; i++) {
-      // vertical
-      ctx.beginPath();
-      ctx.moveTo(x0 + sw * i / 3, y0);
-      ctx.lineTo(x0 + sw * i / 3, y1);
-      ctx.stroke();
-      // horizontal
-      ctx.beginPath();
-      ctx.moveTo(x0, y0 + sh * i / 3);
-      ctx.lineTo(x1, y0 + sh * i / 3);
-      ctx.stroke();
+  canvas.on("path:created", (e: any) => {
+    if (e.path) {
+      applyCleanShotStyle(e.path);
     }
-    ctx.restore();
+    saveState();
   });
+  canvas.on("object:modified", saveState);
 }
 
-// ─── Shape factory ────────────────────────────────────────────────────────────
+// ─── Shape factory ─────────────────────────────────────────────────────────────
 
 function createShape(tool: ToolType, x: number, y: number): any {
-  const sw = Math.max(1, strokeWidth);
+  const sw = Math.max(2, strokeWidth);
+
   switch (tool) {
     case "rectangle":
       return new Rect({
         left: x, top: y, width: 0, height: 0,
-        fill: "transparent", stroke: currentColor,
-        strokeWidth: sw, strokeUniform: true,
+        rx: 10, ry: 10,
+        fill: "transparent",
+        stroke: currentColor,
+        strokeWidth: sw,
+        strokeUniform: true,
         selectable: false, evented: false,
       });
+
     case "ellipse":
       return new Ellipse({
         left: x, top: y, rx: 0, ry: 0,
-        fill: "transparent", stroke: currentColor,
-        strokeWidth: sw, strokeUniform: true,
+        fill: "transparent",
+        stroke: currentColor,
+        strokeWidth: sw,
+        strokeUniform: true,
         selectable: false, evented: false,
       });
+
     case "line":
       return new Line([x, y, x, y], {
-        stroke: currentColor, strokeWidth: sw, strokeUniform: true,
+        stroke: currentColor,
+        strokeWidth: sw,
+        strokeUniform: true,
+        strokeLineCap: "round",
         selectable: false, evented: false,
       });
+
     case "arrow":
       return new Line([x, y, x, y], {
-        stroke: currentColor, strokeWidth: sw, strokeUniform: true,
+        stroke: currentColor,
+        strokeWidth: sw,
+        strokeUniform: true,
+        strokeLineCap: "round",
         selectable: false, evented: false,
       });
-    case "highlight":
+
+    case "callout":
       return new Rect({
         left: x, top: y, width: 0, height: 0,
-        fill: currentColor, opacity: 0.3, stroke: "", strokeWidth: 0,
+        rx: 12, ry: 12,
+        fill: currentColor,
+        stroke: "#FFFFFF",
+        strokeWidth: 2,
+        strokeUniform: true,
         selectable: false, evented: false,
       });
+
+    case "spotlight":
+      return new Rect({
+        left: x, top: y, width: 0, height: 0,
+        rx: 8, ry: 8,
+        fill: "transparent",
+        stroke: "#1667F2",
+        strokeWidth: 2,
+        strokeDashArray: [6, 4],
+        selectable: false, evented: false,
+      });
+
     case "blur":
       return new Rect({
         left: x, top: y, width: 0, height: 0,
-        fill: "rgba(100,100,100,0.4)", stroke: "rgba(255,255,255,0.6)",
-        strokeWidth: 1.5, strokeUniform: true, strokeDashArray: [6, 4],
+        rx: 4, ry: 4,
+        fill: "rgba(100,100,100,0.35)",
+        stroke: "rgba(255,255,255,0.7)",
+        strokeWidth: 1.5,
+        strokeUniform: true,
+        strokeDashArray: [5, 4],
         selectable: false, evented: false,
       });
-    case "crop":
-      return new Rect({
-        left: x, top: y, width: 0, height: 0,
-        fill: "transparent", stroke: "#FFFFFF",
-        strokeWidth: 1.5, strokeUniform: true,
-        selectable: false, evented: false,
-      });
+
     default:
       return null;
   }
@@ -383,7 +478,7 @@ function updateShape(
   const height = Math.abs(y2 - y1);
 
   switch (tool) {
-    case "rectangle": case "highlight": case "blur": case "crop":
+    case "rectangle": case "blur": case "crop": case "callout": case "spotlight":
       shape.set({ left, top, width, height });
       break;
     case "ellipse":
@@ -396,7 +491,7 @@ function updateShape(
   shape.setCoords();
 }
 
-// ─── Arrow ────────────────────────────────────────────────────────────────────
+// ─── Arrow (Straight & Curved) ───────────────────────────────────────────────
 
 function finaliseArrow(line: Line): void {
   const [x1, y1, x2, y2] = [
@@ -405,21 +500,84 @@ function finaliseArrow(line: Line): void {
   ];
   const dx = x2 - x1, dy = y2 - y1;
   const len = Math.sqrt(dx * dx + dy * dy);
-  if (len < 5) { canvas.remove(line); return; }
+  if (len < 6) { canvas.remove(line); return; }
 
-  const sw     = Math.max(1, strokeWidth);
-  const hs     = Math.max(sw * 4, 10);
+  const sw     = Math.max(2, strokeWidth);
+  const hs     = Math.max(sw * 3.5, 12);
   const angle  = Math.atan2(dy, dx);
-  const spread = Math.PI / 6;
+  const spread = Math.PI / 7;
 
+  if (currentArrowType === "curved") {
+    // Elegant curved arrow with quadratic bezier curve
+    const midX = (x1 + x2) / 2;
+    const midY = (y1 + y2) / 2;
+    // Perpendicular offset for curvature
+    const perpX = -dy * 0.25;
+    const perpY = dx * 0.25;
+    const cpX = midX + perpX;
+    const cpY = midY + perpY;
+
+    // Arrowhead angle computed from control point to endpoint
+    const headAngle = Math.atan2(y2 - cpY, x2 - cpX);
+
+    const curvePath = new Path(
+      `M ${x1} ${y1} Q ${cpX} ${cpY} ${x2} ${y2}`,
+      {
+        fill: "transparent",
+        stroke: currentColor,
+        strokeWidth: sw,
+        strokeLineCap: "round",
+        strokeLineJoin: "round",
+      }
+    );
+
+    const head = new Path(
+      `M ${x2} ${y2} ` +
+      `L ${x2 - hs * Math.cos(headAngle - spread)} ${y2 - hs * Math.sin(headAngle - spread)} ` +
+      `Q ${x2 - (hs * 0.7) * Math.cos(headAngle)} ${y2 - (hs * 0.7) * Math.sin(headAngle)} ` +
+      `${x2 - hs * Math.cos(headAngle + spread)} ${y2 - hs * Math.sin(headAngle + spread)} Z`,
+      {
+        fill: currentColor,
+        stroke: currentColor,
+        strokeWidth: 1,
+        strokeLineJoin: "round",
+      }
+    );
+
+    const group = new Group([curvePath, head], {
+      selectable: false,
+      evented: false,
+    });
+
+    applyCleanShotStyle(group);
+    canvas.remove(line);
+    canvas.add(group);
+    group.setCoords();
+    canvas.renderAll();
+    saveState();
+    return;
+  }
+
+  // Straight arrow
   const head = new Path(
     `M ${x2} ${y2} ` +
     `L ${x2 - hs * Math.cos(angle - spread)} ${y2 - hs * Math.sin(angle - spread)} ` +
-    `L ${x2 - hs * Math.cos(angle + spread)} ${y2 - hs * Math.sin(angle + spread)} Z`,
-    { fill: currentColor, stroke: "" }
+    `Q ${x2 - (hs * 0.7) * Math.cos(angle)} ${y2 - (hs * 0.7) * Math.sin(angle)} ` +
+    `${x2 - hs * Math.cos(angle + spread)} ${y2 - hs * Math.sin(angle + spread)} Z`,
+    {
+      fill: currentColor,
+      stroke: currentColor,
+      strokeWidth: 1,
+      strokeLineJoin: "round",
+    }
   );
 
-  const group = new Group([line, head], { selectable: false, evented: false });
+  const group = new Group([line, head], {
+    selectable: false,
+    evented: false,
+  });
+
+  applyCleanShotStyle(group);
   canvas.remove(line);
   canvas.add(group);
   group.setCoords();
@@ -427,7 +585,104 @@ function finaliseArrow(line: Line): void {
   saveState();
 }
 
-// ─── Blur ─────────────────────────────────────────────────────────────────────
+// ─── CleanShot X Callout Bubble ───────────────────────────────────────────────
+
+function finaliseCallout(rect: Rect): void {
+  const l = rect.left ?? 0;
+  const t = rect.top ?? 0;
+  const w = Math.max(60, (rect.width ?? 0) * (rect.scaleX ?? 1));
+  const h = Math.max(36, (rect.height ?? 0) * (rect.scaleY ?? 1));
+  canvas.remove(rect);
+
+  const bubble = new Rect({
+    left: 0, top: 0, width: w, height: h,
+    rx: 10, ry: 10,
+    fill: currentColor,
+    originX: "left", originY: "top",
+  });
+
+  const text = new IText("Note", {
+    left: w / 2, top: h / 2,
+    fontSize: Math.max(13, Math.min(18, h * 0.45)),
+    fontFamily: "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif",
+    fontWeight: "bold",
+    fill: "#FFFFFF",
+    originX: "center", originY: "center",
+  });
+
+  const group = new Group([bubble, text], {
+    left: l, top: t,
+    selectable: false,
+    evented: false,
+  });
+
+  applyCleanShotStyle(group);
+  canvas.add(group);
+  group.setCoords();
+  canvas.renderAll();
+  saveState();
+}
+
+// ─── CleanShot X Spotlight ────────────────────────────────────────────────────
+
+function finaliseSpotlight(rect: Rect): void {
+  const l = Math.max(0, rect.left ?? 0);
+  const t = Math.max(0, rect.top ?? 0);
+  const w = (rect.width ?? 0) * (rect.scaleX ?? 1);
+  const h = (rect.height ?? 0) * (rect.scaleY ?? 1);
+  canvas.remove(rect);
+
+  if (w < 10 || h < 10) return;
+
+  const cW = canvas.width || dispW;
+  const cH = canvas.height || dispH;
+
+  // Outer full canvas boundary path clockwise + Inner spotlight cutout counter-clockwise (evenodd fill)
+  const pathStr = `M 0 0 L ${cW} 0 L ${cW} ${cH} L 0 ${cH} Z M ${l} ${t} L ${l} ${t + h} L ${l + w} ${t + h} L ${l + w} ${t} Z`;
+  const spotlight = new Path(pathStr, {
+    left: 0,
+    top: 0,
+    fill: "rgba(0, 0, 0, 0.60)",
+    fillRule: "evenodd",
+    selectable: false,
+    evented: false,
+    originX: "left",
+    originY: "top",
+  });
+
+  const border = new Rect({
+    left: l,
+    top: t,
+    width: w,
+    height: h,
+    rx: 8,
+    ry: 8,
+    fill: "transparent",
+    stroke: "#FFFFFF",
+    strokeWidth: 2,
+    selectable: false,
+    evented: false,
+    originX: "left",
+    originY: "top",
+  });
+
+  const group = new Group([spotlight, border], {
+    left: 0,
+    top: 0,
+    selectable: false,
+    evented: false,
+    originX: "left",
+    originY: "top",
+  });
+
+  applyCleanShotStyle(group);
+  canvas.add(group);
+  group.setCoords();
+  canvas.renderAll();
+  saveState();
+}
+
+// ─── Blur / Redact (Glass, Pixelate, Redact Blackout) ──────────────────────────
 
 async function finaliseBlur(placeholder: any): Promise<void> {
   const l = placeholder.left ?? 0;
@@ -437,34 +692,75 @@ async function finaliseBlur(placeholder: any): Promise<void> {
 
   if (!backgroundImage || w < 2 || h < 2) { canvas.remove(placeholder); return; }
 
+  const rx = Math.max(0, Math.round(l));
+  const ry = Math.max(0, Math.round(t));
+  const rw = Math.max(1, Math.min(Math.round(w), Math.round(dispW) - rx));
+  const rh = Math.max(1, Math.min(Math.round(h), Math.round(dispH) - ry));
+
+  // Option 3: Redact Blackout
+  if (currentBlurType === "redact") {
+    canvas.remove(placeholder);
+    const redactBox = new Rect({
+      left: rx,
+      top: ry,
+      width: rw,
+      height: rh,
+      fill: "#000000",
+      rx: 3,
+      ry: 3,
+      selectable: false,
+      evented: false,
+      originX: "left",
+      originY: "top",
+    });
+    applyCleanShotStyle(redactBox);
+    canvas.add(redactBox);
+    redactBox.setCoords();
+    canvas.renderAll();
+    saveState();
+    return;
+  }
+
   try {
-    const bgEl = backgroundImage.getElement() as HTMLImageElement;
+    const fullDataUrl = canvas.toDataURL({ format: "png", quality: 1, multiplier: 1 });
+    const src = new Image();
+    src.src = fullDataUrl;
+    await new Promise<void>((r) => { src.onload = () => r(); });
 
-    const nx = Math.round(l / fitScale), ny = Math.round(t / fitScale);
-    const nw = Math.max(1, Math.round(w / fitScale)), nh = Math.max(1, Math.round(h / fitScale));
-    const cx = Math.max(0, Math.min(nx, bgEl.naturalWidth  - 1));
-    const cy = Math.max(0, Math.min(ny, bgEl.naturalHeight - 1));
-    const cw = Math.max(1, Math.min(nw, bgEl.naturalWidth  - cx));
-    const ch = Math.max(1, Math.min(nh, bgEl.naturalHeight - cy));
+    const region = document.createElement("canvas");
+    region.width = rw; region.height = rh;
+    const ctx = region.getContext("2d")!;
+    ctx.drawImage(src, rx, ry, rw, rh, 0, 0, rw, rh);
 
-    const blockSize = 12;
-    const bw = Math.max(1, Math.round(cw / blockSize));
-    const bh = Math.max(1, Math.round(ch / blockSize));
+    // Option 2: Pixelate
+    if (currentBlurType === "pixel") {
+      const pixelSize = Math.max(8, Math.round(Math.min(rw, rh) / 10));
+      const offCanvas = document.createElement("canvas");
+      const offW = Math.max(1, Math.floor(rw / pixelSize));
+      const offH = Math.max(1, Math.floor(rh / pixelSize));
+      offCanvas.width = offW;
+      offCanvas.height = offH;
+      const offCtx = offCanvas.getContext("2d")!;
+      offCtx.imageSmoothingEnabled = false;
+      offCtx.drawImage(region, 0, 0, offW, offH);
 
-    const small = document.createElement("canvas");
-    small.width = bw; small.height = bh;
-    const sc = small.getContext("2d")!;
-    sc.imageSmoothingEnabled = false;
-    sc.drawImage(bgEl, cx, cy, cw, ch, 0, 0, bw, bh);
+      ctx.imageSmoothingEnabled = false;
+      ctx.clearRect(0, 0, rw, rh);
+      ctx.drawImage(offCanvas, 0, 0, offW, offH, 0, 0, rw, rh);
+    } else {
+      // Option 1: Glass Smooth Blur
+      const radius = Math.max(16, Math.round(Math.min(rw, rh) / 4));
+      canvasRGBA(region, 0, 0, rw, rh, radius);
+    }
 
-    const big = document.createElement("canvas");
-    big.width = Math.round(w); big.height = Math.round(h);
-    const bc = big.getContext("2d")!;
-    bc.imageSmoothingEnabled = false;
-    bc.drawImage(small, 0, 0, bw, bh, 0, 0, big.width, big.height);
+    const img = await FabricImage.fromURL(region.toDataURL("image/png"));
+    img.set({
+      left: rx, top: ry,
+      originX: "left", originY: "top",
+      selectable: false, evented: false,
+    });
+    applyCleanShotStyle(img);
 
-    const img = await FabricImage.fromURL(big.toDataURL("image/png"));
-    img.set({ left: l, top: t, originX: "left", originY: "top", selectable: false, evented: false });
     canvas.remove(placeholder);
     canvas.add(img);
     img.setCoords();
@@ -478,79 +774,143 @@ async function finaliseBlur(placeholder: any): Promise<void> {
   }
 }
 
-// ─── Crop ─────────────────────────────────────────────────────────────────────
+// ─── Crop (Cropper.js modal — CleanShot X style) ─────────────────────────────
 
-function cancelCrop(): void {
-  if (cropShape) { canvas.remove(cropShape); cropShape = null; }
-  if (tempShape) { canvas.remove(tempShape); tempShape = null; }
-  isDrawing = false;
-  canvas.renderAll();
-}
-
-async function applyCrop(): Promise<void> {
-  if (!cropShape || !backgroundImage) { showToast("Draw a crop area first"); return; }
-
-  const rawL = cropShape.left ?? 0, rawT = cropShape.top ?? 0;
-  const rawW = (cropShape.width  ?? 0) * (cropShape.scaleX ?? 1);
-  const rawH = (cropShape.height ?? 0) * (cropShape.scaleY ?? 1);
-  const l = Math.max(0, Math.min(rawL, dispW - 1));
-  const t = Math.max(0, Math.min(rawT, dispH - 1));
-  const w = Math.max(1, Math.min(rawW, dispW - l));
-  const h = Math.max(1, Math.min(rawH, dispH - t));
-  if (w < 5 || h < 5) { showToast("Crop area too small"); return; }
-
-  showToast("Cropping…");
-
-  // Remove crop shape BEFORE toDataURL so the overlay doesn't appear in export.
-  canvas.remove(cropShape); cropShape = null;
-  tempShape = null;
-  canvas.renderAll();
+function openCropModal(): void {
+  const modal    = document.getElementById("cropModal")!;
+  const img      = document.getElementById("cropImg") as HTMLImageElement;
+  const sizeEl   = document.getElementById("cropSizeDisplay")!;
+  const posEl    = document.getElementById("cropPosDisplay")!;
 
   const multiplier = Math.max(1, 1 / fitScale);
-  const fullDataUrl = canvas.toDataURL({ format: "png", quality: 1, multiplier });
+  const dataUrl = canvas.toDataURL({ format: "png", quality: 1, multiplier });
 
-  const src = new Image();
-  src.src = fullDataUrl;
-  await new Promise<void>((r) => { src.onload = () => r(); });
+  document.querySelectorAll(".tool-btn[data-tool]").forEach((b) => b.classList.remove("active"));
+  document.querySelector(".tool-btn[data-tool='crop']")?.classList.add("active");
 
-  const ratio = src.width / dispW;
-  const out   = document.createElement("canvas");
-  out.width   = Math.round(w * ratio);
-  out.height  = Math.round(h * ratio);
-  out.getContext("2d")!.drawImage(src, l * ratio, t * ratio, w * ratio, h * ratio, 0, 0, out.width, out.height);
+  modal.style.display = "flex";
+  sizeEl.textContent = `${imgNativeW} × ${imgNativeH} px`;
+  posEl.textContent  = "";
 
-  canvas.clear();
-  backgroundImage = null;
-  undoStack = []; redoStack = [];
-  stepCounter = 1;
+  img.onload = () => {
+    if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
+    cropperInstance = new Cropper(img, {
+      viewMode:         1,
+      dragMode:         "crop",
+      guides:           true,
+      center:           true,
+      highlight:        false,
+      background:       true,
+      autoCrop:         false,
+      movable:          false,
+      rotatable:        false,
+      scalable:         false,
+      zoomable:         false,
+      zoomOnWheel:      false,
+      toggleDragModeOnDblclick: false,
+      crop(event: Cropper.CropEvent) {
+        const { x, y, width, height } = event.detail;
+        if (width > 1 && height > 1) {
+          sizeEl.textContent = `${Math.round(width)} × ${Math.round(height)} px`;
+          posEl.textContent  = `${Math.round(x)}, ${Math.round(y)}`;
+        }
+      },
+    });
 
-  await loadScreenshot(out.toDataURL("image/png"));
-  setTool("select");
-  saveState();
+    document.querySelectorAll<HTMLButtonElement>(".ratio-btn").forEach((btn) => {
+      btn.onclick = () => {
+        document.querySelectorAll(".ratio-btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        const r = btn.dataset.ratio;
+        cropperInstance?.setAspectRatio(r ? parseFloat(r) : NaN);
+      };
+    });
+  };
+  img.src = dataUrl;
+}
+
+function closeCropModal(andSelectTool = true): void {
+  if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
+  const modal = document.getElementById("cropModal")!;
+  const img   = document.getElementById("cropImg") as HTMLImageElement;
+  modal.style.display = "none";
+  img.src = "";
+  document.querySelectorAll(".ratio-btn").forEach((b) => b.classList.remove("active"));
+  document.querySelector<HTMLButtonElement>('.ratio-btn[data-ratio=""]')?.classList.add("active");
+  if (andSelectTool) setTool("select");
+}
+
+function applyCropModal(): void {
+  if (!cropperInstance) return;
+  const data = cropperInstance.getData(true);
+  if (!data.width || !data.height || data.width < 4 || data.height < 4) {
+    document.getElementById("cropSizeDisplay")!.textContent = "Draw a selection first";
+    return;
+  }
+  const croppedCanvas = cropperInstance.getCroppedCanvas({
+    imageSmoothingEnabled: true,
+    imageSmoothingQuality: "high",
+  });
+  if (!croppedCanvas) { showToast("Crop failed — try again"); return; }
+  const resultDataUrl = croppedCanvas.toDataURL("image/png");
+
+  if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
+  const modal = document.getElementById("cropModal")!;
+  const img   = document.getElementById("cropImg") as HTMLImageElement;
+  modal.style.display = "none";
+  img.src = "";
+
+  loadScreenshot(resultDataUrl, true).then(() => {
+    setTool("select");
+    saveState();
+    showToast("Cropped successfully");
+  });
+}
+
+function nudgeCropBox(dx: number, dy: number): void {
+  if (!cropperInstance) return;
+  const d = cropperInstance.getData();
+  cropperInstance.setData({ x: (d.x ?? 0) + dx, y: (d.y ?? 0) + dy });
 }
 
 // ─── Coordinate helper ────────────────────────────────────────────────────────
 
 function getScenePoint(e: any): { x: number; y: number } {
-  if (e.scenePoint)      return e.scenePoint;
-  if (e.absolutePointer) return e.absolutePointer;
-  const raw: MouseEvent = e.e;
-  const el   = canvas.getElement();
-  const rect = el.getBoundingClientRect();
-  return {
-    x: ((raw.clientX - rect.left) / rect.width)  * (canvas.width  || dispW),
-    y: ((raw.clientY - rect.top)  / rect.height) * (canvas.height || dispH),
-  };
+  if (e?.scenePoint && typeof e.scenePoint.x === "number" && !isNaN(e.scenePoint.x)) {
+    return { x: e.scenePoint.x, y: e.scenePoint.y };
+  }
+
+  const raw: MouseEvent = e?.e || e;
+  if (!raw || typeof raw.clientX !== "number") {
+    return { x: 0, y: 0 };
+  }
+
+  const upperCanvas = canvas.upperCanvasEl || canvas.getElement();
+  const rect = upperCanvas.getBoundingClientRect();
+  const cW = canvas.width || dispW || 1;
+  const cH = canvas.height || dispH || 1;
+
+  if (rect.width > 0 && rect.height > 0) {
+    const x = ((raw.clientX - rect.left) / rect.width) * cW;
+    const y = ((raw.clientY - rect.top) / rect.height) * cH;
+    return {
+      x: Math.max(0, Math.min(cW, x)),
+      y: Math.max(0, Math.min(cH, y)),
+    };
+  }
+
+  return { x: 0, y: 0 };
 }
 
 // ─── Text & step ─────────────────────────────────────────────────────────────
 
 function addText(x: number, y: number): void {
-  const text = new IText("Type here", {
-    left: x, top: y, fontSize: 20,
-    fontFamily: "system-ui, sans-serif",
-    fill: currentColor, fontWeight: "bold", editable: true,
+  const text = new IText("Redact confidential info", {
+    left: x, top: y, fontSize: 26,
+    fontFamily: "'Caveat', cursive, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+    fill: currentColor, fontWeight: "700", editable: true,
   });
+  applyCleanShotStyle(text);
   canvas.add(text);
   canvas.setActiveObject(text);
   text.enterEditing();
@@ -559,13 +919,25 @@ function addText(x: number, y: number): void {
 }
 
 function addStepNumber(x: number, y: number): void {
-  const r      = 14;
-  const circle = new Circle({ radius: r, fill: currentColor, originX: "center", originY: "center" });
-  const label  = new FabricText(String(stepCounter), {
-    fontSize: 14, fontFamily: "system-ui, sans-serif",
-    fill: "#fff", fontWeight: "bold", originX: "center", originY: "center",
+  const r      = 15;
+  const circle = new Circle({
+    radius: r,
+    fill: currentColor,
+    originX: "center", originY: "center",
   });
-  const group = new Group([circle, label], { left: x - r, top: y - r });
+  const label  = new FabricText(String(stepCounter), {
+    fontSize: 15,
+    fontFamily: "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif",
+    fill: "#FFFFFF",
+    fontWeight: "bold",
+    originX: "center", originY: "center",
+  });
+  const group = new Group([circle, label], {
+    left: x - r, top: y - r,
+    selectable: false,
+    evented: false,
+  });
+  applyCleanShotStyle(group);
   canvas.add(group);
   stepCounter++;
   saveState();
@@ -645,22 +1017,20 @@ function setupExportButtons(): void {
 
   document.getElementById("pdf-btn")!.addEventListener("click", async () => {
     try {
-      const { jsPDF } = await import("jspdf");
-      const blob    = await exportToBlob();
-      const dataUrl = await blobToDataUrl(blob);
-      const img     = new Image();
-      img.src = dataUrl;
-      await new Promise<void>((r) => { img.onload = () => r(); });
-      const pdf = new jsPDF({ orientation: img.width > img.height ? "landscape" : "portrait", unit: "pt", format: "a4" });
-      const pw  = pdf.internal.pageSize.getWidth(), ph = pdf.internal.pageSize.getHeight();
-      const sc  = pw / img.width, sh = img.height * sc;
-      for (let i = 0; i < Math.ceil(sh / ph); i++) {
-        if (i > 0) pdf.addPage();
-        pdf.addImage(dataUrl, "PNG", 0, -(i * ph), pw, sh, undefined, "NONE");
-      }
-      pdf.save(`gofully-${Date.now()}.pdf`);
+      const blob = await exportToBlob();
+      const pdfBlob = await generatePDF(blob, "a4");
+      const url = URL.createObjectURL(pdfBlob);
+      const a = Object.assign(document.createElement("a"), {
+        href: url,
+        download: `gofully-${Date.now()}.pdf`,
+      });
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
       showToast("PDF saved");
-    } catch (err) { console.error(err); showToast("PDF failed"); }
+    } catch (err) {
+      console.error(err);
+      showToast("PDF failed");
+    }
   });
 
   document.getElementById("undo-btn")!.addEventListener("click",   undo);
@@ -668,10 +1038,24 @@ function setupExportButtons(): void {
   document.getElementById("delete-btn")!.addEventListener("click", deleteSelected);
   document.getElementById("zoom-in-btn")?.addEventListener("click",  () => adjustZoom(0.1));
   document.getElementById("zoom-out-btn")?.addEventListener("click", () => adjustZoom(-0.1));
+  document.getElementById("hdr-zoom-in-btn")?.addEventListener("click",  () => adjustZoom(0.1));
+  document.getElementById("hdr-zoom-out-btn")?.addEventListener("click", () => adjustZoom(-0.1));
+  document.getElementById("hdr-zoom-val")?.addEventListener("click", () => {
+    if (!backgroundImage) return;
+    cssZoom = 1;
+    applyContainerZoom(1);
+    const zStr = "100%";
+    zoomEl.textContent = zStr;
+    const hdrZoomVal = document.getElementById("hdr-zoom-val");
+    if (hdrZoomVal) hdrZoomVal.textContent = zStr;
+  });
   document.getElementById("done-btn")?.addEventListener("click", () => window.close());
+
+  // Crop modal buttons
+  document.getElementById("cropApplyBtn")?.addEventListener("click",  applyCropModal);
+  document.getElementById("cropCancelBtn")?.addEventListener("click", () => closeCropModal(true));
 }
 
-/** Return the canvas export multiplier based on the user-selected quality. */
 function getExportMultiplier(): number {
   const quality = (document.getElementById("exportQuality") as HTMLSelectElement)?.value ?? "native";
   const nativeM = 1 / fitScale;
@@ -688,16 +1072,8 @@ function getExportMultiplier(): number {
 }
 
 async function exportToBlob(): Promise<Blob> {
-  // Temporarily hide crop shape so it doesn't appear in the export.
-  const savedCrop = cropShape;
-  if (savedCrop) { canvas.remove(savedCrop); canvas.renderAll(); }
-
   const multiplier = getExportMultiplier();
   const dataUrl    = canvas.toDataURL({ format: "png", quality: 1, multiplier });
-
-  // Restore crop shape
-  if (savedCrop) { canvas.add(savedCrop); cropShape = savedCrop; canvas.renderAll(); }
-
   return dataUrlToBlob(dataUrl);
 }
 
@@ -705,9 +1081,12 @@ async function exportToBlob(): Promise<Blob> {
 
 function adjustZoom(delta: number): void {
   if (!backgroundImage) return;
-  cssZoom = Math.min(Math.min(4, 8 / fitScale), Math.max(0.1, cssZoom + delta));
+  cssZoom = Math.min(5.0, Math.max(0.1, Math.round((cssZoom + delta) * 100) / 100));
   applyContainerZoom(cssZoom);
-  zoomEl.textContent = `${Math.round(cssZoom * 100)}%`;
+  const zStr = `${Math.round(cssZoom * 100)}%`;
+  zoomEl.textContent = zStr;
+  const hdrZoomVal = document.getElementById("hdr-zoom-val");
+  if (hdrZoomVal) hdrZoomVal.textContent = zStr;
 }
 
 // ─── Undo / redo / delete ─────────────────────────────────────────────────────
@@ -718,25 +1097,25 @@ function saveState(): void {
   if (undoStack.length > 50) undoStack.shift();
 }
 
-/** Find the background image after canvas.loadFromJSON replaces all objects. */
 function findBackgroundImage(): FabricImage | null {
   const objs = canvas.getObjects();
   if (objs.length > 0 && objs[0] instanceof FabricImage) return objs[0] as FabricImage;
   return null;
 }
 
-/** Re-apply current tool's selectability to all canvas objects after load. */
 function restoreObjectInteractivity(): void {
   const isSelect = currentTool === "select";
   canvas.getObjects().forEach((obj) => {
     obj.selectable = obj === backgroundImage ? false : isSelect;
     obj.evented    = obj === backgroundImage ? false : isSelect;
+    if (obj !== backgroundImage) {
+      applyCleanShotStyle(obj);
+    }
   });
 }
 
 function undo(): void {
   if (undoStack.length <= 1) return;
-  cancelCrop();
   redoStack.push(undoStack.pop()!);
   canvas.loadFromJSON(undoStack[undoStack.length - 1]).then(() => {
     backgroundImage = findBackgroundImage();
@@ -748,7 +1127,6 @@ function undo(): void {
 
 function redo(): void {
   if (!redoStack.length) return;
-  cancelCrop();
   const next = redoStack.pop()!;
   undoStack.push(next);
   canvas.loadFromJSON(next).then(() => {
@@ -774,11 +1152,19 @@ function setupKeyboardShortcuts(): void {
     const activeObj = canvas.getActiveObject();
     if (activeObj?.type === "i-text" && (activeObj as IText).isEditing) return;
 
-    if (e.key === "Enter" && currentTool === "crop") { e.preventDefault(); applyCrop(); return; }
+    if (e.key === "Enter" && cropperInstance) { e.preventDefault(); applyCropModal(); return; }
     if (e.key === "Escape") {
       e.preventDefault();
-      if (currentTool === "crop") { cancelCrop(); setTool("select"); }
+      if (cropperInstance) { closeCropModal(true); }
       return;
+    }
+    // Arrow nudge in cropper
+    if (cropperInstance) {
+      const step = e.shiftKey ? 10 : 1;
+      if (e.key === "ArrowLeft")  { e.preventDefault(); nudgeCropBox(-step, 0); return; }
+      if (e.key === "ArrowRight") { e.preventDefault(); nudgeCropBox( step, 0); return; }
+      if (e.key === "ArrowUp")    { e.preventDefault(); nudgeCropBox(0, -step); return; }
+      if (e.key === "ArrowDown")  { e.preventDefault(); nudgeCropBox(0,  step); return; }
     }
 
     if ((e.metaKey || e.ctrlKey) && e.key === "z") { e.preventDefault(); e.shiftKey ? redo() : undo(); return; }
@@ -790,8 +1176,8 @@ function setupKeyboardShortcuts(): void {
     if (!e.metaKey && !e.ctrlKey && !e.shiftKey) {
       const map: Record<string, ToolType> = {
         v: "select", a: "arrow", r: "rectangle", e: "ellipse",
-        l: "line",   p: "freedraw", t: "text",   h: "highlight",
-        b: "blur",   n: "step",     c: "crop",
+        c: "callout", l: "line", p: "freedraw", t: "text",
+        s: "spotlight", b: "blur", n: "step", x: "crop",
       };
       if (map[e.key]) setTool(map[e.key]);
     }
@@ -815,7 +1201,6 @@ function blobToDataUrl(blob: Blob): Promise<string> {
   });
 }
 
-/** Convert a data: URL to a Blob without using fetch (avoids connect-src CSP issues). */
 function dataUrlToBlob(dataUrl: string): Blob {
   const [header, b64] = dataUrl.split(",");
   const mime = header.match(/:(.*?);/)?.[1] ?? "image/png";

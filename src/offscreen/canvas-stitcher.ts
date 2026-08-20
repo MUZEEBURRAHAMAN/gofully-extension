@@ -1,7 +1,43 @@
 import type { CaptureFrame } from "../types";
 import { loadImage, canvasToBlob, needsTiling, computeTiles } from "../utils/image";
+import { createWorker } from "tesseract.js";
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message.type === "PERFORM_OCR") {
+    const { dataUrl } = message.payload as { dataUrl: string };
+    (async () => {
+      let worker: any = null;
+      try {
+        const workerPath = chrome.runtime.getURL("assets/tesseract-worker.min.js");
+        const corePath = chrome.runtime.getURL("assets/tesseract-core.wasm.js");
+        const langPath = chrome.runtime.getURL("assets");
+
+        worker = await createWorker({
+          workerPath,
+          corePath,
+          langPath,
+          logger: () => {},
+          errorHandler: (err) => console.warn("Tesseract worker warning:", err),
+        });
+
+        await worker.loadLanguage("eng");
+        await worker.initialize("eng");
+
+        const ret = await worker.recognize(dataUrl);
+        const text = (ret?.data?.text || "").trim();
+        sendResponse({ text });
+      } catch (err: any) {
+        console.error("Offscreen OCR error:", err);
+        sendResponse({ error: err?.message || "OCR recognition failed" });
+      } finally {
+        if (worker) {
+          try { await worker.terminate(); } catch {}
+        }
+      }
+    })();
+    return true;
+  }
+
   if (message.type === "STITCH_FRAMES") {
     const { frames, totalWidth, totalHeight, dpr } = message.payload as {
       frames: CaptureFrame[];

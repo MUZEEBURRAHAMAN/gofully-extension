@@ -4,17 +4,32 @@ import type {
   CaptureRegion,
   ScrollableElementInfo,
 } from "../types";
+import { captureFullPage, captureVisibleArea, captureSelectedArea } from "./capture-engine";
 import {
-  captureFullPage,
-  captureVisibleArea,
-  captureSelectedArea,
-} from "./capture-engine";
-import { captureScrollingArea } from "../capture-modes/scrolling-area";
-import { captureScrollableElement } from "../capture-modes/scrollable-element";
+  captureScrollingArea,
+  captureManualFrame,
+  stitchManualFrames,
+} from "../capture-modes/scrolling-area";
+import { generatePDF } from "../export/pdf-generator";
+import type { CaptureFrame } from "../types";
 
 let lastCaptureResult: CaptureResult | null = null;
 let lastCaptureBlob: Blob | null = null;
 let lastCaptureDataUrl: string | null = null;
+let manualFrames: CaptureFrame[] = [];
+
+async function ensureOffscreenDocument(): Promise<void> {
+  const existingContexts = await (chrome.runtime as any).getContexts({
+    contextTypes: ["OFFSCREEN_DOCUMENT"],
+  });
+  if (existingContexts.length > 0) return;
+
+  await chrome.offscreen.createDocument({
+    url: "offscreen.html",
+    reasons: [chrome.offscreen.Reason.BLOBS, chrome.offscreen.Reason.DOM_SCRAPING],
+    justification: "Process offscreen canvas and OCR operations",
+  });
+}
 
 async function blobToDataUrl(blob: Blob): Promise<string> {
   const buffer = await blob.arrayBuffer();
@@ -28,16 +43,17 @@ async function blobToDataUrl(blob: Blob): Promise<string> {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "START_CAPTURE") {
-    const { mode, region, speed, elementInfo } = message.payload as {
+    const { mode, region, speed, elementInfo, tabId } = message.payload as {
       mode: CaptureMode;
       region?: CaptureRegion;
       speed?: "slow" | "medium" | "fast";
       elementInfo?: ScrollableElementInfo;
+      tabId?: number;
     };
 
-    const senderTabId = sender.tab?.id;
+    const senderTabId = sender.tab?.id || tabId;
 
-    handleCapture(mode, region, speed, elementInfo)
+    handleCapture(mode, region, speed, elementInfo, senderTabId)
       .then(async (result) => {
         lastCaptureBlob = result.blob;
         lastCaptureDataUrl = await blobToDataUrl(result.blob);
@@ -51,16 +67,22 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           url: result.url,
           title: result.title,
           timestamp: result.timestamp,
+          dataUrl: lastCaptureDataUrl,
         };
 
         sendResponse({ type: "CAPTURE_COMPLETE", payload });
 
-        // If sent from a content script (tab), show the result popup on that tab
-        if (senderTabId) {
-          await showResultBarOnTab(senderTabId, payload);
+        // Show result HUD immediately on the tab
+        let targetTab = senderTabId;
+        if (!targetTab) {
+          const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+          targetTab = activeTab?.id;
+        }
+        if (targetTab && (mode === "selected-area" || mode === "scrolling-area" || mode === "full-page" || mode === "visible-area")) {
+          await showResultBarOnTab(targetTab, payload);
         }
 
-        // Also broadcast to popup (if open)
+        // Broadcast to popup (if open)
         chrome.runtime.sendMessage({
           type: "CAPTURE_COMPLETE",
           payload,
@@ -155,18 +177,27 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 
-  // Content script reports element selected for scrollable-element.
-  // Use sender.tab?.id (not payload) — same reason as SCROLLING_REGION_SELECTED.
-  if (message.type === "ELEMENT_CAPTURE_START") {
-    const { elementInfo } = message.payload;
+  if (message.type === "MANUAL_CAPTURE_FRAME") {
+    const { region } = message.payload;
     const tabId = sender.tab?.id;
-    if (!tabId) { sendResponse({ started: false }); return false; }
-    captureScrollableElement(tabId, elementInfo, (progress) => {
-      chrome.tabs.sendMessage(tabId, {
-        type: "ELEMENT_CAPTURE_PROGRESS",
-        payload: progress,
-      }).catch(() => {});
-    })
+    if (!tabId) { sendResponse({ success: false }); return false; }
+    captureManualFrame(tabId, region).then((frame) => {
+      if (frame) manualFrames.push(frame);
+      sendResponse({ success: !!frame, count: manualFrames.length });
+    });
+    return true;
+  }
+
+  if (message.type === "FINISH_MANUAL_CAPTURE") {
+    const { region } = message.payload;
+    const tabId = sender.tab?.id;
+    if (!tabId || manualFrames.length === 0) {
+      sendResponse({ success: false });
+      return false;
+    }
+    const framesToStitch = [...manualFrames];
+    manualFrames = [];
+    stitchManualFrames(framesToStitch, region, tabId)
       .then(async (result) => {
         lastCaptureBlob = result.blob;
         lastCaptureDataUrl = await blobToDataUrl(result.blob);
@@ -177,14 +208,40 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           mode: result.mode,
           method: result.method,
         });
+        sendResponse({ success: true });
       })
       .catch((err) => {
-        chrome.tabs.sendMessage(tabId, {
-          type: "CAPTURE_ERROR_INLINE",
-          payload: { message: err.message },
-        }).catch(() => {});
+        sendResponse({ success: false, error: err.message });
       });
-    sendResponse({ started: true });
+    return true;
+  }
+
+  if (message.type === "EXECUTE_OCR") {
+    const { region } = message.payload as { region: CaptureRegion };
+    const tabId = sender.tab?.id;
+    if (!tabId) {
+      sendResponse({ error: "No active tab" });
+      return false;
+    }
+
+    captureSelectedArea(tabId, region)
+      .then(async (result) => {
+        const dataUrl = await blobToDataUrl(result.blob);
+        await ensureOffscreenDocument();
+        const ocrResp = await chrome.runtime.sendMessage({
+          type: "PERFORM_OCR",
+          payload: { dataUrl },
+        });
+        if (ocrResp?.error) {
+          sendResponse({ error: ocrResp.error });
+        } else {
+          sendResponse({ text: ocrResp?.text || "" });
+        }
+      })
+      .catch((err) => {
+        console.error("OCR execution error:", err);
+        sendResponse({ error: err.message || "OCR failed" });
+      });
     return true;
   }
 
@@ -227,12 +284,27 @@ async function handleCapture(
   mode: CaptureMode,
   region?: CaptureRegion,
   speed?: "slow" | "medium" | "fast",
-  elementInfo?: ScrollableElementInfo
+  elementInfo?: ScrollableElementInfo,
+  explicitTabId?: number
 ): Promise<CaptureResult> {
-  const [tab] = await chrome.tabs.query({
-    active: true,
-    currentWindow: true,
-  });
+  let targetTabId = explicitTabId;
+  let tab: chrome.tabs.Tab | undefined;
+
+  if (targetTabId) {
+    try {
+      tab = await chrome.tabs.get(targetTabId);
+    } catch {}
+  }
+
+  if (!tab) {
+    const [activeTab] = await chrome.tabs.query({
+      active: true,
+      currentWindow: true,
+    });
+    tab = activeTab;
+    targetTabId = tab?.id;
+  }
+
   if (!tab?.id) throw new Error("No active tab");
 
   const tabUrl = tab.url || "";
@@ -244,7 +316,7 @@ async function handleCapture(
     );
   }
 
-  if (!isRestrictedPage && (mode === "full-page" || mode === "scrolling-area" || mode === "scrollable-element")) {
+  if (!isRestrictedPage && (mode === "full-page" || mode === "scrolling-area")) {
     await injectContentScripts(tab.id);
   }
 
@@ -257,28 +329,23 @@ async function handleCapture(
 
   switch (mode) {
     case "full-page":
-      return captureFullPage(tab.id, sendProgress);
+      return captureFullPage(targetTabId!, sendProgress);
 
     case "visible-area":
-      return captureVisibleArea(tab.id);
+      return captureVisibleArea(targetTabId!);
 
     case "selected-area":
       if (!region) throw new Error("Region required for selected-area mode");
-      return captureSelectedArea(tab.id, region);
+      return captureSelectedArea(targetTabId!, region);
 
     case "scrolling-area":
       if (!region) throw new Error("Region required for scrolling-area mode");
       return captureScrollingArea(
-        tab.id,
+        targetTabId!,
         region,
         speed || "medium",
         sendProgress
       );
-
-    case "scrollable-element":
-      if (!elementInfo)
-        throw new Error("Element info required for scrollable-element mode");
-      return captureScrollableElement(tab.id, elementInfo, sendProgress);
 
     default:
       throw new Error(`Unknown capture mode: ${mode}`);
@@ -338,17 +405,14 @@ async function initInteractiveMode(
       });
     }
 
-    if (mode === "scrollable-element") {
+    if (mode === "capture-text") {
       await chrome.scripting.executeScript({
         target: { tabId },
-        files: [
-          "scrollable-detector.js",
-          "element-selector.js",
-        ],
+        files: ["ocr-overlay.js"],
       });
       await sleep(100);
       await chrome.tabs.sendMessage(tabId, {
-        type: "START_ELEMENT_SELECT_MODE",
+        type: "START_OCR_MODE",
         payload: { tabId },
       });
     }
@@ -363,16 +427,28 @@ function sleep(ms: number): Promise<void> {
 
 async function showResultBarOnTab(tabId: number, payload: any): Promise<void> {
   try {
-    // Ensure result-bar.js is injected
+    // 1. Ensure result-bar.js is loaded
     await chrome.scripting.executeScript({
       target: { tabId },
       files: ["result-bar.js"],
-    });
-    await sleep(100);
+    }).catch(() => {});
+
+    // 2. Directly invoke the global render function inside the page
+    await chrome.scripting.executeScript({
+      target: { tabId },
+      func: (info: any) => {
+        if (typeof (window as any).__snapforge_show_result_bar === "function") {
+          (window as any).__snapforge_show_result_bar(info);
+        }
+      },
+      args: [payload],
+    }).catch(() => {});
+
+    // 3. Also dispatch message as fallback
     await chrome.tabs.sendMessage(tabId, {
       type: "SHOW_RESULT_BAR",
       payload,
-    });
+    }).catch(() => {});
   } catch (err) {
     console.error("showResultBarOnTab failed:", err);
   }
@@ -417,6 +493,15 @@ async function handleExport(
       }
 
       case "pdf": {
+        const domain = getDomain(result.url);
+        const filename = generateFilename(domain, "pdf");
+        const pdfBlob = await generatePDF(blob, "a4");
+        const pdfDataUrl = await blobToDataUrl(pdfBlob);
+        await chrome.downloads.download({
+          url: pdfDataUrl,
+          filename,
+          saveAs: false,
+        });
         return { success: true };
       }
 

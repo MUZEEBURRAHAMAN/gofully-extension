@@ -6,12 +6,15 @@ export async function generatePDF(
   _pageSize: "a4" | "letter" = "a4",
   watermarkUrl?: string
 ): Promise<Blob> {
-  const img = await createImageBitmap(imageBlob);
+  const dataUrl = await blobToDataUrl(imageBlob);
+  const img = new Image();
+  img.src = dataUrl;
+  await new Promise<void>((resolve, reject) => {
+    img.onload = () => resolve();
+    img.onerror = () => reject(new Error("Failed to load image for PDF"));
+  });
 
-  // Treat the capture as 144 DPI (2× retina): 2 image pixels = 1 pt.
-  // This makes the PDF page match the page's CSS pixel dimensions exactly,
-  // so the content looks crisp and properly sized in any PDF viewer.
-  const PX_TO_PT = 0.5;
+  const PX_TO_PT = 0.75; // Standard 96 DPI CSS/web rendering: 1px = 0.75pt
   const pageW = Math.round(img.width * PX_TO_PT);
   const fullH  = Math.round(img.height * PX_TO_PT);
 
@@ -20,21 +23,19 @@ export async function generatePDF(
   const pageH = Math.min(fullH, MAX_PAGE_H);
   const totalPages = Math.ceil(fullH / pageH);
 
-  const dataUrl = await blobToDataUrl(imageBlob);
-
   const pdf = new jsPDF({
     unit: "pt",
     format: [pageW, pageH],
+    orientation: pageW > pageH ? "landscape" : "portrait",
   });
 
   for (let i = 0; i < totalPages; i++) {
     if (i > 0) {
       const remainH = fullH - i * pageH;
-      pdf.addPage([pageW, Math.min(pageH, remainH)]);
+      const thisH = Math.min(pageH, remainH);
+      pdf.addPage([pageW, thisH], pageW > thisH ? "landscape" : "portrait");
     }
 
-    // Draw full image, offset upward per page. "NONE" = no extra compression —
-    // the PNG is already losslessly compressed; re-encoding degrades quality.
     pdf.addImage(
       dataUrl,
       "PNG",
@@ -70,7 +71,7 @@ export async function downloadPDF(
   pageSize: "a4" | "letter" = "a4",
   watermarkUrl?: string
 ): Promise<void> {
-  const pdfBlob = await generatePDF(imageBlob, pageSize, watermarkUrl); // pageSize kept for API compat
+  const pdfBlob = await generatePDF(imageBlob, pageSize, watermarkUrl);
   const dataUrl = await blobToDataUrl(pdfBlob);
   const filename = generateFilename(domain, "pdf");
 

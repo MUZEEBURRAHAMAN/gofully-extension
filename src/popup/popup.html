@@ -279,7 +279,48 @@
       font-weight: 600;
     }
     .res-btn.prim:hover { background: var(--blue-h); }
-    .res-btn.prim:active { background: #0F44C0; }
+    /* Image Preview Container */
+    .popup-preview {
+      position: relative;
+      width: 100%;
+      height: 150px;
+      background: #f1f5f9;
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+    .popup-preview img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+      object-position: top center;
+    }
+    .popup-preview-fade {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 48px;
+      background: linear-gradient(to bottom, rgba(241, 245, 249, 0) 0%, rgba(241, 245, 249, 0.92) 80%, rgba(241, 245, 249, 1) 100%);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 6px;
+      pointer-events: none;
+    }
+    .popup-preview-pill {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: var(--text-3);
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
 
     /* ─── ERROR ─── */
     #errorBar { display: none; }
@@ -340,7 +381,7 @@
   <div class="hdr-right">
     <button class="icon-btn" id="settingsBtn" title="Settings">
       <!-- Hugeicons: setting-02 -->
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="3"/>
         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
       </svg>
@@ -354,12 +395,12 @@
   <button class="mode-btn primary" data-mode="full-page">
     <div class="m-icon">
       <!-- Hugeicons: browser -->
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="4" width="20" height="16"/>
-        <path d="M2 9H22"/>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="4" width="20" height="16" rx="0"/>
+        <path d="M2 9h20"/>
         <circle cx="5.5" cy="6.5" r=".9" fill="currentColor" stroke="none"/>
-        <circle cx="8.2" cy="6.5" r=".9" fill="currentColor" stroke="none"/>
-        <circle cx="10.9" cy="6.5" r=".9" fill="currentColor" stroke="none"/>
+        <circle cx="8.5" cy="6.5" r=".9" fill="currentColor" stroke="none"/>
+        <circle cx="11.5" cy="6.5" r=".9" fill="currentColor" stroke="none"/>
       </svg>
     </div>
     <div class="m-text">
@@ -371,10 +412,10 @@
 
   <button class="mode-btn" data-mode="visible-area">
     <div class="m-icon">
-      <!-- Hugeicons: computer -->
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="3" width="20" height="14"/>
-        <path d="M8 21H16M12 17V21"/>
+      <!-- Hugeicons: computer-desktop -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="3" width="20" height="14" rx="0"/>
+        <path d="M8 21h8M12 17v4"/>
       </svg>
     </div>
     <div class="m-text">
@@ -388,10 +429,10 @@
 
   <button class="mode-btn" data-mode="selected-area">
     <div class="m-icon">
-      <!-- Hugeicons: crop-01 -->
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M6 2V18H22"/>
-        <path d="M2 6H18V22"/>
+      <!-- Hugeicons: crop -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 2v16h16"/>
+        <path d="M2 6h16v16"/>
       </svg>
     </div>
     <div class="m-text">
@@ -402,11 +443,11 @@
 
   <button class="mode-btn" data-mode="scrolling-area">
     <div class="m-icon">
-      <!-- Hugeicons: swipe-down / scroll arrows -->
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 3V21"/>
-        <path d="M8 7L12 3L16 7"/>
-        <path d="M8 17L12 21L16 17"/>
+      <!-- Hugeicons: swipe-vertical / scroll -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3v18"/>
+        <path d="M8 7l4-4 4 4"/>
+        <path d="M8 17l4 4 4-4"/>
       </svg>
     </div>
     <div class="m-text">
@@ -415,19 +456,20 @@
     </div>
   </button>
 
-  <button class="mode-btn" data-mode="scrollable-element">
+  <button class="mode-btn" data-mode="capture-text">
     <div class="m-icon">
-      <!-- Hugeicons: layers / element container with scrollbar -->
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="4" width="16" height="16"/>
-        <path d="M20 8V16"/>
-        <path d="M18 10L20 8L22 10"/>
-        <path d="M18 14L20 16L22 14"/>
+      <!-- Hugeicons: text-font -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 7V4h16v3"/>
+        <path d="M9 20h6"/>
+        <path d="M12 4v16"/>
+        <path d="M3 12h3"/>
+        <path d="M18 12h3"/>
       </svg>
     </div>
     <div class="m-text">
-      <span class="m-name">Scrollable Element</span>
-      <span class="m-desc">Capture any overflow container</span>
+      <span class="m-name">Capture Text (OCR)</span>
+      <span class="m-desc">Extract & copy text from area</span>
     </div>
   </button>
 
@@ -437,10 +479,10 @@
 <div id="progressSection">
   <div class="prog-top">
     <div class="prog-icon">
-      <!-- Hugeicons: clock-01 -->
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <!-- Hugeicons: loading-03 / clock -->
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"/>
-        <path d="M12 6V12L16 14"/>
+        <path d="M12 6v6l4 2"/>
       </svg>
     </div>
     <div>
@@ -457,45 +499,51 @@
 <div id="resultBar">
   <div class="res-status">
     <div class="res-check">
-      <!-- Hugeicons: tick-02 -->
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M20 6L9 17L4 12"/>
+      <!-- Hugeicons: checkmark-circle-02 -->
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 6L9 17l-5-5"/>
       </svg>
     </div>
     <span class="res-title">Screenshot captured</span>
     <span class="res-dim" id="resultText"></span>
   </div>
+  <div class="popup-preview" id="popupPreviewContainer" style="display:none;">
+    <img id="popupPreviewImg" src="" alt="Capture Preview" />
+    <div class="popup-preview-fade" id="popupPreviewFade" style="display:none;">
+      <span class="popup-preview-pill">Full Page View</span>
+    </div>
+  </div>
   <div class="res-actions">
     <button class="res-btn prim" id="copyBtn">
       <!-- Hugeicons: copy-01 -->
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="9" y="9" width="13" height="13"/>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="9" width="13" height="13" rx="1"/>
         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
       </svg>
       Copy
     </button>
     <button class="res-btn" id="savePngBtn">
-      <!-- Hugeicons: image-01 -->
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="18" height="18"/>
-        <circle cx="8.5" cy="8.5" r="1.5"/>
-        <path d="M21 15L16 10L5 21"/>
+      <!-- Hugeicons: download-01 -->
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
       </svg>
       PNG
     </button>
     <button class="res-btn" id="savePdfBtn">
       <!-- Hugeicons: file-pdf -->
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/>
-        <path d="M14 2V8H20"/>
-        <path d="M9 13H15M9 17H12"/>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <path d="M9 13h6M9 17h3"/>
       </svg>
       PDF
     </button>
     <button class="res-btn" id="editBtn">
       <!-- Hugeicons: pencil-edit-01 -->
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
       </svg>
       Edit
     </button>

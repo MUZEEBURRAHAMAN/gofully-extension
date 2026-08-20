@@ -19,9 +19,8 @@ const contentScripts = [
   "lazy-loader",
   "result-bar",
   "region-selector",
-  "element-selector",
-  "scrollable-detector",
   "scrolling-area-ui",
+  "ocr-overlay",
 ];
 
 for (const name of contentScripts) {
@@ -66,6 +65,26 @@ if (existsSync(resolve(__dirname, "assets/shutter.mp3"))) {
   );
 }
 
+// Copy local Tesseract OCR assets
+if (existsSync(resolve(__dirname, "node_modules/tesseract.js/dist/worker.min.js"))) {
+  cpSync(
+    resolve(__dirname, "node_modules/tesseract.js/dist/worker.min.js"),
+    resolve(dist, "assets/tesseract-worker.min.js")
+  );
+}
+if (existsSync(resolve(__dirname, "node_modules/tesseract.js-core/tesseract-core.wasm.js"))) {
+  cpSync(
+    resolve(__dirname, "node_modules/tesseract.js-core/tesseract-core.wasm.js"),
+    resolve(dist, "assets/tesseract-core.wasm.js")
+  );
+}
+if (existsSync(resolve(__dirname, "assets/eng.traineddata.gz"))) {
+  cpSync(
+    resolve(__dirname, "assets/eng.traineddata.gz"),
+    resolve(dist, "assets/eng.traineddata.gz")
+  );
+}
+
 // Step 5: Copy HTML files (popup, editor, settings, offscreen)
 console.log("Step 5: Copying HTML files...");
 
@@ -93,10 +112,12 @@ const settingsFixed = settingsHtml.replace(
 );
 writeFileSync(resolve(dist, "settings.html"), settingsFixed);
 
-// Offscreen HTML
-cpSync(
-  resolve(__dirname, "src/offscreen/offscreen.html"),
-  resolve(dist, "offscreen.html")
+// Offscreen HTML — replace .ts script reference with .js
+const offscreenHtml = readFileSync(resolve(__dirname, "src/offscreen/offscreen.html"), "utf8");
+const offscreenFixed = offscreenHtml.replace(
+  /<script\s+src="canvas-stitcher\.ts"\s+type="module"><\/script>/,
+  '<script type="module" src="offscreen.js"></script>'
 );
+writeFileSync(resolve(dist, "offscreen.html"), offscreenFixed);
 
 console.log("\nBuild complete! Load dist/ as unpacked extension in Chrome.");

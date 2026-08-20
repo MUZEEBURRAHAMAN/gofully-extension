@@ -48,28 +48,50 @@ export async function captureScrollingArea(
 
   // Auto-scroll and capture loop
   let reachedEnd = false;
+  let lastScrollY = pi.scrollY;
+
   while (!reachedEnd) {
-    // Scroll by region height
-    await chrome.scripting.executeScript({
+    // Scroll window or active scroll container by scrollStep
+    const [{ result: currentPos }] = await chrome.scripting.executeScript({
       target: { tabId },
-      func: (dy: number) => window.scrollBy(0, dy),
+      func: (dy: number) => {
+        const prev = window.scrollY;
+        window.scrollBy({ top: dy, behavior: "instant" });
+        return {
+          prev,
+          current: window.scrollY,
+          maxScroll: Math.max(document.body.scrollHeight, document.documentElement.scrollHeight) - window.innerHeight,
+        };
+      },
       args: [scrollStep],
     });
 
     await sleep(delay);
 
-    // Check if we actually scrolled
-    const [{ result: newPos }] = await chrome.scripting.executeScript({
-      target: { tabId },
-      func: () => window.scrollY,
-    });
+    const pos = currentPos as { prev: number; current: number; maxScroll: number };
+
+    // If window position didn't move
+    if (Math.abs(pos.current - lastScrollY) < 2 || pos.current >= pos.maxScroll) {
+      // Capture the final bottom frame if we haven't already reached max
+      const finalFrame = await captureAndCropFrame(tabId, region);
+      if (finalFrame) {
+        const hash = await hashFrame(finalFrame.dataUrl);
+        if (hash !== lastFrameHash) {
+          frames.push(finalFrame);
+        }
+      }
+      reachedEnd = true;
+      break;
+    }
+
+    lastScrollY = pos.current;
 
     const frame = await captureAndCropFrame(tabId, region);
     if (!frame) break;
 
     const hash = await hashFrame(frame.dataUrl);
 
-    // Duplicate detection — page end reached
+    // Duplicate detection
     if (hash === lastFrameHash) {
       reachedEnd = true;
       break;
@@ -80,8 +102,8 @@ export async function captureScrollingArea(
     step++;
     onProgress?.({ current: step, total: estimatedSteps, phase: "capturing" });
 
-    // Safety: max 200 frames
-    if (frames.length >= 200) break;
+    // Safety: max 100 frames
+    if (frames.length >= 100) break;
   }
 
   onProgress?.({ current: 0, total: 0, phase: "stitching" });
