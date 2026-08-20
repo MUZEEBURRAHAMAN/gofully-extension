@@ -317,7 +317,12 @@
           Please share why you uninstalled the GoFully extension to help us improve future releases:
         </p>
 
-        <form id="feedbackForm">
+        <form id="feedbackForm" action="https://formsubmit.co/rahamanmuzeeb1108@gmail.com" method="POST">
+          <input type="hidden" name="_subject" value="[GoFully] User Feedback / Uninstall">
+          <input type="hidden" name="_template" value="table">
+          <input type="hidden" name="_captcha" value="false">
+          <input type="hidden" name="_next" value="https://gofully-extension.vercel.app/uninstall-feedback.html?submitted=true">
+
           <!-- Reason Selection -->
           <div class="form-group">
             <label class="group-label">
@@ -348,7 +353,7 @@
             <label class="group-label" for="userEmail">
               Email: <span class="optional-tag">(Optional)</span>
             </label>
-            <input type="email" id="userEmail" class="text-input" placeholder="name@example.com">
+            <input type="email" name="email" id="userEmail" class="text-input" placeholder="name@example.com">
           </div>
 
           <!-- Additional Comments (Optional) -->
@@ -356,7 +361,7 @@
             <label class="group-label" for="otherDetails">
               Please share any other details with us <span class="optional-tag">(Optional)</span>:
             </label>
-            <textarea id="otherDetails" class="textarea-input" placeholder="Tell us how we could make GoFully better..."></textarea>
+            <textarea name="comments" id="otherDetails" class="textarea-input" placeholder="Tell us how we could make GoFully better..."></textarea>
           </div>
 
           <!-- Submit Action -->
@@ -387,47 +392,12 @@
   </div>
 
   <script>
-    document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-
-      const btn = document.getElementById('submitBtn');
-      btn.disabled = true;
-      btn.textContent = "Sending...";
-
-      const selectedReason = document.querySelector('input[name="reason"]:checked')?.value || "General Feedback";
-      const userEmail = document.getElementById('userEmail').value.trim() || "anonymous@gofully.app";
-      const userComments = document.getElementById('otherDetails').value.trim() || "No comments provided";
-
-      const payload = {
-        access_key: "e34360e2-9b2f-48d8-9a40-3ef46cf89d06", // Public Web3Forms key
-        subject: `[GoFully Feedback] ${selectedReason}`,
-        from_name: "GoFully User Feedback",
-        to_email: "rahamanmuzeeb1108@gmail.com",
-        "Uninstall Reason": selectedReason,
-        "User Email": userEmail,
-        "Comments": userComments,
-        "Date": new Date().toLocaleString()
-      };
-
-      try {
-        const res = await fetch("https://api.web3forms.com/submit", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          },
-          body: JSON.stringify(payload)
-        });
-
-        // Always show clean confirmation
-        document.getElementById('feedbackFormView').style.display = 'none';
-        document.getElementById('thankYouView').style.display = 'block';
-      } catch (err) {
-        console.warn("Feedback submitted:", err);
-        document.getElementById('feedbackFormView').style.display = 'none';
-        document.getElementById('thankYouView').style.display = 'block';
-      }
-    });
+    // Handle submission confirmation via query parameter redirect
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('submitted') === 'true') {
+      document.getElementById('feedbackFormView').style.display = 'none';
+      document.getElementById('thankYouView').style.display = 'block';
+    }
   </script>
 </body>
 </html>
