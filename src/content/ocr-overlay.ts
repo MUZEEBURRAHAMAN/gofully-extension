@@ -461,14 +461,14 @@ async function processOCR(region: CaptureRegion): Promise<void> {
           </svg>
           Extracted Text
         </div>
-        <button class="ocr-close" id="ocr-close-btn">
+        <button class="ocr-close" id="ocr-close-btn" aria-label="Close">
           <!-- Hugeicons: cancel-01 -->
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
-      <textarea class="ocr-textarea" id="ocr-text-content" readonly>${text}</textarea>
+      <textarea class="ocr-textarea" id="ocr-text-content" readonly></textarea>
       <div class="ocr-footer">
-        <div class="ocr-meta">${text.length} characters</div>
+        <div class="ocr-meta" id="ocr-meta-text"></div>
         <div class="ocr-actions">
           <button class="ocr-btn secondary" id="ocr-done-btn">Done</button>
           <button class="ocr-btn primary" id="ocr-copy-btn">
@@ -483,10 +483,14 @@ async function processOCR(region: CaptureRegion): Promise<void> {
       </div>
     `;
 
+    const textarea = resultModal.querySelector("#ocr-text-content") as HTMLTextAreaElement;
+    if (textarea) textarea.value = text;
+    const metaEl = resultModal.querySelector("#ocr-meta-text") as HTMLDivElement;
+    if (metaEl) metaEl.textContent = `${text.length} characters`;
+
     resultModal.querySelector("#ocr-close-btn")?.addEventListener("click", () => stopOCRSelection());
     resultModal.querySelector("#ocr-done-btn")?.addEventListener("click", () => stopOCRSelection());
     resultModal.querySelector("#ocr-copy-btn")?.addEventListener("click", async () => {
-      const textarea = resultModal!.querySelector("#ocr-text-content") as HTMLTextAreaElement;
       if (textarea) {
         await navigator.clipboard.writeText(textarea.value);
         showToast("Copied to clipboard!");
@@ -496,17 +500,18 @@ async function processOCR(region: CaptureRegion): Promise<void> {
     resultModal.innerHTML = `
       <div class="ocr-header">
         <div class="ocr-title">OCR Recognition Failed</div>
-        <button class="ocr-close" id="ocr-close-btn">
+        <button class="ocr-close" id="ocr-close-btn" aria-label="Close">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
       </div>
-      <div style="padding: 20px 0; color: #ef4444; font-size: 13px;">
-        ${err?.message || "Failed to process text"}
-      </div>
+      <div class="ocr-error-msg" id="ocr-error-text" style="padding: 20px 0; color: #ef4444; font-size: 13px;"></div>
       <div class="ocr-footer" style="justify-content: flex-end;">
         <button class="ocr-btn secondary" id="ocr-done-btn">Close</button>
       </div>
     `;
+    const errEl = resultModal.querySelector("#ocr-error-text") as HTMLDivElement;
+    if (errEl) errEl.textContent = err?.message || "Failed to process text";
+
     resultModal.querySelector("#ocr-close-btn")?.addEventListener("click", () => stopOCRSelection());
     resultModal.querySelector("#ocr-done-btn")?.addEventListener("click", () => stopOCRSelection());
   }

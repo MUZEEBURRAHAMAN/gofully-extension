@@ -1,7 +1,7 @@
 {
-  "name": "snapforge",
+  "name": "gofully",
   "version": "1.0.0",
-  "description": "Full page screenshot Chrome extension with 5 capture modes, built-in editor, and PDF export",
+  "description": "GoFully — Full page screenshot and screen capture Chrome extension with OCR, built-in editor, and PDF export",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -14,10 +14,9 @@
     "full-page",
     "capture"
   ],
-  "author": "SnapForge",
+  "author": "GoFully",
   "license": "MIT",
   "devDependencies": {
-    "@crxjs/vite-plugin": "^2.0.0-beta.33",
     "@types/chrome": "^0.2.6",
     "typescript": "^7.0.2",
     "vite": "^8.2.1"
@@ -27,7 +26,6 @@
     "cropperjs": "^1.6.2",
     "fabric": "^7.4.0",
     "jspdf": "^4.2.1",
-    "ocrad.js": "^0.0.1",
     "stackblur-canvas": "^3.0.1",
     "tesseract.js": "^4.1.1"
   }

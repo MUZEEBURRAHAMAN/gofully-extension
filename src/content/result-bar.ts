@@ -268,7 +268,7 @@ export function showResultBar(info: {
     </div>
 
     ${
-      info.dataUrl
+      info.dataUrl && info.dataUrl.startsWith("data:image/")
         ? `
       <div class="preview-container">
         <img class="preview-img" src="${info.dataUrl}" alt="Capture Preview" />
