@@ -387,8 +387,52 @@
   </div>
 
   <script>
+    const reasonLabels = {
+      temporarily_deleting: "Just temporarily deleting",
+      dont_know_how_to_use: "I don't know how to use it",
+      did_not_work_properly: "Did not work properly",
+      not_useful: "Not useful"
+    };
+
     document.getElementById('feedbackForm').addEventListener('submit', function(e) {
       e.preventDefault();
+
+      const selectedRadio = document.querySelector('input[name="reason"]:checked');
+      const reasonVal = selectedRadio ? selectedRadio.value : "General Feedback";
+      const reasonReadable = reasonLabels[reasonVal] || reasonVal;
+      const userEmail = document.getElementById('userEmail').value.trim();
+      const details = document.getElementById('otherDetails').value.trim();
+
+      const subject = encodeURIComponent(`[GoFully Feedback] ${reasonReadable}`);
+      const bodyLines = [
+        `Uninstall / Feedback Reason: ${reasonReadable}`,
+        userEmail ? `User Email: ${userEmail}` : `User Email: (Not provided)`,
+        "",
+        "User Comments & Details:",
+        details || "No additional comments provided."
+      ];
+      const body = encodeURIComponent(bodyLines.join("\n"));
+
+      // Target email address
+      const targetEmail = "rahamanmuzeeb1108@gmail.com";
+
+      // 1. First try opening directly in Gmail Web Compose in a new tab
+      const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${targetEmail}&su=${subject}&body=${body}`;
+      
+      // 2. Fallback mailto URL
+      const mailtoUrl = `mailto:${targetEmail}?subject=${subject}&body=${body}`;
+
+      try {
+        const gmailWindow = window.open(gmailComposeUrl, '_blank');
+        if (!gmailWindow || gmailWindow.closed || typeof gmailWindow.closed === 'undefined') {
+          // If popup blocker caught it, trigger mailto protocol
+          window.location.href = mailtoUrl;
+        }
+      } catch (err) {
+        window.location.href = mailtoUrl;
+      }
+
+      // Transition to thank you confirmation view
       document.getElementById('feedbackFormView').style.display = 'none';
       document.getElementById('thankYouView').style.display = 'block';
     });
