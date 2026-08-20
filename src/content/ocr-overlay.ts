@@ -160,8 +160,8 @@ function createUI(): void {
     .ocr-footer {
       display: flex; align-items: center; justify-content: space-between;
     }
-    .ocr-count { font-size: 12px; color: #64748b; }
-    .ocr-btn-row { display: flex; gap: 8px; }
+    .ocr-meta { font-size: 12px; color: #64748b; }
+    .ocr-actions { display: flex; gap: 8px; }
     .ocr-btn {
       padding: 8px 16px; border-radius: 0px; font-size: 12px; font-weight: 600;
       cursor: pointer; border: 1px solid transparent; display: flex; align-items: center; gap: 6px;
