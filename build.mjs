@@ -120,6 +120,10 @@ const helpFixed = helpHtml.replace(
 );
 writeFileSync(resolve(dist, "help.html"), helpFixed);
 
+// Uninstall Feedback HTML
+const feedbackHtml = readFileSync(resolve(__dirname, "src/feedback/uninstall-feedback.html"), "utf8");
+writeFileSync(resolve(dist, "uninstall-feedback.html"), feedbackHtml);
+
 // Offscreen HTML — replace .ts script reference with .js
 const offscreenHtml = readFileSync(resolve(__dirname, "src/offscreen/offscreen.html"), "utf8");
 const offscreenFixed = offscreenHtml.replace(
