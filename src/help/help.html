@@ -44,8 +44,8 @@
     /* ─── GOFULLY HEADER (BLUE / WHITE BRAND IDENTITY) ─── */
     .top-nav {
       background: var(--white);
-      height: 54px;
-      padding: 0 28px;
+      height: 56px;
+      padding: 0 32px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -53,6 +53,7 @@
       position: sticky;
       top: 0;
       z-index: 100;
+      box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
     }
 
     .nav-brand {
@@ -66,31 +67,33 @@
     .brand-logo-wrap {
       display: flex;
       align-items: center;
-      gap: 7px;
+      gap: 9px;
     }
 
     .logo-img {
-      width: 24px;
-      height: 24px;
+      width: 28px;
+      height: 28px;
       display: block;
       object-fit: contain;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(22, 103, 242, 0.25);
     }
 
     .wm {
-      font-size: 15px;
-      font-weight: 700;
+      font-size: 17px;
+      font-weight: 800;
       letter-spacing: -0.4px;
       line-height: 1;
     }
-    .wm-go   { color: var(--text-2); font-weight: 500; }
-    .wm-full { color: var(--blue); font-weight: 700; }
-    .wm-y    { color: var(--blue); opacity: 0.45; font-weight: 700; }
+    .wm-go   { color: var(--text); font-weight: 600; }
+    .wm-full { color: var(--blue); font-weight: 800; }
+    .wm-y    { color: var(--blue); opacity: 0.7; font-weight: 800; }
 
     .nav-tag {
       font-size: 11.5px;
       background: var(--blue-bg);
       border: 1px solid var(--blue-bd);
-      padding: 3px 9px;
+      padding: 4px 10px;
       border-radius: 4px;
       font-weight: 600;
       color: var(--blue);
