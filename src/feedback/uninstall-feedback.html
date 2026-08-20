@@ -317,7 +317,13 @@
           Please share why you uninstalled the GoFully extension to help us improve future releases:
         </p>
 
-        <form id="feedbackForm">
+        <form id="feedbackForm" action="https://formsubmit.co/rahamanmuzeeb1108@gmail.com" method="POST">
+          <!-- FormSubmit Configuration -->
+          <input type="hidden" name="_subject" id="formSubject" value="[GoFully] User Feedback / Uninstall">
+          <input type="hidden" name="_template" value="table">
+          <input type="hidden" name="_captcha" value="false">
+          <input type="hidden" name="_next" value="https://gofully-extension.vercel.app/uninstall-feedback.html?submitted=true">
+
           <!-- Reason Selection -->
           <div class="form-group">
             <label class="group-label">
@@ -325,19 +331,19 @@
             </label>
             <div class="radio-list">
               <label class="radio-option">
-                <input type="radio" name="reason" value="temporarily_deleting" required>
+                <input type="radio" name="reason" value="Just temporarily deleting" required>
                 <span>Just temporarily deleting</span>
               </label>
               <label class="radio-option">
-                <input type="radio" name="reason" value="dont_know_how_to_use">
+                <input type="radio" name="reason" value="I don't know how to use it">
                 <span>I don't know how to use it</span>
               </label>
               <label class="radio-option">
-                <input type="radio" name="reason" value="did_not_work_properly">
+                <input type="radio" name="reason" value="Did not work properly">
                 <span>Did not work properly</span>
               </label>
               <label class="radio-option">
-                <input type="radio" name="reason" value="not_useful">
+                <input type="radio" name="reason" value="Not useful">
                 <span>Not useful</span>
               </label>
             </div>
@@ -348,7 +354,7 @@
             <label class="group-label" for="userEmail">
               Email: <span class="optional-tag">(Optional)</span>
             </label>
-            <input type="email" id="userEmail" class="text-input" placeholder="name@example.com">
+            <input type="email" name="email" id="userEmail" class="text-input" placeholder="name@example.com">
           </div>
 
           <!-- Additional Comments (Optional) -->
@@ -356,7 +362,7 @@
             <label class="group-label" for="otherDetails">
               Please share any other details with us <span class="optional-tag">(Optional)</span>:
             </label>
-            <textarea id="otherDetails" class="textarea-input" placeholder="Tell us how we could make GoFully better..."></textarea>
+            <textarea name="comments" id="otherDetails" class="textarea-input" placeholder="Tell us how we could make GoFully better..."></textarea>
           </div>
 
           <!-- Submit Action -->
@@ -387,62 +393,18 @@
   </div>
 
   <script>
-    const reasonLabels = {
-      temporarily_deleting: "Just temporarily deleting",
-      dont_know_how_to_use: "I don't know how to use it",
-      did_not_work_properly: "Did not work properly",
-      not_useful: "Not useful"
-    };
+    // Check if user just submitted and was redirected back
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('submitted') === 'true') {
+      document.getElementById('feedbackFormView').style.display = 'none';
+      document.getElementById('thankYouView').style.display = 'block';
+    }
 
-    document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-
-      const submitBtn = this.querySelector('.submit-btn');
-      const originalBtnText = submitBtn.textContent;
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Sending...";
-
-      const selectedRadio = document.querySelector('input[name="reason"]:checked');
-      const reasonVal = selectedRadio ? selectedRadio.value : "General Feedback";
-      const reasonReadable = reasonLabels[reasonVal] || reasonVal;
-      const userEmail = document.getElementById('userEmail').value.trim() || "anonymous@user.com";
-      const details = document.getElementById('otherDetails').value.trim() || "No additional comments";
-
-      // Target email address
-      const targetEmail = "rahamanmuzeeb1108@gmail.com";
-
-      try {
-        // Send direct HTTP POST to FormSubmit service (delivers directly to your inbox without opening email clients)
-        const response = await fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          },
-          body: JSON.stringify({
-            _subject: `[GoFully Feedback] ${reasonReadable}`,
-            _template: "table",
-            "Uninstall Reason": reasonReadable,
-            "User Email": userEmail,
-            "Feedback & Comments": details,
-            "Submitted At": new Date().toLocaleString()
-          })
-        });
-
-        if (response.ok) {
-          document.getElementById('feedbackFormView').style.display = 'none';
-          document.getElementById('thankYouView').style.display = 'block';
-        } else {
-          // Fallback if network blocked
-          document.getElementById('feedbackFormView').style.display = 'none';
-          document.getElementById('thankYouView').style.display = 'block';
-        }
-      } catch (err) {
-        console.warn("Feedback delivery notice:", err);
-        // Fallback UI
-        document.getElementById('feedbackFormView').style.display = 'none';
-        document.getElementById('thankYouView').style.display = 'block';
-      }
+    // Dynamic subject update
+    document.querySelectorAll('input[name="reason"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        document.getElementById('formSubject').value = `[GoFully Feedback] ${this.value}`;
+      });
     });
   </script>
 </body>
