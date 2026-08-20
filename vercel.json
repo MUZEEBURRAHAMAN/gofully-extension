@@ -1,0 +1,9 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/feedback", "destination": "/dist/uninstall-feedback.html" },
+    { "source": "/help", "destination": "/dist/help.html" },
+    { "source": "/privacy", "destination": "/PRIVACY_POLICY.md" },
+    { "source": "/(.*)", "destination": "/dist/$1" }
+  ]
+}
