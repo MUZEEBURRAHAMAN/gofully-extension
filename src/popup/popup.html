@@ -116,6 +116,18 @@
     .mode-btn:active { background: var(--border); }
     .mode-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
 
+    /* Disabled mode button on unsupported pages */
+    .mode-btn:disabled {
+      opacity: 0.52;
+      cursor: not-allowed;
+      pointer-events: none;
+      background: transparent !important;
+      border-left-color: transparent !important;
+    }
+    .mode-btn:disabled .m-icon { color: var(--text-4) !important; }
+    .mode-btn:disabled .m-name { color: var(--text-3) !important; }
+    .mode-btn:disabled .m-kbd { opacity: 0.6; }
+
     /* Primary mode highlight */
     .mode-btn.primary {
       background: var(--blue-bg);
@@ -124,6 +136,87 @@
     .mode-btn.primary:hover { background: #E3EAFD; }
     .mode-btn.primary .m-icon { color: var(--blue); }
     .mode-btn.primary .m-name { color: var(--blue); font-weight: 600; }
+
+    /* ─── UNSUPPORTED PAGE NOTICE PANEL ─── */
+    #unsupportedPanel {
+      display: none;
+      margin: 8px 10px;
+      padding: 10px 12px;
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 0px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      animation: fadeIn 0.16s ease-out;
+    }
+    #unsupportedPanel.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-3px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .unsupp-header {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 4px;
+    }
+
+    .unsupp-icon {
+      color: #F59E0B;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .unsupp-title {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.1px;
+    }
+
+    .unsupp-desc {
+      font-size: 10.5px;
+      color: var(--text-3);
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    .unsupp-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .unsupp-btn {
+      height: 22px;
+      padding: 0 10px;
+      border: 1px solid #CBD5E1;
+      background: #FFFFFF;
+      color: var(--text-2);
+      font-size: 10.5px;
+      font-weight: 600;
+      font-family: inherit;
+      border-radius: 0px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.12s, border-color 0.12s, color 0.12s;
+    }
+    .unsupp-btn:hover {
+      background: #F1F5F9;
+      border-color: #94A3B8;
+      color: var(--text);
+    }
+    .unsupp-btn:active {
+      transform: scale(0.97);
+    }
+    .unsupp-btn:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 1px;
+    }
 
     .m-icon {
       width: 15px; height: 15px;
@@ -386,6 +479,27 @@
         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
       </svg>
     </button>
+  </div>
+</div>
+
+<!-- UNSUPPORTED NOTICE PANEL -->
+<div id="unsupportedPanel">
+  <div class="unsupp-header">
+    <div class="unsupp-icon">
+      <!-- Hugeicons: alert-circle / alert-diamond -->
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+    </div>
+    <span class="unsupp-title" id="unsupportedTitle">Capture isn't available here</span>
+  </div>
+  <div class="unsupp-desc" id="unsupportedDesc">
+    GoFully can't capture browser or restricted pages. Open a regular webpage and try again.
+  </div>
+  <div class="unsupp-actions">
+    <button class="unsupp-btn" id="unsupportedDismissBtn" type="button">Got it</button>
   </div>
 </div>
 

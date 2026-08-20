@@ -2,6 +2,7 @@ import type { CaptureMode, CaptureProgress, ExportFormat } from "../types";
 import { copyToClipboard } from "../export/clipboard";
 import { generatePDF } from "../export/pdf-generator";
 import { generateFilename } from "../utils/image";
+import { isSupportedCapturePage, type PageSupportResult } from "../utils/url-validator";
 
 const modesSection = document.getElementById("modesSection")!;
 const progressSection = document.getElementById("progressSection")!;
@@ -16,9 +17,16 @@ const savePngBtn = document.getElementById("savePngBtn")!;
 const savePdfBtn = document.getElementById("savePdfBtn")!;
 const toast = document.getElementById("toast")!;
 
+// Unsupported panel elements
+const unsupportedPanel = document.getElementById("unsupportedPanel")!;
+const unsupportedTitle = document.getElementById("unsupportedTitle")!;
+const unsupportedDesc = document.getElementById("unsupportedDesc")!;
+const unsupportedDismissBtn = document.getElementById("unsupportedDismissBtn")!;
+
 let currentBlobUrl: string | null = null;
 let currentUrl = "";
 let captureMetadata: any = null;
+let currentSupportState: PageSupportResult = { supported: true, type: "supported" };
 
 function playCaptureSound(): void {
   try {
@@ -32,6 +40,11 @@ function playCaptureSound(): void {
 // Settings button
 document.getElementById("settingsBtn")?.addEventListener("click", () => {
   chrome.runtime.openOptionsPage();
+});
+
+// Unsupported panel dismiss button ("Got it")
+unsupportedDismissBtn?.addEventListener("click", () => {
+  unsupportedPanel.classList.remove("active");
 });
 
 // Mode buttons
@@ -121,13 +134,69 @@ chrome.runtime.onMessage.addListener((message) => {
   }
 });
 
+/**
+ * Initial page validation on popup open
+ */
+async function checkActiveTabSupport(): Promise<void> {
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const url = tab?.url || "";
+    currentUrl = url;
+
+    currentSupportState = isSupportedCapturePage(url);
+    applyPageSupportState(currentSupportState);
+  } catch {
+    // If tab lookup fails, default to allowing capture and letting SW validate
+    currentSupportState = { supported: true, type: "supported" };
+    applyPageSupportState(currentSupportState);
+  }
+}
+
+function applyPageSupportState(support: PageSupportResult): void {
+  const modeButtons = document.querySelectorAll(".mode-btn");
+
+  if (!support.supported) {
+    // Disable all mode buttons and add title tooltip
+    modeButtons.forEach((btn) => {
+      const button = btn as HTMLButtonElement;
+      button.disabled = true;
+      button.setAttribute("aria-disabled", "true");
+      button.title = support.message || "Capture is unavailable on this page";
+    });
+
+    // Populate and show the unsupported notice panel
+    if (unsupportedTitle && support.title) {
+      unsupportedTitle.textContent = support.title;
+    }
+    if (unsupportedDesc && support.message) {
+      unsupportedDesc.textContent = support.message;
+    }
+    unsupportedPanel.classList.add("active");
+  } else {
+    // Enable all mode buttons
+    modeButtons.forEach((btn) => {
+      const button = btn as HTMLButtonElement;
+      button.disabled = false;
+      button.removeAttribute("aria-disabled");
+      button.removeAttribute("title");
+    });
+    unsupportedPanel.classList.remove("active");
+  }
+}
+
 async function startCapture(mode: CaptureMode): Promise<void> {
-  // For all capture modes, close the popup and let the sleek upper confirmation HUD appear on the page!
   const [tab] = await chrome.tabs.query({
     active: true,
     currentWindow: true,
   });
   if (!tab?.id) return;
+
+  // Double check central URL support before initiating any capture workflow
+  const support = isSupportedCapturePage(tab.url);
+  if (!support.supported) {
+    applyPageSupportState(support);
+    return;
+  }
 
   if (
     mode === "selected-area" ||
@@ -235,3 +304,6 @@ function blobToDataUrlLocal(blob: Blob): Promise<string> {
     reader.readAsDataURL(blob);
   });
 }
+
+// Run active tab support check on popup open
+checkActiveTabSupport();

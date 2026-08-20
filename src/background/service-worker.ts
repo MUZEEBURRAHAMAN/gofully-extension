@@ -12,6 +12,7 @@ import {
 } from "../capture-modes/scrolling-area";
 import { generatePDF } from "../export/pdf-generator";
 import type { CaptureFrame } from "../types";
+import { isSupportedCapturePage } from "../utils/url-validator";
 
 let lastCaptureResult: CaptureResult | null = null;
 let lastCaptureBlob: Blob | null = null;
@@ -306,15 +307,13 @@ async function handleCapture(
   if (!tab?.id) throw new Error("No active tab");
 
   const tabUrl = tab.url || "";
-  const isRestrictedPage = isRestrictedUrl(tabUrl);
+  const support = isSupportedCapturePage(tabUrl);
 
-  if (isRestrictedPage && mode !== "visible-area") {
-    throw new Error(
-      "Cannot capture this type of page. Navigate to a regular website and try again, or use 'Visible Area' mode."
-    );
+  if (!support.supported) {
+    throw new Error(support.message || "This page cannot be captured.");
   }
 
-  if (!isRestrictedPage && (mode === "full-page" || mode === "scrolling-area")) {
+  if (mode === "full-page" || mode === "scrolling-area") {
     await injectContentScripts(tab.id);
   }
 
@@ -350,29 +349,17 @@ async function handleCapture(
   }
 }
 
-function isRestrictedUrl(url: string): boolean {
-  return (
-    !url ||
-    url.startsWith("chrome://") ||
-    url.startsWith("chrome-extension://") ||
-    url.startsWith("about:") ||
-    url.startsWith("chrome-search://") ||
-    url.startsWith("devtools://") ||
-    url.startsWith("edge://")
-  );
-}
-
 async function initInteractiveMode(
   mode: CaptureMode,
   tabId: number
 ): Promise<void> {
   try {
     const tab = await chrome.tabs.get(tabId);
-    if (isRestrictedUrl(tab.url || "")) {
-      // Can't inject scripts on restricted pages — notify the user via the popup error
+    const support = isSupportedCapturePage(tab.url || "");
+    if (!support.supported) {
       chrome.runtime.sendMessage({
         type: "CAPTURE_ERROR",
-        payload: { message: "Cannot use this mode on a browser page. Navigate to a regular website first." },
+        payload: { message: support.message || "Cannot capture this type of page." },
       }).catch(() => {});
       return;
     }
