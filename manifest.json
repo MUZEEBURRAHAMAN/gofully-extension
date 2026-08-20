@@ -78,8 +78,6 @@
         "editor.html",
         "assets/*",
         "scrolling-area-ui.js",
-        "scrollable-detector.js",
-        "element-selector.js",
         "region-selector.js",
         "page-analyzer.js",
         "sticky-manager.js",

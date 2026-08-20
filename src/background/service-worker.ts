@@ -43,17 +43,16 @@ async function blobToDataUrl(blob: Blob): Promise<string> {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "START_CAPTURE") {
-    const { mode, region, speed, elementInfo, tabId } = message.payload as {
+    const { mode, region, speed, tabId } = message.payload as {
       mode: CaptureMode;
       region?: CaptureRegion;
       speed?: "slow" | "medium" | "fast";
-      elementInfo?: ScrollableElementInfo;
       tabId?: number;
     };
 
     const senderTabId = sender.tab?.id || tabId;
 
-    handleCapture(mode, region, speed, elementInfo, senderTabId)
+    handleCapture(mode, region, speed, senderTabId)
       .then(async (result) => {
         lastCaptureBlob = result.blob;
         lastCaptureDataUrl = await blobToDataUrl(result.blob);
@@ -284,7 +283,6 @@ async function handleCapture(
   mode: CaptureMode,
   region?: CaptureRegion,
   speed?: "slow" | "medium" | "fast",
-  elementInfo?: ScrollableElementInfo,
   explicitTabId?: number
 ): Promise<CaptureResult> {
   let targetTabId = explicitTabId;

@@ -314,7 +314,14 @@ export function showResultBar(info: {
   shadow.appendChild(popup);
   shadow.appendChild(toastEl);
   document.querySelectorAll("#snapforge-result-bar").forEach((el) => el.remove());
-  (document.body || document.documentElement || document.firstElementChild)?.appendChild(bar);
+  const targetRoot = document.body || document.documentElement || document.firstElementChild;
+  if (targetRoot) {
+    targetRoot.appendChild(bar);
+  } else {
+    document.addEventListener("DOMContentLoaded", () => {
+      (document.body || document.documentElement)?.appendChild(bar!);
+    }, { once: true });
+  }
 
   function showToast(msg: string) {
     toastEl.textContent = msg;
