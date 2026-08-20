@@ -8,6 +8,20 @@ A modern, high-performance Chrome extension for capturing full pages, viewports,
 
 ---
 
+## Comparison: GoFully vs. Other Tools
+
+| Feature / Standard | GoFullPage | Awesome Screenshot | Lightshot | **GoFully** |
+|---|:---:|:---:|:---:|:---:|
+| **Full-Page CDP Capture** | ✅ | ⚠️ *(Scroll only)* | ❌ | **✅ (CDP + Scroll fallback)** |
+| **On-Device OCR (Free)** | ❌ | ❌ *(Paid cloud)* | ❌ | **✅ (100% Local WASM)** |
+| **Glass Blur / Redaction**| ❌ *(Paid)* | ⚠️ *(Basic pixel)* | ❌ | **✅ (Glass + Pixel + Redact)** |
+| **Offline Privacy Guarantee** | ✅ | ❌ *(Uploads data)* | ❌ *(Public URL leaks)* | **✅ (Zero Cloud Uploads)** |
+| **CleanShot-Style Markup**| ❌ | ❌ | ❌ | **✅ (Curved arrows, steps, spotlight)** |
+| **Custom Aspect Ratio Crop** | ❌ | ❌ | ❌ | **✅ (Cropper.js presets + nudging)** |
+| **Multi-Page PDF Export** | ❌ *(Paid)* | ❌ *(Paid)* | ❌ | **✅ (Free auto-paginated A4)** |
+
+---
+
 ## Features
 
 ### 📸 Capture Modes
