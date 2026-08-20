@@ -14,14 +14,6 @@ import { generatePDF } from "../export/pdf-generator";
 import type { CaptureFrame } from "../types";
 import { isSupportedCapturePage } from "../utils/url-validator";
 
-// Uninstall feedback URL configuration
-chrome.runtime.onInstalled.addListener(() => {
-  // Sets uninstall survey URL when extension is removed
-  if (chrome.runtime.setUninstallURL) {
-    chrome.runtime.setUninstallURL("https://gofully.vercel.app/feedback");
-  }
-});
-
 let lastCaptureResult: CaptureResult | null = null;
 let lastCaptureBlob: Blob | null = null;
 let lastCaptureDataUrl: string | null = null;
