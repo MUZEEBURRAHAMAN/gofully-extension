@@ -1,101 +1,72 @@
-SnapForge — the most powerful free screenshot extension for Chrome. 5 capture modes, built-in editor, PDF export. 100% offline. Zero permissions beyond the active tab.
+GoFully is a complete browser screenshot and screen capture extension for capturing full pages, visible viewports, custom selected areas, scrolling regions, and extracting text from images (OCR) with built-in annotation and privacy redaction.
 
-One click. Full page. Done.
-
-Click the SnapForge icon (or press Alt+S) and pick your capture mode. Your screenshot is ready in seconds — copy to clipboard, save as PNG, or download as auto-paginated PDF. No account needed. No data leaves your device. Ever.
+Capture entire scrollable webpages, select scrolling areas, extract text from web images, annotate with arrows and callout notes, blur sensitive details, and export to PNG or auto-paginated PDF files—all processed locally on your device.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-5 CAPTURE MODES — MORE THAN ANY FREE EXTENSION
+📸 5 CAPTURE MODES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 1. FULL PAGE SCREENSHOT
-Captures the entire page from top to bottom. Uses Chrome DevTools Protocol for pixel-perfect single-shot capture on pages under 16,384px — no stitching artifacts. Automatically falls back to intelligent scroll-and-stitch for longer pages with smart sticky header detection and lazy-load pre-scrolling.
+Captures the entire scrollable page from top to bottom. Integrates with the Chrome DevTools Protocol for single-shot captures on standard pages to eliminate stitching seams, with automatic scroll-stitch fallback for long documents, smart sticky header handling, and lazy-load image pre-scrolling.
 
-2. VISIBLE AREA
-One-click capture of exactly what you see. Perfect for quick grabs.
+2. VISIBLE VIEWPORT
+One-click instant capture of exactly what is visible on your screen.
 
-3. SELECTED AREA
-Drag to select any region on the page. Dashed selection box with live dimensions badge shows exactly what you're capturing.
+3. SELECTED REGION
+Click and drag to select any custom area on the page with live pixel dimension indicators and movable handles.
 
-4. SCROLLING AREA CAPTURE (like CleanShot — but free!)
-Draw a rectangle around any part of the page (e.g., just the article column, ignoring the sidebar). SnapForge auto-scrolls within that region and stitches every frame into one tall image. Choose Auto-Scroll with speed control (slow / medium / fast) or Manual mode for tricky infinite-scroll pages. Duplicate frame detection automatically stops at the bottom.
+4. SCROLLING AREA CAPTURE
+Draw a boundary around any fixed section of a webpage (such as an article column or dashboard panel). GoFully automatically scrolls within that region and stitches the frames together into a single tall image with duplicate detection.
 
-5. SCROLLABLE ELEMENT CAPTURE
-The feature no other extension offers. Hover over any nested scrollable container — chat boxes, code blocks, log panels, data tables, API response viewers — and click to capture its FULL scrollable content as a single image. Green overlay highlights all scrollable elements on the page.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-BUILT-IN EDITOR — FREE, NO PAYWALL
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Annotate your screenshots instantly without leaving the browser:
-• Arrows, lines, and shapes (rectangle, ellipse)
-• Text boxes with custom fonts and sizes
-• Highlight regions with semi-transparent overlays
-• Blur sensitive content (emails, passwords, personal info)
-• Step numbers for tutorials and documentation
-• Free-draw pen tool
-• Crop to any size
-• Full undo/redo history
-• 6 colors + adjustable stroke width
-• Keyboard shortcuts for every tool (V, A, R, E, L, P, T, H, B, N, C)
+5. CAPTURE TEXT (ON-DEVICE OCR)
+Select any area containing text—including photos, scanned PDFs, diagrams, and video frames—to extract and copy editable text directly to your clipboard using on-device optical character recognition.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-3 EXPORT OPTIONS — ALL FREE, ONE CLICK
+🎨 BUILT-IN ANNOTATION & MARKUP STUDIO
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-• COPY TO CLIPBOARD — Paste directly into Slack, email, docs, Figma, anywhere
-• SAVE AS PNG — Auto-named snapforge-{domain}-{timestamp}.png to Downloads
-• DOWNLOAD AS PDF — Auto-paginated across A4 or Letter pages. Tall screenshots become multi-page PDFs. Optional URL watermark in footer.
+Annotate and organize visual feedback directly in the browser:
+• Arrows & Lines: Straight arrows, curved arrows, and line tools
+• Shapes: Rectangles and ellipses
+• Callouts & Notes: Speech bubbles with customizable text
+• Step Numbers: Auto-incrementing badges (1, 2, 3...) for reproduction steps and tutorials
+• Spotlight Mode: Dim surrounding areas to focus attention on key UI components
+• Freehand Drawing: Pen tool with adjustable stroke width
+• Cropping Studio: Preset aspect ratios (Freeform, 16:9, 4:3, 1:1, 3:2, 2:1) with grid guides and keyboard nudging
+• Undo / Redo History: Multi-step history stack for seamless editing
+• Curated Palette: 8 preset color swatches with stroke width adjustment
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-WHY SNAPFORGE OVER GOFULLPAGE / FIRESHOT / AWESOME SCREENSHOT?
+🔒 PRIVACY REDACTION: BLUR, PIXELATE & BLACKOUT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-✓ 5 capture modes vs 1 (GoFullPage only does full page)
-✓ Free editor — GoFullPage charges for editing
-✓ Free PDF export — GoFullPage charges for PDF
-✓ Scrollable element capture — nobody else does this
-✓ CleanShot-style scrolling area — macOS-only feature, now in Chrome
-✓ Smart sticky header detection (not a hacky scroll padding workaround)
-✓ Lazy-load pre-scrolling — no more grey placeholder images
-✓ Shadow DOM support — captures content inside web components
-✓ DPR-aware — crisp output at any zoom level or display scaling
-✓ 100% offline — unlike Awesome Screenshot, ZERO data goes to any server
-✓ No account required — unlike Nimbus and Awesome Screenshot
-✓ Manifest V3 — future-proof, not using deprecated Chrome APIs
-✓ Chunked rendering — handles pages over 32,000px without crashing
+Protect private information before sharing screenshots:
+• Glass Smooth Blur: Soft Gaussian-style blur for sensitive text or numbers
+• Mosaic Pixelate: Pixelation filter for avatars or user IDs
+• Redact Blackout: Solid black box redaction for credentials and private data
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-KEYBOARD SHORTCUTS
+💾 EXPORT & SHARING
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-• Alt+S — Open SnapForge
-• Alt+Shift+F — Capture full page instantly
-• Alt+Shift+V — Capture visible area instantly
-• Customize at chrome://extensions/shortcuts
+• Copy Image: Copy PNG directly to clipboard for Slack, Jira, Figma, Notion, or email
+• Save PNG: Download in Native Resolution, 1080p HD, or 4K UHD
+• Export to PDF: Save clean, auto-paginated A4 documents
+• Quick In-Page Result Bar: Take immediate post-capture actions right on the page
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-PRIVACY BY ARCHITECTURE
+🛡️ PRIVACY & ON-DEVICE PROCESSING
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-• No network requests. No analytics. No tracking.
-• No cloud uploads. No account creation.
-• Everything processed locally in your browser.
-• Minimal permissions: activeTab + downloads only.
-• Optional debugger permission for CDP capture (you choose, with clear explanation).
-• Open-source and auditable.
+• 100% Client-Side Processing: Captures, annotations, and OCR operations execute locally in your browser.
+• No Cloud Uploads: Screenshots and extracted text are never transmitted to external servers.
+• No Account Required: Install and use immediately without signups or tracking.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-TECHNICAL DETAILS
+⌨️ KEYBOARD SHORTCUTS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-• Manifest V3 (latest Chrome extension standard)
-• Hybrid capture: CDP Page.captureScreenshot + scroll-stitch fallback
-• OffscreenCanvas for background image assembly
-• Fabric.js annotation engine
-• jsPDF client-side PDF generation
-• TypeScript + Vite for fast, type-safe builds
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-SnapForge is free, offline, and open. Take better screenshots.
+• Alt+S — Open GoFully popup
+• Alt+Shift+F — Capture full page
+• Alt+Shift+V — Capture visible area
+• Shortcuts can be customized at chrome://extensions/shortcuts

@@ -1,10 +1,10 @@
-# SnapForge — Chrome Web Store Listing Metadata
+# GoFully — Chrome Web Store Listing Metadata
 
 ## Extension Name
-SnapForge — Full Page Screenshot
+GoFully: Full Page Screenshot & OCR
 
 ## Short Description (132 chars max — Chrome Web Store limit)
-Capture full page screenshots, selected areas, or scrollable elements. Built-in editor, PDF export, clipboard copy. 5 modes. Free.
+Capture full pages or selected areas, extract text with local OCR, annotate, redact sensitive details, and export to PNG or PDF.
 
 ## Category
 Productivity
@@ -13,45 +13,49 @@ Productivity
 English
 
 ## Website
-(Set to your GitHub repo or landing page URL)
+https://github.com/MUZEEBURRAHAMAN/gofully-extension
 
 ## Privacy Practices
-- **Single Purpose**: Screenshot capture and annotation
-- **Data Usage**: Does not collect or transmit any user data
+- **Single Purpose**: Complete browser screenshot capture, on-device OCR text extraction, and privacy-focused visual annotation.
+- **Data Usage**: Does not collect, transmit, or monetize any user data. All processing is strictly local.
 - **Permissions Justification**:
-  - `activeTab`: Capture the visible tab content
-  - `scripting`: Inject capture helpers (sticky detection, lazy-load)
-  - `offscreen`: Stitch images in background canvas
-  - `downloads`: Save screenshots to user's Downloads folder
-  - `storage`: Persist user settings locally
-  - `debugger` (optional): CDP capture for pixel-perfect full-page screenshots
+  - `activeTab`: Capture visible tab content and inject selection interfaces.
+  - `scripting`: Inject page-dimension measurement, sticky element management, and lazy-loading scripts.
+  - `offscreen`: Perform canvas stitching and host local WebAssembly OCR workers in the background.
+  - `downloads`: Save high-resolution PNG and PDF files to user's Downloads directory.
+  - `storage`: Store user preferences (zoom defaults, format choices, hotkeys).
+  - `debugger`: Interface with Chrome DevTools Protocol (`Page.captureScreenshot`) for single-shot full-page captures.
 
 ## Promotional Tile Text
 
 ### Small Tile (440x280)
-**Headline**: 5 Capture Modes. Free Editor. Zero Cloud.
-**Subline**: The screenshot extension that does it all — offline.
+**Headline**: Full Page Capture. Local OCR. Free Editor.
+**Subline**: Complete browser screenshot studio — 100% on-device.
 
 ### Large Tile (920x680)
-**Headline**: Full Page. Scrolling Area. Scrollable Elements. Selected Region. Visible Area.
-**Subline**: 5 capture modes, built-in editor, PDF export. 100% free, 100% offline.
+**Headline**: Full Page. Scrolling Area. Selected Region. Local OCR.
+**Subline**: 5 capture modes, CleanShot-grade annotation studio, privacy redaction, and PDF export.
 
 ### Marquee (1400x560)
-**Headline**: SnapForge — The Most Powerful Free Screenshot Extension
-**Subline**: Capture anything on any page. Annotate. Export. No account. No cloud. No limits.
+**Headline**: GoFully — Full Page Screenshot & Annotation Studio
+**Subline**: Capture full webpages, extract text from images with local OCR, redact sensitive details, and export in 4K or PDF.
 
-## Screenshot Captions (for store screenshots — max 5)
+## 5-Screenshot Store Gallery Strategy (1280x800)
 
-1. **Full Page Capture** — "One click captures the entire page — pixel-perfect, no stitching artifacts"
-2. **5 Capture Modes** — "Full page, visible area, selected region, scrolling area, and scrollable element capture"
-3. **Built-in Editor** — "Arrows, text, blur, highlights, step numbers — all free, no paywall"
-4. **Scrolling Area** — "Draw a region, auto-scroll, get one tall image — like CleanShot, but in Chrome"
-5. **Export Options** — "Copy to clipboard, save PNG, or download auto-paginated PDF — one click"
+1. **Full Page & Scrolling Capture** — "Capture entire scrollable webpages, visible viewports, or custom regions with automated sticky header handling."
+2. **Annotation & Visual Feedback Studio** — "Annotate with curved arrows, callout bubbles, step numbers (1, 2, 3), and spotlight highlights."
+3. **Privacy Redaction & Data Protection** — "Redact sensitive information with Glass Smooth Blur, Mosaic Pixelation, or Solid Blackout."
+4. **On-Device OCR Text Extraction** — "Extract and copy unselectable text from images, charts, and video frames instantly."
+5. **High-Res Export & PDF Generation** — "Export in Native, 1080p HD, 4K UHD, or multi-page paginated PDF — 100% client-side."
 
-## Store Tags / Labels
-- Screenshot
+## Store Tags / Search Terms
+- Full Page Screenshot
+- Screenshot Extension
+- Scrolling Screenshot
+- Screenshot Editor
+- OCR Screenshot
+- Annotate Screenshot
+- Blur Screenshot
 - Screen Capture
-- Full Page
-- Annotation
-- PDF
+- Webpage to PDF
 - Productivity
