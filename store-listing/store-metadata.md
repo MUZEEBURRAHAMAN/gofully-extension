@@ -13,7 +13,13 @@ Productivity
 English
 
 ## Website
-https://github.com/MUZEEBURRAHAMAN/gofully-extension
+https://gofully-extension.vercel.app/
+
+## Support & Privacy URL
+- **Website**: https://gofully-extension.vercel.app/
+- **Help Center**: https://gofully-extension.vercel.app/help.html
+- **Privacy Policy**: https://gofully-extension.vercel.app/privacy.html
+- **Repository**: https://github.com/MUZEEBURRAHAMAN/gofully-extension
 
 ## Privacy Practices
 - **Single Purpose**: Complete browser screenshot capture, on-device OCR text extraction, and privacy-focused visual annotation.

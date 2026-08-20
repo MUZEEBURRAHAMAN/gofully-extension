@@ -4,7 +4,10 @@ A modern, high-performance Chrome extension for capturing full pages, viewports,
 
 ![Chrome MV3](https://img.shields.io/badge/Chrome-MV3-blue?logo=googlechrome)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6?logo=typescript)
+![Deployment](https://img.shields.io/badge/Live%20Website-gofully--extension.vercel.app-success?logo=vercel)
 ![License](https://img.shields.io/badge/license-MIT-green)
+
+**🌐 Official Website & Documentation**: [https://gofully-extension.vercel.app](https://gofully-extension.vercel.app)
 
 ---
 
