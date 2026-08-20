@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GoFully — Full Page Screenshot, OCR Text Extraction & Annotation Studio</title>
+  <meta name="description" content="Capture full webpages, extract text with on-device OCR, annotate with CleanShot-grade tools, redact sensitive data, and export in 4K or PDF — 100% in your browser.">
+  
+  <!-- Canonical & Social Meta -->
+  <link rel="canonical" href="https://gofully-extension.vercel.app/">
+  <meta property="og:title" content="GoFully — Full Page Screenshot & Annotation Studio">
+  <meta property="og:description" content="Capture full webpages, extract text with local OCR, annotate, redact sensitive details, and export to PNG or PDF.">
+  <meta property="og:url" content="https://gofully-extension.vercel.app/">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://gofully-extension.vercel.app/assets/icon-128.png">
+
+  <!-- Fonts & Styles -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="site.css">
+
+  <style>
+    /* ─── HERO SECTION ─── */
+    .hero {
+      padding: 72px 24px 80px;
+      text-align: center;
+      background: radial-gradient(50% 50% at 50% 0%, var(--blue-100) 0%, rgba(248, 250, 252, 0) 100%);
+    }
+
+    .hero-badge-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+
+    .hero-h1 {
+      font-size: 48px;
+      font-weight: 800;
+      letter-spacing: -1.2px;
+      color: var(--slate-900);
+      line-height: 1.15;
+      max-width: 780px;
+      margin: 0 auto 18px;
+    }
+
+    .hero-p {
+      font-size: 17px;
+      color: var(--slate-600);
+      max-width: 640px;
+      margin: 0 auto 32px;
+      line-height: 1.6;
+    }
+
+    .hero-ctas {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 56px;
+      flex-wrap: wrap;
+    }
+
+    /* ─── HERO MOCKUP: REAL GOFULLY POPUP PREVIEW ─── */
+    .hero-preview-container {
+      max-width: 920px;
+      margin: 0 auto;
+      background: var(--white);
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .mock-browser-bar {
+      height: 40px;
+      background: var(--slate-100);
+      border-bottom: 1px solid var(--slate-200);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+    }
+
+    .mock-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .mock-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .mock-dot-r { background: #FF5F56; }
+    .mock-dot-y { background: #FFBD2E; }
+    .mock-dot-g { background: #27C93F; }
+
+    .mock-url-box {
+      flex: 1;
+      background: var(--white);
+      border: 1px solid var(--slate-200);
+      height: 24px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      font-size: 11px;
+      color: var(--slate-500);
+    }
+
+    .mock-body-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      background: var(--slate-50);
+      min-height: 380px;
+    }
+
+    .mock-webpage-canvas {
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      border-right: 1px solid var(--slate-200);
+    }
+
+    .mock-art-block {
+      background: var(--white);
+      border: 1px solid var(--slate-200);
+      border-radius: 8px;
+      padding: 20px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .mock-skeleton-line {
+      height: 12px;
+      background: var(--slate-100);
+      border-radius: 3px;
+    }
+
+    .mock-popup-pane {
+      background: var(--white);
+      width: 340px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── REAL POPUP HEADER ─── */
+    .popup-hdr {
+      height: 48px;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--slate-200);
+    }
+
+    .popup-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .popup-brand img {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+    }
+
+    .popup-wm {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .popup-modes {
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .popup-mode-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: var(--radius-md);
+      border: 1px solid transparent;
+      background: var(--white);
+      text-align: left;
+    }
+
+    .popup-mode-card.primary {
+      background: var(--blue-100);
+      border-color: var(--blue-bd);
+    }
+
+    .popup-mode-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: var(--white);
+      border: 1px solid var(--slate-200);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--slate-700);
+      flex-shrink: 0;
+    }
+
+    .popup-mode-card.primary .popup-mode-icon {
+      background: var(--blue-600);
+      color: var(--white);
+      border: none;
+    }
+
+    .popup-mode-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--slate-900);
+    }
+
+    .popup-mode-desc {
+      font-size: 11px;
+      color: var(--slate-500);
+    }
+
+    /* ─── 5-STEP WORKFLOW STORY ─── */
+    .story-section {
+      padding: 96px 24px;
+      max-width: 1140px;
+      margin: 0 auto;
+    }
+
+    .section-header-center {
+      text-align: center;
+      max-width: 680px;
+      margin: 0 auto 64px;
+    }
+
+    .section-title {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.7px;
+      color: var(--slate-900);
+      margin-bottom: 12px;
+    }
+
+    .section-subtitle {
+      font-size: 16px;
+      color: var(--slate-600);
+      line-height: 1.6;
+    }
+
+    .story-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .story-card {
+      background: var(--white);
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      box-shadow: var(--shadow-xs);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+
+    .story-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--blue-bd);
+      box-shadow: var(--shadow-md);
+    }
+
+    .story-step-num {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--blue-600);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+
+    .story-step-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--slate-900);
+      letter-spacing: -0.4px;
+      margin-bottom: 10px;
+    }
+
+    .story-step-desc {
+      font-size: 14px;
+      color: var(--slate-600);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .story-pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: auto;
+    }
+
+    .story-pill {
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 3px 8px;
+      background: var(--slate-100);
+      color: var(--slate-700);
+      border-radius: var(--radius-sm);
+    }
+
+    /* ─── COMPARISON TABLE ─── */
+    .compare-section {
+      padding: 80px 24px;
+      background: var(--white);
+      border-top: 1px solid var(--slate-200);
+      border-bottom: 1px solid var(--slate-200);
+    }
+
+    .compare-table-wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      overflow-x: auto;
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-xs);
+    }
+
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13.5px;
+    }
+
+    .compare-table th {
+      background: var(--slate-50);
+      padding: 14px 18px;
+      font-weight: 700;
+      color: var(--slate-700);
+      border-bottom: 1px solid var(--slate-200);
+    }
+
+    .compare-table td {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--slate-100);
+      color: var(--slate-600);
+    }
+
+    .compare-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .compare-highlight {
+      background: var(--blue-50);
+      font-weight: 600;
+      color: var(--blue-600) !important;
+    }
+
+    /* ─── PRIVACY BANNER ─── */
+    .privacy-banner {
+      max-width: 1040px;
+      margin: 80px auto;
+      padding: 48px;
+      background: var(--blue-50);
+      border: 1px solid var(--blue-bd);
+      border-radius: var(--radius-xl);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+    }
+
+    .privacy-banner-text h3 {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--slate-900);
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .privacy-banner-text p {
+      font-size: 14.5px;
+      color: var(--slate-600);
+      line-height: 1.6;
+      max-width: 580px;
+    }
+
+    /* ─── FINAL CTA ─── */
+    .final-cta {
+      text-align: center;
+      padding: 80px 24px 100px;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .final-cta h2 {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--slate-900);
+      letter-spacing: -0.8px;
+      margin-bottom: 12px;
+    }
+
+    .final-cta p {
+      font-size: 16px;
+      color: var(--slate-600);
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 860px) {
+      .hero-h1 { font-size: 34px; }
+      .story-grid { grid-template-columns: 1fr; }
+      .mock-body-layout { grid-template-columns: 1fr; }
+      .mock-popup-pane { width: 100%; border-top: 1px solid var(--slate-200); }
+      .privacy-banner { flex-direction: column; padding: 28px 20px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- GLOBAL HEADER -->
+  <header class="site-header">
+    <div class="nav-container">
+      <a href="/" class="brand-link">
+        <img class="brand-logo" src="assets/icon-128.png" alt="GoFully Logo">
+        <span class="brand-wordmark">
+          <span class="wm-go">Go</span><span class="wm-full">Full</span><span class="wm-y">y</span>
+        </span>
+      </a>
+
+      <ul class="nav-menu">
+        <li><a href="/" class="nav-link active">Product</a></li>
+        <li><a href="#features" class="nav-link">Features</a></li>
+        <li><a href="/security" class="nav-link">Security</a></li>
+        <li><a href="/support" class="nav-link">Support</a></li>
+        <li><a href="/faq" class="nav-link">FAQ</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <a href="https://chromewebstore.google.com" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/>
+          </svg>
+          Add to Chrome
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-wrapper">
+    
+    <!-- HERO SECTION -->
+    <section class="hero">
+      <div class="hero-badge-wrap">
+        <span class="badge badge-blue">Chrome Extension Manifest V3</span>
+        <span class="badge badge-green">100% On-Device</span>
+      </div>
+      <h1 class="hero-h1">Capture anything.<br>Make it clear.</h1>
+      <p class="hero-p">
+        GoFully is a powerful browser extension for capturing webpages, extracting text, annotating screenshots, protecting sensitive information, and exporting polished results — all from your browser.
+      </p>
+      <div class="hero-ctas">
+        <a href="https://chromewebstore.google.com" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/>
+          </svg>
+          Add to Chrome — It's Free
+        </a>
+        <a href="#features" class="btn btn-secondary btn-lg">
+          See how it works ↓
+        </a>
+      </div>
+
+      <!-- HERO VISUAL: REAL GOFULLY POPUP MOCKUP -->
+      <div class="hero-preview-container">
+        <div class="mock-browser-bar">
+          <div class="mock-dots">
+            <div class="mock-dot mock-dot-r"></div>
+            <div class="mock-dot mock-dot-y"></div>
+            <div class="mock-dot mock-dot-g"></div>
+          </div>
+          <div class="mock-url-box">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            https://apple.com/macbook-pro — Active Tab
+          </div>
+        </div>
+
+        <div class="mock-body-layout">
+          <!-- Webpage Wireframe Preview -->
+          <div class="mock-webpage-canvas">
+            <div class="mock-art-block">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="mock-skeleton-line" style="width: 140px; height: 16px; background: var(--blue-100);"></div>
+                <div class="mock-skeleton-line" style="width: 80px;"></div>
+              </div>
+              <div class="mock-skeleton-line" style="width: 85%; height: 24px; margin: 12px 0 6px;"></div>
+              <div class="mock-skeleton-line" style="width: 60%;"></div>
+              <div style="height: 140px; background: var(--slate-100); border-radius: 6px; margin: 16px 0; display:flex; align-items:center; justify-content:center; color: var(--slate-400); font-size:12px; font-weight:600;">
+                Full-Page Document Viewport
+              </div>
+              <div class="mock-skeleton-line" style="width: 95%;"></div>
+              <div class="mock-skeleton-line" style="width: 75%;"></div>
+            </div>
+          </div>
+
+          <!-- Real Popup UI -->
+          <div class="mock-popup-pane">
+            <div class="popup-hdr">
+              <div class="popup-brand">
+                <img src="assets/icon-128.png" alt="GoFully">
+                <span class="popup-wm"><span class="wm-go">Go</span><span class="wm-full">Full</span><span class="wm-y">y</span></span>
+              </div>
+              <div style="display:flex; gap:4px;">
+                <span class="badge badge-blue" style="font-size:10px;">Ready</span>
+              </div>
+            </div>
+
+            <div class="popup-modes">
+              <!-- Mode 1 -->
+              <div class="popup-mode-card primary">
+                <div class="popup-mode-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                </div>
+                <div>
+                  <div class="popup-mode-title">Full Page</div>
+                  <div class="popup-mode-desc">Capture entire scrollable page</div>
+                </div>
+              </div>
+
+              <!-- Mode 2 -->
+              <div class="popup-mode-card">
+                <div class="popup-mode-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </div>
+                <div>
+                  <div class="popup-mode-title">Visible Area</div>
+                  <div class="popup-mode-desc">Instant current viewport snapshot</div>
+                </div>
+              </div>
+
+              <!-- Mode 3 -->
+              <div class="popup-mode-card">
+                <div class="popup-mode-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="3 3"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>
+                </div>
+                <div>
+                  <div class="popup-mode-title">Selected Area</div>
+                  <div class="popup-mode-desc">Custom crosshair drag selection</div>
+                </div>
+              </div>
+
+              <!-- Mode 4 -->
+              <div class="popup-mode-card">
+                <div class="popup-mode-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+                </div>
+                <div>
+                  <div class="popup-mode-title">Capture Text (OCR)</div>
+                  <div class="popup-mode-desc">Extract text from image/frame</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5-STEP WORKFLOW STORY -->
+    <section class="story-section" id="features">
+      <div class="section-header-center">
+        <span class="badge badge-blue" style="margin-bottom: 12px;">The Complete Workflow</span>
+        <h2 class="section-title">Everything You Need After the Capture</h2>
+        <p class="section-subtitle">
+          GoFully unifies capture, annotation, privacy redaction, on-device OCR, and export into one fast, seamless browser studio.
+        </p>
+      </div>
+
+      <div class="story-grid">
+        <!-- 01 — Capture -->
+        <div class="story-card">
+          <div class="story-step-num">01 — Capture</div>
+          <h3 class="story-step-title">Capture Webpages Exactly As Needed</h3>
+          <p class="story-step-desc">
+            Full Page, Visible Area, Selected Region, and CleanShot-style Scrolling Area capture modes give you the flexibility to capture any webpage layout without distortion.
+          </p>
+          <div class="story-pill-list">
+            <span class="story-pill">Full Page (CDP)</span>
+            <span class="story-pill">Visible Viewport</span>
+            <span class="story-pill">Selected Area</span>
+            <span class="story-pill">Scrolling Area</span>
+          </div>
+        </div>
+
+        <!-- 02 — Annotate -->
+        <div class="story-card">
+          <div class="story-step-num">02 — Annotate</div>
+          <h3 class="story-step-title">Turn Captures into Clear Explanations</h3>
+          <p class="story-step-desc">
+            Add curved arrows, callouts, shapes, Caveat handwriting text, spotlight focus overlays, and auto-incrementing step bubbles (1, 2, 3) to communicate visual ideas.
+          </p>
+          <div class="story-pill-list">
+            <span class="story-pill">Curved Arrows</span>
+            <span class="story-pill">Step Bubbles</span>
+            <span class="story-pill">Spotlight Mode</span>
+            <span class="story-pill">Cropper.js Presets</span>
+          </div>
+        </div>
+
+        <!-- 03 — Protect -->
+        <div class="story-card">
+          <div class="story-step-num">03 — Protect</div>
+          <h3 class="story-step-title">Redact Sensitive Information</h3>
+          <p class="story-step-desc">
+            Blur passwords, email addresses, or account figures before sharing. Choose from smooth Gaussian blur, mosaic pixelation, or solid blackout redaction blocks.
+          </p>
+          <div class="story-pill-list">
+            <span class="story-pill">Glass Smooth Blur</span>
+            <span class="story-pill">Mosaic Pixelate</span>
+            <span class="story-pill">Solid Blackout</span>
+          </div>
+        </div>
+
+        <!-- 04 — Extract -->
+        <div class="story-card">
+          <div class="story-step-num">04 — Extract</div>
+          <h3 class="story-step-title">Local OCR Text Extraction</h3>
+          <p class="story-step-desc">
+            Extract text directly from captured regions, video frames, diagrams, and locked web elements using local WebAssembly OCR. Instant clipboard copy.
+          </p>
+          <div class="story-pill-list">
+            <span class="story-pill">WebAssembly OCR</span>
+            <span class="story-pill">Zero Cloud Transmission</span>
+            <span class="story-pill">Auto Copy</span>
+          </div>
+        </div>
+
+        <!-- 05 — Export -->
+        <div class="story-card">
+          <div class="story-step-num">05 — Export</div>
+          <h3 class="story-step-title">Polished Export in Any Format</h3>
+          <p class="story-step-desc">
+            Copy images directly to your clipboard or download in Native Resolution, 1080p HD, 4K UHD, or auto-paginated A4 Multi-Page PDF documents.
+          </p>
+          <div class="story-pill-list">
+            <span class="story-pill">Clipboard Copy</span>
+            <span class="story-pill">4K PNG / JPG</span>
+            <span class="story-pill">Multi-Page PDF</span>
+          </div>
+        </div>
+
+        <!-- 06 — Privacy -->
+        <div class="story-card" style="background: var(--blue-50); border-color: var(--blue-bd);">
+          <div class="story-step-num" style="color: var(--blue-600);">Privacy Architecture</div>
+          <h3 class="story-step-title">Your Data Stays Under Your Control</h3>
+          <p class="story-step-desc">
+            Core capture and editing workflows run locally in your browser sandbox without requiring an account, cloud upload, or telemetry.
+          </p>
+          <div class="story-pill-list">
+            <a href="/security" style="font-size:12px; font-weight:700; color:var(--blue-600);">Learn about security →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPETITIVE COMPARISON TABLE -->
+    <section class="compare-section">
+      <div class="container">
+        <div class="section-header-center" style="margin-bottom: 40px;">
+          <span class="badge badge-gray" style="margin-bottom: 12px;">Feature Matrix</span>
+          <h2 class="section-title">Why Professionals Choose GoFully</h2>
+          <p class="section-subtitle">A direct comparison of core screenshot, OCR, and editing capabilities.</p>
+        </div>
+
+        <div class="compare-table-wrap">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>Feature / Standard</th>
+                <th>GoFullPage</th>
+                <th>Awesome Screenshot</th>
+                <th>Lightshot</th>
+                <th class="compare-highlight">GoFully</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Full-Page CDP Capture</strong></td>
+                <td>✅ Included</td>
+                <td>⚠️ Scroll only</td>
+                <td>❌ None</td>
+                <td class="compare-highlight">✅ CDP + Stitch Fallback</td>
+              </tr>
+              <tr>
+                <td><strong>On-Device OCR Text Extraction</strong></td>
+                <td>❌ None</td>
+                <td>⚠️ Paid cloud upload</td>
+                <td>❌ None</td>
+                <td class="compare-highlight">✅ Free Local WebAssembly</td>
+              </tr>
+              <tr>
+                <td><strong>Glass Blur &amp; Redaction</strong></td>
+                <td>❌ Paid only</td>
+                <td>⚠️ Basic pixel only</td>
+                <td>❌ None</td>
+                <td class="compare-highlight">✅ Glass, Pixel &amp; Blackout</td>
+              </tr>
+              <tr>
+                <td><strong>CleanShot-Style Annotations</strong></td>
+                <td>❌ Basic lines</td>
+                <td>⚠️ Standard shapes</td>
+                <td>❌ Minimal</td>
+                <td class="compare-highlight">✅ Curved arrows, steps &amp; spotlight</td>
+              </tr>
+              <tr>
+                <td><strong>Multi-Page PDF Export</strong></td>
+                <td>❌ Paid upgrade</td>
+                <td>❌ Paid upgrade</td>
+                <td>❌ None</td>
+                <td class="compare-highlight">✅ Included Free</td>
+              </tr>
+              <tr>
+                <td><strong>Account Required</strong></td>
+                <td>No</td>
+                <td>Yes (for features)</td>
+                <td>No</td>
+                <td class="compare-highlight">No Account Required</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRIVACY BANNER -->
+    <section class="container">
+      <div class="privacy-banner">
+        <div class="privacy-banner-text">
+          <h3>Your captures stay under your control.</h3>
+          <p>
+            GoFully is designed with privacy in mind. Core capture and editing workflows are designed to run locally in your browser, without requiring an account.
+          </p>
+        </div>
+        <div>
+          <a href="/privacy" class="btn btn-secondary">
+            Learn about privacy →
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="final-cta">
+      <h2>Capture less hassle. Get more done.</h2>
+      <p>
+        Capture webpages, explain ideas, extract text, protect sensitive information, and share better visuals with GoFully.
+      </p>
+      <a href="https://chromewebstore.google.com" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/>
+        </svg>
+        Add GoFully to Chrome — Free
+      </a>
+    </section>
+
+  </main>
+
+  <!-- GLOBAL FOOTER -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="/" class="brand-link">
+            <img class="brand-logo" src="assets/icon-128.png" alt="GoFully Logo">
+            <span class="brand-wordmark">
+              <span class="wm-go">Go</span><span class="wm-full">Full</span><span class="wm-y">y</span>
+            </span>
+          </a>
+          <p>
+            The all-in-one browser screenshot, OCR text extraction, and privacy-focused annotation studio. Built for precision and clarity.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Product</h4>
+          <ul class="footer-links">
+            <li><a href="/#features">Capture Modes</a></li>
+            <li><a href="/#features">Annotation Studio</a></li>
+            <li><a href="/#features">OCR Text Extraction</a></li>
+            <li><a href="/#features">Privacy Redaction</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <ul class="footer-links">
+            <li><a href="/help">Help Center</a></li>
+            <li><a href="/support">Support Guides</a></li>
+            <li><a href="/faq">FAQ</a></li>
+            <li><a href="/feedback">Send Feedback</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Trust &amp; Legal</h4>
+          <ul class="footer-links">
+            <li><a href="/privacy">Privacy Policy</a></li>
+            <li><a href="/security">Security Architecture</a></li>
+            <li><a href="/terms">Terms of Service</a></li>
+            <li><a href="https://github.com/MUZEEBURRAHAMAN/gofully-extension" target="_blank" rel="noopener noreferrer">GitHub Repository</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>GoFully © 2026 — 100% Client-Side Screenshot &amp; Annotation Studio.</div>
+        <div>All captures remain strictly under your local control.</div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

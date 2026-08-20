@@ -1,9 +1,14 @@
 {
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/feedback", "destination": "/dist/uninstall-feedback.html" },
+    { "source": "/", "destination": "/dist/index.html" },
+    { "source": "/privacy", "destination": "/dist/privacy.html" },
+    { "source": "/security", "destination": "/dist/security.html" },
+    { "source": "/terms", "destination": "/dist/terms.html" },
+    { "source": "/support", "destination": "/dist/support.html" },
+    { "source": "/faq", "destination": "/dist/faq.html" },
     { "source": "/help", "destination": "/dist/help.html" },
-    { "source": "/privacy", "destination": "/PRIVACY_POLICY.md" },
+    { "source": "/feedback", "destination": "/dist/uninstall-feedback.html" },
     { "source": "/(.*)", "destination": "/dist/$1" }
   ]
 }

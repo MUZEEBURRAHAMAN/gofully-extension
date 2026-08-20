@@ -124,6 +124,24 @@ writeFileSync(resolve(dist, "help.html"), helpFixed);
 const feedbackHtml = readFileSync(resolve(__dirname, "src/feedback/uninstall-feedback.html"), "utf8");
 writeFileSync(resolve(dist, "uninstall-feedback.html"), feedbackHtml);
 
+// Website Pages & Styles
+const siteFiles = [
+  "index.html",
+  "privacy.html",
+  "security.html",
+  "terms.html",
+  "support.html",
+  "faq.html",
+  "site.css"
+];
+
+for (const file of siteFiles) {
+  const srcPath = resolve(__dirname, `src/site/${file}`);
+  if (existsSync(srcPath)) {
+    writeFileSync(resolve(dist, file), readFileSync(srcPath, "utf8"));
+  }
+}
+
 // Offscreen HTML — replace .ts script reference with .js
 const offscreenHtml = readFileSync(resolve(__dirname, "src/offscreen/offscreen.html"), "utf8");
 const offscreenFixed = offscreenHtml.replace(
