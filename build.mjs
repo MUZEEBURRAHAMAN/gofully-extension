@@ -112,6 +112,14 @@ const settingsFixed = settingsHtml.replace(
 );
 writeFileSync(resolve(dist, "settings.html"), settingsFixed);
 
+// Help HTML — replace .ts script reference with .js
+const helpHtml = readFileSync(resolve(__dirname, "src/help/help.html"), "utf8");
+const helpFixed = helpHtml.replace(
+  /<script\s+src="help\.ts"\s+type="module"><\/script>/,
+  '<script type="module" src="help.js"></script>'
+);
+writeFileSync(resolve(dist, "help.html"), helpFixed);
+
 // Offscreen HTML — replace .ts script reference with .js
 const offscreenHtml = readFileSync(resolve(__dirname, "src/offscreen/offscreen.html"), "utf8");
 const offscreenFixed = offscreenHtml.replace(

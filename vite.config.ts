@@ -12,6 +12,7 @@ export default defineConfig({
         "service-worker": resolve(__dirname, "src/background/service-worker.ts"),
         popup: resolve(__dirname, "src/popup/popup.ts"),
         settings: resolve(__dirname, "src/settings/settings.ts"),
+        help: resolve(__dirname, "src/help/help.ts"),
         "canvas-editor": resolve(__dirname, "src/editor/canvas-editor.ts"),
         offscreen: resolve(__dirname, "src/offscreen/canvas-stitcher.ts"),
       },

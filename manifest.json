@@ -76,6 +76,7 @@
       "resources": [
         "offscreen.html",
         "editor.html",
+        "help.html",
         "assets/*",
         "scrolling-area-ui.js",
         "region-selector.js",

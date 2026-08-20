@@ -37,9 +37,13 @@ function playCaptureSound(): void {
   } catch { /* ignore */ }
 }
 
-// Settings button
+// Settings & Help buttons
 document.getElementById("settingsBtn")?.addEventListener("click", () => {
   chrome.runtime.openOptionsPage();
+});
+
+document.getElementById("helpBtn")?.addEventListener("click", () => {
+  chrome.tabs.create({ url: chrome.runtime.getURL("help.html") });
 });
 
 // Unsupported panel dismiss button ("Got it")
