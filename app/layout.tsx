@@ -9,6 +9,7 @@ export const metadata: Metadata = {
     "GoFully is a powerful Chrome extension for capturing full webpages, extracting text with local WebAssembly OCR, annotating screenshots, and exporting in 4K or PDF — 100% on-device.",
   icons: {
     icon: "/assets/icon-32.png",
+    shortcut: "/favicon.ico",
     apple: "/assets/icon-128.png",
   },
   openGraph: {
@@ -42,6 +43,36 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://gofully-extension.vercel.app/#software",
+      "name": "GoFully",
+      "applicationCategory": "BrowserApplication",
+      "operatingSystem": "Google Chrome, Chromium, Brave, Edge",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+      },
+      "description":
+        "High-performance Chrome extension for full-page scrolling screenshots, on-device WebAssembly OCR text extraction, CleanShot-grade visual annotations, and PDF/4K exports.",
+      "url": "https://gofully-extension.vercel.app/",
+      "installUrl": "https://chromewebstore.google.com",
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://gofully-extension.vercel.app/#website",
+      "url": "https://gofully-extension.vercel.app/",
+      "name": "GoFully",
+      "description":
+        "The complete web capture, local OCR, and visual annotation studio for Chrome.",
+    },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -49,6 +80,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="bg-[#070b14] text-slate-100 antialiased selection:bg-sky-500 selection:text-white">
         {children}
       </body>

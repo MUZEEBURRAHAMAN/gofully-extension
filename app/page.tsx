@@ -11,7 +11,7 @@ const FEATURES = [
     description:
       "Seamlessly capture full-height websites, complex dashboards, and infinite scroll feeds. GoFully automatically scrolls the page, waits for lazy-loaded content, suppresses sticky navigation bars, and composes a pixel-perfect high-res canvas with zero overlap.",
     footerPill: "AUTOMATED VIEWPORT STITCHING • ZERO OVERLAP",
-    image: "/features/feature-1.jpg",
+    image: "/features/feature-1.webp",
     alt: "Full-Page Scrolling Capture Showcase",
   },
   {
@@ -21,7 +21,7 @@ const FEATURES = [
     description:
       "Extract readable text, code snippets, and structured tables from any graphic or screen region in milliseconds. Embedded local WebAssembly models execute directly on your CPU with zero cloud transmission or network latency.",
     footerPill: "ON-DEVICE WASM ENGINE • ZERO LATENCY • 100% OFFLINE",
-    image: "/features/feature-2.jpg",
+    image: "/features/feature-2.webp",
     alt: "Local WebAssembly OCR Extraction Showcase",
   },
   {
@@ -31,7 +31,7 @@ const FEATURES = [
     description:
       "Mark up screenshots with auto-incrementing step bubbles, curved arrows, spotlight magnifiers, callouts, and geometric shapes. Instantly blur or pixelate sensitive API keys, passwords, and PII before sharing.",
     footerPill: "STEP MARKERS • ARROWS • SENSITIVE DATA REDACTION",
-    image: "/features/feature-3.jpg",
+    image: "/features/feature-3.webp",
     alt: "Visual Annotation Studio Showcase",
   },
   {
@@ -41,7 +41,7 @@ const FEATURES = [
     description:
       "Generate clean paginated multi-page PDF documents or download 4K crisp PNG and WebP files ready for presentations and client reports. Or copy directly to your system clipboard in a single stroke.",
     footerPill: "4K PNG • LOSSLESS WEBP • PAGINATED MULTI-PAGE PDF",
-    image: "/features/feature-4.jpg",
+    image: "/features/feature-4.webp",
     alt: "4K Lossless & PDF Export Showcase",
   },
 ];
