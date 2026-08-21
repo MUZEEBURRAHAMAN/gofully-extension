@@ -1,9 +1,11 @@
 import { defineConfig } from "vite";
 import { resolve } from "path";
+import react from "@vitejs/plugin-react";
 
 // Content scripts and service worker are built separately via build.mjs
 // This config handles the ES module entries (popup, settings, editor, service-worker)
 export default defineConfig({
+  plugins: [react()],
   build: {
     outDir: "dist",
     emptyOutDir: true,
