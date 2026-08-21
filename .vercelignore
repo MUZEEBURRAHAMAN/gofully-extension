@@ -1,0 +1,5 @@
+dist/
+.originkit/
+src/site/
+site.css
+index.html
