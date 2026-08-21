@@ -153,16 +153,10 @@ for (const file of siteFiles) {
   if (existsSync(srcPath)) {
     let content = readFileSync(srcPath, "utf8");
     if (file === "index.html") {
-      content = content.replace(
-        /\/src\/mount-landing-hero\.tsx/g,
-        "mount-landing-hero.js"
-      ).replace(
-        /src\/mount-landing-hero\.tsx/g,
-        "mount-landing-hero.js"
-      ).replace(
-        /<\/head>/,
-        '  <link rel="stylesheet" href="assets/mount-landing-hero.css">\n</head>'
-      );
+      content = content
+        .replace(/\/src\/site\/hero-matrix\.ts/g, "hero-matrix.js")
+        .replace(/src\/site\/hero-matrix\.ts/g, "hero-matrix.js")
+        .replace(/\/hero-matrix\.js/g, "hero-matrix.js");
     }
     writeFileSync(resolve(dist, file), content);
   }
