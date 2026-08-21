@@ -512,7 +512,86 @@
 <body>
 
   <!-- NEW HERO SECTION (DotMatrix Hero 26) -->
-  <div id="hero-26-mount"></div>
+  <div id="hero-26-mount">
+    <section class="ok-h26-hero" id="hero">
+      <nav class="ok-h26-nav">
+        <a href="/" class="ok-h26-logo" style="display: flex; align-items: center;">
+          <img
+            src="/gofully-wordmark.png"
+            alt="GoFully"
+            style="height: 32px; width: auto; object-fit: contain; display: block;"
+          />
+        </a>
+
+        <div class="ok-h26-nav-links">
+          <a class="ok-h26-nav-pill" href="/">Product</a>
+          <a class="ok-h26-nav-pill" href="#features">Features</a>
+          <a class="ok-h26-nav-pill" href="/security">Security</a>
+          <a class="ok-h26-nav-pill" href="/support">Support</a>
+          <a class="ok-h26-nav-pill" href="/faq">FAQ</a>
+          <a class="ok-h26-nav-pill ok-h26-nav-pill--cta" href="https://chromewebstore.google.com" target="_blank" rel="noreferrer">
+            <span class="ok-h26-nav-pill__label">Add to Chrome</span>
+            <span class="ok-h26-nav-pill__icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </span>
+          </a>
+        </div>
+
+        <button
+          class="ok-h26-nav-toggle"
+          type="button"
+          aria-label="Toggle menu"
+          id="ok-h26-mobile-toggle"
+          onclick="(function(){ var m = document.getElementById('ok-h26-mobile-dropdown'); if(m) m.style.display = m.style.display === 'none' ? 'flex' : 'none'; })()"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+        </button>
+      </nav>
+
+      <!-- Mobile Dropdown Menu -->
+      <div class="ok-h26-mobile-menu" id="ok-h26-mobile-dropdown" style="display: none;">
+        <a class="ok-h26-mobile-link" href="/" onclick="document.getElementById('ok-h26-mobile-dropdown').style.display='none'">Product</a>
+        <a class="ok-h26-mobile-link" href="#features" onclick="document.getElementById('ok-h26-mobile-dropdown').style.display='none'">Features</a>
+        <a class="ok-h26-mobile-link" href="/security" onclick="document.getElementById('ok-h26-mobile-dropdown').style.display='none'">Security</a>
+        <a class="ok-h26-mobile-link" href="/support" onclick="document.getElementById('ok-h26-mobile-dropdown').style.display='none'">Support</a>
+        <a class="ok-h26-mobile-link" href="/faq" onclick="document.getElementById('ok-h26-mobile-dropdown').style.display='none'">FAQ</a>
+        <a class="ok-h26-mobile-link ok-h26-mobile-link--cta" href="https://chromewebstore.google.com" target="_blank" rel="noreferrer" onclick="document.getElementById('ok-h26-mobile-dropdown').style.display='none'">
+          <span>Add to Chrome</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <div class="ok-h26-hero-media">
+        <div class="ok-h26-hero-media__bg" id="hero-dotmatrix-canvas-container"></div>
+        <div class="ok-h26-hero-media__gradient"></div>
+
+        <div class="ok-h26-hero-inner">
+          <div class="ok-h26-hero-content">
+            <div class="ok-h26-badge">CHROME EXTENSION MANIFEST V3 • 100% ON-DEVICE</div>
+            <div class="ok-h26-hero-text">
+              <h1>
+                Capture anything.<br>Make it clear.
+              </h1>
+              <p>
+                GoFully is a powerful browser extension for capturing webpages, extracting text, annotating screenshots, protecting sensitive information, and exporting polished results — all from your browser.
+              </p>
+            </div>
+            <div class="ok-h26-cta-row">
+              <a class="ok-h26-btn ok-h26-btn--white" href="https://chromewebstore.google.com" target="_blank" rel="noreferrer">
+                <span class="ok-h26-btn__label">Add to Chrome — It's Free</span>
+                <span class="ok-h26-btn__icon">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0b43a2" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </span>
+              </a>
+              <a class="ok-h26-btn ok-h26-btn--blue" href="#features">
+                <span class="ok-h26-btn__label">See how it works ↓</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
   <script type="module" src="/src/mount-landing-hero.tsx"></script>
 
   <main class="page-wrapper">
