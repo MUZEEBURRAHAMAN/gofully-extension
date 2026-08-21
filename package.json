@@ -4,9 +4,11 @@
   "description": "GoFully — Full page screenshot and screen capture Chrome extension with OCR, built-in editor, and PDF export",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "node build.mjs",
-    "preview": "vite preview"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "build:extension": "node build.mjs",
+    "dev:extension": "vite"
   },
   "keywords": [
     "chrome-extension",
@@ -31,6 +33,7 @@
     "fabric": "^7.4.0",
     "jspdf": "^4.2.1",
     "motion": "^13.1.1",
+    "next": "^16.3.2",
     "ogl": "^1.0.11",
     "postcss": "^8.5.26",
     "react": "^19.2.8",

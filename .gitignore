@@ -5,3 +5,4 @@ dist/
 .vite/
 .originkit/
 .vercel
+.next/
