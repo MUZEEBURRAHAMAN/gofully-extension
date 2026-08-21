@@ -1,11 +1,15 @@
-import { Renderer, Camera, Mesh, Plane, Program, RenderTarget } from "ogl";
+import {
+  Renderer,
+  Camera,
+  Mesh,
+  Plane,
+  Program,
+  RenderTarget as OglRenderTarget,
+  Texture,
+} from "ogl";
 
-function initDotmatrix() {
-  const container = document.getElementById("hero-dotmatrix-canvas-container");
-  if (!container) return;
-
-  try {
-    const perlinVertexShader = `#version 300 es
+// Dot Matrix — Originkit (Full WebGL Shader Implementation)
+const perlinVertexShader = `#version 300 es
 in vec2 uv;
 in vec2 position;
 out vec2 vUv;
@@ -14,7 +18,7 @@ void main() {
   gl_Position = vec4(position, 0., 1.);
 }`;
 
-    const perlinFragmentShader = `#version 300 es
+const perlinFragmentShader = `#version 300 es
 precision mediump float;
 uniform float uFrequency;
 uniform float uTime;
@@ -90,7 +94,7 @@ void main() {
   fragColor = vec4(rainbowColor, 1.0);
 }`;
 
-    const dotVertexShader = `#version 300 es
+const dotVertexShader = `#version 300 es
 in vec2 uv;
 in vec2 position;
 out vec2 vUv;
@@ -99,7 +103,7 @@ void main() {
   gl_Position = vec4(position, 0., 1.);
 }`;
 
-    const dotFragmentShader = `#version 300 es
+const dotFragmentShader = `#version 300 es
 precision highp float;
 uniform vec2 uResolution;
 uniform sampler2D uTexture;
@@ -109,6 +113,10 @@ uniform float uPaletteA[10];
 uniform float uCellSize;
 uniform float uGamma;
 uniform float uPaletteBias;
+uniform int uUseGlyphAtlas;
+uniform sampler2D uGlyphAtlas;
+uniform ivec2 uGlyphGrid;
+uniform int uCharCount;
 out vec4 fragColor;
 
 void main() {
@@ -121,11 +129,25 @@ void main() {
   float gray = 0.3 * col.r + 0.59 * col.g + 0.11 * col.b;
   gray = pow(clamp(gray, 0.0001, 1.0), uGamma);
 
-  vec2 cellUV = fract(pix / cell) - 0.5;
-  float dist = length(cellUV);
-  float radius = clamp(gray + uPaletteBias, 0.0, 1.0) * 0.5;
-  float aa = fwidth(dist) + 1e-4;
-  float mark = 1.0 - smoothstep(radius - aa, radius + aa, dist);
+  float mark = 0.0;
+  if (uUseGlyphAtlas == 1 && uCharCount > 0 && uGlyphGrid.x > 0 && uGlyphGrid.y > 0) {
+    float g = clamp(gray + uPaletteBias, 0.0, 1.0);
+    int idx = int(clamp(floor(g * float(uCharCount - 1) + 0.5), 0.0, float(uCharCount - 1)));
+    vec2 cellUV = fract(pix / cell);
+    vec2 grid = vec2(uGlyphGrid);
+    vec2 tileSize = 1.0 / grid;
+    float colIdx = float(idx % uGlyphGrid.x);
+    float rowIdx = floor(float(idx) / float(uGlyphGrid.x));
+    vec2 atlasUV = (vec2(colIdx, rowIdx) + cellUV) * tileSize;
+    vec3 glyphSample = texture(uGlyphAtlas, atlasUV).rgb;
+    mark = dot(glyphSample, vec3(0.299, 0.587, 0.114));
+  } else {
+    vec2 cellUV = fract(pix / cell) - 0.5;
+    float dist = length(cellUV);
+    float radius = clamp(gray + uPaletteBias, 0.0, 1.0) * 0.5;
+    float aa = fwidth(dist) + 1e-4;
+    mark = 1.0 - smoothstep(radius - aa, radius + aa, dist);
+  }
 
   float g2 = clamp(gray + uPaletteBias, 0.0, 1.0);
   int cnt = max(uPaletteCount, 1);
@@ -145,6 +167,118 @@ void main() {
   fragColor = vec4(dotCol, mark * dotOpacity);
 }`;
 
+type Rgba = { r: number; g: number; b: number; a: number };
+
+function parseColorToRgba(input: string): Rgba {
+  if (!input) return { r: 0, g: 0, b: 0, a: 1 };
+  const str = input.trim();
+  const rgbaMatch = str.match(
+    /rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+)\s*)?\)/i
+  );
+  if (rgbaMatch) {
+    const r = Math.max(0, Math.min(255, parseFloat(rgbaMatch[1]))) / 255;
+    const g = Math.max(0, Math.min(255, parseFloat(rgbaMatch[2]))) / 255;
+    const b = Math.max(0, Math.min(255, parseFloat(rgbaMatch[3]))) / 255;
+    const a =
+      rgbaMatch[4] !== undefined
+        ? Math.max(0, Math.min(1, parseFloat(rgbaMatch[4])))
+        : 1;
+    return { r, g, b, a };
+  }
+  const hex = str.replace(/^#/, "");
+  if (hex.length === 8) {
+    return {
+      r: parseInt(hex.slice(0, 2), 16) / 255,
+      g: parseInt(hex.slice(2, 4), 16) / 255,
+      b: parseInt(hex.slice(4, 6), 16) / 255,
+      a: parseInt(hex.slice(6, 8), 16) / 255,
+    };
+  }
+  if (hex.length === 6) {
+    return {
+      r: parseInt(hex.slice(0, 2), 16) / 255,
+      g: parseInt(hex.slice(2, 4), 16) / 255,
+      b: parseInt(hex.slice(4, 6), 16) / 255,
+      a: 1,
+    };
+  }
+  return { r: 0, g: 0, b: 0, a: 1 };
+}
+
+function colorStringToVec4(input: string): [number, number, number, number] {
+  const { r, g, b, a } = parseColorToRgba(input);
+  return [r, g, b, a];
+}
+
+function mapLinear(
+  value: number,
+  inMin: number,
+  inMax: number,
+  outMin: number,
+  outMax: number
+): number {
+  if (inMax === inMin) return outMin;
+  const t = (value - inMin) / (inMax - inMin);
+  return outMin + t * (outMax - outMin);
+}
+
+function mapFrequencyUiToShader(ui: number): number {
+  return mapLinear(ui, 1, 10, 0.3, 6);
+}
+function mapSpeedUiToShader(ui: number): number {
+  return ui * 0.05;
+}
+function mapCellSizeUiToShader(ui: number): number {
+  return mapLinear(ui, 1, 100, 6, 60);
+}
+function mapGammaUiToShader(ui: number): number {
+  return mapLinear(ui, 1, 20, 0.5, 8);
+}
+function mapPaletteBiasUiToShader(ui: number): number {
+  return ui * 0.05;
+}
+
+const MAX_COLORS = 10;
+// GoFully Electric Blue & Sky Cyan Palette
+const DEFAULT_COLORS = [
+  "#FFFFFF",
+  "#38BDF8",
+  "#3B82F6",
+  "#1D4ED8",
+  "#0B43A2",
+  "#070B14"
+];
+
+function buildPaletteUniforms(colorList: string[]) {
+  const rgb: [number, number, number][] = [];
+  const alpha: number[] = [];
+  for (let i = 0; i < MAX_COLORS; i++) {
+    const src = colorList[i];
+    if (src != null) {
+      const [r, g, b, a] = colorStringToVec4(src);
+      rgb.push([r, g, b]);
+      alpha.push(a);
+    } else {
+      rgb.push([0, 0, 0]);
+      alpha.push(0);
+    }
+  }
+  return { rgb, alpha };
+}
+
+function initDotmatrix() {
+  const container = document.getElementById("hero-dotmatrix-canvas-container");
+  if (!container) return;
+
+  try {
+    const frequency = 1;
+    const speed = 9;
+    const cellSize = 16;
+    const gamma = 4;
+    const paletteBias = 10;
+    const palette = buildPaletteUniforms(DEFAULT_COLORS);
+    const effPaletteCount = Math.min(MAX_COLORS, DEFAULT_COLORS.length);
+
     const renderer = new Renderer({
       dpr: Math.min(window.devicePixelRatio || 1, 2),
       alpha: true,
@@ -158,6 +292,56 @@ void main() {
 
     const camera = new Camera(gl, { near: 0.1, far: 100 });
     camera.position.set(0, 0, 3);
+
+    const perlinProgram = new Program(gl, {
+      vertex: perlinVertexShader,
+      fragment: perlinFragmentShader,
+      uniforms: {
+        uTime: { value: 0 },
+        uFrequency: { value: mapFrequencyUiToShader(frequency) },
+        uSpeed: { value: mapSpeedUiToShader(speed) },
+        uValue: { value: 1.0 },
+        uResolution: { value: [gl.canvas.width, gl.canvas.height] },
+      },
+    });
+
+    const perlinMesh = new Mesh(gl, {
+      geometry: new Plane(gl, { width: 2, height: 2 }),
+      program: perlinProgram,
+    });
+
+    const renderTarget = new OglRenderTarget(gl);
+
+    const dummyGlyphTexture = new Texture(gl, {
+      width: 1,
+      height: 1,
+      generateMipmaps: false,
+      flipY: false,
+    });
+
+    const dotProgram = new Program(gl, {
+      vertex: dotVertexShader,
+      fragment: dotFragmentShader,
+      uniforms: {
+        uResolution: { value: [gl.canvas.width, gl.canvas.height] },
+        uTexture: { value: renderTarget.texture },
+        uPaletteCount: { value: effPaletteCount },
+        uPalette: { value: palette.rgb },
+        uPaletteA: { value: palette.alpha },
+        uCellSize: { value: cellSize },
+        uGamma: { value: mapGammaUiToShader(gamma) },
+        uPaletteBias: { value: mapPaletteBiasUiToShader(paletteBias) },
+        uUseGlyphAtlas: { value: 0 },
+        uGlyphAtlas: { value: dummyGlyphTexture },
+        uGlyphGrid: { value: [0, 0] },
+        uCharCount: { value: 0 },
+      },
+    });
+
+    const dotMesh = new Mesh(gl, {
+      geometry: new Plane(gl, { width: 2, height: 2 }),
+      program: dotProgram,
+    });
 
     const doResize = () => {
       const width = container.clientWidth || window.innerWidth;
@@ -183,52 +367,6 @@ void main() {
       ro.observe(container);
     }
 
-    const perlinProgram = new Program(gl, {
-      vertex: perlinVertexShader,
-      fragment: perlinFragmentShader,
-      uniforms: {
-        uTime: { value: 0 },
-        uFrequency: { value: 2.0 },
-        uSpeed: { value: 0.15 },
-        uValue: { value: 1.0 },
-        uResolution: { value: [gl.canvas.width, gl.canvas.height] },
-      },
-    });
-    const perlinMesh = new Mesh(gl, {
-      geometry: new Plane(gl, { width: 2, height: 2 }),
-      program: perlinProgram,
-    });
-
-    const renderTarget = new RenderTarget(gl);
-
-    const paletteRgb = [
-      [30 / 255, 64 / 255, 175 / 255],
-      [59 / 255, 130 / 255, 246 / 255],
-      [56 / 255, 189 / 255, 248 / 255],
-      [255 / 255, 255 / 255, 255 / 255],
-      [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]
-    ];
-    const paletteA = [0.85, 0.95, 1.0, 1.0, 0, 0, 0, 0, 0, 0];
-
-    const dotProgram = new Program(gl, {
-      vertex: dotVertexShader,
-      fragment: dotFragmentShader,
-      uniforms: {
-        uResolution: { value: [gl.canvas.width, gl.canvas.height] },
-        uTexture: { value: renderTarget.texture },
-        uPaletteCount: { value: 4 },
-        uPalette: { value: paletteRgb },
-        uPaletteA: { value: paletteA },
-        uCellSize: { value: 16 },
-        uGamma: { value: 2.2 },
-        uPaletteBias: { value: 0.15 },
-      },
-    });
-    const dotMesh = new Mesh(gl, {
-      geometry: new Plane(gl, { width: 2, height: 2 }),
-      program: dotProgram,
-    });
-
     doResize();
     requestAnimationFrame(doResize);
 
@@ -240,13 +378,15 @@ void main() {
         lastTime = time;
         perlinProgram.uniforms.uTime.value = time * 0.001;
         renderer.render({ scene: perlinMesh, camera, target: renderTarget });
+        dotProgram.uniforms.uResolution.value = [gl.canvas.width, gl.canvas.height];
+        perlinProgram.uniforms.uResolution.value = [gl.canvas.width, gl.canvas.height];
         renderer.render({ scene: dotMesh, camera });
       }
       requestAnimationFrame(animate);
     }
     requestAnimationFrame(animate);
   } catch (err) {
-    console.warn("Dotmatrix WebGL initialization fallback:", err);
+    console.warn("Originkit Dotmatrix WebGL initialization fallback:", err);
   }
 }
 
@@ -255,4 +395,3 @@ if (document.readyState === "loading") {
 } else {
   initDotmatrix();
 }
-
