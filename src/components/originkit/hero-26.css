@@ -408,3 +408,54 @@
     font-size: 24px;
   }
 }
+
+/* ---------- Mobile Dropdown Menu ---------- */
+
+.ok-h26-mobile-menu {
+  position: absolute;
+  top: 72px;
+  left: 20px;
+  right: 20px;
+  z-index: 100;
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0px !important;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0px 16px 32px rgba(0, 0, 0, 0.6);
+}
+
+.ok-h26-mobile-link {
+  font-family: "Geist Mono", monospace;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  text-decoration: none;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background 0.15s ease;
+}
+
+.ok-h26-mobile-link:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.ok-h26-mobile-link--cta {
+  background: #fff;
+  color: #0b43a2;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.ok-h26-mobile-link--cta:hover {
+  background: #dbe8ff;
+}

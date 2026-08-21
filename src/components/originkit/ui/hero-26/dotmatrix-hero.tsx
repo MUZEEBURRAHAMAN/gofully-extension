@@ -896,14 +896,31 @@ export function DotmatrixHero({
   primaryCtaLabel = "Add to Chrome — It's Free",
   secondaryCtaLabel = "See how it works ↓",
 }: DotmatrixHeroProps = {}) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <section className="ok-h26-hero">
       <nav className="ok-h26-nav">
-        <div className="ok-h26-logo flex items-center">
-          <span style={{ fontFamily: "'Archivo', sans-serif", fontWeight: 900 }} className="text-2xl tracking-tighter text-white">
-            Gofully
-          </span>
-        </div>
+        <a href="/" className="ok-h26-logo flex items-center">
+          <img
+            src="/gofully-wordmark.png"
+            alt="GoFully"
+            style={{ height: "32px", width: "auto", objectFit: "contain", display: "block" }}
+            onError={(e) => {
+              // Fallback to stylized Archivo text if image fails
+              (e.currentTarget as HTMLElement).style.display = "none";
+              const parent = e.currentTarget.parentElement;
+              if (parent && !parent.querySelector(".fallback-wordmark")) {
+                const span = document.createElement("span");
+                span.className = "fallback-wordmark text-2xl tracking-tighter text-white font-extrabold";
+                span.style.fontFamily = "'Archivo', sans-serif";
+                span.innerText = "Gofully";
+                parent.appendChild(span);
+              }
+            }}
+          />
+        </a>
+
         <div className="ok-h26-nav-links">
           <a className="ok-h26-nav-pill" href="/">
             Product
@@ -927,14 +944,46 @@ export function DotmatrixHero({
             </span>
           </a>
         </div>
+
         <button
           className="ok-h26-nav-toggle"
           type="button"
-          aria-label="Open menu"
+          aria-label="Toggle menu"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
-          <img src={asset("list.svg")} alt="" />
+          <img src={asset("list.svg")} alt="Menu" />
         </button>
       </nav>
+
+      {mobileMenuOpen && (
+        <div className="ok-h26-mobile-menu">
+          <a className="ok-h26-mobile-link" href="/" onClick={() => setMobileMenuOpen(false)}>
+            Product
+          </a>
+          <a className="ok-h26-mobile-link" href="#features" onClick={() => setMobileMenuOpen(false)}>
+            Features
+          </a>
+          <a className="ok-h26-mobile-link" href="/security" onClick={() => setMobileMenuOpen(false)}>
+            Security
+          </a>
+          <a className="ok-h26-mobile-link" href="/support" onClick={() => setMobileMenuOpen(false)}>
+            Support
+          </a>
+          <a className="ok-h26-mobile-link" href="/faq" onClick={() => setMobileMenuOpen(false)}>
+            FAQ
+          </a>
+          <a
+            className="ok-h26-mobile-link ok-h26-mobile-link--cta"
+            href="https://chromewebstore.google.com"
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <span>Add to Chrome</span>
+            <img src={asset("arrow-right.svg")} alt="" style={{ width: "16px", height: "16px" }} />
+          </a>
+        </div>
+      )}
 
       <div className="ok-h26-hero-media">
         <div className="ok-h26-hero-media__bg">
