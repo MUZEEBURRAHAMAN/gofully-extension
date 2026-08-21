@@ -4,6 +4,10 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  serverExternalPackages: ["fabric", "canvas", "tesseract.js", "jspdf", "cropperjs"],
+  typescript: {
+    ignoreBuildErrors: false,
+  },
 };
 
 export default nextConfig;
