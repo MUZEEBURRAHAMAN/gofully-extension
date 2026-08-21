@@ -17,7 +17,7 @@ export function SiteFooter() {
               The high-performance in-browser screenshot studio with local WebAssembly OCR, full-page scrolling capture, CleanShot visual annotations, and PDF exports.
             </p>
             <div className="mt-6 flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-emerald-400">
-              <span className="inline-block h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="inline-block h-2 w-2 bg-emerald-500 animate-pulse" />
               100% On-Device Sandbox • Zero Cloud Telemetry
             </div>
           </div>
@@ -26,7 +26,7 @@ export function SiteFooter() {
             <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-200">
               Product & Security
             </h4>
-            <ul className="mt-4 space-y-2.5 text-sm">
+            <ul className="mt-4 space-y-2.5 text-xs font-mono uppercase">
               <li>
                 <Link href="/#features" className="transition-colors hover:text-white">
                   Full Page Capture
@@ -59,7 +59,7 @@ export function SiteFooter() {
             <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-200">
               Support & Legal
             </h4>
-            <ul className="mt-4 space-y-2.5 text-sm">
+            <ul className="mt-4 space-y-2.5 text-xs font-mono uppercase">
               <li>
                 <Link href="/support" className="transition-colors hover:text-white">
                   Help & Contact Desk

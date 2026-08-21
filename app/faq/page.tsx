@@ -49,6 +49,7 @@ const ALL_FAQS = [
 export default function FAQPage() {
   const [openMap, setOpenMap] = useState<{ [key: string]: boolean }>({
     "0-0": true,
+    "1-0": true,
   });
 
   const toggle = (id: string) => {
@@ -59,23 +60,24 @@ export default function FAQPage() {
     <div className="min-h-screen bg-[#070b14] text-slate-100 flex flex-col justify-between">
       <SiteNav />
 
-      <main className="mx-auto max-w-4xl px-6 py-20 lg:px-8 flex-1">
-        <div className="text-center max-w-2xl mx-auto">
-          <span className="inline-block rounded-full bg-sky-500/10 border border-sky-500/30 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-wider text-sky-400">
+      <main className="mx-auto w-full max-w-6xl px-6 py-20 lg:px-8 flex-1">
+        <div className="text-center max-w-3xl mx-auto">
+          <span className="inline-block bg-[#000] border border-slate-700 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-wider text-sky-400">
             Knowledge Base
           </span>
-          <h1 className="mt-4 text-3xl font-extrabold text-white sm:text-4xl">
+          <h1 className="mt-4 text-3xl font-extrabold text-white sm:text-5xl tracking-tight">
             Frequently Asked Questions
           </h1>
-          <p className="mt-3 text-base text-slate-400">
+          <p className="mt-4 text-base text-slate-400">
             Find answers to common questions about features, privacy, and workflows.
           </p>
         </div>
 
-        <div className="mt-14 space-y-10">
+        <div className="mt-16 space-y-12">
           {ALL_FAQS.map((group, gIdx) => (
             <div key={gIdx} className="space-y-4">
-              <h2 className="text-sm font-mono font-bold uppercase tracking-wider text-sky-400">
+              <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-sky-400 flex items-center gap-2">
+                <span className="inline-block h-1.5 w-1.5 bg-sky-400" />
                 {group.category}
               </h2>
               <div className="space-y-3">
@@ -85,20 +87,20 @@ export default function FAQPage() {
                   return (
                     <div
                       key={iIdx}
-                      className="rounded-lg border border-slate-800 bg-slate-900/40 backdrop-blur overflow-hidden transition-colors hover:border-slate-700"
+                      className="border border-slate-800 bg-[#0d1424] transition-colors hover:border-slate-700"
                     >
                       <button
                         type="button"
                         onClick={() => toggle(id)}
-                        className="w-full flex items-center justify-between p-5 text-left font-medium text-white"
+                        className="w-full flex items-center justify-between p-6 text-left font-medium text-white cursor-pointer"
                       >
                         <span className="text-base font-semibold">{item.q}</span>
-                        <span className="ml-4 flex h-6 w-6 items-center justify-center rounded-full bg-slate-800 text-slate-300 text-sm font-bold">
+                        <span className="ml-4 flex h-6 w-6 items-center justify-center border border-slate-700 bg-slate-800/80 text-slate-300 text-sm font-bold font-mono">
                           {isOpen ? "−" : "+"}
                         </span>
                       </button>
                       {isOpen && (
-                        <div className="px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-slate-800/60 pt-3">
+                        <div className="px-6 pb-6 text-sm text-slate-300 leading-relaxed border-t border-slate-800/80 pt-4">
                           {item.a}
                         </div>
                       )}

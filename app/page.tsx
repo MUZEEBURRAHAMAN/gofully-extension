@@ -39,10 +39,10 @@ export default function HomePage() {
       <section id="features" className="relative py-28 px-6 lg:px-8 border-t border-slate-800/80 bg-[#070b14]">
         <div className="mx-auto max-w-7xl">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="inline-block rounded-full bg-sky-500/10 border border-sky-500/30 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-wider text-sky-400">
+            <span className="inline-block bg-[#000] border border-slate-700 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-wider text-sky-400">
               Complete Capture Studio
             </span>
-            <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl text-white">
+            <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-5xl text-white">
               Engineered for Speed, Privacy & Precision
             </h2>
             <p className="mt-4 text-base text-slate-400">
@@ -52,8 +52,8 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Feature 1: Full-Height CDP Capture */}
-            <div className="group rounded-xl border border-slate-800 bg-slate-900/40 p-8 backdrop-blur transition-all duration-200 hover:border-sky-500/50 hover:bg-slate-900/70">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400">
+            <div className="group border border-slate-800 bg-[#0d1424] p-8 transition-all duration-200 hover:border-sky-500/50">
+              <div className="flex h-12 w-12 items-center justify-center border border-sky-500/30 bg-sky-500/10 text-sky-400">
                 <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -66,8 +66,8 @@ export default function HomePage() {
             </div>
 
             {/* Feature 2: Local WASM OCR */}
-            <div className="group rounded-xl border border-slate-800 bg-slate-900/40 p-8 backdrop-blur transition-all duration-200 hover:border-sky-500/50 hover:bg-slate-900/70">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400">
+            <div className="group border border-slate-800 bg-[#0d1424] p-8 transition-all duration-200 hover:border-sky-500/50">
+              <div className="flex h-12 w-12 items-center justify-center border border-sky-500/30 bg-sky-500/10 text-sky-400">
                 <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
@@ -79,8 +79,8 @@ export default function HomePage() {
             </div>
 
             {/* Feature 3: Visual Annotation Studio */}
-            <div className="group rounded-xl border border-slate-800 bg-slate-900/40 p-8 backdrop-blur transition-all duration-200 hover:border-sky-500/50 hover:bg-slate-900/70">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400">
+            <div className="group border border-slate-800 bg-[#0d1424] p-8 transition-all duration-200 hover:border-sky-500/50">
+              <div className="flex h-12 w-12 items-center justify-center border border-sky-500/30 bg-sky-500/10 text-sky-400">
                 <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                 </svg>
@@ -92,8 +92,8 @@ export default function HomePage() {
             </div>
 
             {/* Feature 4: Privacy & Redaction */}
-            <div className="group rounded-xl border border-slate-800 bg-slate-900/40 p-8 backdrop-blur transition-all duration-200 hover:border-sky-500/50 hover:bg-slate-900/70">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400">
+            <div className="group border border-slate-800 bg-[#0d1424] p-8 transition-all duration-200 hover:border-sky-500/50">
+              <div className="flex h-12 w-12 items-center justify-center border border-sky-500/30 bg-sky-500/10 text-sky-400">
                 <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
@@ -105,8 +105,8 @@ export default function HomePage() {
             </div>
 
             {/* Feature 5: Multi-Format 4K Export */}
-            <div className="group rounded-xl border border-slate-800 bg-slate-900/40 p-8 backdrop-blur transition-all duration-200 hover:border-sky-500/50 hover:bg-slate-900/70">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400">
+            <div className="group border border-slate-800 bg-[#0d1424] p-8 transition-all duration-200 hover:border-sky-500/50">
+              <div className="flex h-12 w-12 items-center justify-center border border-sky-500/30 bg-sky-500/10 text-sky-400">
                 <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
@@ -118,8 +118,8 @@ export default function HomePage() {
             </div>
 
             {/* Feature 6: Zero Latency Performance */}
-            <div className="group rounded-xl border border-slate-800 bg-slate-900/40 p-8 backdrop-blur transition-all duration-200 hover:border-sky-500/50 hover:bg-slate-900/70">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400">
+            <div className="group border border-slate-800 bg-[#0d1424] p-8 transition-all duration-200 hover:border-sky-500/50">
+              <div className="flex h-12 w-12 items-center justify-center border border-sky-500/30 bg-sky-500/10 text-sky-400">
                 <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
@@ -135,7 +135,7 @@ export default function HomePage() {
 
       {/* PRIVACY GUARANTEE BANNER */}
       <section className="py-20 px-6 lg:px-8 bg-[#0a1020] border-y border-slate-800">
-        <div className="mx-auto max-w-5xl rounded-2xl border border-sky-500/30 bg-sky-950/20 p-8 lg:p-12 flex flex-col md:flex-row items-center justify-between gap-8 backdrop-blur">
+        <div className="mx-auto max-w-6xl border border-sky-500/30 bg-sky-950/20 p-8 lg:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
           <div>
             <div className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-sky-400">
               <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
@@ -143,10 +143,10 @@ export default function HomePage() {
               </svg>
               Privacy & Local Guarantee
             </div>
-            <h3 className="mt-2 text-2xl font-extrabold text-white sm:text-3xl">
+            <h3 className="mt-2 text-2xl font-extrabold text-white sm:text-4xl tracking-tight">
               100% In-Browser. No Cloud Storage.
             </h3>
-            <p className="mt-3 text-sm text-slate-300 max-w-xl leading-relaxed">
+            <p className="mt-3 text-sm text-slate-300 max-w-2xl leading-relaxed">
               Unlike cloud capture tools that upload your private screenshots to remote servers, GoFully operates entirely within your browser sandbox. Your data remains strictly on your device.
             </p>
           </div>
@@ -154,7 +154,7 @@ export default function HomePage() {
             href="https://chromewebstore.google.com"
             target="_blank"
             rel="noreferrer"
-            className="whitespace-nowrap rounded-md bg-white px-6 py-3 text-xs font-mono font-bold uppercase tracking-wider text-slate-900 shadow-xl transition-all hover:bg-slate-200"
+            className="whitespace-nowrap border border-white bg-white px-6 py-3 text-xs font-mono font-bold uppercase tracking-wider text-slate-900 shadow-xl transition-all hover:bg-slate-200 cursor-pointer"
           >
             Add to Chrome Free →
           </a>
@@ -162,12 +162,12 @@ export default function HomePage() {
       </section>
 
       {/* FAQ SECTION */}
-      <section id="faq" className="py-24 px-6 lg:px-8 max-w-4xl mx-auto">
+      <section id="faq" className="py-24 px-6 lg:px-8 max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <span className="inline-block rounded-full bg-sky-500/10 border border-sky-500/30 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-wider text-sky-400">
+          <span className="inline-block bg-[#000] border border-slate-700 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-wider text-sky-400">
             Frequently Asked Questions
           </span>
-          <h2 className="mt-4 text-3xl font-extrabold text-white">Everything You Need to Know</h2>
+          <h2 className="mt-4 text-3xl font-extrabold text-white sm:text-5xl tracking-tight">Everything You Need to Know</h2>
         </div>
 
         <div className="space-y-4">
@@ -176,20 +176,20 @@ export default function HomePage() {
             return (
               <div
                 key={idx}
-                className="rounded-lg border border-slate-800 bg-slate-900/40 backdrop-blur overflow-hidden transition-colors hover:border-slate-700"
+                className="border border-slate-800 bg-[#0d1424] overflow-hidden transition-colors hover:border-slate-700"
               >
                 <button
                   type="button"
                   onClick={() => setOpenFaq(isOpen ? null : idx)}
-                  className="w-full flex items-center justify-between p-5 text-left font-medium text-white"
+                  className="w-full flex items-center justify-between p-6 text-left font-medium text-white cursor-pointer"
                 >
                   <span className="text-base font-semibold">{item.q}</span>
-                  <span className="ml-4 flex h-6 w-6 items-center justify-center rounded-full bg-slate-800 text-slate-300 text-sm font-bold">
+                  <span className="ml-4 flex h-6 w-6 items-center justify-center border border-slate-700 bg-slate-800/80 text-slate-300 text-sm font-bold font-mono">
                     {isOpen ? "−" : "+"}
                   </span>
                 </button>
                 {isOpen && (
-                  <div className="px-5 pb-5 text-sm text-slate-400 leading-relaxed border-t border-slate-800/60 pt-3">
+                  <div className="px-6 pb-6 text-sm text-slate-300 leading-relaxed border-t border-slate-800/80 pt-4">
                     {item.a}
                   </div>
                 )}
@@ -202,7 +202,7 @@ export default function HomePage() {
       {/* FINAL CALL TO ACTION */}
       <section className="py-24 px-6 lg:px-8 text-center border-t border-slate-800 bg-gradient-to-b from-[#070b14] to-[#040812]">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
+          <h2 className="text-3xl font-extrabold text-white sm:text-5xl tracking-tight">
             Ready to Capture Smarter?
           </h2>
           <p className="mt-4 text-base text-slate-400">
@@ -213,7 +213,7 @@ export default function HomePage() {
               href="https://chromewebstore.google.com"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-6 py-3 text-xs font-mono font-bold uppercase tracking-wider text-white shadow-lg shadow-blue-600/30 transition-all hover:bg-blue-500"
+              className="inline-flex items-center gap-2 border border-blue-500 bg-blue-600 px-6 py-3.5 text-xs font-mono font-bold uppercase tracking-wider text-white shadow-lg shadow-blue-600/30 transition-all hover:bg-blue-500 cursor-pointer"
             >
               <span>Add to Chrome — It's Free</span>
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -20,25 +20,25 @@ export function SiteNav() {
         <nav className="hidden items-center gap-6 md:flex">
           <Link
             href="/#features"
-            className="text-sm font-medium text-slate-300 transition-colors hover:text-white"
+            className="text-xs font-mono font-semibold uppercase tracking-wider text-slate-300 transition-colors hover:text-white"
           >
             Features
           </Link>
           <Link
             href="/security"
-            className="text-sm font-medium text-slate-300 transition-colors hover:text-white"
+            className="text-xs font-mono font-semibold uppercase tracking-wider text-slate-300 transition-colors hover:text-white"
           >
             Security
           </Link>
           <Link
             href="/support"
-            className="text-sm font-medium text-slate-300 transition-colors hover:text-white"
+            className="text-xs font-mono font-semibold uppercase tracking-wider text-slate-300 transition-colors hover:text-white"
           >
             Support
           </Link>
           <Link
             href="/faq"
-            className="text-sm font-medium text-slate-300 transition-colors hover:text-white"
+            className="text-xs font-mono font-semibold uppercase tracking-wider text-slate-300 transition-colors hover:text-white"
           >
             FAQ
           </Link>
@@ -46,7 +46,7 @@ export function SiteNav() {
             href="https://chromewebstore.google.com"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white shadow-lg shadow-blue-500/20 transition-all hover:bg-blue-500"
+            className="inline-flex items-center gap-2 border border-blue-500 bg-blue-600 px-4 py-2 text-xs font-mono font-bold uppercase tracking-wider text-white shadow-lg shadow-blue-500/20 transition-all hover:bg-blue-500"
           >
             <span>Add to Chrome</span>
             <svg
@@ -68,7 +68,7 @@ export function SiteNav() {
         <button
           type="button"
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="flex h-10 w-10 items-center justify-center rounded-md border border-slate-700 bg-slate-800/50 text-slate-300 md:hidden"
+          className="flex h-10 w-10 items-center justify-center border border-slate-700 bg-slate-800/50 text-slate-300 md:hidden"
           aria-label="Toggle Navigation"
         >
           <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -83,28 +83,28 @@ export function SiteNav() {
             <Link
               href="/#features"
               onClick={() => setMobileOpen(false)}
-              className="rounded-md px-3 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800/60 hover:text-white"
+              className="px-3 py-2 text-xs font-mono font-semibold uppercase tracking-wider text-slate-300 hover:bg-slate-800/60 hover:text-white"
             >
               Features
             </Link>
             <Link
               href="/security"
               onClick={() => setMobileOpen(false)}
-              className="rounded-md px-3 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800/60 hover:text-white"
+              className="px-3 py-2 text-xs font-mono font-semibold uppercase tracking-wider text-slate-300 hover:bg-slate-800/60 hover:text-white"
             >
               Security
             </Link>
             <Link
               href="/support"
               onClick={() => setMobileOpen(false)}
-              className="rounded-md px-3 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800/60 hover:text-white"
+              className="px-3 py-2 text-xs font-mono font-semibold uppercase tracking-wider text-slate-300 hover:bg-slate-800/60 hover:text-white"
             >
               Support
             </Link>
             <Link
               href="/faq"
               onClick={() => setMobileOpen(false)}
-              className="rounded-md px-3 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800/60 hover:text-white"
+              className="px-3 py-2 text-xs font-mono font-semibold uppercase tracking-wider text-slate-300 hover:bg-slate-800/60 hover:text-white"
             >
               FAQ
             </Link>
@@ -112,7 +112,7 @@ export function SiteNav() {
               href="https://chromewebstore.google.com"
               target="_blank"
               rel="noreferrer"
-              className="mt-2 inline-flex items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-white"
+              className="mt-2 inline-flex items-center justify-center gap-2 border border-blue-500 bg-blue-600 px-4 py-2.5 text-xs font-mono font-bold uppercase tracking-wider text-white"
             >
               <span>Add to Chrome</span>
               <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
