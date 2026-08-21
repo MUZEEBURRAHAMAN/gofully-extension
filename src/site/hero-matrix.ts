@@ -188,9 +188,9 @@ void main() {
       fragment: perlinFragmentShader,
       uniforms: {
         uTime: { value: 0 },
-        uFrequency: { value: 1.5 },
-        uSpeed: { value: 0.1 },
-        uValue: { value: 1 },
+        uFrequency: { value: 2.0 },
+        uSpeed: { value: 0.15 },
+        uValue: { value: 1.0 },
         uResolution: { value: [gl.canvas.width, gl.canvas.height] },
       },
     });
@@ -202,12 +202,13 @@ void main() {
     const renderTarget = new RenderTarget(gl);
 
     const paletteRgb = [
-      [1/255, 5/255, 15/255],
-      [5/255, 32/255, 84/255],
-      [11/255, 67/255, 162/255],
-      [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]
+      [30 / 255, 64 / 255, 175 / 255],
+      [59 / 255, 130 / 255, 246 / 255],
+      [56 / 255, 189 / 255, 248 / 255],
+      [255 / 255, 255 / 255, 255 / 255],
+      [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]
     ];
-    const paletteA = [1, 1, 1, 0, 0, 0, 0, 0, 0, 0];
+    const paletteA = [0.85, 0.95, 1.0, 1.0, 0, 0, 0, 0, 0, 0];
 
     const dotProgram = new Program(gl, {
       vertex: dotVertexShader,
@@ -215,12 +216,12 @@ void main() {
       uniforms: {
         uResolution: { value: [gl.canvas.width, gl.canvas.height] },
         uTexture: { value: renderTarget.texture },
-        uPaletteCount: { value: 3 },
+        uPaletteCount: { value: 4 },
         uPalette: { value: paletteRgb },
         uPaletteA: { value: paletteA },
-        uCellSize: { value: 12 },
-        uGamma: { value: 3 },
-        uPaletteBias: { value: 0.4 },
+        uCellSize: { value: 16 },
+        uGamma: { value: 2.2 },
+        uPaletteBias: { value: 0.15 },
       },
     });
     const dotMesh = new Mesh(gl, {
