@@ -9,6 +9,8 @@
     { "source": "/faq", "destination": "/dist/faq.html" },
     { "source": "/help", "destination": "/dist/help.html" },
     { "source": "/feedback", "destination": "/dist/uninstall-feedback.html" },
+    { "source": "/robots.txt", "destination": "/dist/robots.txt" },
+    { "source": "/sitemap.xml", "destination": "/dist/sitemap.xml" },
     { "source": "/(.*)", "destination": "/dist/$1" }
   ]
 }

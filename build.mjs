@@ -45,9 +45,16 @@ for (const name of contentScripts) {
   });
 }
 
-// Step 3: Copy manifest.json
-console.log("Step 3: Copying manifest.json...");
+// Step 3: Copy manifest.json & SEO files
+console.log("Step 3: Copying manifest.json, robots.txt, sitemap.xml...");
 cpSync(resolve(__dirname, "manifest.json"), resolve(dist, "manifest.json"));
+
+if (existsSync(resolve(__dirname, "public/robots.txt"))) {
+  cpSync(resolve(__dirname, "public/robots.txt"), resolve(dist, "robots.txt"));
+}
+if (existsSync(resolve(__dirname, "public/sitemap.xml"))) {
+  cpSync(resolve(__dirname, "public/sitemap.xml"), resolve(dist, "sitemap.xml"));
+}
 
 // Step 4: Copy assets (icons)
 console.log("Step 4: Copying assets...");

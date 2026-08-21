@@ -17,8 +17,82 @@
   <!-- Fonts & Styles -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Archivo:wght@800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="site.css">
+
+  <!-- JSON-LD Structured Data for Technical SEO, AEO & GEO -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://gofully-extension.vercel.app/#software",
+        "name": "GoFully",
+        "applicationCategory": "BrowserApplication",
+        "operatingSystem": "Google Chrome, Chromium, Brave, Edge",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "description": "Chrome browser extension for capturing full-page screenshots, scrolling areas, annotating with shapes & arrows, redacting sensitive information with blur/pixelate, and extracting text using local WebAssembly OCR.",
+        "url": "https://gofully-extension.vercel.app/",
+        "installUrl": "https://chromewebstore.google.com"
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://gofully-extension.vercel.app/#website",
+        "url": "https://gofully-extension.vercel.app/",
+        "name": "GoFully",
+        "description": "The complete web capture, local OCR, and visual annotation studio for Chrome.",
+        "publisher": {
+          "@id": "https://gofully-extension.vercel.app/#organization"
+        }
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://gofully-extension.vercel.app/#organization",
+        "name": "GoFully Inc.",
+        "url": "https://gofully-extension.vercel.app/",
+        "logo": "https://gofully-extension.vercel.app/assets/icon-128.png",
+        "sameAs": [
+          "https://github.com/MUZEEBURRAHAMAN/gofully-extension"
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://gofully-extension.vercel.app/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is GoFully?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "GoFully is a Chrome browser extension designed for capturing full-page screenshots, selected regions, and scrolling webpage areas, annotating captures with visual shapes and text, redacting credentials with blur/pixelation, and extracting text using on-device WebAssembly OCR."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I take a full-page screenshot in Chrome with GoFully?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Install GoFully from the Chrome Web Store, click the GoFully extension icon or press Alt+Shift+F (Option+Shift+F on Mac), and GoFully will capture the entire scrollable webpage into a high-resolution image."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How does GoFully extract text from screenshots (OCR)?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "GoFully uses an on-device WebAssembly Tesseract OCR worker that processes captured images locally in your browser sandbox, recognizing text instantly without sending data to external cloud servers."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
 
   <style>
     /* ─── HERO SECTION ─── */

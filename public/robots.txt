@@ -1,0 +1,22 @@
+# Robots.txt for GoFully (https://gofully-extension.vercel.app)
+User-agent: *
+Allow: /
+Disallow: /scratch/
+
+# Search Engine & AI Web Crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+Sitemap: https://gofully-extension.vercel.app/sitemap.xml
