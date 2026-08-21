@@ -1,10 +1,8 @@
 // Delivered by Originkit · stack: nextjs · styling: tailwind
 "use client";
 
-"use client";
-
 /* —— Dotted WebGL background (inlined; avoids nested ui/ publish) —— */
-import { useEffect, useRef, type CSSProperties } from "react";
+import { useState, useEffect, useRef, type CSSProperties } from "react";
 import {
     Renderer,
     Camera,

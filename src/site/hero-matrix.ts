@@ -8,7 +8,7 @@ import {
   Texture,
 } from "ogl";
 
-// Dot Matrix — Originkit (Full WebGL Shader Implementation)
+// Dot Matrix — Originkit (Hero-26 Exact Shader & Uniforms)
 const perlinVertexShader = `#version 300 es
 in vec2 uv;
 in vec2 position;
@@ -166,16 +166,37 @@ function parseColorToRgba(input: string): Rgba {
   return { r: 0, g: 0, b: 0, a: 1 };
 }
 
+function mapLinear(
+  value: number,
+  inMin: number,
+  inMax: number,
+  outMin: number,
+  outMax: number
+): number {
+  if (inMax === inMin) return outMin;
+  const t = (value - inMin) / (inMax - inMin);
+  return outMin + t * (outMax - outMin);
+}
+
+function mapFrequencyUiToShader(ui: number): number {
+  return mapLinear(ui, 1, 10, 0.3, 6);
+}
+function mapSpeedUiToShader(ui: number): number {
+  return ui * 0.05;
+}
+function mapCellSizeUiToShader(ui: number): number {
+  return mapLinear(ui, 1, 100, 6, 60);
+}
+function mapGammaUiToShader(ui: number): number {
+  return mapLinear(ui, 1, 20, 0.5, 8);
+}
+function mapPaletteBiasUiToShader(ui: number): number {
+  return ui * 0.05;
+}
+
 const MAX_COLORS = 10;
-// Exact electric cobalt & royal blue wave palette matching Originkit reference
-const HERO_COLORS = [
-  "#002288",
-  "#0044EE",
-  "#0066FF",
-  "#2980FF",
-  "#38BDF8",
-  "#FFFFFF"
-];
+// Originkit Hero-26 exact color palette
+const HERO_COLORS = ["#01050f", "#052054", "#0b43a2"];
 
 function buildPaletteUniforms(colorList: string[]) {
   const rgb: [number, number, number][] = [];
@@ -199,6 +220,11 @@ function initDotmatrix() {
   if (!container) return;
 
   try {
+    const frequency = 1.5;
+    const speed = 2;
+    const cellSize = 10;
+    const gamma = 3;
+    const paletteBias = 8;
     const palette = buildPaletteUniforms(HERO_COLORS);
     const effPaletteCount = Math.min(MAX_COLORS, HERO_COLORS.length);
 
@@ -221,8 +247,8 @@ function initDotmatrix() {
       fragment: perlinFragmentShader,
       uniforms: {
         uTime: { value: 0 },
-        uFrequency: { value: 0.4 }, // Broad flowing wave contours
-        uSpeed: { value: 0.35 },    // Graceful organic speed
+        uFrequency: { value: mapFrequencyUiToShader(frequency) },
+        uSpeed: { value: mapSpeedUiToShader(speed) },
         uValue: { value: 1.0 },
         uResolution: { value: [gl.canvas.width, gl.canvas.height] },
       },
@@ -244,9 +270,9 @@ function initDotmatrix() {
         uPaletteCount: { value: effPaletteCount },
         uPalette: { value: palette.rgb },
         uPaletteA: { value: palette.alpha },
-        uCellSize: { value: 8.5 }, // Dense, crisp dots matching Originkit preview
-        uGamma: { value: 1.6 },
-        uPaletteBias: { value: 0.35 },
+        uCellSize: { value: mapCellSizeUiToShader(cellSize) },
+        uGamma: { value: mapGammaUiToShader(gamma) },
+        uPaletteBias: { value: mapPaletteBiasUiToShader(paletteBias) },
       },
     });
 
@@ -258,6 +284,7 @@ function initDotmatrix() {
     const doResize = () => {
       const width = container.clientWidth || window.innerWidth;
       const height = container.clientHeight || window.innerHeight;
+      renderer.dpr = Math.min(window.devicePixelRatio || 1, 2);
       renderer.setSize(width, height);
       camera.perspective({ aspect: gl.canvas.width / Math.max(gl.canvas.height, 1) });
       if (renderTarget && renderTarget.setSize) {
