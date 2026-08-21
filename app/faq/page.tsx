@@ -62,7 +62,7 @@ export default function FAQPage() {
 
       <main className="mx-auto w-full max-w-6xl px-6 py-20 lg:px-8 flex-1">
         <div className="text-center max-w-3xl mx-auto">
-          <span className="inline-block bg-[#000] border border-slate-700 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-wider text-sky-400">
+          <span className="inline-block bg-[#000] border border-[#0b43a2]/40 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-wider text-[#9fc7ff]">
             Knowledge Base
           </span>
           <h1 className="mt-4 text-3xl font-extrabold text-white sm:text-5xl tracking-tight">
@@ -76,8 +76,8 @@ export default function FAQPage() {
         <div className="mt-16 space-y-12">
           {ALL_FAQS.map((group, gIdx) => (
             <div key={gIdx} className="space-y-4">
-              <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-sky-400 flex items-center gap-2">
-                <span className="inline-block h-1.5 w-1.5 bg-sky-400" />
+              <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-[#9fc7ff] flex items-center gap-2">
+                <span className="inline-block h-1.5 w-1.5 bg-[#0b43a2]" />
                 {group.category}
               </h2>
               <div className="space-y-3">
@@ -87,7 +87,7 @@ export default function FAQPage() {
                   return (
                     <div
                       key={iIdx}
-                      className="border border-slate-800 bg-[#0d1424] transition-colors hover:border-slate-700"
+                      className="border border-slate-800 bg-[#0d1424] transition-colors hover:border-[#0b43a2]/60"
                     >
                       <button
                         type="button"

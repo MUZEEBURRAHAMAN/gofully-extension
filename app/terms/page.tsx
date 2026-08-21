@@ -7,7 +7,7 @@ export default function TermsPage() {
       <SiteNav />
 
       <main className="mx-auto w-full max-w-5xl px-6 py-20 lg:px-8 flex-1">
-        <span className="inline-block bg-[#000] border border-slate-700 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-wider text-sky-400">
+        <span className="inline-block bg-[#000] border border-[#0b43a2]/40 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-wider text-[#9fc7ff]">
           Legal
         </span>
         <h1 className="mt-4 text-3xl font-extrabold text-white sm:text-5xl tracking-tight">Terms of Service</h1>

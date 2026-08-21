@@ -16,8 +16,8 @@ export function SiteFooter() {
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-slate-400">
               The high-performance in-browser screenshot studio with local WebAssembly OCR, full-page scrolling capture, CleanShot visual annotations, and PDF exports.
             </p>
-            <div className="mt-6 flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-emerald-400">
-              <span className="inline-block h-2 w-2 bg-emerald-500 animate-pulse" />
+            <div className="mt-6 flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#9fc7ff]">
+              <span className="inline-block h-2 w-2 bg-[#0b43a2] animate-pulse" />
               100% On-Device Sandbox • Zero Cloud Telemetry
             </div>
           </div>
@@ -80,7 +80,7 @@ export function SiteFooter() {
                   href="https://chromewebstore.google.com"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-sky-400 hover:text-sky-300"
+                  className="text-[#9fc7ff] hover:text-white"
                 >
                   Chrome Web Store ↗
                 </a>

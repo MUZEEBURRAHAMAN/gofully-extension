@@ -18,7 +18,7 @@ export default function SupportPage() {
 
       <main className="mx-auto w-full max-w-6xl px-6 py-20 lg:px-8 flex-1">
         <div className="text-center max-w-3xl mx-auto">
-          <span className="inline-block bg-[#000] border border-slate-700 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-wider text-sky-400">
+          <span className="inline-block bg-[#000] border border-[#0b43a2]/40 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-wider text-[#9fc7ff]">
             Help & Support Desk
           </span>
           <h1 className="mt-4 text-3xl font-extrabold text-white sm:text-5xl tracking-tight">
@@ -32,7 +32,7 @@ export default function SupportPage() {
         <div className="mt-16 border border-slate-800 bg-[#0d1424] p-8 lg:p-12">
           {submitted ? (
             <div className="text-center py-16">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center border border-emerald-500/40 bg-emerald-500/10 text-emerald-400">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center border border-[#0b43a2]/50 bg-[#0b43a2]/15 text-[#9fc7ff]">
                 <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
                 </svg>
@@ -53,7 +53,7 @@ export default function SupportPage() {
                     type="text"
                     required
                     placeholder="Jane Doe"
-                    className="mt-2 w-full border border-slate-700 bg-slate-900/90 px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+                    className="mt-2 w-full border border-slate-700 bg-slate-900/90 px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#0b43a2] focus:outline-none"
                   />
                 </div>
                 <div>
@@ -64,7 +64,7 @@ export default function SupportPage() {
                     type="email"
                     required
                     placeholder="jane@example.com"
-                    className="mt-2 w-full border border-slate-700 bg-slate-900/90 px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+                    className="mt-2 w-full border border-slate-700 bg-slate-900/90 px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#0b43a2] focus:outline-none"
                   />
                 </div>
               </div>
@@ -73,7 +73,7 @@ export default function SupportPage() {
                 <label className="block text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
                   Topic / Category
                 </label>
-                <select className="mt-2 w-full border border-slate-700 bg-slate-900/90 px-4 py-3 text-sm text-white focus:border-sky-500 focus:outline-none">
+                <select className="mt-2 w-full border border-slate-700 bg-slate-900/90 px-4 py-3 text-sm text-white focus:border-[#0b43a2] focus:outline-none">
                   <option>Technical Question / Troubleshooting</option>
                   <option>Feature Request</option>
                   <option>Bug Report</option>
@@ -89,13 +89,13 @@ export default function SupportPage() {
                   required
                   rows={6}
                   placeholder="Describe your question or issue in detail..."
-                  className="mt-2 w-full border border-slate-700 bg-slate-900/90 px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+                  className="mt-2 w-full border border-slate-700 bg-slate-900/90 px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#0b43a2] focus:outline-none"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full border border-blue-500 bg-blue-600 px-6 py-3.5 text-xs font-mono font-bold uppercase tracking-wider text-white shadow-lg shadow-blue-500/25 transition-all hover:bg-blue-500 cursor-pointer"
+                className="w-full border border-[#0b43a2] bg-[#0b43a2] px-6 py-3.5 text-xs font-mono font-bold uppercase tracking-wider text-white shadow-lg shadow-[#0b43a2]/25 transition-all hover:bg-[#0d52c9] cursor-pointer"
               >
                 Submit Request →
               </button>
