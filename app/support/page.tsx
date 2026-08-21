@@ -25,7 +25,7 @@ export default function SupportPage() {
             How can we help you?
           </h1>
           <p className="mt-4 text-base text-slate-400">
-            Have a question, feedback, or a feature suggestion? Our team is here to assist you.
+            Have a question, feedback, or a feature suggestion? Submit the ticket below or reach out directly at <a href="mailto:rahamanmuzeeb1108@gmail.com" className="text-[#D2E5FF] underline font-mono">rahamanmuzeeb1108@gmail.com</a>.
           </p>
         </div>
 

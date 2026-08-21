@@ -28,7 +28,7 @@ export default function TermsPage() {
               <span className="text-[#136CDE]">§</span> Agreement to Terms
             </h2>
             <p className="text-slate-300">
-              These Terms of Service ("Terms", "Agreement") constitute a legally binding contract between you ("User", "you", or "your") and GoFully ("GoFully", "we", "us", or "our") governing your installation, access, and use of the GoFully Chrome browser extension, website (<a href="https://gofully.org" className="text-[#D2E5FF] underline">https://gofully.org</a>), and associated software products (collectively, the "Software" or "Service").
+              These Terms of Service ("Terms", "Agreement") constitute a legally binding contract between you ("User", "you", or "your") and GoFully ("GoFully", "we", "us", or "our") governing your installation, access, and use of the GoFully Chrome browser extension, website (<a href="https://gofully-extension.vercel.app" className="text-[#D2E5FF] underline">https://gofully-extension.vercel.app</a>), and associated software products (collectively, the "Software" or "Service").
             </p>
             <p className="mt-3 text-slate-400">
               By downloading, installing, enabling, or using GoFully from the Google Chrome Web Store or our website, you expressly agree to be bound by these Terms. If you do not agree to all terms and conditions herein, you must immediately uninstall and discontinue use of the Software.
@@ -176,7 +176,7 @@ export default function TermsPage() {
               >
                 GoFully Legal & Support Desk →
               </a>
-              <span className="text-slate-500">Legal Contact: legal@gofully.org</span>
+              <span className="text-slate-400 font-mono">Legal Contact: <a href="mailto:rahamanmuzeeb1108@gmail.com" className="text-[#D2E5FF] underline">rahamanmuzeeb1108@gmail.com</a></span>
             </div>
           </div>
         </div>

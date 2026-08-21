@@ -162,7 +162,7 @@ export default function PrivacyPage() {
               >
                 GoFully Support Desk →
               </a>
-              <span className="text-slate-500">Email: support@gofully.org</span>
+              <span className="text-slate-400 font-mono">Direct Email: <a href="mailto:rahamanmuzeeb1108@gmail.com" className="text-[#D2E5FF] underline">rahamanmuzeeb1108@gmail.com</a></span>
             </div>
           </div>
         </div>

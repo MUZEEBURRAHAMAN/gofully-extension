@@ -3,7 +3,7 @@ import "./globals.css";
 import "@/components/originkit/hero-26.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://gofully.org"),
+  metadataBase: new URL("https://gofully-extension.vercel.app"),
   title: "GoFully — Full Page Screenshot, Local OCR & Annotation Studio",
   description:
     "GoFully is a powerful Chrome extension for capturing full webpages, extracting text with local WebAssembly OCR, annotating screenshots, and exporting in 4K or PDF — 100% on-device.",
@@ -15,11 +15,11 @@ export const metadata: Metadata = {
     title: "GoFully — Full Page Screenshot & Screen Capture Studio",
     description:
       "Capture entire webpages, extract text with local OCR, annotate visually, and export in 4K/PDF. 100% private and in-browser.",
-    url: "https://gofully.org",
+    url: "https://gofully-extension.vercel.app",
     siteName: "GoFully",
     images: [
       {
-        url: "/gofully-wordmark.png",
+        url: "https://gofully-extension.vercel.app/gofully-wordmark.png",
         width: 1200,
         height: 630,
         alt: "GoFully Screenshot Studio",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "GoFully — Full Page Screenshot Studio",
     description: "Capture, OCR, annotate, redact, and export full webpages in seconds.",
-    images: ["/gofully-wordmark.png"],
+    images: ["https://gofully-extension.vercel.app/gofully-wordmark.png"],
   },
 };
 
