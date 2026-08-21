@@ -58,6 +58,9 @@ if (existsSync(resolve(__dirname, "public/sitemap.xml"))) {
 if (existsSync(resolve(__dirname, "public/gofully-wordmark.png"))) {
   cpSync(resolve(__dirname, "public/gofully-wordmark.png"), resolve(dist, "gofully-wordmark.png"));
 }
+if (existsSync(resolve(__dirname, "public/gofully-wordmark-dark.png"))) {
+  cpSync(resolve(__dirname, "public/gofully-wordmark-dark.png"), resolve(dist, "gofully-wordmark-dark.png"));
+}
 
 // Step 4: Copy assets (icons)
 console.log("Step 4: Copying assets...");
