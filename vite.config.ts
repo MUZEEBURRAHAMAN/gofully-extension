@@ -17,6 +17,7 @@ export default defineConfig({
         help: resolve(__dirname, "src/help/help.ts"),
         "canvas-editor": resolve(__dirname, "src/editor/canvas-editor.ts"),
         offscreen: resolve(__dirname, "src/offscreen/canvas-stitcher.ts"),
+        "mount-landing-hero": resolve(__dirname, "src/mount-landing-hero.tsx"),
       },
       output: {
         entryFileNames: "[name].js",

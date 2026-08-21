@@ -138,7 +138,20 @@ const siteFiles = [
 for (const file of siteFiles) {
   const srcPath = resolve(__dirname, `src/site/${file}`);
   if (existsSync(srcPath)) {
-    writeFileSync(resolve(dist, file), readFileSync(srcPath, "utf8"));
+    let content = readFileSync(srcPath, "utf8");
+    if (file === "index.html") {
+      content = content.replace(
+        /\/src\/mount-landing-hero\.tsx/g,
+        "mount-landing-hero.js"
+      ).replace(
+        /src\/mount-landing-hero\.tsx/g,
+        "mount-landing-hero.js"
+      ).replace(
+        /<\/head>/,
+        '  <link rel="stylesheet" href="assets/mount-landing-hero.css">\n</head>'
+      );
+    }
+    writeFileSync(resolve(dist, file), content);
   }
 }
 
