@@ -103,12 +103,12 @@
 
 .ok-h26-nav-pill--cta {
   padding: 0;
-  background: #0b43a2;
+  background: #136CDE;
   gap: 0;
 }
 
 .ok-h26-nav-pill--cta:hover {
-  background: #0d52c9;
+  background: #177BF7;
 }
 
 .ok-h26-nav-pill--cta .ok-h26-nav-pill__label {
@@ -306,7 +306,7 @@
 }
 
 .ok-h26-btn--white .ok-h26-btn__label {
-  color: #0b43a2;
+  color: #136CDE;
 }
 
 .ok-h26-btn--white:hover {
@@ -314,16 +314,16 @@
 }
 
 .ok-h26-btn--blue {
-  background: #0b43a2;
+  background: #136CDE;
   border: 1px solid rgba(0, 0, 0, 0.25);
 }
 
 .ok-h26-btn--blue .ok-h26-btn__label {
-  color: #9cd0ff;
+  color: #d2e5ff;
 }
 
 .ok-h26-btn--blue:hover {
-  background: #0d52c9;
+  background: #177BF7;
 }
 
 /* ---------- Tablet ---------- */

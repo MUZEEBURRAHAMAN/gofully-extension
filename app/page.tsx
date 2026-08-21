@@ -48,7 +48,7 @@ const FEATURES = [
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[#070B14] text-slate-100">
+    <div className="min-h-screen bg-[#070B14] text-slate-100 font-sans">
       {/* NATIVE ORIGINKIT HERO 26 */}
       <Hero26 />
 
@@ -57,7 +57,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl">
           {/* Header */}
           <div className="text-center max-w-3xl mx-auto mb-20">
-            <span className="inline-block bg-[#000] border border-[#0b43a2]/40 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-wider text-[#9fc7ff]">
+            <span className="inline-block bg-[#000] border border-[#136CDE]/40 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-wider text-[#D2E5FF]">
               Core Features
             </span>
             <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-5xl text-white">
@@ -73,13 +73,13 @@ export default function HomePage() {
             {FEATURES.map((feature, idx) => (
               <div
                 key={idx}
-                className="group border border-slate-800 bg-[#0a0f1d] grid grid-cols-1 lg:grid-cols-12 overflow-hidden transition-all duration-200 hover:border-[#0b43a2]/60"
+                className="group border border-slate-800 bg-[#0a0f1d] grid grid-cols-1 lg:grid-cols-12 overflow-hidden transition-all duration-200 hover:border-[#136CDE]/60"
               >
                 {/* Left Column: Content */}
                 <div className="relative p-8 lg:p-14 flex flex-col justify-between lg:col-span-5 border-b lg:border-b-0 lg:border-r border-slate-800/80">
                   <div>
                     {/* Feature Tag */}
-                    <div className="inline-block border border-[#0b43a2]/40 bg-[#0b43a2]/15 px-3 py-1 text-xs font-mono font-bold uppercase tracking-wider text-[#9fc7ff]">
+                    <div className="inline-block border border-[#136CDE]/40 bg-[#136CDE]/15 px-3 py-1 text-xs font-mono font-bold uppercase tracking-wider text-[#D2E5FF]">
                       {feature.tag}
                     </div>
 
@@ -114,7 +114,7 @@ export default function HomePage() {
                     className="absolute inset-0 opacity-15 pointer-events-none"
                     style={{
                       backgroundImage:
-                        "radial-gradient(circle, #0b43a2 1px, transparent 1px)",
+                        "radial-gradient(circle, #136CDE 1px, transparent 1px)",
                       backgroundSize: "24px 24px",
                     }}
                   />
@@ -138,7 +138,7 @@ export default function HomePage() {
       {/* UNIFIED CALL TO ACTION & PRIVACY SECTION */}
       <section className="py-28 px-6 lg:px-8 text-center border-t border-slate-800 bg-gradient-to-b from-[#070b14] via-[#080e1c] to-[#040812]">
         <div className="max-w-4xl mx-auto">
-          <span className="inline-block bg-[#000] border border-[#0b43a2]/50 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-wider text-[#9fc7ff] mb-6">
+          <span className="inline-block bg-[#000] border border-[#136CDE]/50 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-wider text-[#D2E5FF] mb-6">
             100% In-Browser • Zero Cloud Storage
           </span>
           <h2 className="text-3xl font-extrabold text-white sm:text-5xl tracking-tight">
@@ -152,7 +152,7 @@ export default function HomePage() {
               href="https://chromewebstore.google.com"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 border border-[#0b43a2] bg-[#0b43a2] px-8 py-4 text-xs font-mono font-bold uppercase tracking-wider text-white shadow-xl shadow-[#0b43a2]/30 transition-all hover:bg-[#0d52c9] cursor-pointer"
+              className="inline-flex items-center gap-2 border border-[#136CDE] bg-[#136CDE] px-8 py-4 text-xs font-mono font-bold uppercase tracking-wider text-white shadow-xl shadow-[#136CDE]/30 transition-all hover:bg-[#177BF7] cursor-pointer"
             >
               <span>Add to Chrome — It's Free</span>
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

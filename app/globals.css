@@ -1,12 +1,12 @@
-@import url("https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700;1,900&family=Geist+Mono:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700;1,900&family=Geist+Mono:wght@400;500;600;700&family=Geist:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
 
 :root {
   --font-sans: 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
-  --primary-blue: #0b43a2;
-  --primary-blue-hover: #0d52c9;
-  --primary-blue-light: #9fc7ff;
+  --font-mono: 'Geist Mono', monospace;
+  --primary-blue: #136CDE;
+  --primary-blue-hover: #177BF7;
+  --primary-blue-light: #D2E5FF;
 }
 
 *, *::before, *::after {

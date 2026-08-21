@@ -3,11 +3,11 @@ import { SiteFooter } from "@/components/footer";
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-[#070b14] text-slate-100 flex flex-col justify-between">
+    <div className="min-h-screen bg-[#070b14] text-slate-100 font-sans flex flex-col justify-between">
       <SiteNav />
 
       <main className="mx-auto w-full max-w-5xl px-6 py-20 lg:px-8 flex-1">
-        <span className="inline-block bg-[#000] border border-[#0b43a2]/40 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-wider text-[#9fc7ff]">
+        <span className="inline-block bg-[#000] border border-[#136CDE]/40 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-wider text-[#D2E5FF]">
           Legal
         </span>
         <h1 className="mt-4 text-3xl font-extrabold text-white sm:text-5xl tracking-tight">Terms of Service</h1>

@@ -57,12 +57,12 @@ export default function FAQPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#070b14] text-slate-100 flex flex-col justify-between">
+    <div className="min-h-screen bg-[#070b14] text-slate-100 font-sans flex flex-col justify-between">
       <SiteNav />
 
       <main className="mx-auto w-full max-w-6xl px-6 py-20 lg:px-8 flex-1">
         <div className="text-center max-w-3xl mx-auto">
-          <span className="inline-block bg-[#000] border border-[#0b43a2]/40 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-wider text-[#9fc7ff]">
+          <span className="inline-block bg-[#000] border border-[#136CDE]/40 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-wider text-[#D2E5FF]">
             Knowledge Base
           </span>
           <h1 className="mt-4 text-3xl font-extrabold text-white sm:text-5xl tracking-tight">
@@ -76,8 +76,8 @@ export default function FAQPage() {
         <div className="mt-16 space-y-12">
           {ALL_FAQS.map((group, gIdx) => (
             <div key={gIdx} className="space-y-4">
-              <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-[#9fc7ff] flex items-center gap-2">
-                <span className="inline-block h-1.5 w-1.5 bg-[#0b43a2]" />
+              <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-[#D2E5FF] flex items-center gap-2">
+                <span className="inline-block h-1.5 w-1.5 bg-[#136CDE]" />
                 {group.category}
               </h2>
               <div className="space-y-3">
@@ -87,7 +87,7 @@ export default function FAQPage() {
                   return (
                     <div
                       key={iIdx}
-                      className="border border-slate-800 bg-[#0d1424] transition-colors hover:border-[#0b43a2]/60"
+                      className="border border-slate-800 bg-[#0d1424] transition-colors hover:border-[#136CDE]/60"
                     >
                       <button
                         type="button"

@@ -46,7 +46,7 @@ export function SiteNav() {
             href="https://chromewebstore.google.com"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 border border-[#0b43a2] bg-[#0b43a2] px-4 py-2 text-xs font-mono font-bold uppercase tracking-wider text-white shadow-lg shadow-[#0b43a2]/20 transition-all hover:bg-[#0d52c9]"
+            className="inline-flex items-center gap-2 border border-[#136CDE] bg-[#136CDE] px-4 py-2 text-xs font-mono font-bold uppercase tracking-wider text-white shadow-lg shadow-[#136CDE]/20 transition-all hover:bg-[#177BF7]"
           >
             <span>Add to Chrome</span>
             <svg
@@ -112,7 +112,7 @@ export function SiteNav() {
               href="https://chromewebstore.google.com"
               target="_blank"
               rel="noreferrer"
-              className="mt-2 inline-flex items-center justify-center gap-2 border border-[#0b43a2] bg-[#0b43a2] px-4 py-2.5 text-xs font-mono font-bold uppercase tracking-wider text-white hover:bg-[#0d52c9]"
+              className="mt-2 inline-flex items-center justify-center gap-2 border border-[#136CDE] bg-[#136CDE] px-4 py-2.5 text-xs font-mono font-bold uppercase tracking-wider text-white hover:bg-[#177BF7]"
             >
               <span>Add to Chrome</span>
               <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
