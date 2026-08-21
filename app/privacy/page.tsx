@@ -16,7 +16,7 @@ export default function PrivacyPage() {
         <div className="mt-3 flex items-center gap-4 text-xs font-mono uppercase text-slate-400">
           <span>Effective Date: August 21, 2026</span>
           <span>•</span>
-          <span>Version 2.4</span>
+          <span>Version 2.5</span>
           <span>•</span>
           <span className="text-[#D2E5FF]">100% On-Device Architecture</span>
         </div>
@@ -27,24 +27,24 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-bold text-white mb-3 flex items-center gap-2">
               <span className="text-[#136CDE]">§</span> Executive Privacy Commitment
             </h2>
-            <p className="text-slate-300">
+            <p className="text-slate-300 leading-relaxed">
               GoFully ("we", "us", "our", or "the Extension") is engineered with an uncompromising privacy-first architecture. <strong>We do not collect, transmit, store, monetize, or share your screenshots, captured web content, extracted OCR text, or browsing history.</strong> Every computation, image stitching algorithm, optical recognition pass, and visual annotation occurs strictly within your local computer’s browser sandbox.
             </p>
           </div>
 
-          {/* Section 1: Zero Data Collection Principle */}
+          {/* Section 1: Zero Personal Data Collection Policy */}
           <div>
             <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
               <span className="text-[#136CDE]">1.</span> Zero Personal Data Collection Policy
             </h2>
             <p className="mb-3">
-              Unlike cloud-hosted screen recording or capture tools that upload your files to remote cloud buckets, GoFully operates entirely in-memory on your client device:
+              Unlike cloud-hosted screen recording or capture tools that upload your files to remote cloud servers, GoFully operates entirely in-memory on your client device:
             </p>
             <ul className="list-disc pl-5 space-y-2 text-slate-400">
-              <li><strong>No Image Uploads:</strong> Screenshots (full-page, visible area, or selected region) are generated and rendered directly into local HTML5 Canvas elements.</li>
-              <li><strong>No Text or OCR Exfiltration:</strong> Text recognized by the embedded WebAssembly OCR engine is processed strictly on your CPU. No extracted text strings are ever sent over the network.</li>
-              <li><strong>No Tracking or Telemetry:</strong> We do not embed Google Analytics, Mixpanel, Segment, advertising trackers, fingerprinting scripts, or session recording SDKs in the extension.</li>
-              <li><strong>No User Accounts:</strong> GoFully does not require account creation, logins, email addresses, passwords, or personal credentials to function.</li>
+              <li><strong>Zero Image Uploads:</strong> Screenshots (full-page, visible area, or selected region) are generated and rendered directly into local HTML5 Canvas elements in your device's memory.</li>
+              <li><strong>Zero Text or OCR Exfiltration:</strong> Text recognized by the embedded WebAssembly OCR engine is processed strictly on your local CPU. No extracted text strings are ever sent over the network.</li>
+              <li><strong>Zero Tracking or Telemetry:</strong> We do not embed Google Analytics, Mixpanel, Segment, advertising trackers, fingerprinting scripts, or session recording SDKs in the extension.</li>
+              <li><strong>Zero User Accounts:</strong> GoFully does not require account creation, logins, email addresses, passwords, or personal credentials to function.</li>
             </ul>
           </div>
 
@@ -87,22 +87,23 @@ export default function PrivacyPage() {
             </div>
           </div>
 
-          {/* Section 3: Data Security & Sandboxing */}
+          {/* Section 3: Data Security & Sandboxing (Strong Absolute Language) */}
           <div>
             <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-              <span className="text-[#136CDE]">3.</span> Client-Side Sandboxing & Data Isolation
+              <span className="text-[#136CDE]">3.</span> 100% Local Processing & Client-Side Sandboxing
             </h2>
-            <p className="mb-3">
-              All visual data created during your editing session (including drawings, arrows, text callouts, shapes, and redaction masks) is held in transient browser memory (RAM):
+            <p className="mb-3 leading-relaxed">
+              <strong>GoFully is strictly an on-device utility.</strong> Screenshot data, canvas annotations, image pixels, and OCR recognized text are never uploaded, streamed, cached, or transmitted to remote servers under any circumstances. There are zero remote cloud endpoints or backend databases connected to the extension runtime.
             </p>
             <ul className="list-disc pl-5 space-y-2 text-slate-400">
-              <li>When you close the GoFully editor tab, the temporary in-memory canvas is completely deallocated by the browser’s garbage collector.</li>
-              <li>Files exported (PNG, WebP, PDF) are downloaded directly to your local file system via browser Blob URLs (`blob:chrome-extension://...`).</li>
-              <li>Data placed on the clipboard (e.g. copied OCR text or copied images) is written directly using the standard Web Clipboard API.</li>
+              <li>All visual data created during your editing session (including drawings, arrows, text callouts, shapes, and redaction masks) is held strictly in transient browser RAM.</li>
+              <li>When you close the GoFully editor tab, the temporary in-memory canvas is completely deallocated by your browser's garbage collector.</li>
+              <li>Exported files (PNG, WebP, PDF) are downloaded directly to your local file system via browser Blob URLs (`blob:chrome-extension://...`).</li>
+              <li>Data copied to the clipboard (such as extracted OCR text or images) is written directly using the standard browser Web Clipboard API without network calls.</li>
             </ul>
           </div>
 
-          {/* Section 4: GDPR, CCPA/CPRA, and International Privacy Regulations */}
+          {/* Section 4: Global Privacy Regulations (GDPR, CCPA/CPRA, LGPD) */}
           <div>
             <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
               <span className="text-[#136CDE]">4.</span> Global Privacy Rights (GDPR, CCPA/CPRA, LGPD)
@@ -111,8 +112,8 @@ export default function PrivacyPage() {
               Because GoFully does not collect, process, or store personal data on any server, we naturally satisfy the highest global privacy requirements by design:
             </p>
             <ul className="list-disc pl-5 space-y-2 text-slate-400">
-              <li><strong>No Data Sales:</strong> We do not sell, rent, or trade your data under the California Consumer Privacy Act (CCPA) or California Privacy Rights Act (CPRA).</li>
-              <li><strong>Right to Erasure & Access:</strong> Since zero personal data resides on our infrastructure, there is no remote user data to delete, modify, or export. Clearing your browser cache or uninstalling the extension removes all local preferences immediately.</li>
+              <li><strong>No Data Sales:</strong> We do not sell, rent, or trade user data under the California Consumer Privacy Act (CCPA) or California Privacy Rights Act (CPRA).</li>
+              <li><strong>Right to Erasure & Access:</strong> Since zero personal data resides on remote infrastructure, there is no remote user data to delete, modify, or export. Clearing your browser cache or uninstalling the extension removes all local preferences immediately.</li>
               <li><strong>Data Minimization:</strong> GoFully strictly adheres to Article 5(1)(c) of the General Data Protection Regulation (GDPR) by collecting zero unnecessary data.</li>
             </ul>
           </div>
@@ -123,17 +124,17 @@ export default function PrivacyPage() {
               <span className="text-[#136CDE]">5.</span> Third-Party Links & Chrome Web Store
             </h2>
             <p>
-              Our website may contain links to third-party services, such as the Google Chrome Web Store or documentation resources. When you navigate to third-party websites, their respective privacy policies and terms of service govern your interactions. We encourage you to review their terms.
+              Our website and extension may contain links to third-party services, such as the Google Chrome Web Store. When you navigate to third-party websites, their respective privacy policies and terms of service govern your interactions.
             </p>
           </div>
 
           {/* Section 6: Children's Privacy */}
           <div>
             <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-              <span className="text-[#136CDE]">6.</span> Children's Online Privacy (COPPA Compliance)
+              <span className="text-[#136CDE]">6.</span> Children's Online Privacy Protection (COPPA)
             </h2>
             <p>
-              GoFully is not directed to children under 13 years of age, and we do not knowingly collect personal information from children. Because the extension operates without remote data collection, no child data is ever harvested or stored.
+              GoFully is not directed to children under 13 years of age, and we do not knowingly collect personal information from children. Because the extension operates entirely without remote data collection, no child data is ever harvested or stored.
             </p>
           </div>
 
@@ -143,26 +144,40 @@ export default function PrivacyPage() {
               <span className="text-[#136CDE]">7.</span> Amendments & Notifications
             </h2>
             <p>
-              We may update this Privacy Policy from time to time to reflect extension updates or evolving regulatory requirements. Any modifications will be posted directly to this page with an updated "Effective Date" at the top. We encourage users to periodically review this document.
+              We may update this Privacy Policy from time to time to reflect extension updates or evolving regulatory requirements. Any modifications will be posted directly to this page with an updated "Effective Date" at the top.
             </p>
           </div>
 
-          {/* Section 8: Contact & Inquiries */}
+          {/* Section 8: Direct Contact & Developer Information */}
           <div className="border-t border-slate-800/80 pt-8">
             <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-              <span className="text-[#136CDE]">8.</span> Privacy Contact & Verification
+              <span className="text-[#136CDE]">8.</span> Developer & Privacy Contact
             </h2>
-            <p className="text-slate-400 mb-4">
-              If you have any questions, technical privacy inquiries, or would like guidance on verifying zero network traffic in DevTools, please contact our team:
+            <p className="text-slate-400 mb-6">
+              For any questions, privacy inquiries, developer verifications, or technical support regarding GoFully, please contact the primary developer directly:
             </p>
-            <div className="flex flex-wrap items-center gap-4 text-xs font-mono uppercase">
-              <a
-                href="/support"
-                className="border border-[#136CDE] bg-[#136CDE]/15 px-4 py-2 text-[#D2E5FF] hover:bg-[#136CDE] hover:text-white transition-colors"
-              >
-                GoFully Support Desk →
-              </a>
-              <span className="text-slate-400 font-mono">Direct Email: <a href="mailto:rahamanmuzeeb1108@gmail.com" className="text-[#D2E5FF] underline">rahamanmuzeeb1108@gmail.com</a></span>
+            
+            <div className="border border-slate-800 bg-[#070b14] p-6 space-y-3 font-mono text-xs">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+                <span className="text-slate-500 uppercase">Developer / Publisher:</span>
+                <span className="text-white font-bold">Muzeebur Rahaman</span>
+              </div>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+                <span className="text-slate-500 uppercase">Direct Email:</span>
+                <a href="mailto:rahamanmuzeeb1108@gmail.com" className="text-[#D2E5FF] underline font-bold hover:text-white">
+                  rahamanmuzeeb1108@gmail.com
+                </a>
+              </div>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+                <span className="text-slate-500 uppercase">Support Desk:</span>
+                <a href="https://gofully-extension.vercel.app/support" className="text-[#D2E5FF] underline hover:text-white">
+                  https://gofully-extension.vercel.app/support
+                </a>
+              </div>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+                <span className="text-slate-500 uppercase">Response Time:</span>
+                <span className="text-slate-300">Within 24–48 business hours</span>
+              </div>
             </div>
           </div>
         </div>
