@@ -161,49 +161,24 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* PRIVACY GUARANTEE BANNER */}
-      <section className="py-20 px-6 lg:px-8 bg-[#0a1020] border-y border-slate-800">
-        <div className="mx-auto max-w-6xl border border-sky-500/30 bg-sky-950/20 p-8 lg:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
-          <div>
-            <div className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-sky-400">
-              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              Privacy & Local Guarantee
-            </div>
-            <h3 className="mt-2 text-2xl font-extrabold text-white sm:text-4xl tracking-tight">
-              100% In-Browser. No Cloud Storage.
-            </h3>
-            <p className="mt-3 text-sm text-slate-300 max-w-2xl leading-relaxed">
-              Unlike cloud capture tools that upload your private screenshots to remote servers, GoFully operates entirely within your browser sandbox. Your data remains strictly on your device.
-            </p>
-          </div>
-          <a
-            href="https://chromewebstore.google.com"
-            target="_blank"
-            rel="noreferrer"
-            className="whitespace-nowrap border border-white bg-white px-6 py-3 text-xs font-mono font-bold uppercase tracking-wider text-slate-900 shadow-xl transition-all hover:bg-slate-200 cursor-pointer"
-          >
-            Add to Chrome Free →
-          </a>
-        </div>
-      </section>
-
-      {/* FINAL CALL TO ACTION */}
-      <section className="py-24 px-6 lg:px-8 text-center border-t border-slate-800 bg-gradient-to-b from-[#070b14] to-[#040812]">
-        <div className="max-w-3xl mx-auto">
+      {/* UNIFIED CALL TO ACTION & PRIVACY SECTION */}
+      <section className="py-28 px-6 lg:px-8 text-center border-t border-slate-800 bg-gradient-to-b from-[#070b14] via-[#080e1c] to-[#040812]">
+        <div className="max-w-4xl mx-auto">
+          <span className="inline-block bg-[#000] border border-sky-500/40 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-wider text-sky-400 mb-6">
+            100% In-Browser • Zero Cloud Storage
+          </span>
           <h2 className="text-3xl font-extrabold text-white sm:text-5xl tracking-tight">
             Ready to Capture Smarter?
           </h2>
-          <p className="mt-4 text-base text-slate-400">
-            Install GoFully on Chrome in seconds. 100% free, private, and on-device.
+          <p className="mt-5 text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+            Unlike cloud tools that upload your private screenshots to remote servers, GoFully operates entirely within your browser sandbox. 100% free, private, and on-device.
           </p>
-          <div className="mt-8 flex justify-center gap-4">
+          <div className="mt-10 flex justify-center gap-4">
             <a
               href="https://chromewebstore.google.com"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 border border-blue-500 bg-blue-600 px-6 py-3.5 text-xs font-mono font-bold uppercase tracking-wider text-white shadow-lg shadow-blue-600/30 transition-all hover:bg-blue-500 cursor-pointer"
+              className="inline-flex items-center gap-2 border border-blue-500 bg-blue-600 px-8 py-4 text-xs font-mono font-bold uppercase tracking-wider text-white shadow-xl shadow-blue-600/30 transition-all hover:bg-blue-500 cursor-pointer"
             >
               <span>Add to Chrome — It's Free</span>
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
