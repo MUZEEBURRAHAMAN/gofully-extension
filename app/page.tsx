@@ -3,13 +3,13 @@
 import Hero26 from "@/components/originkit/hero-26";
 import { SiteFooter } from "@/components/footer";
 
-const STEPS = [
+const FEATURES = [
   {
-    stepNumber: "01",
-    stepTag: "Step: 1",
+    number: "01",
+    tag: "CAPTURE ENGINE",
     title: "Full-Page Scrolling Capture",
     description:
-      "Seamlessly capture full-height websites, dashboards, and long articles. GoFully automatically scrolls the page, waits for lazy-loaded images, suppresses sticky headers, and composes a pixel-perfect canvas in memory.",
+      "Seamlessly capture full-height websites, complex dashboards, and infinite scroll feeds. GoFully automatically scrolls the page, waits for lazy-loaded content, suppresses sticky navigation bars, and composes a pixel-perfect high-res canvas with zero overlap.",
     footerPill: "AUTOMATED VIEWPORT STITCHING • ZERO OVERLAP",
     icon: (
       <svg className="h-10 w-10 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -20,11 +20,11 @@ const STEPS = [
     badgeColor: "text-sky-400 border-sky-500/30 bg-sky-500/10",
   },
   {
-    stepNumber: "02",
-    stepTag: "Step: 2",
-    title: "Local WebAssembly OCR",
+    number: "02",
+    tag: "LOCAL OCR & WASM",
+    title: "On-Device Text & Code Extraction",
     description:
-      "Instantly extract text, code snippets, and data tables from any graphic or captured region. Powered by an embedded WebAssembly model running 100% locally on your CPU with zero cloud transmission.",
+      "Extract readable text, code snippets, and structured tables from any graphic or screen region in milliseconds. Embedded local WebAssembly models execute directly on your CPU with zero cloud transmission or network latency.",
     footerPill: "ON-DEVICE WASM ENGINE • ZERO LATENCY • 100% OFFLINE",
     icon: (
       <svg className="h-10 w-10 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -34,11 +34,11 @@ const STEPS = [
     badgeColor: "text-emerald-400 border-emerald-500/30 bg-emerald-500/10",
   },
   {
-    stepNumber: "03",
-    stepTag: "Step: 3",
-    title: "CleanShot Visual Studio",
+    number: "03",
+    tag: "VISUAL EDITOR & REDACTION",
+    title: "CleanShot-Grade Annotation Studio",
     description:
-      "Mark up captures with auto-incrementing numbered step bubbles, smooth curved arrows, spotlight magnifiers, and text callouts. Blur or pixelate sensitive tokens, passwords, and personal details in one click.",
+      "Mark up screenshots with auto-incrementing step bubbles, curved arrows, spotlight magnifiers, callouts, and geometric shapes. Instantly blur or pixelate sensitive API keys, passwords, and PII before sharing.",
     footerPill: "STEP MARKERS • ARROWS • SENSITIVE DATA REDACTION",
     icon: (
       <svg className="h-10 w-10 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -48,11 +48,11 @@ const STEPS = [
     badgeColor: "text-blue-400 border-blue-500/30 bg-blue-500/10",
   },
   {
-    stepNumber: "04",
-    stepTag: "Step: 4",
-    title: "4K Lossless & PDF Export",
+    number: "04",
+    tag: "EXPORT & INTEGRATIONS",
+    title: "4K Lossless & Multi-Page PDF Export",
     description:
-      "Generate clean paginated multi-page PDF documents or download 4K crisp PNG and WebP files ready for slide decks, customer reports, and documentation. Or copy directly to your clipboard in a single stroke.",
+      "Generate clean paginated multi-page PDF documents or download 4K crisp PNG and WebP files ready for presentations and client reports. Or copy directly to your system clipboard in a single stroke.",
     footerPill: "4K PNG • LOSSLESS WEBP • PAGINATED MULTI-PAGE PDF",
     icon: (
       <svg className="h-10 w-10 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -69,25 +69,25 @@ export default function HomePage() {
       {/* NATIVE ORIGINKIT HERO 26 */}
       <Hero26 />
 
-      {/* STEP-BY-STEP CAPTURE STUDIO SECTION */}
+      {/* CORE FEATURES SHOWCASE SECTION */}
       <section id="features" className="relative py-28 px-6 lg:px-8 border-t border-slate-800/80 bg-[#070b14]">
         <div className="mx-auto max-w-7xl">
           {/* Header */}
           <div className="text-center max-w-3xl mx-auto mb-20">
             <span className="inline-block bg-[#000] border border-slate-700 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-wider text-sky-400">
-              Complete Capture Studio
+              Core Features
             </span>
             <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-5xl text-white">
-              How GoFully Works
+              Powerful Features for Modern Workflows
             </h2>
             <p className="mt-4 text-base text-slate-400">
-              A complete end-to-end capture, OCR extraction, annotation, and export workflow designed for high-performance teams.
+              Engineered from the ground up to capture, extract, annotate, and deliver pixel-perfect visual intelligence with zero cloud latency.
             </p>
           </div>
 
-          {/* Sequential Step Showcases */}
+          {/* Sequential Feature Showcases */}
           <div className="space-y-12">
-            {STEPS.map((step, idx) => (
+            {FEATURES.map((feature, idx) => (
               <div
                 key={idx}
                 className="border border-slate-800 bg-[#0a0f1d] grid grid-cols-1 lg:grid-cols-12 overflow-hidden transition-all duration-200 hover:border-slate-700"
@@ -95,30 +95,30 @@ export default function HomePage() {
                 {/* Left Column: Content */}
                 <div className="relative p-8 lg:p-14 flex flex-col justify-between lg:col-span-6 border-b lg:border-b-0 lg:border-r border-slate-800/80">
                   <div>
-                    {/* Step Tag */}
-                    <div className="inline-block border border-slate-700 bg-black/60 px-3 py-1 text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
-                      {step.stepTag}
+                    {/* Feature Tag */}
+                    <div className="inline-block border border-slate-700 bg-black/60 px-3 py-1 text-xs font-mono font-bold uppercase tracking-wider text-sky-400">
+                      {feature.tag}
                     </div>
 
-                    {/* Step Title */}
+                    {/* Feature Title */}
                     <h3 className="mt-6 text-2xl lg:text-3xl font-bold text-white tracking-tight">
-                      {step.title}
+                      {feature.title}
                     </h3>
 
-                    {/* Step Description */}
+                    {/* Feature Description */}
                     <p className="mt-4 text-sm lg:text-base text-slate-400 leading-relaxed max-w-lg">
-                      {step.description}
+                      {feature.description}
                     </p>
                   </div>
 
                   {/* Watermark Number & Footer Ticker */}
                   <div className="mt-12">
                     <div className="text-6xl lg:text-8xl font-extrabold font-mono text-slate-800/40 select-none tracking-tighter">
-                      {step.stepNumber}
+                      {feature.number}
                     </div>
                     <div className="mt-4 pt-4 border-t border-slate-800/60 text-xs font-mono uppercase tracking-widest text-slate-400 flex items-center gap-2">
                       <span className="text-slate-600">|</span>
-                      <span>{step.footerPill}</span>
+                      <span>{feature.footerPill}</span>
                       <span className="text-slate-600">|</span>
                     </div>
                   </div>
@@ -138,12 +138,12 @@ export default function HomePage() {
 
                   {/* Central Visual Card */}
                   <div className="relative z-10 w-full max-w-md border border-slate-800 bg-[#0d1424]/90 p-8 flex flex-col items-center justify-center text-center shadow-2xl">
-                    <div className={`flex h-20 w-20 items-center justify-center border ${step.badgeColor} mb-6`}>
-                      {step.icon}
+                    <div className={`flex h-20 w-20 items-center justify-center border ${feature.badgeColor} mb-6`}>
+                      {feature.icon}
                     </div>
 
                     <div className="text-xs font-mono font-bold uppercase tracking-wider text-white">
-                      {step.title}
+                      {feature.title}
                     </div>
                     <div className="mt-2 text-xs font-mono text-slate-400">
                       100% IN-BROWSER EXECUTION
