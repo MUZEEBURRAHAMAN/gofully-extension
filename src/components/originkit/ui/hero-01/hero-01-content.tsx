@@ -307,7 +307,7 @@ const Hero01Content = () => {
               </a>
 
               <a
-                href="https://chromewebstore.google.com"
+                href="https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc"
                 target="_blank"
                 rel="noreferrer"
                 className="relative hidden min-h-9 items-center justify-center overflow-clip rounded-full bg-black px-4 py-2 text-center text-xs font-semibold text-white transition-opacity hover:opacity-90 ipad:inline-flex"
@@ -351,7 +351,7 @@ const Hero01Content = () => {
               className="relative flex w-full flex-col items-stretch gap-3 will-change-transform ipad:w-auto ipad:flex-row ipad:items-center ipad:justify-center ipad:gap-4"
             >
               <a
-                href="https://chromewebstore.google.com"
+                href="https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc"
                 target="_blank"
                 rel="noreferrer"
                 className="relative inline-flex min-h-12 w-full shrink-0 items-center justify-center overflow-clip rounded-lg border border-transparent bg-[#2563eb] px-6 py-3.5 text-center text-[15px] font-semibold text-white shadow-md transition-all hover:bg-[#1d4ed8] active:scale-[0.98] ipad:w-auto"

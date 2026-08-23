@@ -149,7 +149,7 @@ export default function HomePage() {
           </p>
           <div className="mt-10 flex justify-center gap-4">
             <a
-              href="https://chromewebstore.google.com"
+              href="https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc"
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-2 border border-[#136CDE] bg-[#136CDE] px-8 py-4 text-xs font-mono font-bold uppercase tracking-wider text-white shadow-xl shadow-[#136CDE]/30 transition-all hover:bg-[#177BF7] cursor-pointer"

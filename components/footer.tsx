@@ -77,7 +77,7 @@ export function SiteFooter() {
               </li>
               <li>
                 <a
-                  href="https://chromewebstore.google.com"
+                  href="https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc"
                   target="_blank"
                   rel="noreferrer"
                   className="text-[#D2E5FF] hover:text-white"

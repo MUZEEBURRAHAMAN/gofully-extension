@@ -935,7 +935,7 @@ export function DotmatrixHero({
           <a className="ok-h26-nav-pill" href="/faq">
             FAQ
           </a>
-          <a className="ok-h26-nav-pill ok-h26-nav-pill--cta" href="https://chromewebstore.google.com" target="_blank" rel="noreferrer">
+          <a className="ok-h26-nav-pill ok-h26-nav-pill--cta" href="https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc" target="_blank" rel="noreferrer">
             <span className="ok-h26-nav-pill__label">Add to Chrome</span>
             <span className="ok-h26-nav-pill__icon">
               <img src={asset("arrow-right.svg")} alt="" />
@@ -972,7 +972,7 @@ export function DotmatrixHero({
           </a>
           <a
             className="ok-h26-mobile-link ok-h26-mobile-link--cta"
-            href="https://chromewebstore.google.com"
+            href="https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc"
             target="_blank"
             rel="noreferrer"
             onClick={() => setMobileMenuOpen(false)}
@@ -1009,7 +1009,7 @@ export function DotmatrixHero({
               <p>{description}</p>
             </div>
             <div className="ok-h26-cta-row">
-              <a className="ok-h26-btn ok-h26-btn--white" href="https://chromewebstore.google.com" target="_blank" rel="noreferrer">
+              <a className="ok-h26-btn ok-h26-btn--white" href="https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc" target="_blank" rel="noreferrer">
                 <span className="ok-h26-btn__label">{primaryCtaLabel}</span>
                 <span className="ok-h26-btn__icon">
                   <img src={asset("arrow-right-1.svg")} alt="" />

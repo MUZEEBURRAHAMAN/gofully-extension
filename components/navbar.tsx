@@ -43,7 +43,7 @@ export function SiteNav() {
             FAQ
           </Link>
           <a
-            href="https://chromewebstore.google.com"
+            href="https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc"
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-2 border border-[#136CDE] bg-[#136CDE] px-4 py-2 text-xs font-mono font-bold uppercase tracking-wider text-white shadow-lg shadow-[#136CDE]/20 transition-all hover:bg-[#177BF7]"
@@ -109,7 +109,7 @@ export function SiteNav() {
               FAQ
             </Link>
             <a
-              href="https://chromewebstore.google.com"
+              href="https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc"
               target="_blank"
               rel="noreferrer"
               className="mt-2 inline-flex items-center justify-center gap-2 border border-[#136CDE] bg-[#136CDE] px-4 py-2.5 text-xs font-mono font-bold uppercase tracking-wider text-white hover:bg-[#177BF7]"

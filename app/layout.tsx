@@ -60,7 +60,7 @@ const jsonLd = {
       "description":
         "High-performance Chrome extension for full-page scrolling screenshots, on-device WebAssembly OCR text extraction, CleanShot-grade visual annotations, and PDF/4K exports.",
       "url": "https://gofully-extension.vercel.app/",
-      "installUrl": "https://chromewebstore.google.com",
+      "installUrl": "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc",
     },
     {
       "@type": "WebSite",
