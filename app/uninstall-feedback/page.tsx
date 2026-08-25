@@ -32,12 +32,8 @@ export default function UninstallFeedbackPage() {
     <div className="min-h-screen bg-[#070b14] text-slate-100 font-sans flex flex-col items-center justify-center px-6 py-16">
       <div className="w-full max-w-xl">
         {/* Logo */}
-        <div className="flex items-center gap-2 mb-10">
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-            <rect width="28" height="28" rx="6" fill="#136CDE" />
-            <path d="M7 8h14M7 14h10M7 20h6" stroke="white" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-          <span className="text-white font-bold text-lg tracking-tight">GoFully</span>
+        <div className="mb-10">
+          <img src="/gofully-wordmark-dark.png" alt="GoFully" className="h-8 w-auto" />
         </div>
 
         {submitted ? (
