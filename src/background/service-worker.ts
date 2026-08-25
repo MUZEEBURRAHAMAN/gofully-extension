@@ -17,7 +17,7 @@ import { isSupportedCapturePage } from "../utils/url-validator";
 // Uninstall feedback URL configuration pointing to live Vercel deployment
 chrome.runtime.onInstalled.addListener(() => {
   if (chrome.runtime.setUninstallURL) {
-    chrome.runtime.setUninstallURL("https://gofully-extension.vercel.app/uninstall-feedback.html");
+    chrome.runtime.setUninstallURL("https://gofully-extension.vercel.app/uninstall-feedback");
   }
 });
 
@@ -284,6 +284,13 @@ chrome.commands.onCommand.addListener(async (command) => {
     } catch (e) {
       console.error("Keyboard shortcut capture failed:", e);
     }
+  }
+
+  if (command === "capture-selected-area") {
+    await chrome.tabs.sendMessage(tab.id, {
+      type: "INIT_REGION_SELECTOR",
+      payload: { mode: "selected-area", tabId: tab.id },
+    }).catch(() => {});
   }
 });
 
