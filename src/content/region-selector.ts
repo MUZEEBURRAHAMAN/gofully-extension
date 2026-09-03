@@ -20,17 +20,12 @@ if (!(window as any).__snapforge_region_listener_registered) {
               payload: { mode: "selected-area", region, tabId: activeTabId },
             },
             (response) => {
-              // The result bar is normally shown by the service worker
-              // (showResultBarOnTab) once the capture finishes — this is
-              // just a same-tick fallback for the rare case where
-              // result-bar.js is already loaded on the page.
-              if (
-                response?.type === "CAPTURE_COMPLETE" &&
-                response.payload &&
-                typeof (window as any).__snapforge_show_result_bar === "function"
-              ) {
-                (window as any).__snapforge_show_result_bar(response.payload);
-              } else if (response?.type === "CAPTURE_ERROR") {
+              // The service worker's showResultBarOnTab() already shows the
+              // result bar for selected-area once the capture finishes; a
+              // duplicate direct-invoke used to also live here, firing the
+              // result bar (and its shutter sound) a second time on every
+              // single capture.
+              if (response?.type === "CAPTURE_ERROR") {
                 showInlineError(response.payload?.message || "Capture failed");
               }
             }

@@ -4,6 +4,22 @@ import type { CaptureRegion } from "../types";
 const FONT_STACK =
   `'GoFully Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif`;
 
+// Matches result-bar.ts's shutter sound — every capture mode confirms with
+// the same click, and Capture Text (OCR) was the one mode that never played
+// it at all.
+function playShutterSound(): void {
+  try {
+    const url = chrome.runtime.getURL("assets/shutter.mp3");
+    if (url) {
+      const audio = new Audio(url);
+      audio.volume = 0.4;
+      audio.play().catch(() => {});
+    }
+  } catch {
+    // Ignore audio playback failure in restrictive pages
+  }
+}
+
 
 // Guard against duplicate injections
 if (!(window as any).__snapforge_ocr_listener_registered) {
@@ -457,6 +473,7 @@ async function processOCR(region: CaptureRegion): Promise<void> {
     }
 
     // Auto-copy to clipboard like CleanShot X
+    playShutterSound();
     try {
       await navigator.clipboard.writeText(text);
       showToast("Copied to clipboard!");

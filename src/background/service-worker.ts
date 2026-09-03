@@ -541,13 +541,24 @@ function sleep(ms: number): Promise<void> {
 
 async function showResultBarOnTab(tabId: number, payload: any): Promise<void> {
   try {
-    // 1. Ensure result-bar.js is loaded
+    // 1. Ensure result-bar.js is loaded (defensive re-inject — result-bar.js
+    // is also declared in manifest.json's auto-injecting content_scripts, so
+    // this covers edge cases like the extension having just been reloaded).
     await chrome.scripting.executeScript({
       target: { tabId },
       files: ["result-bar.js"],
     }).catch(() => {});
 
-    // 2. Directly invoke the global render function inside the page
+    // 2. Directly invoke the global render function inside the page.
+    // This alone is a complete, reliable delivery path once the script is
+    // loaded — it doesn't depend on message-listener timing the way a
+    // broadcast does. A THIRD "also send SHOW_RESULT_BAR as a fallback" step
+    // used to also live here, but result-bar.ts registers its listener for
+    // that message at module top level, and the re-injection above runs it a
+    // second time on top of manifest's own auto-injection — each run adds
+    // another listener, so the one broadcast was landing on multiple
+    // listeners and firing showResultBar() (shutter sound included) two or
+    // three times per capture instead of once.
     await chrome.scripting.executeScript({
       target: { tabId },
       func: (info: any) => {
@@ -556,12 +567,6 @@ async function showResultBarOnTab(tabId: number, payload: any): Promise<void> {
         }
       },
       args: [payload],
-    }).catch(() => {});
-
-    // 3. Also dispatch message as fallback
-    await chrome.tabs.sendMessage(tabId, {
-      type: "SHOW_RESULT_BAR",
-      payload,
     }).catch(() => {});
   } catch (err) {
     console.error("showResultBarOnTab failed:", err);
