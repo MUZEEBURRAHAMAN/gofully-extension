@@ -1,5 +1,10 @@
 import type { CaptureRegion } from "../types";
 
+/** Kept in step with src/ui/overlay-kit.ts — this file styles a shadow root. */
+const FONT_STACK =
+  `'GoFully Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif`;
+
+
 // Guard against duplicate injections
 if (!(window as any).__snapforge_ocr_listener_registered) {
   (window as any).__snapforge_ocr_listener_registered = true;
@@ -53,11 +58,18 @@ function createUI(): void {
 
   const style = document.createElement("style");
   style.textContent = `
+    @font-face {
+      font-family: 'GoFully Archivo';
+      src: url('${chrome.runtime.getURL("assets/Archivo.woff2")}') format('woff2-variations'),
+           url('${chrome.runtime.getURL("assets/Archivo.woff2")}') format('woff2');
+      font-weight: 100 900;
+      font-display: swap;
+    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     .overlay {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       z-index: 2147483646; cursor: crosshair;
-      background: rgba(0, 0, 0, 0.45);
+      background: rgba(16, 24, 40, 0.28);
       transition: background 0.15s ease;
       user-select: none;
     }
@@ -71,30 +83,30 @@ function createUI(): void {
       animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       background: #ffffff;
       padding: 22px 30px;
-      border-radius: 0px;
-      border: 1px solid #cbd5e1;
+      border-radius: 0;
+      border: 1px solid #C8D0D9;
       box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
     }
     .hint-icon {
-      width: 44px; height: 44px; border-radius: 0px;
-      background: #eff6ff; border: 1.5px solid #2563eb;
+      width: 44px; height: 44px; border-radius: 0;
+      background: #EDF1FE; border: 1.5px solid #1667F2;
       display: flex; align-items: center; justify-content: center;
-      color: #2563eb;
+      color: #1667F2;
     }
     .hint-text {
-      color: #0f172a; font: 600 15px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #101828; font: 600 15px/1.4 ${FONT_STACK};
       letter-spacing: -0.01em;
     }
     .hint-sub {
-      color: #64748b; font: 400 12px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #667085; font: 400 12px/1.4 ${FONT_STACK};
       display: flex; gap: 10px;
     }
     .hint-sub kbd {
-      background: #f1f5f9;
+      background: #F1F3F7;
       padding: 2px 6px;
-      border-radius: 0px;
-      border: 1px solid #cbd5e1;
-      color: #334155;
+      border-radius: 0;
+      border: 1px solid #C8D0D9;
+      color: #344054;
       font-weight: 600;
       font-size: 11px;
     }
@@ -102,81 +114,81 @@ function createUI(): void {
 
     .selection {
       position: fixed; z-index: 2147483647;
-      border: 2px solid #2563eb;
-      background: rgba(37, 99, 235, 0.08);
-      box-shadow: 0 0 0 99999px rgba(0, 0, 0, 0.45);
+      border: 2px solid #1667F2;
+      background: rgba(22, 103, 242, 0.08);
+      box-shadow: 0 0 0 99999px rgba(16, 24, 40, 0.28);
       display: none;
       box-sizing: border-box;
       cursor: crosshair;
-      border-radius: 0px;
+      border-radius: 0;
     }
 
     .badge {
       position: absolute; top: -30px; left: 0;
-      background: #2563eb; color: #FFFFFF;
-      font: 700 11px/1.2 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      padding: 5px 9px; border-radius: 0px;
+      background: #1667F2; color: #FFFFFF;
+      font: 700 11px/1.2 ${FONT_STACK};
+      padding: 5px 9px; border-radius: 0;
       box-shadow: 0 2px 8px rgba(0,0,0,0.15);
       white-space: nowrap; pointer-events: none;
       display: flex; align-items: center; gap: 4px;
     }
     .badge.bottom { top: auto; bottom: -30px; }
 
-    /* OCR Result Modal (Light Theme & Sharp Square Corners) */
+    /* OCR Result Modal */
     .ocr-modal {
       position: fixed; top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       width: 500px; max-width: 90vw;
-      background: #ffffff; border: 1px solid #e2e8f0;
-      border-radius: 0px;
+      background: #ffffff; border: 1px solid #E3E8EF;
+      border-radius: 0;
       box-shadow: 0 20px 45px rgba(15, 23, 42, 0.18);
       z-index: 2147483647;
       padding: 20px;
       display: flex; flex-direction: column; gap: 14px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      color: #0f172a;
+      font-family: ${FONT_STACK};
+      color: #101828;
       animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .ocr-header {
       display: flex; align-items: center; justify-content: space-between;
     }
     .ocr-title {
-      font-size: 14px; font-weight: 700; color: #0f172a;
+      font-size: 14px; font-weight: 700; color: #101828;
       display: flex; align-items: center; gap: 8px;
     }
     .ocr-close {
-      background: transparent; border: none; color: #94a3b8;
-      cursor: pointer; padding: 4px; border-radius: 0px;
+      background: transparent; border: none; color: #98A2B3;
+      cursor: pointer; padding: 4px; border-radius: 0;
     }
-    .ocr-close:hover { color: #0f172a; background: #f1f5f9; }
+    .ocr-close:hover { color: #101828; background: #F1F3F7; }
     .ocr-textarea {
       width: 100%; height: 160px;
-      background: #f8fafc; border: 1px solid #cbd5e1;
-      border-radius: 0px; color: #0f172a;
+      background: #F7F8FA; border: 1px solid #C8D0D9;
+      border-radius: 0; color: #101828;
       font-size: 13px; font-family: monospace; line-height: 1.5;
       padding: 12px; resize: none; outline: none;
     }
-    .ocr-textarea:focus { border-color: #2563eb; background: #ffffff; }
+    .ocr-textarea:focus { border-color: #1667F2; background: #ffffff; }
     .ocr-footer {
       display: flex; align-items: center; justify-content: space-between;
     }
-    .ocr-meta { font-size: 12px; color: #64748b; }
+    .ocr-meta { font-size: 12px; color: #667085; }
     .ocr-actions { display: flex; gap: 8px; }
     .ocr-btn {
-      padding: 8px 16px; border-radius: 0px; font-size: 12px; font-weight: 600;
+      padding: 8px 16px; border-radius: 0; font-size: 12px; font-weight: 700;
       cursor: pointer; border: 1px solid transparent; display: flex; align-items: center; gap: 6px;
     }
-    .ocr-btn.secondary { background: #f1f5f9; color: #334155; border-color: #cbd5e1; }
-    .ocr-btn.secondary:hover { background: #e2e8f0; color: #0f172a; }
-    .ocr-btn.primary { background: #2563eb; color: #FFFFFF; }
-    .ocr-btn.primary:hover { background: #1d4ed8; }
+    .ocr-btn.secondary { background: #F1F3F7; color: #344054; border-color: #C8D0D9; }
+    .ocr-btn.secondary:hover { background: #E3E8EF; color: #101828; }
+    .ocr-btn.primary { background: #1667F2; color: #FFFFFF; }
+    .ocr-btn.primary:hover { background: #1257D8; }
     .ocr-loading {
       display: flex; align-items: center; justify-content: center; gap: 10px;
-      padding: 40px 0; color: #2563eb; font-size: 14px; font-weight: 600;
+      padding: 40px 0; color: #1667F2; font-size: 14px; font-weight: 600;
     }
     .spinner {
-      width: 20px; height: 20px; border: 2px solid rgba(37,99,235,0.2);
-      border-top-color: #2563eb; border-radius: 50%;
+      width: 20px; height: 20px; border: 2px solid rgba(22,103,242,0.2);
+      border-top-color: #1667F2; border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -184,9 +196,9 @@ function createUI(): void {
     .toast {
       position: fixed; bottom: 24px; left: 50%;
       transform: translateX(-50%) translateY(40px);
-      background: #10B981; color: #ffffff;
-      padding: 8px 16px; border-radius: 0px;
-      font: 600 12px/1.2 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #039855; color: #ffffff;
+      padding: 8px 16px; border-radius: 0;
+      font: 600 12px/1.2 ${FONT_STACK};
       box-shadow: 0 4px 16px rgba(0,0,0,0.15);
       opacity: 0; pointer-events: none;
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -389,7 +401,7 @@ async function processOCR(region: CaptureRegion): Promise<void> {
     <div class="ocr-header">
       <div class="ocr-title">
         <!-- Hugeicons: text-font -->
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1667F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M4 7V4h16v3M9 20h6M12 4v16M3 12h3M18 12h3"/>
         </svg>
         Recognizing Text...
@@ -432,7 +444,7 @@ async function processOCR(region: CaptureRegion): Promise<void> {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
-        <div style="padding: 24px 0; text-align: center; color: #94a3b8; font-size: 13px;">
+        <div style="padding: 24px 0; text-align: center; color: #98A2B3; font-size: 13px;">
           No readable text found in the selected area.
         </div>
         <div class="ocr-footer" style="justify-content: flex-end;">
@@ -456,7 +468,7 @@ async function processOCR(region: CaptureRegion): Promise<void> {
       <div class="ocr-header">
         <div class="ocr-title">
           <!-- Hugeicons: checkmark-circle-02 -->
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#039855" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 6L9 17l-5-5"/>
           </svg>
           Extracted Text

@@ -3,6 +3,10 @@ import { loadImage, canvasToBlob, needsTiling, computeTiles } from "../utils/ima
 import { createWorker } from "tesseract.js";
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message.type === "OFFSCREEN_PING") {
+    sendResponse({ ok: true });
+    return true;
+  }
   if (message.type === "PERFORM_OCR") {
     const { dataUrl } = message.payload as { dataUrl: string };
     (async () => {
@@ -12,18 +16,33 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
         const corePath = chrome.runtime.getURL("assets/tesseract-core.wasm.js");
         const langPath = chrome.runtime.getURL("assets");
 
-        worker = await createWorker({
-          workerPath,
-          corePath,
-          langPath,
-          logger: () => {},
-          errorHandler: (err) => console.warn("Tesseract worker warning:", err),
-        });
+        // Tesseract's own worker/WASM instantiation is a black box once
+        // started — if it stalls (a bad build of the WASM asset, a
+        // sandboxing quirk, anything), there's no other signal that it's
+        // stuck. Without a bound here, the UI's "Extracting text…" spinner
+        // would run forever instead of failing with an actionable message.
+        const withTimeout = <T,>(p: Promise<T>, label: string, ms = 20000): Promise<T> =>
+          Promise.race([
+            p,
+            new Promise<T>((_, reject) =>
+              setTimeout(() => reject(new Error(`OCR engine timed out (${label})`)), ms)
+            ),
+          ]);
 
-        await worker.loadLanguage("eng");
-        await worker.initialize("eng");
+        worker = await withTimeout(
+          createWorker({
+            workerPath,
+            corePath,
+            langPath,
+            logger: () => {},
+            errorHandler: (err) => console.warn("Tesseract worker warning:", err),
+          }),
+          "starting engine"
+        );
 
-        const ret = await worker.recognize(dataUrl);
+        await withTimeout(worker.loadLanguage("eng"), "loading language");
+        await withTimeout(worker.initialize("eng"), "initializing engine");
+        const ret: any = await withTimeout(worker.recognize(dataUrl), "recognizing text", 30000);
         const text = (ret?.data?.text || "").trim();
         sendResponse({ text });
       } catch (err: any) {

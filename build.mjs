@@ -77,6 +77,12 @@ if (existsSync(resolve(__dirname, "assets/shutter.mp3"))) {
     resolve(dist, "assets/shutter.mp3")
   );
 }
+if (existsSync(resolve(__dirname, "assets/Archivo.woff2"))) {
+  cpSync(
+    resolve(__dirname, "assets/Archivo.woff2"),
+    resolve(dist, "assets/Archivo.woff2")
+  );
+}
 
 // Copy local Tesseract OCR assets
 if (existsSync(resolve(__dirname, "node_modules/tesseract.js/dist/worker.min.js"))) {

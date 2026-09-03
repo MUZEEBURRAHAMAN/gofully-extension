@@ -8,6 +8,10 @@ const elements = {
   pngSaveAs: document.getElementById("pngSaveAs") as HTMLSelectElement,
   pdfPageSize: document.getElementById("pdfPageSize") as HTMLSelectElement,
   pdfWatermark: document.getElementById("pdfWatermark") as HTMLInputElement,
+  captureSound: document.getElementById("captureSound") as HTMLInputElement,
+  captureCountdown: document.getElementById("captureCountdown") as HTMLSelectElement,
+  skipStickyHeaders: document.getElementById("skipStickyHeaders") as HTMLInputElement,
+  defaultExportFormat: document.getElementById("defaultExportFormat") as HTMLSelectElement,
   savedToast: document.getElementById("savedToast")!,
 };
 
@@ -24,6 +28,10 @@ async function loadSettings(): Promise<void> {
   elements.pngSaveAs.value = String(settings.pngSaveAs);
   elements.pdfPageSize.value = settings.pdfPageSize;
   elements.pdfWatermark.checked = settings.pdfWatermark;
+  elements.captureSound.checked = settings.captureSound;
+  elements.captureCountdown.value = String(settings.captureCountdown);
+  elements.skipStickyHeaders.checked = settings.skipStickyHeaders;
+  elements.defaultExportFormat.value = settings.defaultExportFormat;
 }
 
 async function saveSettings(): Promise<void> {
@@ -35,6 +43,10 @@ async function saveSettings(): Promise<void> {
     pdfPageSize: elements.pdfPageSize.value as "a4" | "letter",
     pdfWatermark: elements.pdfWatermark.checked,
     scrollPadding: 0,
+    captureSound: elements.captureSound.checked,
+    captureCountdown: parseInt(elements.captureCountdown.value) as 0 | 1 | 2 | 3,
+    skipStickyHeaders: elements.skipStickyHeaders.checked,
+    defaultExportFormat: elements.defaultExportFormat.value as "png" | "webp",
   };
 
   await chrome.storage.sync.set({ settings });
@@ -46,7 +58,6 @@ function showSavedToast(): void {
   setTimeout(() => elements.savedToast.classList.remove("show"), 2000);
 }
 
-// Auto-save on change
 const inputs = [
   elements.defaultAction,
   elements.captureDelay,
@@ -54,10 +65,12 @@ const inputs = [
   elements.pngSaveAs,
   elements.pdfPageSize,
   elements.pdfWatermark,
+  elements.captureSound,
+  elements.captureCountdown,
+  elements.skipStickyHeaders,
+  elements.defaultExportFormat,
 ];
 
-inputs.forEach((el) => {
-  el.addEventListener("change", saveSettings);
-});
+inputs.forEach((el) => el.addEventListener("change", saveSettings));
 
 loadSettings();

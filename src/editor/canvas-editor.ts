@@ -1,6 +1,6 @@
 import {
   Canvas, FabricImage, Rect, Ellipse, Line, IText, Path, Group,
-  Circle, FabricText, PencilBrush,
+  Circle, FabricText, PencilBrush, FabricObject,
 } from "fabric";
 import Cropper from "cropperjs";
 import { canvasRGBA } from "stackblur-canvas";
@@ -50,6 +50,18 @@ async function init(): Promise<void> {
     enableRetinaScaling: true,
   });
 
+  // Rotate cursor: circular arrows SVG as data URI
+  const rotateCursorSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path fill="%23333" d="M16 4.5a11.5 11.5 0 0 1 8.35 3.65L21.5 11h9V2l-3.22 3.22A15 15 0 0 0 1.07 17h4.02A11.5 11.5 0 0 1 16 4.5zm0 23A11.5 11.5 0 0 1 7.65 23.85L10.5 21h-9v9l3.22-3.22A15 15 0 0 0 30.93 15h-4.02A11.5 11.5 0 0 1 16 27.5z"/></svg>`;
+  const rotateCursor = `url("data:image/svg+xml,${rotateCursorSvg}") 16 16, crosshair`;
+  // Fabric v7: controls may live on prototype or per-object; guard both paths
+  try {
+    const proto = FabricObject.prototype as any;
+    if (proto.controls?.mtr) proto.controls.mtr.cursorStyle = rotateCursor;
+  } catch {}
+  canvas.on("object:added", (e: any) => {
+    try { if (e.target?.controls?.mtr) e.target.controls.mtr.cursorStyle = rotateCursor; } catch {}
+  });
+
   setupTools();
   setupDropdownMenus();
   setupColorPicker();
@@ -81,6 +93,7 @@ function setupDropdownMenus(): void {
   arrowExpand?.addEventListener("click", (e) => {
     e.stopPropagation();
     blurMenu?.classList.remove("show");
+    exportDropMenu?.classList.remove("show");
     arrowMenu?.classList.toggle("show");
   });
 
@@ -90,13 +103,38 @@ function setupDropdownMenus(): void {
   blurExpand?.addEventListener("click", (e) => {
     e.stopPropagation();
     arrowMenu?.classList.remove("show");
+    exportDropMenu?.classList.remove("show");
     blurMenu?.classList.toggle("show");
+  });
+
+  // Export dropdown toggle — use fixed positioning so toolbar z-index doesn't clip it
+  const exportMenuBtn = document.getElementById("export-menu-btn");
+  const exportDropMenu = document.getElementById("export-drop-menu");
+  exportMenuBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    arrowMenu?.classList.remove("show");
+    blurMenu?.classList.remove("show");
+    const isOpen = exportDropMenu?.classList.contains("show");
+    if (!isOpen && exportDropMenu && exportMenuBtn) {
+      const r = exportMenuBtn.getBoundingClientRect();
+      exportDropMenu.style.right = `${window.innerWidth - r.right}px`;
+      exportDropMenu.style.top = `${r.bottom + 6}px`;
+    }
+    exportDropMenu?.classList.toggle("show");
+  });
+  // Close export menu after any item click (but not settings panel)
+  exportDropMenu?.addEventListener("click", (e) => {
+    const target = e.target as HTMLElement;
+    if (!target.closest("#export-settings-panel")) {
+      exportDropMenu.classList.remove("show");
+    }
   });
 
   // Close menus on click outside
   document.addEventListener("click", () => {
     arrowMenu?.classList.remove("show");
     blurMenu?.classList.remove("show");
+    document.getElementById("export-drop-menu")?.classList.remove("show");
   });
 
   // Arrow type selection
@@ -222,6 +260,8 @@ function setupTools(): void {
 }
 
 function setTool(tool: ToolType): void {
+  const textFmtGroup = document.getElementById("text-format-group");
+  if (textFmtGroup) textFmtGroup.style.display = tool === "text" ? "" : "none";
   if (tool === "crop") {
     if (!backgroundImage) { showToast("No image to crop"); return; }
     openCropModal();
@@ -997,7 +1037,111 @@ function setupStrokeControl(): void {
 
 // ─── Export buttons ───────────────────────────────────────────────────────────
 
+function getAnnotToggle(): boolean {
+  return (document.getElementById("annot-toggle-check") as HTMLInputElement)?.checked ?? true;
+}
+
+function getResizeDims(): { w: number; h: number } | null {
+  const wEl = document.getElementById("export-w") as HTMLInputElement;
+  const hEl = document.getElementById("export-h") as HTMLInputElement;
+  const w = parseInt(wEl?.value ?? "");
+  const h = parseInt(hEl?.value ?? "");
+  if (w > 0 && h > 0) return { w, h };
+  return null;
+}
+
+async function exportToBlob(): Promise<Blob> {
+  const clean = !getAnnotToggle();
+  const annotations = canvas.getObjects().filter((o) => o !== backgroundImage);
+  const hasAnnotations = annotations.length > 0;
+  const dims = getResizeDims();
+
+  // Clean export (or no annotations): bypass Fabric entirely — zero quality loss
+  if (clean || !hasAnnotations) {
+    const resp = await chrome.runtime.sendMessage({ type: "GET_CAPTURE_BLOB_URL" });
+    const dataUrl: string | null = resp?.url ?? null;
+    if (dataUrl) {
+      let blob = await dataUrlToBlob(dataUrl);
+      if (dims) {
+        const bitmap = await createImageBitmap(blob);
+        const oc = new OffscreenCanvas(dims.w, dims.h);
+        const ctx = oc.getContext("2d")!;
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(bitmap, 0, 0, dims.w, dims.h);
+        blob = await oc.convertToBlob({ type: "image/png" });
+      }
+      return blob;
+    }
+    // Fallback to Fabric if SW returns nothing
+  }
+
+  // Annotated export: render via Fabric at exact native pixel ratio
+  const multiplier = imgNativeW > 0 ? imgNativeW / dispW : Math.max(1, 1 / fitScale);
+
+  if (clean) {
+    annotations.forEach((o) => o.set("visible", false));
+    canvas.renderAll();
+  }
+
+  const dataUrl = canvas.toDataURL({ format: "png", quality: 1, multiplier, imageSmoothingEnabled: true, imageSmoothingQuality: "high" } as any);
+
+  if (clean) {
+    annotations.forEach((o) => o.set("visible", true));
+    canvas.renderAll();
+  }
+
+  let blob = await dataUrlToBlob(dataUrl);
+
+  if (dims) {
+    const bitmap = await createImageBitmap(blob);
+    const oc = new OffscreenCanvas(dims.w, dims.h);
+    const ctx = oc.getContext("2d")!;
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(bitmap, 0, 0, dims.w, dims.h);
+    blob = await oc.convertToBlob({ type: "image/png" });
+  }
+
+  return blob;
+}
+
 function setupExportButtons(): void {
+  // Stop clicks inside settings panel from closing the dropdown
+  document.getElementById("export-settings-panel")?.addEventListener("click", (e) => e.stopPropagation());
+
+  // Aspect ratio lock for resize inputs
+  let aspectLocked = true;
+  const lockBtn = document.getElementById("resize-lock-btn")!;
+  const wInput  = document.getElementById("export-w") as HTMLInputElement;
+  const hInput  = document.getElementById("export-h") as HTMLInputElement;
+
+  lockBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    aspectLocked = !aspectLocked;
+    lockBtn.classList.toggle("locked", aspectLocked);
+    lockBtn.setAttribute("aria-pressed", String(aspectLocked));
+    lockBtn.title = aspectLocked ? "Aspect ratio locked" : "Aspect ratio unlocked";
+    // Closed vs open shackle — same body, so only the shackle path changes.
+    lockBtn.innerHTML =
+      `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" ` +
+      `stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">` +
+      `<rect x="4" y="11" width="16" height="10" rx="2"/>` +
+      (aspectLocked ? `<path d="M8 11V7a4 4 0 0 1 8 0v4"/>` : `<path d="M8 11V7a4 4 0 0 1 7.5-2"/>`) +
+      `</svg>`;
+  });
+
+  wInput?.addEventListener("input", () => {
+    if (!aspectLocked || !imgNativeW || !imgNativeH) return;
+    const w = parseInt(wInput.value);
+    if (w > 0) hInput.value = String(Math.round(w * imgNativeH / imgNativeW));
+  });
+  hInput?.addEventListener("input", () => {
+    if (!aspectLocked || !imgNativeW || !imgNativeH) return;
+    const h = parseInt(hInput.value);
+    if (h > 0) wInput.value = String(Math.round(h * imgNativeW / imgNativeH));
+  });
+
   document.getElementById("copy-btn")!.addEventListener("click", async () => {
     try {
       const blob = await exportToBlob();
@@ -1020,18 +1164,48 @@ function setupExportButtons(): void {
       const blob = await exportToBlob();
       const pdfBlob = await generatePDF(blob, "a4");
       const url = URL.createObjectURL(pdfBlob);
-      const a = Object.assign(document.createElement("a"), {
-        href: url,
-        download: `gofully-${Date.now()}.pdf`,
-      });
+      const a = Object.assign(document.createElement("a"), { href: url, download: `gofully-${Date.now()}.pdf` });
       a.click();
       setTimeout(() => URL.revokeObjectURL(url), 5000);
       showToast("PDF saved");
-    } catch (err) {
-      console.error(err);
-      showToast("PDF failed");
-    }
+    } catch { showToast("PDF failed"); }
   });
+
+  document.getElementById("copy-selected-btn")?.addEventListener("click", async () => {
+    const active = canvas.getActiveObject();
+    if (!active) { showToast("Select an object first"); return; }
+    try {
+      const tmpCanvas = document.createElement("canvas");
+      const bounds = active.getBoundingRect();
+      tmpCanvas.width  = Math.ceil(bounds.width);
+      tmpCanvas.height = Math.ceil(bounds.height);
+      const ctx = tmpCanvas.getContext("2d")!;
+      ctx.translate(-bounds.left, -bounds.top);
+      active.render(ctx);
+      tmpCanvas.toBlob(async (blob) => {
+        if (!blob) return;
+        await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+        showToast("Object copied");
+      }, "image/png");
+    } catch { showToast("Copy failed"); }
+  });
+
+  document.getElementById("save-webp-btn")?.addEventListener("click", async () => {
+    const pngBlob = await exportToBlob();
+    const bitmap = await createImageBitmap(pngBlob);
+    const dims = getResizeDims();
+    const ow = dims?.w ?? bitmap.width;
+    const oh = dims?.h ?? bitmap.height;
+    const oc = new OffscreenCanvas(ow, oh);
+    oc.getContext("2d")!.drawImage(bitmap, 0, 0, ow, oh);
+    const webpBlob = await oc.convertToBlob({ type: "image/webp", quality: 0.92 });
+    const url = URL.createObjectURL(webpBlob);
+    const a = Object.assign(document.createElement("a"), { href: url, download: `gofully-${Date.now()}.webp` });
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    showToast("WebP saved");
+  });
+
 
   document.getElementById("undo-btn")!.addEventListener("click",   undo);
   document.getElementById("redo-btn")!.addEventListener("click",   redo);
@@ -1054,6 +1228,9 @@ function setupExportButtons(): void {
   // Crop modal buttons
   document.getElementById("cropApplyBtn")?.addEventListener("click",  applyCropModal);
   document.getElementById("cropCancelBtn")?.addEventListener("click", () => closeCropModal(true));
+
+  setupTextFormatting();
+  setupRotateControls();
 }
 
 function getExportMultiplier(): number {
@@ -1071,10 +1248,90 @@ function getExportMultiplier(): number {
   return nativeM;
 }
 
-async function exportToBlob(): Promise<Blob> {
-  const multiplier = getExportMultiplier();
-  const dataUrl    = canvas.toDataURL({ format: "png", quality: 1, multiplier });
-  return dataUrlToBlob(dataUrl);
+// ─── Text formatting ──────────────────────────────────────────────────────────
+
+function setupTextFormatting(): void {
+  const group   = document.getElementById("text-format-group");
+  const boldBtn = document.getElementById("text-bold-btn");
+  const italicBtn = document.getElementById("text-italic-btn");
+  const sizeSlider = document.getElementById("fontSize") as HTMLInputElement;
+  const sizeVal    = document.getElementById("fontSizeVal");
+  if (!group || !boldBtn || !italicBtn || !sizeSlider) return;
+
+  canvas.on("selection:created", updateTextFormatUI);
+  canvas.on("selection:updated", updateTextFormatUI);
+  canvas.on("selection:cleared", () => { if (group) group.style.display = "none"; });
+
+  function updateTextFormatUI() {
+    const obj = canvas.getActiveObject() as any;
+    if (!obj || (obj.type !== "i-text" && obj.type !== "text")) {
+      group!.style.display = "none"; return;
+    }
+    group!.style.display = "";
+    boldBtn!.classList.toggle("active", obj.fontWeight === "bold");
+    italicBtn!.classList.toggle("active", obj.fontStyle === "italic");
+    sizeSlider.value = String(Math.round(obj.fontSize ?? 24));
+    if (sizeVal) sizeVal.textContent = sizeSlider.value;
+  }
+
+  boldBtn.addEventListener("click", () => {
+    const obj = canvas.getActiveObject() as any;
+    if (!obj) return;
+    obj.set("fontWeight", obj.fontWeight === "bold" ? "normal" : "bold");
+    boldBtn.classList.toggle("active", obj.fontWeight === "bold");
+    canvas.renderAll(); saveState();
+  });
+
+  italicBtn.addEventListener("click", () => {
+    const obj = canvas.getActiveObject() as any;
+    if (!obj) return;
+    obj.set("fontStyle", obj.fontStyle === "italic" ? "normal" : "italic");
+    italicBtn.classList.toggle("active", obj.fontStyle === "italic");
+    canvas.renderAll(); saveState();
+  });
+
+  sizeSlider.addEventListener("input", () => {
+    const val = parseInt(sizeSlider.value);
+    if (sizeVal) sizeVal.textContent = String(val);
+    const obj = canvas.getActiveObject() as any;
+    if (!obj) return;
+    obj.set("fontSize", val);
+    canvas.renderAll(); saveState();
+  });
+}
+
+// ─── Rotate controls ──────────────────────────────────────────────────────────
+
+function setupRotateControls(): void {
+  const group = document.getElementById("rotate-group");
+  const leftBtn = document.getElementById("rotate-left-btn");
+  const rightBtn = document.getElementById("rotate-right-btn");
+  if (!group || !leftBtn || !rightBtn) return;
+
+  function showHide() {
+    const obj = canvas.getActiveObject();
+    if (group) group.style.display = obj ? "flex" : "none";
+  }
+
+  canvas.on("selection:created", showHide);
+  canvas.on("selection:updated", showHide);
+  canvas.on("selection:cleared", () => { if (group) group.style.display = "none"; });
+
+  leftBtn.addEventListener("click", () => {
+    const obj = canvas.getActiveObject();
+    if (!obj) return;
+    obj.rotate(((obj.angle ?? 0) - 90 + 360) % 360);
+    canvas.requestRenderAll();
+    saveState();
+  });
+
+  rightBtn.addEventListener("click", () => {
+    const obj = canvas.getActiveObject();
+    if (!obj) return;
+    obj.rotate(((obj.angle ?? 0) + 90) % 360);
+    canvas.requestRenderAll();
+    saveState();
+  });
 }
 
 // ─── Zoom ─────────────────────────────────────────────────────────────────────
@@ -1210,4 +1467,324 @@ function dataUrlToBlob(dataUrl: string): Blob {
   return new Blob([arr], { type: mime });
 }
 
+// ─── Beautifier ──────────────────────────────────────────────────────────────
+
+let beautifyActive = false;
+let originalScreenshotUrl: string | null = null;
+
+function setupBeautifier(): void {
+  const panel = document.getElementById("beautifyPanel");
+  const btn = document.getElementById("tool-beautify") as HTMLElement | null;
+  if (!panel || !btn) return;
+
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    beautifyActive = !beautifyActive;
+    panel.classList.toggle("open", beautifyActive);
+    btn.classList.toggle("active", beautifyActive);
+    if (beautifyActive) toolNameEl.textContent = "Screenshot Beautifier";
+  });
+
+  // Background swatches
+  panel.querySelectorAll<HTMLElement>(".bf-bg-swatch").forEach((sw) => {
+    sw.addEventListener("click", () => {
+      panel.querySelectorAll(".bf-bg-swatch").forEach((s) => s.classList.remove("active"));
+      sw.classList.add("active");
+    });
+  });
+
+  // Frame buttons
+  panel.querySelectorAll<HTMLElement>(".bf-frame-btn").forEach((b) => {
+    b.addEventListener("click", () => {
+      panel.querySelectorAll(".bf-frame-btn").forEach((x) => x.classList.remove("active"));
+      b.classList.add("active");
+    });
+  });
+
+  // Ratio buttons
+  panel.querySelectorAll<HTMLElement>(".bf-ratio-btn").forEach((b) => {
+    b.addEventListener("click", () => {
+      panel.querySelectorAll(".bf-ratio-btn").forEach((x) => x.classList.remove("active"));
+      b.classList.add("active");
+    });
+  });
+
+  // Slider value displays
+  const sliders: [string, string, string][] = [
+    ["bf-padding", "bf-padding-val", "px"],
+    ["bf-radius", "bf-radius-val", "px"],
+    ["bf-shadow", "bf-shadow-val", "px"],
+    ["bf-shadow-opacity", "bf-shadow-opacity-val", "%"],
+    ["bf-noise", "bf-noise-val", "%"],
+  ];
+  for (const [id, valId, suffix] of sliders) {
+    const sl = document.getElementById(id) as HTMLInputElement;
+    const vl = document.getElementById(valId);
+    if (sl && vl) {
+      sl.addEventListener("input", () => { vl.textContent = sl.value + suffix; });
+    }
+  }
+
+  // Apply
+  document.getElementById("bf-apply-btn")?.addEventListener("click", applyBeautify);
+  // Reset
+  document.getElementById("bf-reset-btn")?.addEventListener("click", resetBeautify);
+}
+
+async function applyBeautify(): Promise<void> {
+  if (!backgroundImage) { showToast("No image to beautify"); return; }
+
+  // Save original if not saved yet
+  if (!originalScreenshotUrl) {
+    const multiplier = imgNativeW > 0 ? imgNativeW / dispW : Math.max(1, 1 / fitScale);
+    originalScreenshotUrl = canvas.toDataURL({ format: "png", quality: 1, multiplier } as any);
+  }
+
+  // Read settings
+  const bgSwatch = document.querySelector<HTMLElement>(".bf-bg-swatch.active");
+  const bgValue = bgSwatch?.dataset.bg || "none";
+  const padding = parseInt((document.getElementById("bf-padding") as HTMLInputElement).value) || 0;
+  const radius = parseInt((document.getElementById("bf-radius") as HTMLInputElement).value) || 0;
+  const shadowBlur = parseInt((document.getElementById("bf-shadow") as HTMLInputElement).value) || 0;
+  const shadowOpacity = parseInt((document.getElementById("bf-shadow-opacity") as HTMLInputElement).value) || 0;
+  const noiseAmount = parseInt((document.getElementById("bf-noise") as HTMLInputElement).value) || 0;
+  const frameType = document.querySelector<HTMLElement>(".bf-frame-btn.active")?.dataset.frame || "none";
+  const ratioStr = document.querySelector<HTMLElement>(".bf-ratio-btn.active")?.dataset.ratio || "";
+
+  // Get current canvas as image (with annotations)
+  const multiplier = imgNativeW > 0 ? imgNativeW / dispW : Math.max(1, 1 / fitScale);
+  const srcDataUrl = canvas.toDataURL({ format: "png", quality: 1, multiplier } as any);
+
+  const srcImg = new Image();
+  srcImg.src = srcDataUrl;
+  await new Promise<void>((r) => { srcImg.onload = () => r(); });
+
+  const srcW = srcImg.naturalWidth;
+  const srcH = srcImg.naturalHeight;
+
+  // Frame bar height (in native pixels, scaled proportionally)
+  const frameBarH = frameType !== "none" ? Math.round(Math.max(28, srcH * 0.035)) : 0;
+
+  // Calculate output dimensions
+  let outW = srcW + padding * 2;
+  let outH = srcH + padding * 2 + frameBarH;
+
+  // Apply aspect ratio
+  if (ratioStr) {
+    const ratio = parseFloat(ratioStr);
+    if (ratio > 0) {
+      const currentRatio = outW / outH;
+      if (currentRatio > ratio) {
+        outH = Math.round(outW / ratio);
+      } else {
+        outW = Math.round(outH * ratio);
+      }
+    }
+  }
+
+  // Build result on offscreen canvas
+  const oc = document.createElement("canvas");
+  oc.width = outW;
+  oc.height = outH;
+  const ctx = oc.getContext("2d")!;
+
+  // Draw background
+  if (bgValue === "none") {
+    ctx.fillStyle = "transparent";
+    ctx.clearRect(0, 0, outW, outH);
+  } else if (bgValue.startsWith("linear-gradient")) {
+    const colors = bgValue.match(/#[0-9a-fA-F]{6}/g) || ["#667eea", "#764ba2"];
+    const grad = ctx.createLinearGradient(0, 0, outW, outH);
+    grad.addColorStop(0, colors[0]);
+    grad.addColorStop(1, colors[1] || colors[0]);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, outW, outH);
+  } else {
+    ctx.fillStyle = bgValue;
+    ctx.fillRect(0, 0, outW, outH);
+  }
+
+  // Add noise texture
+  if (noiseAmount > 0) {
+    const imageData = ctx.getImageData(0, 0, outW, outH);
+    const data = imageData.data;
+    const intensity = noiseAmount * 2.55;
+    for (let i = 0; i < data.length; i += 4) {
+      const noise = (Math.random() - 0.5) * intensity;
+      data[i] += noise;
+      data[i + 1] += noise;
+      data[i + 2] += noise;
+    }
+    ctx.putImageData(imageData, 0, 0);
+  }
+
+  // Position screenshot centered with padding
+  const imgX = Math.round((outW - srcW) / 2);
+  const imgY = Math.round((outH - srcH - frameBarH) / 2) + frameBarH;
+
+  // Draw shadow
+  if (shadowBlur > 0 && shadowOpacity > 0) {
+    ctx.save();
+    ctx.shadowColor = `rgba(0,0,0,${shadowOpacity / 100})`;
+    ctx.shadowBlur = shadowBlur;
+    ctx.shadowOffsetY = Math.round(shadowBlur * 0.3);
+
+    if (radius > 0) {
+      roundedRect(ctx, imgX, imgY, srcW, srcH, radius);
+      ctx.fillStyle = "rgba(0,0,0,1)";
+      ctx.fill();
+    } else {
+      ctx.fillStyle = "rgba(0,0,0,1)";
+      ctx.fillRect(imgX, imgY, srcW, srcH);
+    }
+    ctx.restore();
+  }
+
+  // Draw screenshot with rounded corners
+  ctx.save();
+  if (radius > 0) {
+    roundedRect(ctx, imgX, imgY, srcW, srcH, radius);
+    ctx.clip();
+  }
+  ctx.drawImage(srcImg, imgX, imgY, srcW, srcH);
+  ctx.restore();
+
+  // Draw window frame
+  if (frameType === "macos") {
+    drawMacFrame(ctx, imgX, imgY - frameBarH, srcW, frameBarH, radius);
+  } else if (frameType === "browser") {
+    drawBrowserFrame(ctx, imgX, imgY - frameBarH, srcW, frameBarH, radius);
+  }
+
+  // Load result into editor
+  const resultUrl = oc.toDataURL("image/png");
+  await loadScreenshot(resultUrl, true);
+  saveState();
+  showToast("Beautify applied");
+}
+
+function roundedRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number): void {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function drawMacFrame(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, radius: number): void {
+  ctx.save();
+  // Frame background with top rounded corners
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + w - radius, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+  ctx.lineTo(x + w, y + h);
+  ctx.lineTo(x, y + h);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+  ctx.fillStyle = "#E8E8E8";
+  ctx.fill();
+
+  // Traffic light dots
+  const dotR = Math.max(5, Math.round(h * 0.18));
+  const dotY = y + h / 2;
+  const dotStartX = x + Math.round(h * 0.55);
+  const gap = Math.round(dotR * 2.8);
+
+  const dots = [
+    { cx: dotStartX, color: "#FF5F57" },
+    { cx: dotStartX + gap, color: "#FEBC2E" },
+    { cx: dotStartX + gap * 2, color: "#28C840" },
+  ];
+
+  for (const d of dots) {
+    ctx.beginPath();
+    ctx.arc(d.cx, dotY, dotR, 0, Math.PI * 2);
+    ctx.fillStyle = d.color;
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawBrowserFrame(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, radius: number): void {
+  ctx.save();
+  // Frame background with top rounded corners
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + w - radius, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+  ctx.lineTo(x + w, y + h);
+  ctx.lineTo(x, y + h);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+  ctx.fillStyle = "#F0F0F0";
+  ctx.fill();
+
+  // Traffic light dots (smaller)
+  const dotR = Math.max(4, Math.round(h * 0.14));
+  const dotY = y + h / 2;
+  const dotStartX = x + Math.round(h * 0.5);
+  const gap = Math.round(dotR * 2.8);
+
+  const dots = [
+    { color: "#FF5F57" },
+    { color: "#FEBC2E" },
+    { color: "#28C840" },
+  ];
+  for (let i = 0; i < dots.length; i++) {
+    ctx.beginPath();
+    ctx.arc(dotStartX + gap * i, dotY, dotR, 0, Math.PI * 2);
+    ctx.fillStyle = dots[i].color;
+    ctx.fill();
+  }
+
+  // URL bar
+  const barH = Math.round(h * 0.5);
+  const barY = y + (h - barH) / 2;
+  const barX = dotStartX + gap * 3 + dotR * 2;
+  const barW = w - (barX - x) - Math.round(h * 0.5);
+  if (barW > 40) {
+    ctx.fillStyle = "#FFFFFF";
+    ctx.beginPath();
+    const barR = barH / 2;
+    ctx.moveTo(barX + barR, barY);
+    ctx.lineTo(barX + barW - barR, barY);
+    ctx.quadraticCurveTo(barX + barW, barY, barX + barW, barY + barR);
+    ctx.quadraticCurveTo(barX + barW, barY + barH, barX + barW - barR, barY + barH);
+    ctx.lineTo(barX + barR, barY + barH);
+    ctx.quadraticCurveTo(barX, barY + barH, barX, barY + barR);
+    ctx.quadraticCurveTo(barX, barY, barX + barR, barY);
+    ctx.closePath();
+    ctx.fill();
+
+    // Lock icon + placeholder URL text
+    ctx.fillStyle = "#999";
+    ctx.font = `${Math.round(barH * 0.6)}px -apple-system, sans-serif`;
+    ctx.textBaseline = "middle";
+    ctx.fillText("🔒 example.com", barX + 8, barY + barH / 2);
+  }
+
+  ctx.restore();
+}
+
+async function resetBeautify(): Promise<void> {
+  if (originalScreenshotUrl) {
+    await loadScreenshot(originalScreenshotUrl, true);
+    originalScreenshotUrl = null;
+    saveState();
+    showToast("Reset to original");
+  } else {
+    showToast("Nothing to reset");
+  }
+}
+
 init();
+setupBeautifier();

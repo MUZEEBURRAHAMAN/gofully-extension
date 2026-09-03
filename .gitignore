@@ -6,3 +6,6 @@ dist/
 .originkit/
 .vercel
 .next/
+tsconfig.tsbuildinfo
+assets/Archivo.zip
+assets/Archivo/

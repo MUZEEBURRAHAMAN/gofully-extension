@@ -1,9 +1,12 @@
-import type { CaptureMode, CaptureProgress, ExportFormat } from "../types";
+import type { CaptureMode, CaptureProgress, ExportFormat, Settings } from "../types";
 import { copyToClipboard } from "../export/clipboard";
 import { generatePDF } from "../export/pdf-generator";
 import { generateFilename } from "../utils/image";
 import { isSupportedCapturePage, type PageSupportResult } from "../utils/url-validator";
 
+const onboarding = document.getElementById("onboarding")!;
+const onboardingStart = document.getElementById("onboardingStart")!;
+const onboardingSkip = document.getElementById("onboardingSkip")!;
 const modesSection = document.getElementById("modesSection")!;
 const progressSection = document.getElementById("progressSection")!;
 const progressLabel = document.getElementById("progressLabel")!;
@@ -23,18 +26,37 @@ const unsupportedTitle = document.getElementById("unsupportedTitle")!;
 const unsupportedDesc = document.getElementById("unsupportedDesc")!;
 const unsupportedDismissBtn = document.getElementById("unsupportedDismissBtn")!;
 
+// Status line (last capture, shown on a fresh popup open before any new action)
+const statusLine = document.getElementById("statusLine")!;
+const statusThumb = document.getElementById("statusThumb") as HTMLImageElement;
+const statusText = document.getElementById("statusText")!;
+const statusViewBtn = document.getElementById("statusViewBtn")!;
+
 let currentBlobUrl: string | null = null;
 let currentUrl = "";
 let captureMetadata: any = null;
 let currentSupportState: PageSupportResult = { supported: true, type: "supported" };
 
-function playCaptureSound(): void {
+async function readSettings(): Promise<Partial<Settings>> {
+  const stored = (await chrome.storage.sync.get("settings")) as { settings?: Partial<Settings> };
+  return stored.settings ?? {};
+}
+
+async function playCaptureSound(): Promise<void> {
   try {
+    const sound = (await readSettings()).captureSound !== false;
+    if (!sound) return;
     const url = chrome.runtime.getURL("assets/shutter.mp3");
     const audio = new Audio(url);
     audio.volume = 0.5;
     audio.play().catch(() => {});
   } catch { /* ignore */ }
+}
+
+async function getCountdown(): Promise<number> {
+  try {
+    return (await readSettings()).captureCountdown ?? 0;
+  } catch { return 0; }
 }
 
 // Settings & Help buttons
@@ -51,9 +73,10 @@ unsupportedDismissBtn?.addEventListener("click", () => {
   unsupportedPanel.classList.remove("active");
 });
 
-// Mode buttons
+// Mode buttons — use mousedown so first interaction works without needing focus first
 document.querySelectorAll(".mode-btn").forEach((btn) => {
-  btn.addEventListener("click", () => {
+  btn.addEventListener("mousedown", (e) => {
+    e.preventDefault();
     const mode = (btn as HTMLElement).dataset.mode as CaptureMode;
     if ((btn as HTMLButtonElement).disabled) return;
     startCapture(mode);
@@ -68,6 +91,11 @@ copyBtn.addEventListener("click", async () => {
     const blob = await res.blob();
     const pngBlob = blob.type === "image/png" ? blob : await convertToPng(blob);
     await navigator.clipboard.write([new ClipboardItem({ "image/png": pngBlob })]);
+    const label = copyBtn.querySelector("span") ?? copyBtn;
+    const orig = label.textContent ?? "Copy";
+    label.textContent = "Copied!";
+    copyBtn.style.opacity = "0.75";
+    setTimeout(() => { label.textContent = orig; copyBtn.style.opacity = ""; }, 2000);
     showToast("Copied!");
   } catch {
     showToast("Copy failed — try Save PNG");
@@ -87,12 +115,27 @@ savePngBtn.addEventListener("click", async () => {
   try {
     const domain = getDomain(currentUrl);
     const filename = generateFilename(domain, "png");
-    await chrome.downloads.download({
-      url: currentBlobUrl,
-      filename,
-      saveAs: false,
-    });
+    await chrome.downloads.download({ url: currentBlobUrl, filename, saveAs: false });
     showToast("Saved as PNG!");
+  } catch {
+    showToast("Save failed");
+  }
+});
+
+document.getElementById("saveWebpBtn")?.addEventListener("click", async () => {
+  if (!currentBlobUrl) return;
+  try {
+    const res = await fetch(currentBlobUrl);
+    const blob = await res.blob();
+    const bitmap = await createImageBitmap(blob);
+    const oc = new OffscreenCanvas(bitmap.width, bitmap.height);
+    oc.getContext("2d")!.drawImage(bitmap, 0, 0);
+    const webpBlob = await oc.convertToBlob({ type: "image/webp", quality: 0.92 });
+    const downloadUrl = URL.createObjectURL(webpBlob);
+    const domain = getDomain(currentUrl);
+    const filename = generateFilename(domain, "webp");
+    await chrome.downloads.download({ url: downloadUrl, filename, saveAs: false });
+    showToast("Saved as WebP!");
   } catch {
     showToast("Save failed");
   }
@@ -106,17 +149,29 @@ document.getElementById("editBtn")?.addEventListener("click", async () => {
 
 savePdfBtn.addEventListener("click", async () => {
   if (!currentBlobUrl) return;
+  const btnLabel = savePdfBtn.querySelector("span") ?? savePdfBtn;
+  const origText = btnLabel.textContent ?? "Save PDF";
   try {
+    btnLabel.textContent = "Generating...";
+    savePdfBtn.style.opacity = "0.7";
+    (savePdfBtn as HTMLButtonElement).disabled = true;
+
     const response = await fetch(currentBlobUrl);
     const blob = await response.blob();
     const domain = getDomain(currentUrl);
     const pdfBlob = await generatePDF(blob, "a4");
-    const pdfDataUrl = await blobToDataUrlLocal(pdfBlob);
+    const pdfObjUrl = URL.createObjectURL(pdfBlob);
     const filename = generateFilename(domain, "pdf");
-    await chrome.downloads.download({ url: pdfDataUrl, filename, saveAs: false });
+    await chrome.downloads.download({ url: pdfObjUrl, filename, saveAs: false });
+    URL.revokeObjectURL(pdfObjUrl);
     showToast("Saved as PDF!");
-  } catch {
+  } catch (err) {
+    console.error("PDF generation error:", err);
     showToast("PDF generation failed");
+  } finally {
+    btnLabel.textContent = origText;
+    savePdfBtn.style.opacity = "";
+    (savePdfBtn as HTMLButtonElement).disabled = false;
   }
 });
 
@@ -189,42 +244,57 @@ function applyPageSupportState(support: PageSupportResult): void {
 }
 
 async function startCapture(mode: CaptureMode): Promise<void> {
-  const [tab] = await chrome.tabs.query({
-    active: true,
-    currentWindow: true,
-  });
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab?.id) return;
 
-  // Double check central URL support before initiating any capture workflow
   const support = isSupportedCapturePage(tab.url);
-  if (!support.supported) {
-    applyPageSupportState(support);
-    return;
-  }
+  if (!support.supported) { applyPageSupportState(support); return; }
 
-  if (
-    mode === "selected-area" ||
-    mode === "scrolling-area" ||
-    mode === "capture-text"
-  ) {
-    chrome.runtime.sendMessage({
-      type: "INIT_INTERACTIVE_MODE",
-      payload: { mode, tabId: tab.id },
-    });
+  const countdown = await getCountdown();
+
+  if (mode === "selected-area" || mode === "scrolling-area" || mode === "capture-text") {
+    if (countdown > 0) {
+      await runCountdown(countdown, tab.id);
+    }
+    chrome.runtime.sendMessage({ type: "INIT_INTERACTIVE_MODE", payload: { mode, tabId: tab.id } });
     window.close();
     return;
   }
 
-  // Full page and visible area — trigger capture and close popup
-  chrome.runtime.sendMessage({
-    type: "START_CAPTURE",
-    payload: { mode, tabId: tab.id },
+  if (countdown > 0) {
+    await runCountdown(countdown, tab.id);
+  }
+
+  showProgress();
+  chrome.runtime.sendMessage(
+    { type: "START_CAPTURE", payload: { mode, tabId: tab.id } },
+    (response) => {
+      if (response?.type === "CAPTURE_COMPLETE") {
+        captureMetadata = response.payload;
+        currentUrl = response.payload.url || "";
+        chrome.runtime.sendMessage({ type: "GET_CAPTURE_BLOB_URL" }, (resp) => {
+          if (resp?.url) {
+            currentBlobUrl = resp.url;
+          }
+          showResult(response.payload);
+        });
+      } else if (response?.type === "CAPTURE_ERROR") {
+        showError(response.payload?.message || "Capture failed");
+      }
+    }
+  );
+}
+
+function runCountdown(seconds: number, tabId: number): Promise<void> {
+  return new Promise((resolve) => {
+    chrome.tabs.sendMessage(tabId, { type: "SHOW_COUNTDOWN", payload: { seconds } }).catch(() => {});
+    setTimeout(resolve, seconds * 1000);
   });
-  window.close();
 }
 
 function showProgress(): void {
   modesSection.style.display = "none";
+  statusLine.classList.remove("active");
   progressSection.classList.add("active");
   resultBar.classList.remove("active");
   errorBar.classList.remove("active");
@@ -255,6 +325,7 @@ function updateProgress(progress: CaptureProgress): void {
 function showResult(result: any): void {
   progressSection.classList.remove("active");
   modesSection.style.display = "none";
+  statusLine.classList.remove("active");
   resultBar.classList.add("active");
 
   const w = Math.round(result.width);
@@ -280,7 +351,7 @@ function showResult(result: any): void {
 
 function showError(message: string): void {
   progressSection.classList.remove("active");
-  modesSection.style.display = "block";
+  modesSection.style.display = "grid";
   errorBar.classList.add("active");
   errorMsg.textContent = message;
   setTimeout(() => errorBar.classList.remove("active"), 5000);
@@ -300,14 +371,78 @@ function getDomain(url: string): string {
   }
 }
 
-function blobToDataUrlLocal(blob: Blob): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
+function timeAgo(ts: number): string {
+  const s = Math.max(0, Math.round((Date.now() - ts) / 1000));
+  if (s < 5) return "just now";
+  if (s < 60) return `${s}s ago`;
+  const m = Math.round(s / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.round(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.round(h / 24)}d ago`;
 }
 
-// Run active tab support check on popup open
+const MODE_LABEL: Record<string, string> = {
+  "full-page": "Full page",
+  "visible-area": "Visible area",
+  "selected-area": "Selected area",
+  "scrolling-area": "Scrolling area",
+};
+
+/** Shows a one-line summary of the last capture on a fresh popup open, so the
+ *  user doesn't have to re-capture just to grab or re-edit something they
+ *  already took a moment ago. Only shown when nothing else (progress/result/
+ *  error) is already occupying the popup body. */
+async function loadLastCaptureStatus(): Promise<void> {
+  try {
+    const resp = await chrome.runtime.sendMessage({ type: "GET_LAST_CAPTURE" });
+    const result = resp?.result;
+    if (!result || !resp?.hasBlob) return;
+    if (resultBar.classList.contains("active") || errorBar.classList.contains("active")) return;
+
+    const label = MODE_LABEL[result.mode] || result.mode;
+    const w = Math.round(result.width);
+    const h = Math.round(result.height);
+    statusText.innerHTML = `<b>${label}</b> · ${w}×${h} · ${timeAgo(result.timestamp)}`;
+
+    const blobResp = await chrome.runtime.sendMessage({ type: "GET_CAPTURE_BLOB_URL" });
+    if (blobResp?.url) {
+      statusThumb.src = blobResp.url;
+      currentBlobUrl = blobResp.url;
+      currentUrl = result.url || "";
+      statusLine.classList.add("active");
+    }
+  } catch {
+    // no prior capture available — leave the status line hidden
+  }
+}
+
+statusViewBtn.addEventListener("click", async () => {
+  const resp = await chrome.runtime.sendMessage({ type: "GET_LAST_CAPTURE" });
+  if (resp?.result) {
+    captureMetadata = resp.result;
+    showResult(resp.result);
+  }
+});
+
+function dismissOnboarding(): void {
+  chrome.storage.local.set({ gf_onboarded: true });
+  onboarding.classList.remove("active");
+  modesSection.style.display = "grid";
+}
+
+onboardingStart.addEventListener("click", dismissOnboarding);
+onboardingSkip.addEventListener("click", dismissOnboarding);
+
+async function maybeShowOnboarding(): Promise<void> {
+  const data = await chrome.storage.local.get("gf_onboarded");
+  if (!data.gf_onboarded) {
+    onboarding.classList.add("active");
+    modesSection.style.display = "none";
+  }
+}
+
+// Run active tab support check and onboarding on popup open
 checkActiveTabSupport();
+loadLastCaptureStatus();
+maybeShowOnboarding();

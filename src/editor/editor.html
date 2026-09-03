@@ -4,23 +4,37 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GoFully Editor</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    @font-face {
+      font-family: 'Archivo';
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url('assets/Archivo.woff2') format('woff2');
+    }
+  </style>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg:        #F1F5F9;
+      --bg:        #F7F8FA;
       --bar:       #FFFFFF;
-      --bar-bd:    #E2E8F0;
-      --hover:     #F1F5F9;
-      --blue:      #2563EB;
-      --blue-h:    #1D4ED8;
-      --text:      #0F172A;
-      --muted:     #64748B;
-      --border:    #E2E8F0;
-      --green:     #10B981;
+      --bar-bd:    #E3E8EF;
+      --hover:     #F7F8FA;
+      --blue:      #1667F2;
+      --blue-h:    #1257D8;
+      --text:      #101828;
+      --muted:     #667085;
+      --border:    #E3E8EF;
+      --green:     #027A48;
+
+      --text-2:    #344054;
+      --text-4:    #98A2B3;
+      --surface:   #F7F8FA;
+      --sunken:    #F1F3F7;
+
+      --r-sm:      0px;
+      --r-md:      0px;
     }
 
     html, body {
@@ -28,7 +42,7 @@
       overflow: hidden;
       background: var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
+      font-family: 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
       -webkit-font-smoothing: antialiased;
     }
 
@@ -67,7 +81,7 @@
     .brand-logo {
       width: 24px;
       height: 24px;
-      border-radius: 6px;
+      border-radius: 0;
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
       display: block;
       flex-shrink: 0;
@@ -76,7 +90,7 @@
       font-size: 13px;
       font-weight: 700;
       letter-spacing: -0.3px;
-      color: #0F172A;
+      color: #101828;
       display: flex;
       align-items: center;
     }
@@ -89,10 +103,10 @@
       display: flex;
       align-items: center;
       gap: 2px;
-      background: #F1F5F9;
+      background: #F7F8FA;
       padding: 2px 4px;
       border: 1px solid var(--bar-bd);
-      border-radius: 0px;
+      border-radius: 0;
     }
     .hdr-zoom-btn {
       width: 26px;
@@ -104,11 +118,11 @@
       background: transparent;
       cursor: pointer;
       color: var(--muted);
-      border-radius: 0px;
+      border-radius: 0;
       transition: background 0.12s, color 0.12s;
     }
     .hdr-zoom-btn:hover {
-      background: #E2E8F0;
+      background: #E3E8EF;
       color: var(--text);
     }
     .hdr-zoom-btn:active {
@@ -151,12 +165,12 @@
       display: flex; align-items: center; justify-content: center;
       border: none; background: transparent; cursor: pointer;
       color: var(--muted);
-      border-radius: 0px;
+      border-radius: 0;
       position: relative;
       transition: color .12s, background .12s, transform .08s;
     }
     .tool-btn:hover { background: var(--hover); color: var(--text); }
-    .tool-btn.active { background: var(--blue); color: #fff; box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35); }
+    .tool-btn.active { background: var(--blue); color: #fff; box-shadow: 0 2px 8px rgba(22, 103, 242, 0.35); }
     .tool-btn:active { transform: scale(0.95); }
     .tool-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
     .tool-btn svg { width: 16px; height: 16px; }
@@ -175,7 +189,7 @@
       height: 12px;
       background: #FFFFFF;
       border: 1px solid var(--border);
-      border-radius: 0px;
+      border-radius: 0;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -194,7 +208,7 @@
       left: 0;
       background: #FFFFFF;
       border: 1px solid var(--border);
-      border-radius: 0px;
+      border-radius: 0;
       box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
       padding: 5px;
       display: none;
@@ -216,17 +230,17 @@
       color: var(--text);
       background: transparent;
       border: none;
-      border-radius: 0px;
+      border-radius: 0;
       cursor: pointer;
       text-align: left;
       transition: background 0.1s;
     }
     .tool-dropdown-item:hover {
-      background: #F1F5F9;
+      background: #F7F8FA;
       color: var(--blue);
     }
     .tool-dropdown-item.active {
-      background: #EFF6FF;
+      background: #EDF1FE;
       color: var(--blue);
       font-weight: 600;
     }
@@ -237,13 +251,13 @@
       top: calc(100% + 6px);
       left: 50%;
       transform: translateX(-50%);
-      background: #0F172A;
+      background: #101828;
       border: 1px solid rgba(255,255,255,0.1);
-      color: #F8FAFC;
+      color: #F7F8FA;
       font-size: 10.5px;
       font-weight: 500;
       padding: 3px 8px;
-      border-radius: 0px;
+      border-radius: 0;
       white-space: nowrap;
       opacity: 0;
       pointer-events: none;
@@ -263,14 +277,14 @@
 
     .color-swatch {
       width: 18px; height: 18px;
-      border-radius: 0px;
+      border-radius: 50%;
       border: 2px solid transparent;
       cursor: pointer;
       box-shadow: 0 1px 3px rgba(0,0,0,0.15);
       transition: border-color .1s, transform .12s;
     }
     .color-swatch:hover { transform: scale(1.2); }
-    .color-swatch.active { border-color: #0F172A; transform: scale(1.15); }
+    .color-swatch.active { border-color: #101828; transform: scale(1.15); }
 
     /* Stroke width */
     .stroke-group {
@@ -287,11 +301,158 @@
       cursor: pointer;
     }
 
+    /* ─── BEAUTIFIER PANEL ─── */
+    .beautify-panel {
+      position: fixed;
+      top: 50px;
+      right: 0;
+      width: 280px;
+      height: calc(100% - 50px - 24px);
+      background: #FFFFFF;
+      border-left: 1px solid var(--bar-bd);
+      z-index: 20;
+      overflow-y: auto;
+      transform: translateX(100%);
+      transition: transform .22s ease;
+      box-shadow: -4px 0 20px rgba(0,0,0,0.06);
+    }
+    .beautify-panel.open { transform: translateX(0); }
+
+    .bf-section {
+      padding: 14px 16px;
+      border-bottom: 1px solid #F7F8FA;
+    }
+    .bf-section-title {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .bf-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .bf-row:last-child { margin-bottom: 0; }
+    .bf-label {
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .bf-slider {
+      width: 110px;
+      height: 4px;
+      accent-color: var(--blue);
+      cursor: pointer;
+    }
+    .bf-val {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--muted);
+      min-width: 28px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .bf-bg-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
+    }
+    .bf-bg-swatch {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 0;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color .12s, transform .1s;
+    }
+    .bf-bg-swatch:hover { transform: scale(1.1); }
+    .bf-bg-swatch.active { border-color: var(--blue); transform: scale(1.05); }
+
+    .bf-frame-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+    .bf-frame-btn {
+      padding: 6px 0;
+      border: 1px solid var(--border);
+      border-radius: 0;
+      background: #F7F8FA;
+      cursor: pointer;
+      font-size: 10.5px;
+      font-weight: 600;
+      font-family: inherit;
+      color: var(--text);
+      transition: background .12s, border-color .12s;
+      text-align: center;
+    }
+    .bf-frame-btn:hover { background: #F7F8FA; }
+    .bf-frame-btn.active { background: #EDF1FE; border-color: var(--blue); color: var(--blue); }
+
+    .bf-ratio-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .bf-ratio-btn {
+      padding: 4px 8px;
+      border: 1px solid var(--border);
+      border-radius: 0;
+      background: #F7F8FA;
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 600;
+      font-family: inherit;
+      color: var(--muted);
+      transition: background .12s, border-color .12s;
+    }
+    .bf-ratio-btn:hover { background: #F7F8FA; color: var(--text); }
+    .bf-ratio-btn.active { background: #EDF1FE; border-color: var(--blue); color: var(--blue); }
+
+    .bf-actions {
+      padding: 14px 16px;
+      display: flex;
+      gap: 8px;
+    }
+    .bf-apply-btn {
+      flex: 1;
+      height: 32px;
+      border: none;
+      border-radius: 0;
+      background: var(--blue);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background .12s;
+    }
+    .bf-apply-btn:hover { background: var(--blue-h); }
+    .bf-reset-btn {
+      height: 32px;
+      padding: 0 14px;
+      border: 1px solid var(--border);
+      border-radius: 0;
+      background: #fff;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background .12s;
+    }
+    .bf-reset-btn:hover { background: #F7F8FA; color: var(--text); }
+
     /* Export action buttons */
     .export-btn {
       height: 30px;
       padding: 0 12px;
-      border-radius: 0px;
+      border-radius: 0;
       border: none;
       font-size: 11.5px; font-weight: 600;
       font-family: inherit;
@@ -305,19 +466,19 @@
     .export-btn:active { transform: scale(0.96); }
 
     .export-btn.ghost {
-      background: #F1F5F9;
-      color: #334155;
-      border: 1px solid #E2E8F0;
+      background: #F7F8FA;
+      color: #344054;
+      border: 1px solid #E3E8EF;
     }
     .export-btn.ghost:hover {
-      background: #E2E8F0;
-      color: #0F172A;
+      background: #E3E8EF;
+      color: #101828;
     }
 
     .export-btn.done {
       background: var(--blue);
       color: #FFFFFF;
-      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+      box-shadow: 0 2px 8px rgba(22, 103, 242, 0.25);
     }
     .export-btn.done:hover {
       background: var(--blue-h);
@@ -327,22 +488,158 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      position: relative;
+    }
+
+    /* Export dropdown */
+    .export-drop-wrap {
+      position: relative;
+    }
+    .export-drop-menu {
+      display: none;
+      position: fixed;
+      background: #fff;
+      border: 1px solid #E3E8EF;
+      box-shadow: 0 8px 24px rgba(15,23,42,0.14);
+      min-width: 240px;
+      z-index: 9999;
+      padding: 4px 0;
+    }
+    .export-drop-menu.show { display: block; }
+    .export-drop-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #344054;
+      font-family: inherit;
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+      transition: background .1s;
+    }
+    .export-drop-item:hover { background: #F7F8FA; color: #101828; }
+    .export-drop-item svg { flex-shrink: 0; color: #667085; }
+    .export-drop-sep {
+      height: 1px;
+      background: #E3E8EF;
+      margin: 4px 0;
+    }
+    .export-drop-label {
+      padding: 4px 14px 2px;
+      font-size: 9.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #98A2B3;
+    }
+    /* Export settings panel */
+    .export-settings {
+      padding: 8px 14px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .export-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .export-row-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #344054;
+      flex-shrink: 0;
+    }
+    .export-resize-inputs {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .export-resize-inputs input {
+      width: 58px;
+      height: 24px;
+      border: 1px solid #C8D0D9;
+      background: #F7F8FA;
+      color: #101828;
+      font-size: 11px;
+      font-family: inherit;
+      padding: 0 6px;
+      text-align: center;
+    }
+    .export-resize-inputs input:focus { outline: none; border-color: #1667F2; }
+    .export-resize-x {
+      font-size: 10px;
+      color: #98A2B3;
+    }
+    .export-resize-lock {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #667085;
+      cursor: pointer;
+      padding: 4px;
+      border: 1px solid #C8D0D9;
+      border-radius: 0;
+      background: #F7F8FA;
+      line-height: 0;
+      transition: color .14s ease, border-color .14s ease, background .14s ease;
+    }
+    .export-resize-lock:hover { color: #101828; border-color: #98A2B3; }
+    .export-resize-lock.locked { color: #1667F2; border-color: #1667F2; background: #EDF1FE; }
+    /* Annotations toggle */
+    .annot-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+    .annot-switch {
+      position: relative;
+      width: 32px; height: 18px;
+      flex-shrink: 0;
+    }
+    .annot-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .annot-track {
+      position: absolute; inset: 0;
+      background: #C8D0D9;
+      transition: background .15s;
+    }
+    .annot-track::after {
+      content: '';
+      position: absolute;
+      left: 2px; top: 2px;
+      width: 14px; height: 14px;
+      background: #fff;
+      transition: transform .15s;
+    }
+    .annot-switch input:checked + .annot-track { background: #1667F2; }
+    .annot-switch input:checked + .annot-track::after { transform: translateX(14px); }
+    .annot-toggle-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #344054;
     }
 
     #exportQuality {
       height: 30px;
       padding: 0 8px;
-      border-radius: 0px;
+      border-radius: 0;
       border: 1px solid var(--bar-bd);
-      background: #F1F5F9;
-      color: #334155;
+      background: #F7F8FA;
+      color: #344054;
       font-size: 11.5px;
       font-weight: 600;
       font-family: inherit;
       cursor: pointer;
       outline: none;
     }
-    #exportQuality:hover { background: #E2E8F0; }
+    #exportQuality:hover { background: #E3E8EF; }
     #exportQuality option { background: #FFFFFF; color: var(--text); }
 
     /* ─── CANVAS AREA ─── */
@@ -353,12 +650,12 @@
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      background: #E2E8F0;
+      background: #E3E8EF;
       background-image:
-        linear-gradient(45deg, #CBD5E1 25%, transparent 25%),
-        linear-gradient(-45deg, #CBD5E1 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, #CBD5E1 75%),
-        linear-gradient(-45deg, transparent 75%, #CBD5E1 75%);
+        linear-gradient(45deg, #C8D0D9 25%, transparent 25%),
+        linear-gradient(-45deg, #C8D0D9 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #C8D0D9 75%),
+        linear-gradient(-45deg, transparent 75%, #C8D0D9 75%);
       background-size: 20px 20px;
       background-position: 0 0, 0 10px, 10px -10px, -10px 0;
       padding: 40px;
@@ -367,7 +664,7 @@
     .canvas-wrap > .canvas-container {
       flex-shrink: 0;
       margin: auto;
-      border-radius: 0px;
+      border-radius: 0;
       box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0,0,0,0.06);
     }
 
@@ -399,23 +696,23 @@
     .zoom-btn {
       width: 24px; height: 22px;
       display: flex; align-items: center; justify-content: center;
-      border: 1px solid var(--bar-bd); background: #F8FAFC; cursor: pointer;
+      border: 1px solid var(--bar-bd); background: #F7F8FA; cursor: pointer;
       color: var(--text); font-size: 13px; font-weight: 700; line-height: 1;
-      border-radius: 0px;
+      border-radius: 0;
       transition: color .1s, background .1s;
     }
-    .zoom-btn:hover { background: #E2E8F0; color: #0F172A; }
+    .zoom-btn:hover { background: #E3E8EF; color: #101828; }
 
     /* ─── TOAST ─── */
     .toast {
       position: fixed;
       bottom: 44px; left: 50%;
       transform: translateX(-50%) translateY(12px);
-      background: #0F172A;
+      background: #101828;
       border: 1px solid rgba(255,255,255,0.1);
-      color: #F8FAFC;
+      color: #F7F8FA;
       padding: 6px 16px;
-      border-radius: 0px;
+      border-radius: 0;
       font-size: 12px; font-weight: 600;
       box-shadow: 0 8px 24px rgba(0,0,0,.2);
       opacity: 0; pointer-events: none;
@@ -427,7 +724,7 @@
     /* ─── CROP MODAL ─── */
     #cropModal {
       position: fixed; inset: 0; z-index: 2000;
-      background: #0F172A;
+      background: #101828;
       display: none;
       flex-direction: column;
       align-items: stretch;
@@ -436,7 +733,7 @@
     .crop-topbar {
       flex-shrink: 0;
       height: 48px;
-      background: #1E293B;
+      background: #1D2939;
       border-bottom: 1px solid rgba(255,255,255,0.1);
       display: flex; align-items: center;
       padding: 0 16px; gap: 12px;
@@ -447,34 +744,34 @@
 
     .crop-size-badge {
       display: flex; align-items: center; gap: 6px;
-      background: #0F172A;
+      background: #101828;
       border: 1px solid rgba(255,255,255,0.15);
       padding: 4px 12px;
-      border-radius: 0px;
-      font-size: 12px; font-weight: 700; color: #F8FAFC;
+      border-radius: 0;
+      font-size: 12px; font-weight: 700; color: #F7F8FA;
       letter-spacing: .02em;
     }
-    .crop-size-badge svg { color: #94A3B8; }
+    .crop-size-badge svg { color: #98A2B3; }
     #cropSizeDisplay { font-variant-numeric: tabular-nums; }
     #cropPosDisplay  {
-      font-size: 10.5px; font-weight: 500; color: #94A3B8;
+      font-size: 10.5px; font-weight: 500; color: #98A2B3;
       min-width: 80px; font-variant-numeric: tabular-nums;
     }
     .crop-hint-text {
-      font-size: 11px; font-weight: 500; color: #94A3B8;
+      font-size: 11px; font-weight: 500; color: #98A2B3;
     }
 
     .crop-top-btn {
       height: 30px; padding: 0 16px;
-      border-radius: 0px;
+      border-radius: 0;
       border: none; font-size: 12px; font-weight: 700;
       font-family: inherit; cursor: pointer; letter-spacing: .02em;
       transition: background .1s, color .1s;
     }
-    .crop-top-btn.ghost  { background: transparent; color: #94A3B8; border: 1px solid rgba(255,255,255,0.15); }
-    .crop-top-btn.ghost:hover  { background: rgba(255,255,255,0.1); color: #F8FAFC; }
-    .crop-top-btn.primary { background: #2563EB; color: #fff; }
-    .crop-top-btn.primary:hover { background: #1D4ED8; }
+    .crop-top-btn.ghost  { background: transparent; color: #98A2B3; border: 1px solid rgba(255,255,255,0.15); }
+    .crop-top-btn.ghost:hover  { background: rgba(255,255,255,0.1); color: #F7F8FA; }
+    .crop-top-btn.primary { background: #1667F2; color: #fff; }
+    .crop-top-btn.primary:hover { background: #1257D8; }
 
     #cropModal .crop-body {
       flex: 1; min-height: 0;
@@ -487,25 +784,25 @@
     .crop-ratiobar {
       flex-shrink: 0;
       height: 44px;
-      background: #1E293B;
+      background: #1D2939;
       border-top: 1px solid rgba(255,255,255,0.1);
       display: flex; align-items: center; justify-content: center;
       gap: 4px; padding: 0 16px;
     }
     .ratio-btn {
       height: 28px; padding: 0 12px;
-      border-radius: 6px;
+      border-radius: 0;
       border: 1px solid transparent;
       background: transparent;
-      color: #94A3B8; font-size: 11px; font-weight: 600;
+      color: #98A2B3; font-size: 11px; font-weight: 600;
       font-family: inherit; cursor: pointer;
       transition: background .1s, color .1s, border-color .1s;
       letter-spacing: .02em;
     }
-    .ratio-btn:hover { background: rgba(255,255,255,0.08); color: #F8FAFC; }
+    .ratio-btn:hover { background: rgba(255,255,255,0.08); color: #F7F8FA; }
     .ratio-btn.active {
-      background: #2563EB;
-      border-color: #2563EB;
+      background: #1667F2;
+      border-color: #1667F2;
       color: #FFFFFF;
     }
     .ratio-sep {
@@ -521,7 +818,7 @@
     .cropper-wrap-box,.cropper-canvas{overflow:hidden}
     .cropper-drag-box{background-color:#fff;opacity:0}
     .cropper-modal{background-color:#000;opacity:.65}
-    .cropper-view-box{display:block;height:100%;outline:2px solid #2563EB;outline-color:#2563EB;overflow:hidden;width:100%}
+    .cropper-view-box{display:block;height:100%;outline:2px solid #1667F2;outline-color:#1667F2;overflow:hidden;width:100%}
     .cropper-dashed{border:0 dashed rgba(255,255,255,.45);display:block;opacity:.7;position:absolute}
     .cropper-dashed.dashed-h{border-bottom-width:1px;border-top-width:1px;height:calc(100% / 3);left:0;top:calc(100% / 3);width:100%}
     .cropper-dashed.dashed-v{border-left-width:1px;border-right-width:1px;height:100%;left:calc(100% / 3);top:0;width:calc(100% / 3)}
@@ -531,12 +828,12 @@
     .cropper-center::after{height:9px;left:0;top:-4px;width:1px}
     .cropper-face,.cropper-line,.cropper-point{display:block;height:100%;opacity:.1;position:absolute;width:100%}
     .cropper-face{background-color:#fff;left:0;top:0}
-    .cropper-line{background-color:#2563EB}
+    .cropper-line{background-color:#1667F2}
     .cropper-line.line-e{cursor:ew-resize;right:-3px;top:0;width:5px}
     .cropper-line.line-n{cursor:ns-resize;height:5px;left:0;top:-3px}
     .cropper-line.line-w{cursor:ew-resize;left:-3px;top:0;width:5px}
     .cropper-line.line-s{bottom:-3px;cursor:ns-resize;height:5px;left:0}
-    .cropper-point{background-color:#fff;border:2px solid #2563EB;height:8px;opacity:1;width:8px;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,0.4)}
+    .cropper-point{background-color:#fff;border:2px solid #1667F2;height:8px;opacity:1;width:8px;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,0.4)}
     .cropper-point.point-e{cursor:ew-resize;margin-top:-4px;right:-4px;top:50%}
     .cropper-point.point-n{cursor:ns-resize;left:50%;margin-left:-4px;top:-4px}
     .cropper-point.point-w{cursor:ew-resize;left:-4px;margin-top:-4px;top:50%}
@@ -727,6 +1024,13 @@
       <span class="tip">Crop Tool (X)</span>
     </button>
 
+    <button class="tool-btn" id="tool-beautify">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z"/>
+      </svg>
+      <span class="tip">Beautify (B)</span>
+    </button>
+
   </div>
 
   <div class="tbar-sep"></div>
@@ -740,7 +1044,7 @@
     <div class="color-swatch" data-color="#8B5CF6" style="background:#8B5CF6" title="Purple"></div>
     <div class="color-swatch" data-color="#EC4899" style="background:#EC4899" title="Pink"></div>
     <div class="color-swatch" data-color="#FFFFFF" style="background:#FFFFFF" title="White"></div>
-    <div class="color-swatch" data-color="#0F172A" style="background:#0F172A; border-color:#475569" title="Black"></div>
+    <div class="color-swatch" data-color="#101828" style="background:#101828; border-color:#344054" title="Black"></div>
   </div>
 
   <div class="tbar-sep"></div>
@@ -749,6 +1053,45 @@
   <div class="stroke-group">
     <span class="stroke-label">Width</span>
     <input type="range" id="strokeWidth" min="2" max="12" value="4">
+  </div>
+
+  <div class="tbar-sep"></div>
+
+  <!-- Text formatting (shown when text tool active) -->
+  <div class="tbar-group" id="text-format-group" style="display:none">
+    <button class="tool-btn" id="text-bold-btn" title="Bold">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/>
+      </svg>
+      <span class="tip">Bold</span>
+    </button>
+    <button class="tool-btn" id="text-italic-btn" title="Italic">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/>
+      </svg>
+      <span class="tip">Italic</span>
+    </button>
+    <span class="stroke-label" style="margin-left:4px">Size</span>
+    <input type="range" id="fontSize" min="12" max="96" value="24" style="width:60px">
+    <span id="fontSizeVal" style="font-size:10px;min-width:24px;text-align:center;color:var(--muted)">24</span>
+  </div>
+
+  <!-- Rotate -->
+  <div class="tbar-group" id="rotate-group" style="display:none">
+    <button class="tool-btn" id="rotate-left-btn" title="Rotate 90° counter-clockwise">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+        <path d="M3 3v5h5"/>
+      </svg>
+      <span class="tip">Rotate Left 90°</span>
+    </button>
+    <button class="tool-btn" id="rotate-right-btn" title="Rotate 90° clockwise">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+        <path d="M21 3v5h-5"/>
+      </svg>
+      <span class="tip">Rotate Right 90°</span>
+    </button>
   </div>
 
   <div class="tbar-spacer"></div>
@@ -790,39 +1133,178 @@
       <option value="hd" selected>1080p HD</option>
       <option value="4k">4K UHD</option>
     </select>
-    <button class="export-btn ghost" id="copy-btn">
-      <!-- Hugeicons: copy-01 -->
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="9" y="9" width="13" height="13" rx="1"/>
-        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-      </svg>
-      Copy
-    </button>
-    <button class="export-btn ghost" id="save-btn">
-      <!-- Hugeicons: download-01 -->
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-        <polyline points="7 10 12 15 17 10"/>
-        <line x1="12" y1="15" x2="12" y2="3"/>
-      </svg>
-      Save PNG
-    </button>
-    <button class="export-btn ghost" id="pdf-btn">
-      <!-- Hugeicons: file-pdf -->
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-        <polyline points="14 2 14 8 20 8"/>
-        <path d="M9 13h6M9 17h3"/>
-      </svg>
-      PDF
-    </button>
+
+    <div class="export-drop-wrap">
+      <button class="export-btn ghost" id="export-menu-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Export ▾
+      </button>
+      <div class="export-drop-menu" id="export-drop-menu">
+        <!-- Settings panel — stop propagation so clicks here don't close menu -->
+        <div class="export-settings" id="export-settings-panel">
+          <div class="export-drop-label" style="padding:0 0 2px">Options</div>
+
+          <!-- Annotations toggle -->
+          <div class="export-row">
+            <span class="export-row-label">Include Annotations</span>
+            <label class="annot-toggle">
+              <div class="annot-switch">
+                <input type="checkbox" id="annot-toggle-check" checked>
+                <div class="annot-track"></div>
+              </div>
+            </label>
+          </div>
+
+          <!-- Resize -->
+          <div class="export-row">
+            <span class="export-row-label">Resize</span>
+            <div class="export-resize-inputs">
+              <input type="number" id="export-w" placeholder="W" min="1" max="16000">
+              <span class="export-resize-x">×</span>
+              <input type="number" id="export-h" placeholder="H" min="1" max="16000">
+              <button class="export-resize-lock locked" id="resize-lock-btn" title="Lock aspect ratio" aria-pressed="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></button>
+            </div>
+          </div>
+        </div>
+        <div class="export-drop-sep" style="margin:0"></div>
+
+        <div class="export-drop-label">Copy</div>
+        <button class="export-drop-item" id="copy-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="1"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+          </svg>
+          Copy Image
+        </button>
+        <button class="export-drop-item" id="copy-selected-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 17H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3"/><rect x="11" y="11" width="10" height="10" rx="1"/>
+          </svg>
+          Copy Selected Object
+        </button>
+        <div class="export-drop-sep"></div>
+        <div class="export-drop-label">Save</div>
+        <button class="export-drop-item" id="save-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Save as PNG
+        </button>
+        <button class="export-drop-item" id="save-webp-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Save as WebP
+        </button>
+        <button class="export-drop-item" id="pdf-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13h6M9 17h3"/>
+          </svg>
+          Save as PDF
+        </button>
+      </div>
+    </div>
+
     <button class="export-btn done" id="done-btn">
       Done
-      <!-- Hugeicons: checkmark-circle-02 -->
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M20 6L9 17l-5-5"/>
       </svg>
     </button>
+  </div>
+
+</div>
+
+<!-- ── BEAUTIFIER PANEL ── -->
+<div class="beautify-panel" id="beautifyPanel">
+
+  <div class="bf-section">
+    <div class="bf-section-title">Background</div>
+    <div class="bf-bg-grid" id="bf-bg-grid">
+      <div class="bf-bg-swatch" data-bg="none" style="background:#F7F8FA;position:relative" title="None">
+        <svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="#C8D0D9" stroke-width="2"><line x1="4" y1="4" x2="20" y2="20"/></svg>
+      </div>
+      <div class="bf-bg-swatch active" data-bg="linear-gradient(135deg,#667eea,#764ba2)" style="background:linear-gradient(135deg,#667eea,#764ba2)" title="Indigo Purple"></div>
+      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#f093fb,#f5576c)" style="background:linear-gradient(135deg,#f093fb,#f5576c)" title="Pink Red"></div>
+      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#4facfe,#00f2fe)" style="background:linear-gradient(135deg,#4facfe,#00f2fe)" title="Blue Cyan"></div>
+      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#43e97b,#38f9d7)" style="background:linear-gradient(135deg,#43e97b,#38f9d7)" title="Green Teal"></div>
+      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#fa709a,#fee140)" style="background:linear-gradient(135deg,#fa709a,#fee140)" title="Pink Yellow"></div>
+      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#a18cd1,#fbc2eb)" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)" title="Lavender"></div>
+      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#ffecd2,#fcb69f)" style="background:linear-gradient(135deg,#ffecd2,#fcb69f)" title="Peach"></div>
+      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#0c3483,#a2b6df)" style="background:linear-gradient(135deg,#0c3483,#a2b6df)" title="Navy"></div>
+      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#1a1a2e,#16213e)" style="background:linear-gradient(135deg,#1a1a2e,#16213e)" title="Dark"></div>
+      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#ff9a9e,#fad0c4)" style="background:linear-gradient(135deg,#ff9a9e,#fad0c4)" title="Coral"></div>
+      <div class="bf-bg-swatch" data-bg="#FFFFFF" style="background:#FFFFFF;border:1px solid #E3E8EF" title="White"></div>
+    </div>
+  </div>
+
+  <div class="bf-section">
+    <div class="bf-section-title">Padding</div>
+    <div class="bf-row">
+      <span class="bf-label">Size</span>
+      <input type="range" class="bf-slider" id="bf-padding" min="0" max="120" value="40">
+      <span class="bf-val" id="bf-padding-val">40px</span>
+    </div>
+  </div>
+
+  <div class="bf-section">
+    <div class="bf-section-title">Window Frame</div>
+    <div class="bf-frame-grid" id="bf-frame-grid">
+      <button class="bf-frame-btn active" data-frame="none">None</button>
+      <button class="bf-frame-btn" data-frame="macos">macOS</button>
+      <button class="bf-frame-btn" data-frame="browser">Browser</button>
+    </div>
+  </div>
+
+  <div class="bf-section">
+    <div class="bf-section-title">Corners</div>
+    <div class="bf-row">
+      <span class="bf-label">Radius</span>
+      <input type="range" class="bf-slider" id="bf-radius" min="0" max="32" value="12">
+      <span class="bf-val" id="bf-radius-val">12px</span>
+    </div>
+  </div>
+
+  <div class="bf-section">
+    <div class="bf-section-title">Shadow</div>
+    <div class="bf-row">
+      <span class="bf-label">Blur</span>
+      <input type="range" class="bf-slider" id="bf-shadow" min="0" max="80" value="30">
+      <span class="bf-val" id="bf-shadow-val">30px</span>
+    </div>
+    <div class="bf-row">
+      <span class="bf-label">Opacity</span>
+      <input type="range" class="bf-slider" id="bf-shadow-opacity" min="0" max="100" value="40">
+      <span class="bf-val" id="bf-shadow-opacity-val">40%</span>
+    </div>
+  </div>
+
+  <div class="bf-section">
+    <div class="bf-section-title">Aspect Ratio</div>
+    <div class="bf-ratio-grid" id="bf-ratio-grid">
+      <button class="bf-ratio-btn active" data-ratio="">Free</button>
+      <button class="bf-ratio-btn" data-ratio="1">1:1</button>
+      <button class="bf-ratio-btn" data-ratio="1.333">4:3</button>
+      <button class="bf-ratio-btn" data-ratio="1.778">16:9</button>
+      <button class="bf-ratio-btn" data-ratio="0.5625">9:16</button>
+    </div>
+  </div>
+
+  <div class="bf-section">
+    <div class="bf-section-title">Noise Texture</div>
+    <div class="bf-row">
+      <span class="bf-label">Amount</span>
+      <input type="range" class="bf-slider" id="bf-noise" min="0" max="50" value="0">
+      <span class="bf-val" id="bf-noise-val">0%</span>
+    </div>
+  </div>
+
+  <div class="bf-actions">
+    <button class="bf-reset-btn" id="bf-reset-btn">Reset</button>
+    <button class="bf-apply-btn" id="bf-apply-btn">Apply Beautify</button>
   </div>
 
 </div>

@@ -4,16 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=340">
   <title>GoFully</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    @font-face {
+      font-family: 'Archivo';
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url('assets/Archivo.woff2') format('woff2');
+    }
+  </style>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
       --blue:     #1667F2;
       --blue-h:   #1257D8;
+      --blue-a:   #0E4AB8;
       --blue-bg:  #EDF1FE;
       --blue-bd:  #BDD0FB;
+      --blue-lt:  #D4E2FD;
 
       --text:     #101828;
       --text-2:   #344054;
@@ -23,6 +32,7 @@
       --border:   #E3E8EF;
       --border-h: #C8D0D9;
       --surface:  #F7F8FA;
+      --sunken:   #F1F3F7;
       --white:    #FFFFFF;
 
       --green:    #027A48;
@@ -33,16 +43,25 @@
       --red:      #B42318;
       --red-bg:   #FEF3F2;
       --red-bd:   #FECDCA;
+
+      --r-sm:     0px;
+      --r-md:     0px;
+      --r-lg:     0px;
+      --r-xl:     0px;
+      --r-pill:   0px;
+
+      --shadow-sm: 0 1px 3px rgba(22,103,242,0.04), 0 4px 8px rgba(22,103,242,0.06);
+      --shadow-md: 0 4px 6px -2px rgba(22,103,242,0.04), 0 12px 16px -4px rgba(22,103,242,0.10);
     }
 
     body {
       width: 340px;
       background: var(--white);
       color: var(--text);
-      font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       -webkit-font-smoothing: antialiased;
-      font-size: 12px;
-      line-height: 1;
+      font-size: 12.5px;
+      line-height: 1.4;
       overflow: hidden;
       user-select: none;
     }
@@ -51,8 +70,8 @@
 
     /* ─── HEADER ─── */
     .hdr {
-      height: 44px;
-      padding: 0 10px 0 12px;
+      height: 48px;
+      padding: 0 12px 0 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -62,18 +81,18 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 7px;
+      gap: 8px;
     }
 
     .logo-img {
-      width: 22px; height: 22px;
+      width: 24px; height: 24px;
       flex-shrink: 0;
       display: block;
       object-fit: contain;
     }
 
     .wm {
-      font-size: 13.5px;
+      font-size: 14px;
       font-weight: 700;
       letter-spacing: -0.4px;
       line-height: 1;
@@ -82,70 +101,135 @@
     .wm-full { color: var(--blue); font-weight: 700; }
     .wm-y    { color: var(--blue); opacity: 0.45; font-weight: 700; }
 
-    .hdr-right { display: flex; gap: 1px; }
+    .hdr-right { display: flex; gap: 2px; }
 
     .icon-btn {
-      width: 28px; height: 28px;
+      width: 32px; height: 32px;
       display: flex; align-items: center; justify-content: center;
       border: none; background: transparent; cursor: pointer;
       color: var(--text-4);
-      transition: color .1s, background .1s;
+      border-radius: var(--r-sm);
+      transition: color .12s, background .12s;
     }
     .icon-btn:hover { color: var(--text-2); background: var(--surface); }
     .icon-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
 
-    /* ─── MODE LIST ─── */
-    #modesSection { }
+    /* ─── ONBOARDING ─── */
+    #onboarding {
+      display: none;
+      padding: 24px 20px 20px;
+      text-align: center;
+    }
+    #onboarding.active { display: block; }
 
-    .mode-btn {
-      width: 100%;
+    .ob-icon {
+      width: 56px; height: 56px;
+      margin: 0 auto 16px;
+      background: var(--blue-bg);
+      border-radius: var(--r-lg);
       display: flex;
       align-items: center;
+      justify-content: center;
+      color: var(--blue);
+    }
+
+    .ob-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.3px;
+      margin-bottom: 6px;
+    }
+
+    .ob-desc {
+      font-size: 12px;
+      color: var(--text-3);
+      line-height: 1.5;
+      margin-bottom: 20px;
+      max-width: 280px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .ob-steps {
+      display: flex;
+      flex-direction: column;
       gap: 10px;
-      height: 36px;
-      padding: 0 12px;
-      border: none;
-      background: transparent;
-      cursor: pointer;
+      margin-bottom: 22px;
       text-align: left;
-      border-left: 2px solid transparent;
-      transition: background .08s;
     }
-    .mode-btn:hover { background: var(--surface); }
-    .mode-btn:hover .m-icon { color: var(--text-3); }
-    .mode-btn:active { background: var(--border); }
-    .mode-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
 
-    /* Disabled mode button on unsupported pages */
-    .mode-btn:disabled {
-      opacity: 0.52;
-      cursor: not-allowed;
-      pointer-events: none;
-      background: transparent !important;
-      border-left-color: transparent !important;
+    .ob-step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      background: var(--surface);
+      border-radius: var(--r-md);
     }
-    .mode-btn:disabled .m-icon { color: var(--text-4) !important; }
-    .mode-btn:disabled .m-name { color: var(--text-3) !important; }
-    .mode-btn:disabled .m-kbd { opacity: 0.6; }
 
-    /* Primary mode highlight */
-    .mode-btn.primary {
-      background: var(--blue-bg);
-      border-left-color: var(--blue);
+    .ob-num {
+      width: 26px; height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background: var(--blue);
+      color: var(--white);
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 50%;
     }
-    .mode-btn.primary:hover { background: #E3EAFD; }
-    .mode-btn.primary .m-icon { color: var(--blue); }
-    .mode-btn.primary .m-name { color: var(--blue); font-weight: 600; }
+
+    .ob-step-text {
+      font-size: 12px;
+      color: var(--text-2);
+      font-weight: 500;
+      line-height: 1.35;
+    }
+
+    .ob-cta {
+      display: block;
+      width: 100%;
+      height: 44px;
+      border: none;
+      border-radius: var(--r-pill);
+      background: var(--blue);
+      color: var(--white);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      cursor: pointer;
+      transition: background .14s, transform .08s;
+      box-shadow: var(--shadow-sm);
+    }
+    .ob-cta:hover { background: var(--blue-h); }
+    .ob-cta:active { background: var(--blue-a); transform: scale(0.98); }
+    .ob-cta:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+    .ob-skip {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-4);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      transition: color .12s;
+    }
+    .ob-skip:hover { color: var(--text-3); }
 
     /* ─── UNSUPPORTED PAGE NOTICE PANEL ─── */
     #unsupportedPanel {
       display: none;
-      margin: 8px 10px;
-      padding: 10px 12px;
-      background: #F8FAFC;
-      border: 1px solid #E2E8F0;
-      border-radius: 0px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      margin: 10px 12px 0;
+      padding: 12px 14px;
+      background: #F7F8FA;
+      border: 1px solid #E3E8EF;
+      border-radius: var(--r-md);
       animation: fadeIn 0.16s ease-out;
     }
     #unsupportedPanel.active { display: block; }
@@ -171,17 +255,17 @@
     }
 
     .unsupp-title {
-      font-size: 11.5px;
+      font-size: 12px;
       font-weight: 600;
       color: var(--text);
       letter-spacing: -0.1px;
     }
 
     .unsupp-desc {
-      font-size: 10.5px;
+      font-size: 11px;
       color: var(--text-3);
-      line-height: 1.4;
-      margin-bottom: 8px;
+      line-height: 1.45;
+      margin-bottom: 10px;
     }
 
     .unsupp-actions {
@@ -190,120 +274,246 @@
     }
 
     .unsupp-btn {
-      height: 22px;
-      padding: 0 10px;
-      border: 1px solid #CBD5E1;
-      background: #FFFFFF;
+      height: 28px;
+      padding: 0 14px;
+      border: 1px solid var(--border);
+      background: var(--white);
       color: var(--text-2);
-      font-size: 10.5px;
+      font-size: 11px;
       font-weight: 600;
       font-family: inherit;
-      border-radius: 0px;
+      border-radius: var(--r-sm);
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.12s, border-color 0.12s, color 0.12s;
+      transition: background 0.12s, border-color 0.12s;
     }
-    .unsupp-btn:hover {
-      background: #F1F5F9;
-      border-color: #94A3B8;
-      color: var(--text);
+    .unsupp-btn:hover { background: var(--surface); border-color: var(--border-h); }
+    .unsupp-btn:active { transform: scale(0.97); }
+    .unsupp-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
+
+    /* ─── MODE GRID ─── */
+    #modesSection {
+      padding: 14px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
     }
-    .unsupp-btn:active {
-      transform: scale(0.97);
+
+    .mode-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      min-height: 92px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      background: var(--white);
+      cursor: pointer;
+      text-align: left;
+      transition: background .1s, border-color .1s, transform .06s, box-shadow .14s;
     }
-    .unsupp-btn:focus-visible {
-      outline: 2px solid var(--blue);
-      outline-offset: 1px;
+    .mode-btn:hover {
+      background: var(--surface);
+      border-color: var(--border-h);
+      box-shadow: var(--shadow-sm);
     }
+    .mode-btn:active { transform: scale(0.98); }
+    .mode-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
+
+    /* Full Page — primary CTA spanning both columns */
+    .mode-btn.primary {
+      grid-column: 1 / -1;
+      flex-direction: row;
+      align-items: center;
+      height: 56px;
+      background: var(--blue);
+      border-color: var(--blue);
+      border-radius: var(--r-xl);
+      color: var(--white);
+      box-shadow: var(--shadow-sm);
+    }
+    .mode-btn.primary:hover {
+      background: var(--blue-h); border-color: var(--blue-h);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(22,103,242,0.30);
+    }
+    .mode-btn.primary .m-icon {
+      width: 34px; height: 34px;
+      background: rgba(255,255,255,0.18);
+      border-radius: var(--r-sm);
+      color: var(--white);
+    }
+    .mode-btn.primary .m-icon svg { width: 17px; height: 17px; }
+    .mode-btn.primary .m-text { flex: 1; }
+    .mode-btn.primary .m-name { color: var(--white); font-weight: 700; font-size: 14px; }
+    .mode-btn.primary .m-desc { color: rgba(255,255,255,0.72); font-size: 10.5px; }
+    .mode-btn.primary .m-kbd {
+      background: rgba(255,255,255,0.18);
+      border-color: rgba(255,255,255,0.22);
+      color: rgba(255,255,255,0.85);
+      /* Base .m-kbd sets margin-top:auto for the column-layout mode buttons
+         (pins the badge to the bottom); the primary button is a row layout,
+         where that same rule pushes the badge to the bottom of the CROSS
+         axis instead, fighting align-items:center and landing it wedged in
+         the bottom-right corner. Reset it here so it centers normally. */
+      margin-top: 0;
+      margin-left: 8px;
+      flex-shrink: 0;
+    }
+
+    /* Disabled mode button on unsupported pages */
+    .mode-btn:disabled {
+      cursor: not-allowed;
+      pointer-events: none;
+      background: var(--surface) !important;
+      border-color: var(--border) !important;
+      box-shadow: none !important;
+    }
+    .mode-btn:disabled .m-icon { color: var(--text-4) !important; background: var(--sunken) !important; }
+    .mode-btn:disabled .m-name { color: var(--text-3) !important; }
+    .mode-btn:disabled .m-desc { color: var(--text-4) !important; }
+    .mode-btn:disabled .m-kbd { color: var(--text-4) !important; border-color: var(--border) !important; background: var(--sunken) !important; }
 
     .m-icon {
-      width: 15px; height: 15px;
+      width: 28px; height: 28px;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
-      color: var(--text-4);
+      background: var(--surface);
+      border-radius: var(--r-sm);
+      color: var(--text-3);
+      transition: color .1s, background .1s;
     }
     .m-icon svg { width: 15px; height: 15px; }
+    .mode-btn:hover .m-icon { color: var(--blue); background: var(--blue-bg); }
 
-    .m-text { flex: 1; min-width: 0; }
+    .m-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 
     .m-name {
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 600;
       color: var(--text);
       display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .m-desc {
       font-size: 10px;
       color: var(--text-4);
       display: block;
-      margin-top: 2.5px;
+      line-height: 1.3;
     }
 
     .m-kbd {
-      font-size: 9px;
-      font-weight: 500;
-      color: var(--text-4);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 2px 4px;
-      flex-shrink: 0;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-2);
+      background: var(--sunken);
+      border: 1px solid var(--border-h);
+      padding: 2px 6px;
+      border-radius: 0;
       font-family: inherit;
-      letter-spacing: 0;
+      letter-spacing: 0.02em;
+      margin-top: auto;
     }
 
-    /* Divider between auto and manual groups */
-    .m-sep {
-      height: 1px;
-      background: var(--border);
-      margin: 2px 0;
+    /* ─── STATUS LINE ─── */
+    #statusLine {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      margin: 0 14px 12px;
+      padding: 10px 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
     }
+    #statusLine.active { display: flex; }
+    .status-thumb {
+      width: 28px; height: 28px;
+      border-radius: var(--r-sm);
+      object-fit: cover;
+      object-position: top center;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+      background: var(--white);
+    }
+    .status-text {
+      flex: 1;
+      min-width: 0;
+      font-size: 11px;
+      color: var(--text-3);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .status-text b { color: var(--text-2); font-weight: 600; }
+    .status-view {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--blue);
+      cursor: pointer;
+      flex-shrink: 0;
+      background: none;
+      border: none;
+      font-family: inherit;
+      padding: 2px 4px;
+      border-radius: 0;
+      transition: background .12s;
+    }
+    .status-view:hover { background: var(--blue-bg); }
 
     /* ─── PROGRESS ─── */
     #progressSection {
       display: none;
-      padding: 18px 14px 18px;
+      padding: 20px 16px 20px;
     }
     #progressSection.active { display: block; }
 
     .prog-top {
       display: flex;
       align-items: center;
-      gap: 11px;
-      margin-bottom: 14px;
+      gap: 12px;
+      margin-bottom: 16px;
     }
 
     .prog-icon {
-      width: 34px; height: 34px;
+      width: 36px; height: 36px;
       flex-shrink: 0;
       background: var(--blue-bg);
+      border-radius: var(--r-md);
       display: flex; align-items: center; justify-content: center;
       color: var(--blue);
     }
 
     .prog-label {
-      font-size: 12.5px;
+      font-size: 13px;
       font-weight: 600;
       color: var(--text);
     }
 
     .prog-sub {
-      font-size: 10.5px;
+      font-size: 11px;
       color: var(--text-4);
       margin-top: 3px;
     }
 
     .prog-track {
-      height: 2px;
-      background: var(--border);
+      height: 4px;
+      border-radius: var(--r-pill);
+      background: var(--sunken);
+      overflow: hidden;
     }
 
     .prog-fill {
       height: 100%;
       background: var(--blue);
       width: 0%;
+      border-radius: var(--r-pill);
       transition: width .3s ease;
     }
 
@@ -315,7 +525,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 7px 12px;
+      padding: 8px 14px;
       background: var(--green-bg);
       border-bottom: 1px solid var(--green-bd);
     }
@@ -323,20 +533,19 @@
     .res-check { color: var(--green); flex-shrink: 0; }
 
     .res-title {
-      font-size: 11.5px;
+      font-size: 12px;
       font-weight: 600;
       color: var(--green);
       flex: 1;
     }
 
     .res-dim {
-      font-size: 10px;
+      font-size: 10.5px;
       font-weight: 500;
       color: #059669;
       font-variant-numeric: tabular-nums;
     }
 
-    /* Collapsed button group — VS Code toolbar style */
     .res-actions {
       display: flex;
       border-bottom: 1px solid var(--border);
@@ -344,7 +553,7 @@
 
     .res-btn {
       flex: 1;
-      height: 34px;
+      height: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -361,7 +570,7 @@
     }
     .res-btn:last-child { border-right: none; }
     .res-btn:hover { background: var(--surface); color: var(--text); }
-    .res-btn:active { background: var(--border); }
+    .res-btn:active { background: var(--sunken); }
     .res-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
 
     .res-btn.prim {
@@ -369,15 +578,15 @@
       background: var(--blue);
       border-right-color: var(--blue-h);
       color: #fff;
-      font-weight: 600;
+      font-weight: 700;
     }
     .res-btn.prim:hover { background: var(--blue-h); }
-    /* Image Preview Container */
+
     .popup-preview {
       position: relative;
       width: 100%;
       height: 150px;
-      background: #f1f5f9;
+      background: var(--sunken);
       border-bottom: 1px solid var(--border);
       overflow: hidden;
       display: flex;
@@ -395,7 +604,7 @@
       position: absolute;
       bottom: 0; left: 0; right: 0;
       height: 48px;
-      background: linear-gradient(to bottom, rgba(241, 245, 249, 0) 0%, rgba(241, 245, 249, 0.92) 80%, rgba(241, 245, 249, 1) 100%);
+      background: linear-gradient(to bottom, rgba(241, 243, 247, 0) 0%, rgba(241, 243, 247, 0.92) 80%, rgba(241, 243, 247, 1) 100%);
       backdrop-filter: blur(2px);
       -webkit-backdrop-filter: blur(2px);
       display: flex;
@@ -408,9 +617,10 @@
       font-size: 9.5px;
       font-weight: 700;
       color: var(--text-3);
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.92);
       border: 1px solid var(--border);
       padding: 2px 8px;
+      border-radius: var(--r-pill);
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
@@ -421,7 +631,7 @@
       display: flex;
       align-items: flex-start;
       gap: 8px;
-      padding: 8px 12px;
+      padding: 10px 14px;
       background: var(--red-bg);
       border-top: 1px solid var(--red-bd);
     }
@@ -431,8 +641,8 @@
 
     /* ─── FOOTER ─── */
     .ftr {
-      height: 28px;
-      padding: 0 12px;
+      height: 30px;
+      padding: 0 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -447,12 +657,13 @@
     /* ─── TOAST ─── */
     .toast {
       position: fixed;
-      bottom: 34px; left: 50%;
+      bottom: 36px; left: 50%;
       transform: translateX(-50%) translateY(6px);
       background: var(--text);
       color: #fff;
-      padding: 5px 11px;
+      padding: 6px 14px;
       font-size: 11px; font-weight: 600;
+      border-radius: var(--r-pill);
       box-shadow: 0 4px 12px rgba(0,0,0,.2);
       opacity: 0; pointer-events: none;
       transition: opacity .18s, transform .18s;
@@ -473,7 +684,6 @@
   </div>
   <div class="hdr-right">
     <button class="icon-btn" id="helpBtn" title="How Features Work (Help Guide)">
-      <!-- Hugeicons: information-circle / help -->
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"/>
         <line x1="12" y1="16" x2="12" y2="12"/>
@@ -481,7 +691,6 @@
       </svg>
     </button>
     <button class="icon-btn" id="settingsBtn" title="Settings">
-      <!-- Hugeicons: setting-02 -->
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="3"/>
         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
@@ -490,11 +699,39 @@
   </div>
 </div>
 
+<!-- ONBOARDING (first-time users only) -->
+<div id="onboarding">
+  <div class="ob-icon">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="3" width="20" height="14" rx="2"/>
+      <path d="M8 21h8M12 17v4"/>
+      <path d="M9 10l2 2 4-4"/>
+    </svg>
+  </div>
+  <div class="ob-title">Welcome to GoFully!</div>
+  <div class="ob-desc">Capture full pages, regions, or scrolling areas in one click. Edit, annotate, and export — all 100% offline.</div>
+  <div class="ob-steps">
+    <div class="ob-step">
+      <div class="ob-num">1</div>
+      <div class="ob-step-text">Pick a capture mode — full page, visible area, or select a region</div>
+    </div>
+    <div class="ob-step">
+      <div class="ob-num">2</div>
+      <div class="ob-step-text">Edit with arrows, shapes, blur, text & more in the built-in editor</div>
+    </div>
+    <div class="ob-step">
+      <div class="ob-num">3</div>
+      <div class="ob-step-text">Copy, save as PNG/WebP/PDF, or share — your data never leaves your device</div>
+    </div>
+  </div>
+  <button class="ob-cta" id="onboardingStart">Start Capturing</button>
+  <button class="ob-skip" id="onboardingSkip">I know how this works</button>
+</div>
+
 <!-- UNSUPPORTED NOTICE PANEL -->
 <div id="unsupportedPanel">
   <div class="unsupp-header">
     <div class="unsupp-icon">
-      <!-- Hugeicons: alert-circle / alert-diamond -->
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"/>
         <line x1="12" y1="8" x2="12" y2="12"/>
@@ -511,14 +748,13 @@
   </div>
 </div>
 
-<!-- MODE LIST -->
+<!-- MODE GRID -->
 <div id="modesSection">
 
   <button class="mode-btn primary" data-mode="full-page">
     <div class="m-icon">
-      <!-- Hugeicons: browser -->
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="4" width="20" height="16" rx="0"/>
+        <rect x="2" y="4" width="20" height="16" rx="2"/>
         <path d="M2 9h20"/>
         <circle cx="5.5" cy="6.5" r=".9" fill="currentColor" stroke="none"/>
         <circle cx="8.5" cy="6.5" r=".9" fill="currentColor" stroke="none"/>
@@ -529,29 +765,25 @@
       <span class="m-name">Full Page</span>
       <span class="m-desc">Entire scrollable document</span>
     </div>
-    <span class="m-kbd">⌥⇧F</span>
+    <span class="m-kbd">&#x2325;&#x21E7;F</span>
   </button>
 
   <button class="mode-btn" data-mode="visible-area">
     <div class="m-icon">
-      <!-- Hugeicons: computer-desktop -->
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="3" width="20" height="14" rx="0"/>
+        <rect x="2" y="3" width="20" height="14" rx="2"/>
         <path d="M8 21h8M12 17v4"/>
       </svg>
     </div>
     <div class="m-text">
       <span class="m-name">Visible Area</span>
-      <span class="m-desc">Current viewport only</span>
+      <span class="m-desc">Current viewport</span>
     </div>
-    <span class="m-kbd">⌥⇧V</span>
+    <span class="m-kbd">&#x2325;&#x21E7;V</span>
   </button>
-
-  <div class="m-sep"></div>
 
   <button class="mode-btn" data-mode="selected-area">
     <div class="m-icon">
-      <!-- Hugeicons: crop -->
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <path d="M6 2v16h16"/>
         <path d="M2 6h16v16"/>
@@ -561,11 +793,11 @@
       <span class="m-name">Selected Area</span>
       <span class="m-desc">Drag to select region</span>
     </div>
+    <span class="m-kbd">&#x2325;&#x21E7;S</span>
   </button>
 
   <button class="mode-btn" data-mode="scrolling-area">
     <div class="m-icon">
-      <!-- Hugeicons: swipe-vertical / scroll -->
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 3v18"/>
         <path d="M8 7l4-4 4 4"/>
@@ -574,13 +806,12 @@
     </div>
     <div class="m-text">
       <span class="m-name">Scrolling Area</span>
-      <span class="m-desc">Select region + auto-scroll</span>
+      <span class="m-desc">Select + auto-scroll</span>
     </div>
   </button>
 
   <button class="mode-btn" data-mode="capture-text">
     <div class="m-icon">
-      <!-- Hugeicons: text-font -->
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <path d="M4 7V4h16v3"/>
         <path d="M9 20h6"/>
@@ -590,25 +821,31 @@
       </svg>
     </div>
     <div class="m-text">
-      <span class="m-name">Capture Text (OCR)</span>
-      <span class="m-desc">Extract & copy text from area</span>
+      <span class="m-name">Capture Text</span>
+      <span class="m-desc">Extract & copy (OCR)</span>
     </div>
   </button>
 
+</div>
+
+<!-- STATUS LINE (last capture) -->
+<div id="statusLine">
+  <img class="status-thumb" id="statusThumb" src="" alt="">
+  <span class="status-text" id="statusText"></span>
+  <button class="status-view" id="statusViewBtn" type="button">View</button>
 </div>
 
 <!-- PROGRESS -->
 <div id="progressSection">
   <div class="prog-top">
     <div class="prog-icon">
-      <!-- Hugeicons: loading-03 / clock -->
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"/>
         <path d="M12 6v6l4 2"/>
       </svg>
     </div>
     <div>
-      <div class="prog-label" id="progressLabel">Preparing capture…</div>
+      <div class="prog-label" id="progressLabel">Preparing capture...</div>
       <div class="prog-sub">Please wait</div>
     </div>
   </div>
@@ -621,7 +858,6 @@
 <div id="resultBar">
   <div class="res-status">
     <div class="res-check">
-      <!-- Hugeicons: checkmark-circle-02 -->
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M20 6L9 17l-5-5"/>
       </svg>
@@ -637,7 +873,6 @@
   </div>
   <div class="res-actions">
     <button class="res-btn prim" id="copyBtn">
-      <!-- Hugeicons: copy-01 -->
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <rect x="9" y="9" width="13" height="13" rx="1"/>
         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
@@ -645,7 +880,6 @@
       Copy
     </button>
     <button class="res-btn" id="savePngBtn">
-      <!-- Hugeicons: download-01 -->
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
         <polyline points="7 10 12 15 17 10"/>
@@ -653,8 +887,15 @@
       </svg>
       PNG
     </button>
+    <button class="res-btn" id="saveWebpBtn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      WebP
+    </button>
     <button class="res-btn" id="savePdfBtn">
-      <!-- Hugeicons: file-pdf -->
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
         <polyline points="14 2 14 8 20 8"/>
@@ -663,7 +904,6 @@
       PDF
     </button>
     <button class="res-btn" id="editBtn">
-      <!-- Hugeicons: pencil-edit-01 -->
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
       </svg>
@@ -686,7 +926,7 @@
 <div class="ftr">
   <div class="ftr-left">
     <div class="ftr-dot"></div>
-    <span class="ftr-text">GoFully v1.0</span>
+    <span class="ftr-text">GoFully v1.1</span>
   </div>
   <span class="ftr-text">100% Offline</span>
 </div>

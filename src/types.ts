@@ -104,6 +104,10 @@ export interface Settings {
   captureDelay: number;
   scrollPadding: number;
   lazyLoadWait: number;
+  captureSound: boolean;
+  captureCountdown: 0 | 1 | 2 | 3;
+  skipStickyHeaders: boolean;
+  defaultExportFormat: "png" | "webp";
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -114,4 +118,8 @@ export const DEFAULT_SETTINGS: Settings = {
   captureDelay: 150,
   scrollPadding: 0,
   lazyLoadWait: 2000,
+  captureSound: true,
+  captureCountdown: 0,
+  skipStickyHeaders: false,
+  defaultExportFormat: "png",
 };

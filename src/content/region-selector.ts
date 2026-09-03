@@ -1,5 +1,9 @@
 import type { CaptureRegion } from "../types";
 
+/** Kept in step with src/ui/overlay-kit.ts — this file styles a shadow root. */
+const FONT_STACK =
+  `'GoFully Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif`;
+
 let activeTabId: number | null = null;
 
 // Guard against duplicate injections
@@ -16,9 +20,18 @@ if (!(window as any).__snapforge_region_listener_registered) {
               payload: { mode: "selected-area", region, tabId: activeTabId },
             },
             (response) => {
-              const payload = response?.payload;
-              if (payload && typeof (window as any).__snapforge_show_result_bar === "function") {
-                (window as any).__snapforge_show_result_bar(payload);
+              // The result bar is normally shown by the service worker
+              // (showResultBarOnTab) once the capture finishes — this is
+              // just a same-tick fallback for the rare case where
+              // result-bar.js is already loaded on the page.
+              if (
+                response?.type === "CAPTURE_COMPLETE" &&
+                response.payload &&
+                typeof (window as any).__snapforge_show_result_bar === "function"
+              ) {
+                (window as any).__snapforge_show_result_bar(response.payload);
+              } else if (response?.type === "CAPTURE_ERROR") {
+                showInlineError(response.payload?.message || "Capture failed");
               }
             }
           );
@@ -27,8 +40,25 @@ if (!(window as any).__snapforge_region_listener_registered) {
       sendResponse({ started: true });
       return true;
     }
+    if (message.type === "CAPTURE_ERROR_INLINE") {
+      showInlineError(message.payload?.message || "Capture failed");
+      return false;
+    }
     return false;
   });
+}
+
+function showInlineError(msg: string): void {
+  const el = document.createElement("div");
+  el.textContent = msg;
+  el.style.cssText = `
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: #B42318; color: #fff; padding: 10px 18px;
+    font: 600 12.5px ${FONT_STACK}; z-index: 2147483647;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25); pointer-events: none;
+  `;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 4000);
 }
 
 let host: HTMLDivElement | null = null;
@@ -80,11 +110,22 @@ function createUI(): void {
 
   const style = document.createElement("style");
   style.textContent = `
+    /* Declared inside the shadow root so the face resolves even when the host
+       page's CSP or a missing document-level rule would otherwise block it. */
+    @font-face {
+      font-family: 'GoFully Archivo';
+      src: url('${chrome.runtime.getURL("assets/Archivo.woff2")}') format('woff2-variations'),
+           url('${chrome.runtime.getURL("assets/Archivo.woff2")}') format('woff2');
+      font-weight: 100 900;
+      font-display: swap;
+    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     .overlay {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       z-index: 2147483646; cursor: crosshair;
-      background: rgba(0, 0, 0, 0.45);
+      /* Light dim: enough to read the marquee, not so much that the page
+         content being selected goes murky. */
+      background: rgba(16, 24, 40, 0.28);
       transition: background 0.15s ease;
       user-select: none;
     }
@@ -98,30 +139,30 @@ function createUI(): void {
       animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       background: #ffffff;
       padding: 22px 30px;
-      border-radius: 0px;
-      border: 1px solid #cbd5e1;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
+      border-radius: 0;
+      border: 1px solid #E3E8EF;
+      box-shadow: 0 8px 8px -4px rgba(16,24,40,0.04), 0 20px 24px -4px rgba(16,24,40,0.10);
     }
     .hint-icon {
-      width: 44px; height: 44px; border-radius: 0px;
-      background: #eff6ff; border: 1.5px solid #2563eb;
+      width: 44px; height: 44px; border-radius: 0;
+      background: #EDF1FE; border: 1.5px solid #1667F2;
       display: flex; align-items: center; justify-content: center;
-      color: #2563eb;
+      color: #1667F2;
     }
     .hint-text {
-      color: #0f172a; font: 600 14px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #101828; font: 600 14px/1.4 ${FONT_STACK};
       letter-spacing: -0.01em;
     }
     .hint-sub {
-      color: #64748b; font: 400 12px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #667085; font: 400 12px/1.4 ${FONT_STACK};
       display: flex; gap: 10px;
     }
     .hint-sub kbd {
-      background: #f1f5f9;
+      background: #F1F3F7;
       padding: 2px 6px;
-      border-radius: 0px;
-      border: 1px solid #cbd5e1;
-      color: #334155;
+      border-radius: 0;
+      border: 1px solid #E3E8EF;
+      color: #344054;
       font-weight: 600;
       font-size: 11px;
     }
@@ -130,11 +171,11 @@ function createUI(): void {
     .selection {
       position: fixed; z-index: 2147483647;
       border: 1.5px solid #1667F2;
-      box-shadow: 0 0 0 99999px rgba(0, 0, 0, 0.52);
+      box-shadow: 0 0 0 99999px rgba(16, 24, 40, 0.28);
       display: none;
       box-sizing: border-box;
       cursor: move;
-      border-radius: 0px;
+      border-radius: 0;
     }
 
     /* Handles */
@@ -142,7 +183,7 @@ function createUI(): void {
       position: absolute; width: 8px; height: 8px;
       background: #FFFFFF;
       border: 1.5px solid #1667F2;
-      border-radius: 0px;
+      border-radius: 0;
       box-shadow: 0 1px 3px rgba(0,0,0,0.2);
       z-index: 2;
     }
@@ -158,12 +199,12 @@ function createUI(): void {
     /* Dimensions badge */
     .badge {
       position: absolute; top: -30px; left: 50%; transform: translateX(-50%);
-      background: #ffffff; color: #0f172a;
-      font: 600 11px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      padding: 5px 10px; border-radius: 0px;
-      border: 1px solid #cbd5e1;
+      background: #ffffff; color: #101828;
+      font: 600 11px/1 ${FONT_STACK};
+      padding: 5px 10px; border-radius: 0;
+      border: 1px solid #E3E8EF;
       white-space: nowrap; pointer-events: none;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 6px -2px rgba(16,24,40,0.03), 0 12px 16px -4px rgba(16,24,40,0.08);
       display: none;
       font-variant-numeric: tabular-nums;
       letter-spacing: 0.02em;
@@ -173,26 +214,29 @@ function createUI(): void {
       bottom: -30px;
     }
 
-    /* Actions Bar */
+    /* Actions Bar — inside selection at bottom-center */
     .actions-bar {
-      position: absolute; bottom: -38px; right: 0;
-      display: none; align-items: center; gap: 4px;
-      background: #ffffff; padding: 4px 6px;
-      border-radius: 0px;
-      border: 1px solid #cbd5e1;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
-      z-index: 3;
+      position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+      display: none; align-items: center; gap: 6px;
+      background: #FFFFFF;
+      padding: 6px;
+      border-radius: 0;
+      border: 1px solid #E3E8EF;
+      box-shadow: 0 8px 8px -4px rgba(16,24,40,0.04), 0 20px 24px -4px rgba(16,24,40,0.10);
+      z-index: 3; white-space: nowrap;
     }
     .action-btn {
-      height: 26px; padding: 0 10px; border-radius: 0px;
-      font: 600 11px -apple-system, BlinkMacSystemFont, sans-serif;
+      height: 28px; padding: 0 12px; border-radius: 0;
+      font: 600 11px/1 ${FONT_STACK};
+      letter-spacing: -0.005em;
       border: 1px solid transparent; cursor: pointer;
-      display: flex; align-items: center; gap: 4px;
+      display: flex; align-items: center; gap: 5px;
+      transition: background .14s ease, border-color .14s ease;
     }
-    .action-btn.primary { background: #1667F2; color: #fff; }
+    .action-btn.primary { background: #1667F2; color: #fff; border-color: #1667F2; }
     .action-btn.primary:hover { background: #1257D8; }
-    .action-btn.cancel { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
-    .action-btn.cancel:hover { background: #e2e8f0; color: #0f172a; }
+    .action-btn.cancel { background: #FFFFFF; color: #344054; border-color: #E3E8EF; }
+    .action-btn.cancel:hover { background: #F7F8FA; color: #101828; }
   `;
 
   overlay = document.createElement("div");

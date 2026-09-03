@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "GoFully",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Capture full pages, visible areas, scrolling regions, and extract text with local OCR. Built-in visual editor and PDF export.",
   "icons": {
     "16": "assets/icon-16.png",
@@ -68,6 +68,13 @@
         "mac": "Alt+Shift+V"
       },
       "description": "Capture visible area"
+    },
+    "capture-selected-area": {
+      "suggested_key": {
+        "default": "Alt+Shift+S",
+        "mac": "Alt+Shift+S"
+      },
+      "description": "Capture selected area"
     }
   },
   "options_page": "settings.html",
