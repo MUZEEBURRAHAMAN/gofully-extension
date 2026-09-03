@@ -1074,7 +1074,9 @@ async function exportToBlob(): Promise<Blob> {
   const clean = !getAnnotToggle();
   const annotations = canvas.getObjects().filter((o) => o !== backgroundImage);
   const hasAnnotations = annotations.length > 0;
-  const dims = getResizeDims();
+  // Explicit width/height inputs win when set; otherwise the Quality
+  // dropdown (Native/1080p HD/4K UHD) decides the target size.
+  const dims = getResizeDims() ?? getExportTargetSize();
 
   // Clean export (or no annotations): bypass Fabric entirely — zero quality loss
   if (clean || !hasAnnotations) {
@@ -1096,8 +1098,10 @@ async function exportToBlob(): Promise<Blob> {
     // Fallback to Fabric if SW returns nothing
   }
 
-  // Annotated export: render via Fabric at exact native pixel ratio
-  const multiplier = imgNativeW > 0 ? imgNativeW / dispW : Math.max(1, 1 / fitScale);
+  // Annotated export: render via Fabric at the resolved export multiplier —
+  // native resolution, or upscaled further when Quality is set to 1080p HD
+  // or 4K UHD and native resolution doesn't already meet that target.
+  const multiplier = getExportMultiplier();
 
   if (clean) {
     annotations.forEach((o) => o.set("visible", false));
@@ -1253,19 +1257,34 @@ function setupExportButtons(): void {
   setupRotateControls();
 }
 
-function getExportMultiplier(): number {
+// Target pixel size in NATIVE-image terms when the Quality dropdown asks for
+// more than native resolution already provides; null means "native is enough,
+// don't touch anything" — this is what keeps the zero-quality-loss bypass
+// path in exportToBlob() actually zero-loss for the default "Native"/HD-not-
+// needed cases instead of always re-resampling.
+function getExportTargetSize(): { w: number; h: number } | null {
   const quality = (document.getElementById("exportQuality") as HTMLSelectElement)?.value ?? "native";
-  const nativeM = 1 / fitScale;
+  if (!imgNativeW || !imgNativeH) return null;
 
-  if (quality === "hd") {
-    const hdM = Math.max(1920 / dispW, 1080 / dispH);
-    return Math.max(nativeM, hdM);
-  }
-  if (quality === "4k") {
-    const fourKM = Math.max(3840 / dispW, 2160 / dispH);
-    return Math.max(nativeM, fourKM);
-  }
-  return nativeM;
+  const targets: Record<string, [number, number]> = {
+    hd: [1920, 1080],
+    "4k": [3840, 2160],
+  };
+  const target = targets[quality];
+  if (!target) return null;
+
+  const [targetW, targetH] = target;
+  if (imgNativeW >= targetW || imgNativeH >= targetH) return null;
+
+  const scale = Math.max(targetW / imgNativeW, targetH / imgNativeH);
+  return { w: Math.round(imgNativeW * scale), h: Math.round(imgNativeH * scale) };
+}
+
+function getExportMultiplier(): number {
+  const nativeM = imgNativeW > 0 ? imgNativeW / dispW : Math.max(1, 1 / fitScale);
+  const target = getExportTargetSize();
+  if (!target) return nativeM;
+  return Math.max(nativeM, target.w / dispW, target.h / dispH);
 }
 
 // ─── Text formatting ──────────────────────────────────────────────────────────
