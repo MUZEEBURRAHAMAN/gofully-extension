@@ -1,0 +1,35 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "broken-image",
+        "value": "*",
+        "files": [
+          "src/popup/popup.html"
+        ],
+        "createdAt": "2026-09-03T06:40:54.747Z",
+        "reason": "verified false positives: statusThumb (L833) and popupPreviewImg (L869) both sit in containers that are display:none until popup.ts sets .src then reveals them (statusLine.classList.add('active') at :413; previewContainer.style.display='flex' at :341) — the empty src attribute never renders on screen"
+      },
+      {
+        "rule": "broken-image",
+        "value": "*",
+        "files": [
+          "src/editor/editor.html"
+        ],
+        "createdAt": "2026-09-03T06:42:04.629Z",
+        "reason": "verified false positive: #cropImg (L1360/1364) has no src attribute in markup because canvas-editor.ts sets .src at runtime only when the crop modal is opened (L821/875/899) — never rendered as a broken image"
+      },
+      {
+        "rule": "dark-glow",
+        "value": "*",
+        "files": [
+          "src/editor/editor.html"
+        ],
+        "createdAt": "2026-09-03T06:42:04.688Z",
+        "reason": "verified false positive: the flagged box-shadow is on .tool-btn.active, which lives in .toolbar (background: var(--bar) = #FFFFFF per :root, L21) — a white surface, not a dark page as the rule assumes"
+      }
+    ]
+  }
+}

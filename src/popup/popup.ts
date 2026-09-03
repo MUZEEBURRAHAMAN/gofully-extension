@@ -299,7 +299,7 @@ function showProgress(): void {
   resultBar.classList.remove("active");
   errorBar.classList.remove("active");
   progressLabel.textContent = "Preparing capture...";
-  progressFill.style.width = "0%";
+  progressFill.style.transform = "scaleX(0)";
 }
 
 function updateProgress(progress: CaptureProgress): void {
@@ -310,14 +310,14 @@ function updateProgress(progress: CaptureProgress): void {
       break;
     case "capturing":
       progressLabel.textContent = `Capturing ${current}/${total}...`;
-      progressFill.style.width = `${(current / total) * 80}%`;
+      progressFill.style.transform = `scaleX(${(current / total) * 0.8})`;
       break;
     case "stitching":
       progressLabel.textContent = "Stitching frames...";
-      progressFill.style.width = "90%";
+      progressFill.style.transform = "scaleX(0.9)";
       break;
     case "done":
-      progressFill.style.width = "100%";
+      progressFill.style.transform = "scaleX(1)";
       break;
   }
 }

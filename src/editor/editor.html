@@ -640,6 +640,10 @@
       outline: none;
     }
     #exportQuality:hover { background: #E3E8EF; }
+    #exportQuality:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: -1px;
+    }
     #exportQuality option { background: #FFFFFF; color: var(--text); }
 
     /* ─── CANVAS AREA ─── */
@@ -848,6 +852,25 @@
     .cropper-move{cursor:move}
     .cropper-crop{cursor:crosshair}
     .cropper-disabled .cropper-drag-box,.cropper-disabled .cropper-face,.cropper-disabled .cropper-line,.cropper-disabled .cropper-point{cursor:not-allowed}
+
+    /* ─── REDUCED MOTION ─── */
+    /* Decorative hover/active scale flourishes are dropped entirely; motion
+       that also carries visibility state (panel slide, toast) keeps its
+       transform but loses the animated transition, so it still appears/
+       disappears correctly, just instantly. */
+    @media (prefers-reduced-motion: reduce) {
+      .tool-btn:active,
+      .color-swatch:hover,
+      .color-swatch.active,
+      .bf-bg-swatch:hover,
+      .bf-bg-swatch.active,
+      .export-btn:active {
+        transform: none;
+      }
+      .beautify-panel { transition: none; }
+      .toast { transition: opacity .18s; }
+      .toast.show { transform: translateX(-50%); }
+    }
   </style>
 </head>
 <body>

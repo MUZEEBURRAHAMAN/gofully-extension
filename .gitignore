@@ -9,3 +9,4 @@ dist/
 tsconfig.tsbuildinfo
 assets/Archivo.zip
 assets/Archivo/
+.impeccable/hook.cache.json

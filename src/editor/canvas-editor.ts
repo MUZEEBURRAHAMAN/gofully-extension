@@ -323,6 +323,16 @@ function setTool(tool: ToolType): void {
   canvas.renderAll();
 }
 
+// Shape tools (rectangle, arrow, callout, spotlight, blur, step, etc.) finish
+// a draw the way CleanShot X does: the tool reverts to the pointer and the
+// just-drawn object is immediately selected, so the user can drag/resize/
+// recolor it right away instead of having to click "Select" first.
+function finishAndSelect(obj: FabricObject): void {
+  setTool("select");
+  canvas.setActiveObject(obj);
+  canvas.renderAll();
+}
+
 // ─── Canvas events ────────────────────────────────────────────────────────────
 
 function setupCanvasEvents(): void {
@@ -338,6 +348,11 @@ function setupCanvasEvents(): void {
 
   canvas.on("mouse:down", (e: any) => {
     if (currentTool === "select" || currentTool === "freedraw") return;
+
+    // Step badges stay individually draggable while the Step tool remains
+    // active (for rapid sequential placement); a click that lands on one of
+    // them is a drag, not a request to place a new badge underneath it.
+    if (currentTool === "step" && e.target) return;
 
     const pt = getScenePoint(e);
     drawStartX = pt.x;
@@ -410,8 +425,8 @@ function setupCanvasEvents(): void {
 
     applyCleanShotStyle(tempShape);
     tempShape.setCoords();
-    canvas.renderAll();
     saveState();
+    finishAndSelect(tempShape);
     tempShape = null;
   });
 
@@ -593,8 +608,8 @@ function finaliseArrow(line: Line): void {
     canvas.remove(line);
     canvas.add(group);
     group.setCoords();
-    canvas.renderAll();
     saveState();
+    finishAndSelect(group);
     return;
   }
 
@@ -621,8 +636,8 @@ function finaliseArrow(line: Line): void {
   canvas.remove(line);
   canvas.add(group);
   group.setCoords();
-  canvas.renderAll();
   saveState();
+  finishAndSelect(group);
 }
 
 // ─── CleanShot X Callout Bubble ───────────────────────────────────────────────
@@ -659,8 +674,8 @@ function finaliseCallout(rect: Rect): void {
   applyCleanShotStyle(group);
   canvas.add(group);
   group.setCoords();
-  canvas.renderAll();
   saveState();
+  finishAndSelect(group);
 }
 
 // ─── CleanShot X Spotlight ────────────────────────────────────────────────────
@@ -718,8 +733,8 @@ function finaliseSpotlight(rect: Rect): void {
   applyCleanShotStyle(group);
   canvas.add(group);
   group.setCoords();
-  canvas.renderAll();
   saveState();
+  finishAndSelect(group);
 }
 
 // ─── Blur / Redact (Glass, Pixelate, Redact Blackout) ──────────────────────────
@@ -756,8 +771,8 @@ async function finaliseBlur(placeholder: any): Promise<void> {
     applyCleanShotStyle(redactBox);
     canvas.add(redactBox);
     redactBox.setCoords();
-    canvas.renderAll();
     saveState();
+    finishAndSelect(redactBox);
     return;
   }
 
@@ -804,8 +819,8 @@ async function finaliseBlur(placeholder: any): Promise<void> {
     canvas.remove(placeholder);
     canvas.add(img);
     img.setCoords();
-    canvas.renderAll();
     saveState();
+    finishAndSelect(img);
   } catch (err) {
     console.error("Blur failed:", err);
     canvas.remove(placeholder);
@@ -974,11 +989,16 @@ function addStepNumber(x: number, y: number): void {
   });
   const group = new Group([circle, label], {
     left: x - r, top: y - r,
-    selectable: false,
-    evented: false,
+    // Step numbers are placed in rapid sequence (1, 2, 3...) so — unlike the
+    // other shape tools — we stay in the Step tool rather than reverting to
+    // Select. The badge is still individually draggable right away, since
+    // per-object selectable/evented works independent of the active tool.
+    selectable: true,
+    evented: true,
   });
   applyCleanShotStyle(group);
   canvas.add(group);
+  canvas.setActiveObject(group);
   stepCounter++;
   saveState();
 }

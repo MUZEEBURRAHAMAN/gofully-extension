@@ -337,8 +337,9 @@ function startAuto(): void {
   });
   autoProgressEl = document.createElement("div");
   Object.assign(autoProgressEl.style, {
-    height: "100%", width: "0%", background: T.accent, borderRadius: "3px",
-    transition: "width .35s ease",
+    height: "100%", width: "100%", background: T.accent, borderRadius: "3px",
+    transform: "scaleX(0)", transformOrigin: "left",
+    transition: "transform .35s ease",
   });
   track.appendChild(autoProgressEl);
 
@@ -356,7 +357,7 @@ function startAuto(): void {
 }
 
 function updateAutoProgress(current: number, total: number): void {
-  if (autoProgressEl && total > 0) autoProgressEl.style.width = `${Math.round((current / total) * 100)}%`;
+  if (autoProgressEl && total > 0) autoProgressEl.style.transform = `scaleX(${current / total})`;
   if (frameCountEl) frameCountEl.textContent = total > 0 ? `${current} / ${total}` : String(current);
 }
 

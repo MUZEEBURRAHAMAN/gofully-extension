@@ -293,7 +293,7 @@
     /* ─── FOOTER ─── */
     .footer {
       text-align: center;
-      color: var(--text-4);
+      color: var(--text-3);
       font-size: 11px;
       margin-top: 24px;
     }
@@ -317,6 +317,15 @@
 
     .saved-toast.show {
       transform: translateX(-50%) translateY(0);
+    }
+
+    /* ─── REDUCED MOTION ─── */
+    /* transform drives this toast's show/hide (no opacity channel), so we
+       keep the transform but drop the animated slide for vestibular safety. */
+    @media (prefers-reduced-motion: reduce) {
+      .saved-toast { transition: none; }
+      .toggle .slider,
+      .toggle .slider:before { transition: none; }
     }
   </style>
 </head>
