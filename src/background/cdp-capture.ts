@@ -44,7 +44,12 @@ export async function captureWithCDP(
       }
     );
 
-    // Capture the screenshot
+    // Capture the screenshot. clip.scale is a multiplier ON TOP OF the
+    // deviceScaleFactor set above — passing captureScale to both compounds
+    // them (2x deviceScaleFactor x 2x clip.scale = 4x actual output pixels
+    // vs. the 2x the width/height below assumes), producing an image twice
+    // as large in each dimension as intended. deviceScaleFactor already
+    // establishes the desired scale; clip.scale stays at 1.
     const result = (await chrome.debugger.sendCommand(
       debuggee,
       "Page.captureScreenshot",
@@ -56,7 +61,7 @@ export async function captureWithCDP(
           y: 0,
           width: contentWidth,
           height: contentHeight,
-          scale: captureScale,
+          scale: 1,
         },
       }
     )) as { data: string };
