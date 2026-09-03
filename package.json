@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "build:extension": "node build.mjs",
-    "package:extension": "node build.mjs && cd dist && zip -r ../gofully-extension.zip . -x '*.DS_Store' '*__MACOSX*' 'features/*' 'originkit/*' 'site.css' 'index.html' 'sitemap.xml' 'robots.txt' && cd ..",
+    "package:extension": "node build.mjs && cd dist && zip -r ../gofully-extension.zip . -x '*.DS_Store' '*__MACOSX*' 'features/*' 'originkit/*' 'sitemap.xml' 'robots.txt' && cd ..",
     "dev:extension": "vite"
   },
   "keywords": [

@@ -139,35 +139,6 @@ const helpFixed = helpHtml.replace(
 );
 writeFileSync(resolve(dist, "help.html"), helpFixed);
 
-// Uninstall Feedback HTML
-const feedbackHtml = readFileSync(resolve(__dirname, "src/feedback/uninstall-feedback.html"), "utf8");
-writeFileSync(resolve(dist, "uninstall-feedback.html"), feedbackHtml);
-
-// Website Pages & Styles
-const siteFiles = [
-  "index.html",
-  "privacy.html",
-  "security.html",
-  "terms.html",
-  "support.html",
-  "faq.html",
-  "site.css"
-];
-
-for (const file of siteFiles) {
-  const srcPath = resolve(__dirname, `src/site/${file}`);
-  if (existsSync(srcPath)) {
-    let content = readFileSync(srcPath, "utf8");
-    if (file === "index.html") {
-      content = content
-        .replace(/\/src\/site\/hero-matrix\.ts/g, "hero-matrix.js")
-        .replace(/src\/site\/hero-matrix\.ts/g, "hero-matrix.js")
-        .replace(/\/hero-matrix\.js/g, "hero-matrix.js");
-    }
-    writeFileSync(resolve(dist, file), content);
-  }
-}
-
 // Offscreen HTML — replace .ts script reference with .js
 const offscreenHtml = readFileSync(resolve(__dirname, "src/offscreen/offscreen.html"), "utf8");
 const offscreenFixed = offscreenHtml.replace(
