@@ -83,6 +83,11 @@ if (existsSync(resolve(__dirname, "assets/Archivo.woff2"))) {
     resolve(dist, "assets/Archivo.woff2")
   );
 }
+for (const name of ["onboarding-ocr.jpg", "onboarding-editor.jpg", "onboarding-export.jpg"]) {
+  if (existsSync(resolve(__dirname, `assets/${name}`))) {
+    cpSync(resolve(__dirname, `assets/${name}`), resolve(dist, `assets/${name}`));
+  }
+}
 
 // Copy local Tesseract OCR assets
 if (existsSync(resolve(__dirname, "node_modules/tesseract.js/dist/worker.min.js"))) {

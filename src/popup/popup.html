@@ -13,6 +13,7 @@
       src: url('assets/Archivo.woff2') format('woff2');
     }
   </style>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -114,19 +115,33 @@
     .icon-btn:hover { color: var(--text-2); background: var(--surface); }
     .icon-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
 
+    /* ─── BLUEPRINT FRAME (Industry design system) ───
+       Hairline border + four "+" registration marks at the corners, used
+       throughout onboarding instead of filled/rounded surfaces. */
+    .bp { position: relative; border: 1px solid var(--border); }
+    .bp > .cm { position: absolute; width: 8px; height: 8px; color: var(--blue-bd); }
+    .bp > .cm::before { content: ""; position: absolute; left: 3px; top: 0; width: 1px; height: 100%; background: currentColor; }
+    .bp > .cm::after  { content: ""; position: absolute; top: 3px; left: 0; width: 100%; height: 1px; background: currentColor; }
+    .bp > .cm.tl { top: -4px; left: -4px; }
+    .bp > .cm.tr { top: -4px; right: -4px; }
+    .bp > .cm.bl { bottom: -4px; left: -4px; }
+    .bp > .cm.br { bottom: -4px; right: -4px; }
+
     /* ─── ONBOARDING ─── */
     #onboarding {
       display: none;
-      padding: 24px 20px 20px;
+      padding: 22px 20px 18px;
       text-align: center;
+      font-family: 'Barlow', 'Archivo', sans-serif;
     }
     #onboarding.active { display: block; }
 
+    .ob-slide[hidden] { display: none; }
+
     .ob-icon {
-      width: 56px; height: 56px;
+      width: 52px; height: 52px;
       margin: 0 auto 16px;
       background: var(--blue-bg);
-      border-radius: var(--r-lg);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -134,86 +149,92 @@
     }
 
     .ob-title {
-      font-size: 18px;
-      font-weight: 700;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 19px;
+      font-weight: 600;
       color: var(--text);
-      letter-spacing: -0.3px;
-      margin-bottom: 6px;
+      letter-spacing: -0.2px;
+      margin-bottom: 8px;
     }
 
     .ob-desc {
       font-size: 12px;
       color: var(--text-3);
-      line-height: 1.5;
-      margin-bottom: 20px;
+      line-height: 1.55;
+      margin-bottom: 18px;
       max-width: 280px;
       margin-left: auto;
       margin-right: auto;
     }
 
-    .ob-steps {
+    /* Slide 1 — capture-mode grid */
+    .ob-modes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      text-align: left;
+      margin-bottom: 4px;
+    }
+    .ob-mode {
+      border: 1px solid var(--border);
+      padding: 10px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      margin-bottom: 22px;
-      text-align: left;
+      gap: 6px;
     }
-
-    .ob-step {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 14px;
-      background: var(--surface);
-      border-radius: var(--r-md);
-    }
-
-    .ob-num {
-      width: 26px; height: 26px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      background: var(--blue);
-      color: var(--white);
+    .ob-mode svg { color: var(--blue); }
+    .ob-mode span {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
       font-size: 11px;
-      font-weight: 700;
-      border-radius: 50%;
+      letter-spacing: 0.02em;
     }
 
-    .ob-step-text {
-      font-size: 12px;
-      color: var(--text-2);
-      font-weight: 500;
-      line-height: 1.35;
+    /* Slides 2-4 — screenshot preview */
+    .ob-shot {
+      padding: 6px;
+      margin-bottom: 10px;
     }
-
-    .ob-cta {
-      display: block;
+    .ob-shot img {
       width: 100%;
-      height: 44px;
-      border: none;
-      border-radius: var(--r-pill);
-      background: var(--blue);
-      color: var(--white);
-      font-family: inherit;
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: -0.2px;
-      cursor: pointer;
-      transition: background .14s, transform .08s;
-      box-shadow: var(--shadow-sm);
+      display: block;
+      object-fit: cover;
+      height: 108px;
     }
-    .ob-cta:hover { background: var(--blue-h); }
-    .ob-cta:active { background: var(--blue-a); transform: scale(0.98); }
-    .ob-cta:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+    .ob-tag {
+      display: inline-block;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-4);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      padding: 4px 10px;
+    }
+    .ob-privacy {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .ob-privacy svg { color: var(--blue); flex-shrink: 0; }
+    .ob-privacy span { font-size: 11px; color: var(--text-3); line-height: 1.4; }
+
+    /* Progress dots + nav row */
+    .ob-dots { display: flex; justify-content: center; gap: 6px; margin: 18px 0 14px; }
+    .ob-dots span { width: 16px; height: 4px; background: var(--border); transition: background .15s; }
+    .ob-dots span.active { background: var(--blue); }
+
+    .ob-nav { display: flex; align-items: center; justify-content: space-between; }
 
     .ob-skip {
-      display: inline-block;
-      margin-top: 10px;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 500;
-      color: var(--text-3);
+      color: var(--text-4);
       background: none;
       border: none;
       cursor: pointer;
@@ -222,14 +243,36 @@
     }
     .ob-skip:hover { color: var(--text-2); }
 
+    .ob-next {
+      height: 36px;
+      padding: 0 20px;
+      background: var(--blue);
+      border: 1px solid rgba(29,31,32,.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: var(--white);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: background .14s;
+    }
+    .ob-next.full { width: 100%; height: 44px; font-size: 14px; }
+    .ob-next:hover { background: var(--blue-h); }
+    .ob-next:active { background: var(--blue-a); }
+    .ob-next:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+    .ob-next > .cm { color: rgba(255,255,255,.4); }
+
     /* ─── UNSUPPORTED PAGE NOTICE PANEL ─── */
     #unsupportedPanel {
       display: none;
-      margin: 10px 12px 0;
-      padding: 12px 14px;
-      background: #F7F8FA;
-      border: 1px solid #E3E8EF;
-      border-radius: var(--r-md);
+      margin: 12px 16px 0;
+      padding: 14px;
+      background: rgba(234,179,8,.06);
+      border: 1px solid rgba(234,179,8,.25);
       animation: fadeIn 0.16s ease-out;
     }
     #unsupportedPanel.active { display: block; }
@@ -242,12 +285,12 @@
     .unsupp-header {
       display: flex;
       align-items: center;
-      gap: 7px;
-      margin-bottom: 4px;
+      gap: 8px;
+      margin-bottom: 6px;
     }
 
     .unsupp-icon {
-      color: #F59E0B;
+      color: #ca8a04;
       flex-shrink: 0;
       display: flex;
       align-items: center;
@@ -255,17 +298,20 @@
     }
 
     .unsupp-title {
+      font-family: 'Barlow Condensed', sans-serif;
       font-size: 12px;
       font-weight: 600;
-      color: var(--text);
-      letter-spacing: -0.1px;
+      color: #92400e;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
     }
 
     .unsupp-desc {
+      font-family: 'Barlow', sans-serif;
       font-size: 11px;
       color: var(--text-3);
-      line-height: 1.45;
-      margin-bottom: 10px;
+      line-height: 1.5;
+      margin-bottom: 12px;
     }
 
     .unsupp-actions {
@@ -277,12 +323,13 @@
       height: 28px;
       padding: 0 14px;
       border: 1px solid var(--border);
-      background: var(--white);
+      background: transparent;
       color: var(--text-2);
+      font-family: 'Barlow Condensed', sans-serif;
       font-size: 11px;
       font-weight: 600;
-      font-family: inherit;
-      border-radius: var(--r-sm);
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -485,14 +532,16 @@
       width: 36px; height: 36px;
       flex-shrink: 0;
       background: var(--blue-bg);
-      border-radius: var(--r-md);
       display: flex; align-items: center; justify-content: center;
       color: var(--blue);
     }
+    .prog-icon > .cm { color: var(--blue-bd); }
 
     .prog-label {
-      font-size: 13px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px;
       font-weight: 600;
+      letter-spacing: 0.01em;
       color: var(--text);
     }
 
@@ -527,24 +576,24 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 8px 14px;
-      background: var(--green-bg);
-      border-bottom: 1px solid var(--green-bd);
+      padding: 10px 16px;
+      background: rgba(22,103,242,.08);
+      border-bottom: 1px solid rgba(22,103,242,.12);
     }
 
-    .res-check { color: var(--green); flex-shrink: 0; }
+    .res-check { color: var(--blue); flex-shrink: 0; }
 
     .res-title {
       font-size: 12px;
       font-weight: 600;
-      color: var(--green);
+      color: var(--blue-h);
       flex: 1;
     }
 
     .res-dim {
       font-size: 10.5px;
       font-weight: 500;
-      color: #059669;
+      color: rgba(22,103,242,.7);
       font-variant-numeric: tabular-nums;
     }
 
@@ -555,19 +604,21 @@
 
     .res-btn {
       flex: 1;
-      height: 36px;
+      height: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 5px;
       border: none;
       border-right: 1px solid var(--border);
-      background: var(--white);
+      background: transparent;
       cursor: pointer;
       font-size: 11px;
       font-weight: 500;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
       color: var(--text-2);
-      font-family: inherit;
+      font-family: 'Barlow Condensed', sans-serif;
       transition: background .08s, color .08s;
     }
     .res-btn:last-child { border-right: none; }
@@ -576,11 +627,11 @@
     .res-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
 
     .res-btn.prim {
-      flex: 1.8;
+      flex: 1.6;
       background: var(--blue);
       border-right-color: var(--blue-h);
-      color: #fff;
-      font-weight: 700;
+      color: #f2f2f3;
+      font-weight: 600;
     }
     .res-btn.prim:hover { background: var(--blue-h); }
 
@@ -588,7 +639,7 @@
       position: relative;
       width: 100%;
       height: 150px;
-      background: var(--sunken);
+      background: var(--surface);
       border-bottom: 1px solid var(--border);
       overflow: hidden;
       display: flex;
@@ -616,15 +667,15 @@
       pointer-events: none;
     }
     .popup-preview-pill {
+      font-family: 'Barlow Condensed', sans-serif;
       font-size: 9.5px;
       font-weight: 700;
       color: var(--text-3);
-      background: rgba(255, 255, 255, 0.92);
+      background: rgba(242,242,243,.9);
       border: 1px solid var(--border);
-      padding: 2px 8px;
-      border-radius: var(--r-pill);
+      padding: 2px 10px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.06em;
     }
 
     /* ─── ERROR ─── */
@@ -680,7 +731,6 @@
       #onboarding { animation: none; }
       .mode-btn.primary:hover,
       .mode-btn:active,
-      .ob-cta:active,
       .unsupp-btn:active {
         transform: none;
       }
@@ -718,33 +768,78 @@
   </div>
 </div>
 
-<!-- ONBOARDING (first-time users only) -->
+<!-- ONBOARDING (first-time users only) — 4-slide blueprint carousel -->
 <div id="onboarding">
-  <div class="ob-icon">
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="2" y="3" width="20" height="14" rx="2"/>
-      <path d="M8 21h8M12 17v4"/>
-      <path d="M9 10l2 2 4-4"/>
-    </svg>
-  </div>
-  <div class="ob-title">Welcome to GoFully!</div>
-  <div class="ob-desc">Capture full pages, regions, or scrolling areas in one click. Edit, annotate, and export — all 100% offline.</div>
-  <div class="ob-steps">
-    <div class="ob-step">
-      <div class="ob-num">1</div>
-      <div class="ob-step-text">Pick a capture mode — full page, visible area, or select a region</div>
+
+  <!-- Slide 1 — capture modes -->
+  <div class="ob-slide" data-slide="1">
+    <div class="ob-icon bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16"></rect><path d="M2 9h20"/></svg>
     </div>
-    <div class="ob-step">
-      <div class="ob-num">2</div>
-      <div class="ob-step-text">Edit with arrows, shapes, blur, text & more in the built-in editor</div>
-    </div>
-    <div class="ob-step">
-      <div class="ob-num">3</div>
-      <div class="ob-step-text">Copy, save as PNG/WebP/PDF, or share — your data never leaves your device</div>
+    <div class="ob-title">Capture any part of the page</div>
+    <div class="ob-desc">Full pages, visible viewports, custom regions, or long scrolling feeds — pick the mode that fits what's on screen.</div>
+    <div class="ob-modes">
+      <div class="ob-mode"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16"></rect><path d="M2 9h20"/></svg><span>Full Page</span></div>
+      <div class="ob-mode"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14"></rect><path d="M8 21h8M12 17v4"/></svg><span>Visible Area</span></div>
+      <div class="ob-mode"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v4"/><path d="M18 2v4"/><path d="M6 18v4"/><path d="M18 18v4"/><path d="M2 6h4"/><path d="M2 18h4"/><path d="M18 6h4"/><path d="M18 18h4"/></svg><span>Selected Area</span></div>
+      <div class="ob-mode"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="m8 7 4-4 4 4"/><path d="m8 17 4 4 4-4"/></svg><span>Scrolling Area</span></div>
     </div>
   </div>
-  <button class="ob-cta" id="onboardingStart">Start Capturing</button>
-  <button class="ob-skip" id="onboardingSkip">I know how this works</button>
+
+  <!-- Slide 2 — on-device OCR -->
+  <div class="ob-slide" data-slide="2" hidden>
+    <div class="ob-icon bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 8h10"/><path d="M7 12h10"/><path d="M7 16h7"/></svg>
+    </div>
+    <div class="ob-title">Pull text out instantly</div>
+    <div class="ob-desc">Select any region and extract text, code, or table data with on-device OCR — no cloud round-trip, no delay.</div>
+    <div class="ob-shot bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+      <img src="assets/onboarding-ocr.jpg" alt="On-device OCR text extraction result">
+    </div>
+    <span class="ob-tag">ON-DEVICE WASM · 100% OFFLINE</span>
+  </div>
+
+  <!-- Slide 3 — annotate & redact -->
+  <div class="ob-slide" data-slide="3" hidden>
+    <div class="ob-icon bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/></svg>
+    </div>
+    <div class="ob-title">Annotate, redact, ship</div>
+    <div class="ob-desc">Mark up with arrows, shapes, and callouts. Blur or pixelate sensitive info before you share.</div>
+    <div class="ob-shot bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+      <img src="assets/onboarding-editor.jpg" alt="Annotated screenshot with arrows and callouts in the GoFully editor">
+    </div>
+  </div>
+
+  <!-- Slide 4 — export & privacy -->
+  <div class="ob-slide" data-slide="4" hidden>
+    <div class="ob-icon bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    </div>
+    <div class="ob-title">Export, your way</div>
+    <div class="ob-desc">Copy to your clipboard, save as PNG or WebP, or generate a paginated PDF. Everything stays on your device.</div>
+    <div class="ob-shot bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+      <img src="assets/onboarding-export.jpg" alt="GoFully result bar with copy, PNG, and PDF export options">
+    </div>
+    <div class="ob-privacy">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <span>100% offline. No accounts, no cloud uploads, no telemetry.</span>
+    </div>
+  </div>
+
+  <div class="ob-dots">
+    <span class="active" data-dot="1"></span>
+    <span data-dot="2"></span>
+    <span data-dot="3"></span>
+    <span data-dot="4"></span>
+  </div>
+  <div class="ob-nav">
+    <button class="ob-skip" id="onboardingSkip">Skip</button>
+    <button class="ob-next bp" id="onboardingNext"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+      <span class="ob-next-label">Next</span>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+    </button>
+  </div>
 </div>
 
 <!-- UNSUPPORTED NOTICE PANEL -->
@@ -857,7 +952,7 @@
 <!-- PROGRESS -->
 <div id="progressSection">
   <div class="prog-top">
-    <div class="prog-icon">
+    <div class="prog-icon bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"/>
         <path d="M12 6v6l4 2"/>

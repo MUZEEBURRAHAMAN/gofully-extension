@@ -5,8 +5,10 @@ import { generateFilename } from "../utils/image";
 import { isSupportedCapturePage, type PageSupportResult } from "../utils/url-validator";
 
 const onboarding = document.getElementById("onboarding")!;
-const onboardingStart = document.getElementById("onboardingStart")!;
+const onboardingNext = document.getElementById("onboardingNext")!;
 const onboardingSkip = document.getElementById("onboardingSkip")!;
+const onboardingSlides = Array.from(onboarding.querySelectorAll<HTMLElement>(".ob-slide"));
+const onboardingDots = Array.from(onboarding.querySelectorAll<HTMLElement>(".ob-dots span"));
 const modesSection = document.getElementById("modesSection")!;
 const progressSection = document.getElementById("progressSection")!;
 const progressLabel = document.getElementById("progressLabel")!;
@@ -431,12 +433,35 @@ function dismissOnboarding(): void {
   modesSection.style.display = "grid";
 }
 
-onboardingStart.addEventListener("click", dismissOnboarding);
+let onboardingSlide = 1;
+
+function goToOnboardingSlide(n: number): void {
+  onboardingSlide = n;
+  onboardingSlides.forEach((slide, i) => {
+    slide.hidden = i !== n - 1;
+  });
+  onboardingDots.forEach((dot, i) => dot.classList.toggle("active", i === n - 1));
+
+  const isLast = n === onboardingSlides.length;
+  onboardingNext.classList.toggle("full", isLast);
+  onboardingSkip.style.visibility = isLast ? "hidden" : "visible";
+  const label = onboardingNext.querySelector(".ob-next-label");
+  if (label) label.textContent = isLast ? "Get Started" : "Next";
+}
+
+onboardingNext.addEventListener("click", () => {
+  if (onboardingSlide < onboardingSlides.length) {
+    goToOnboardingSlide(onboardingSlide + 1);
+  } else {
+    dismissOnboarding();
+  }
+});
 onboardingSkip.addEventListener("click", dismissOnboarding);
 
 async function maybeShowOnboarding(): Promise<void> {
   const data = await chrome.storage.local.get("gf_onboarded");
   if (!data.gf_onboarded) {
+    goToOnboardingSlide(1);
     onboarding.classList.add("active");
     modesSection.style.display = "none";
   }

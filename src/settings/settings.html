@@ -13,6 +13,7 @@
       src: url("assets/Archivo.woff2") format("woff2");
     }
   </style>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -22,30 +23,22 @@
       --blue-bg:  #EDF1FE;
       --blue-bd:  #BDD0FB;
 
-      --text:     #101828;
-      --text-2:   #344054;
-      --text-3:   #667085;
-      --text-4:   #98A2B3;
+      --text:     #1d1f20;
+      --text-2:   rgba(29,31,32,.6);
+      --text-3:   rgba(29,31,32,.45);
+      --text-4:   rgba(29,31,32,.35);
 
-      --border:   #E3E8EF;
-      --border-h: #C8D0D9;
-      --surface:  #F7F8FA;
-      --sunken:   #F1F3F7;
+      --border:   rgba(29,31,32,.12);
+      --border-h: rgba(29,31,32,.25);
+      --surface:  #f2f2f3;
+      --sunken:   rgba(29,31,32,.05);
       --white:    #FFFFFF;
 
       --green:    #027A48;
-      --green-bg: #ECFDF3;
-
-      --r-sm:     0px;
-      --r-md:     0px;
-      --r-lg:     0px;
-      --r-pill:   0px;
-
-      --shadow-sm: 0 1px 3px rgba(22,103,242,0.04), 0 4px 8px rgba(22,103,242,0.06);
     }
 
     body {
-      font-family: 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Barlow', 'Archivo', -apple-system, BlinkMacSystemFont, sans-serif;
       -webkit-font-smoothing: antialiased;
       background: var(--surface);
       color: var(--text);
@@ -55,6 +48,18 @@
       max-width: 900px;
       margin: 0 auto;
     }
+
+    h1, .field-label, h2, .help-link { font-family: 'Barlow Condensed', sans-serif; }
+
+    /* ─── BLUEPRINT FRAME ─── */
+    .bp { position: relative; border: 1px solid var(--border); background: transparent; }
+    .bp > .cm { position: absolute; width: 8px; height: 8px; color: var(--border-h); }
+    .bp > .cm::before { content: ""; position: absolute; left: 3px; top: 0; width: 1px; height: 100%; background: currentColor; }
+    .bp > .cm::after  { content: ""; position: absolute; top: 3px; left: 0; width: 100%; height: 1px; background: currentColor; }
+    .bp > .cm.tl { top: -4px; left: -4px; }
+    .bp > .cm.tr { top: -4px; right: -4px; }
+    .bp > .cm.bl { bottom: -4px; left: -4px; }
+    .bp > .cm.br { bottom: -4px; right: -4px; }
 
     /* ─── PAGE HEADER ─── */
     .page-header {
@@ -67,171 +72,156 @@
     .logo-mark {
       width: 28px;
       height: 28px;
-      display: block;
-      object-fit: contain;
-      border-radius: var(--r-sm);
-      box-shadow: 0 1px 3px rgba(22,103,242,0.20);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--blue);
+      border: 1px solid var(--border);
     }
+    .logo-mark img { width: 100%; height: 100%; object-fit: contain; padding: 2px; }
 
     h1 {
       font-size: 20px;
-      font-weight: 700;
+      font-weight: 600;
       color: var(--text);
-      letter-spacing: -0.3px;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
     }
 
     .subtitle {
       color: var(--text-3);
-      font-size: 13px;
-      margin-bottom: 28px;
+      font-size: 12px;
+      margin: 0 0 24px 38px;
     }
+
+    /* ─── LAYOUT GRID ─── */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .stack { display: flex; flex-direction: column; gap: 14px; }
 
     /* ─── SECTION CARDS ─── */
-    .section {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--r-md);
-      padding: 20px;
-      margin-bottom: 14px;
-    }
-
     .section h2 {
-      font-size: 11px;
-      font-weight: 700;
-      margin-bottom: 14px;
-      color: var(--text-3);
+      padding: 14px 16px 10px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-4);
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.08em;
+      border-bottom: 1px solid var(--sunken);
     }
+    .section .fields { padding: 0 16px; }
+    .section.pad { padding: 16px; }
 
     .field {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 10px 0;
+      gap: 12px;
+      padding: 12px 0;
       border-bottom: 1px solid var(--sunken);
     }
 
-    .field:last-child { border-bottom: none; }
+    .fields .field:last-child, .section.pad .field:last-child { border-bottom: none; }
 
     .field-label {
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 500;
       color: var(--text);
     }
 
     .field-desc {
-      font-size: 11px;
-      color: var(--text-3);
-      margin-top: 2px;
+      font-size: 10.5px;
+      color: var(--text-4);
+      margin-top: 1px;
     }
 
     /* ─── FORM CONTROLS ─── */
     select, input[type="number"] {
-      padding: 6px 10px;
+      height: 28px;
+      padding: 0 10px;
       border: 1px solid var(--border);
-      border-radius: var(--r-sm);
-      font-size: 13px;
+      font-size: 11px;
       font-family: inherit;
-      background: var(--white);
-      color: var(--text);
+      background: transparent;
+      color: var(--text-2);
       cursor: pointer;
-      transition: border-color .15s, box-shadow .15s;
+      flex-shrink: 0;
+      transition: border-color .15s;
     }
+    input[type="number"] { cursor: text; text-align: center; }
 
-    /* Native <select> arrow rendering (and its right-side padding) varies by
-       width/OS — replacing it with a fixed custom chevron keeps every
-       dropdown's arrow at the same distance from its right edge. */
     select {
       appearance: none;
       -webkit-appearance: none;
       -moz-appearance: none;
-      padding-right: 28px;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23667085' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      padding-right: 24px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'%3E%3Cpath d='M1 1L5 5L9 1' stroke='rgba(29,31,32,.4)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
-      background-position: right 10px center;
+      background-position: right 8px center;
     }
     select::-ms-expand { display: none; }
 
     select:focus, input:focus {
       outline: none;
       border-color: var(--blue);
-      box-shadow: 0 0 0 3px rgba(22, 103, 242, 0.12);
     }
 
     /* ─── TOGGLE SWITCH ─── */
     .toggle {
       position: relative;
-      width: 42px;
-      height: 24px;
+      width: 36px;
+      height: 20px;
+      flex-shrink: 0;
     }
-
-    .toggle input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
+    .toggle input { opacity: 0; width: 0; height: 0; }
     .toggle .slider {
       position: absolute;
       cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
+      inset: 0;
       background: var(--border-h);
-      border-radius: var(--r-pill);
+      border-radius: 10px;
       transition: background 0.2s;
     }
-
     .toggle .slider:before {
       content: "";
       position: absolute;
-      height: 18px;
-      width: 18px;
-      left: 3px;
-      bottom: 3px;
+      height: 16px;
+      width: 16px;
+      left: 2px;
+      bottom: 2px;
       background: var(--white);
       border-radius: 50%;
       transition: transform 0.2s;
     }
-
-    .toggle input:checked + .slider {
-      background: var(--blue);
-    }
-
-    .toggle input:checked + .slider:before {
-      transform: translateX(18px);
-    }
-
-    .toggle input:focus-visible + .slider {
-      outline: 2px solid var(--blue);
-      outline-offset: 2px;
-    }
+    .toggle input:checked + .slider { background: var(--blue); }
+    .toggle input:checked + .slider:before { transform: translateX(16px); }
+    .toggle input:focus-visible + .slider { outline: 2px solid var(--blue); outline-offset: 2px; }
 
     /* ─── KEYBOARD SHORTCUTS ─── */
-    .shortcut-list {
-      font-size: 12px;
-    }
-
     .shortcut-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 7px 0;
+      padding: 10px 0;
       border-bottom: 1px solid var(--sunken);
+      font-size: 12px;
     }
-
     .shortcut-row:last-child { border-bottom: none; }
-
     .shortcut-row span { color: var(--text-2); }
 
     kbd {
-      background: var(--surface);
+      background: var(--sunken);
       border: 1px solid var(--border);
-      border-radius: 0;
-      padding: 2px 6px;
-      font-family: inherit;
-      font-size: 11px;
+      padding: 2px 8px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
       font-weight: 600;
-      color: var(--text-3);
+      letter-spacing: 0.02em;
+      color: var(--text-4);
     }
 
     /* ─── PRIVACY SECTION ─── */
@@ -239,61 +229,45 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
+      letter-spacing: 0.02em;
       color: var(--text);
       margin-bottom: 6px;
+      text-transform: uppercase;
     }
-
     .privacy-desc {
-      font-size: 12px;
+      font-size: 11.5px;
       color: var(--text-3);
-      line-height: 1.6;
+      line-height: 1.5;
     }
 
     /* ─── HELP SECTION BUTTONS ─── */
-    .help-actions {
-      display: flex;
-      gap: 8px;
-      flex-shrink: 0;
-    }
+    .help-actions { display: flex; gap: 6px; margin-top: 10px; }
 
     .help-link {
+      flex: 1;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 7px 14px;
-      font-size: 12px;
+      justify-content: center;
+      gap: 5px;
+      height: 30px;
+      font-size: 11px;
       font-weight: 600;
-      font-family: inherit;
+      letter-spacing: 0.02em;
       text-decoration: none;
-      border-radius: var(--r-sm);
+      cursor: pointer;
       transition: background .12s, border-color .12s;
     }
-
-    .help-link.secondary {
-      background: var(--surface);
-      color: var(--text-2);
-      border: 1px solid var(--border);
-    }
-    .help-link.secondary:hover {
-      background: var(--sunken);
-      border-color: var(--border-h);
-    }
-
-    .help-link.primary {
-      background: var(--blue);
-      color: var(--white);
-      border: 1px solid var(--blue);
-    }
-    .help-link.primary:hover {
-      background: var(--blue-h);
-    }
+    .help-link.secondary { border: 1px solid var(--border); color: var(--text-3); }
+    .help-link.secondary:hover { background: var(--sunken); border-color: var(--border-h); }
+    .help-link.primary { background: var(--blue); color: var(--surface); border: 1px solid var(--blue); text-transform: uppercase; }
+    .help-link.primary:hover { background: var(--blue-h); }
 
     /* ─── FOOTER ─── */
     .footer {
       text-align: center;
-      color: var(--text-3);
+      color: var(--text-4);
       font-size: 11px;
       margin-top: 24px;
     }
@@ -307,21 +281,15 @@
       background: var(--text);
       color: var(--white);
       padding: 8px 20px;
-      border-radius: var(--r-md);
       font-size: 12px;
       font-weight: 600;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
       transition: transform 0.25s cubic-bezier(0.16,1,0.3,1);
       white-space: nowrap;
     }
-
-    .saved-toast.show {
-      transform: translateX(-50%) translateY(0);
-    }
+    .saved-toast.show { transform: translateX(-50%) translateY(0); }
 
     /* ─── REDUCED MOTION ─── */
-    /* transform drives this toast's show/hide (no opacity channel), so we
-       keep the transform but drop the animated slide for vestibular safety. */
     @media (prefers-reduced-motion: reduce) {
       .saved-toast { transition: none; }
       .toggle .slider,
@@ -331,194 +299,178 @@
 </head>
 <body>
   <div class="page-header">
-    <img class="logo-mark" src="assets/icon-128.png" alt="">
+    <div class="logo-mark"><img src="assets/icon-128.png" alt=""></div>
     <h1>GoFully Settings</h1>
   </div>
   <p class="subtitle">Configure your capture and export preferences</p>
 
-  <!-- Capture Settings -->
-  <div class="section">
-    <h2>Capture</h2>
+  <div class="grid">
 
-    <div class="field">
-      <div>
-        <div class="field-label">Default action after capture</div>
-        <div class="field-desc">What happens when a screenshot is taken</div>
-      </div>
-      <select id="defaultAction">
-        <option value="result-bar">Show result bar</option>
-        <option value="auto-copy">Auto-copy to clipboard</option>
-        <option value="auto-save-png">Auto-save as PNG</option>
-        <option value="auto-pdf">Auto-download as PDF</option>
-      </select>
-    </div>
+    <!-- Capture Settings -->
+    <div class="section bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+      <h2>Capture</h2>
+      <div class="fields">
+        <div class="field">
+          <div>
+            <div class="field-label">Default action after capture</div>
+            <div class="field-desc">What happens when a screenshot is taken</div>
+          </div>
+          <select id="defaultAction">
+            <option value="result-bar">Show result bar</option>
+            <option value="auto-copy">Auto-copy to clipboard</option>
+            <option value="auto-save-png">Auto-save as PNG</option>
+            <option value="auto-pdf">Auto-download as PDF</option>
+          </select>
+        </div>
 
-    <div class="field">
-      <div>
-        <div class="field-label">Capture delay</div>
-        <div class="field-desc">Wait time between scroll frames (ms)</div>
-      </div>
-      <input type="number" id="captureDelay" min="50" max="1000" step="50" value="150" style="width:80px">
-    </div>
+        <div class="field">
+          <div>
+            <div class="field-label">Capture delay</div>
+            <div class="field-desc">Wait time between scroll frames (ms)</div>
+          </div>
+          <input type="number" id="captureDelay" min="50" max="1000" step="50" value="150" style="width:70px">
+        </div>
 
-    <div class="field">
-      <div>
-        <div class="field-label">Lazy-load wait time</div>
-        <div class="field-desc">Max time to wait for lazy content (ms)</div>
-      </div>
-      <input type="number" id="lazyLoadWait" min="500" max="10000" step="500" value="2000" style="width:80px">
-    </div>
+        <div class="field">
+          <div>
+            <div class="field-label">Lazy-load wait time</div>
+            <div class="field-desc">Max time to wait for lazy content (ms)</div>
+          </div>
+          <input type="number" id="lazyLoadWait" min="500" max="10000" step="500" value="2000" style="width:70px">
+        </div>
 
-    <div class="field">
-      <div>
-        <div class="field-label">Countdown before capture</div>
-        <div class="field-desc">Seconds to wait before starting (0 = instant)</div>
-      </div>
-      <select id="captureCountdown" style="width:80px">
-        <option value="0">0s</option>
-        <option value="1">1s</option>
-        <option value="2">2s</option>
-        <option value="3">3s</option>
-      </select>
-    </div>
+        <div class="field">
+          <div>
+            <div class="field-label">Countdown before capture</div>
+            <div class="field-desc">Seconds to wait before starting</div>
+          </div>
+          <select id="captureCountdown" style="width:70px">
+            <option value="0">0s</option>
+            <option value="1">1s</option>
+            <option value="2">2s</option>
+            <option value="3">3s</option>
+          </select>
+        </div>
 
-    <div class="field">
-      <div>
-        <div class="field-label">Capture sound</div>
-        <div class="field-desc">Play shutter sound on capture</div>
-      </div>
-      <label class="toggle">
-        <input type="checkbox" id="captureSound" checked>
-        <span class="slider"></span>
-      </label>
-    </div>
+        <div class="field">
+          <div>
+            <div class="field-label">Capture sound</div>
+            <div class="field-desc">Play shutter sound on capture</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="captureSound" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
 
-    <div class="field">
-      <div>
-        <div class="field-label">Skip sticky/fixed headers</div>
-        <div class="field-desc">Hide fixed elements during full-page capture</div>
-      </div>
-      <label class="toggle">
-        <input type="checkbox" id="skipStickyHeaders">
-        <span class="slider"></span>
-      </label>
-    </div>
-  </div>
-
-  <!-- Export Settings -->
-  <div class="section">
-    <h2>Export</h2>
-
-    <div class="field">
-      <div>
-        <div class="field-label">PNG save location</div>
-        <div class="field-desc">Where to save PNG files</div>
-      </div>
-      <select id="pngSaveAs">
-        <option value="false">Downloads folder</option>
-        <option value="true">Ask each time</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <div>
-        <div class="field-label">PDF page size</div>
-        <div class="field-desc">Page format for PDF exports</div>
-      </div>
-      <select id="pdfPageSize">
-        <option value="a4">A4</option>
-        <option value="letter">Letter</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <div>
-        <div class="field-label">Include URL in PDF footer</div>
-        <div class="field-desc">Add page URL as watermark</div>
-      </div>
-      <label class="toggle">
-        <input type="checkbox" id="pdfWatermark">
-        <span class="slider"></span>
-      </label>
-    </div>
-
-    <div class="field">
-      <div>
-        <div class="field-label">Default image format</div>
-        <div class="field-desc">Format used when saving screenshots</div>
-      </div>
-      <select id="defaultExportFormat">
-        <option value="png">PNG</option>
-        <option value="webp">WebP</option>
-      </select>
-    </div>
-  </div>
-
-  <!-- Keyboard Shortcuts -->
-  <div class="section">
-    <h2>Keyboard Shortcuts</h2>
-    <div class="shortcut-list">
-      <div class="shortcut-row"><span>Open GoFully</span><kbd>Alt+S</kbd></div>
-      <div class="shortcut-row"><span>Capture full page</span><kbd>Alt+Shift+F</kbd></div>
-      <div class="shortcut-row"><span>Capture visible area</span><kbd>Alt+Shift+V</kbd></div>
-      <div class="shortcut-row"><span>Capture selected area</span><kbd>Alt+Shift+S</kbd></div>
-      <div class="shortcut-row" style="padding-top:12px; border-top:1px solid var(--border)">
-        <span style="color:var(--text-3); font-size:11px">Customize at chrome://extensions/shortcuts</span>
+        <div class="field">
+          <div>
+            <div class="field-label">Skip sticky headers</div>
+            <div class="field-desc">Hide fixed elements during full-page capture</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="skipStickyHeaders">
+            <span class="slider"></span>
+          </label>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Privacy & Security -->
-  <div class="section">
-    <h2>Privacy &amp; Security</h2>
-    <div class="privacy-header">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="11" width="18" height="11" rx="0"/>
-        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-        <circle cx="12" cy="16" r="1.5" fill="var(--green)"/>
-      </svg>
-      100% Offline &amp; Private
-    </div>
-    <div class="privacy-desc">
-      Minimal permissions, no data collection, no account required. Screenshots are processed locally and never leave your browser.
-    </div>
-  </div>
+    <!-- Export Settings -->
+    <div class="section bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+      <h2>Export</h2>
+      <div class="fields">
+        <div class="field">
+          <div>
+            <div class="field-label">PNG save location</div>
+            <div class="field-desc">Where to save PNG files</div>
+          </div>
+          <select id="pngSaveAs">
+            <option value="false">Downloads</option>
+            <option value="true">Ask each time</option>
+          </select>
+        </div>
 
-  <!-- Help & Guide -->
-  <div class="section">
-    <h2>Help &amp; Support</h2>
-    <div class="field" style="border-bottom:none; padding-bottom:0">
-      <div>
+        <div class="field">
+          <div>
+            <div class="field-label">PDF page size</div>
+            <div class="field-desc">Page format for PDF exports</div>
+          </div>
+          <select id="pdfPageSize">
+            <option value="a4">A4</option>
+            <option value="letter">Letter</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <div>
+            <div class="field-label">Include URL in PDF footer</div>
+            <div class="field-desc">Add page URL as watermark</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="pdfWatermark">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="field">
+          <div>
+            <div class="field-label">Default image format</div>
+            <div class="field-desc">Format used when saving screenshots</div>
+          </div>
+          <select id="defaultExportFormat">
+            <option value="png">PNG</option>
+            <option value="webp">WebP</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Keyboard Shortcuts -->
+    <div class="section bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+      <h2>Keyboard Shortcuts</h2>
+      <div class="fields">
+        <div class="shortcut-row"><span>Open GoFully</span><kbd>ALT+S</kbd></div>
+        <div class="shortcut-row"><span>Capture full page</span><kbd>ALT+SHIFT+F</kbd></div>
+        <div class="shortcut-row"><span>Capture visible area</span><kbd>ALT+SHIFT+V</kbd></div>
+        <div class="shortcut-row" style="border-bottom:none;"><span>Capture selected area</span><kbd>ALT+SHIFT+S</kbd></div>
+      </div>
+      <div class="fields" style="padding-bottom:14px;">
+        <div style="font-size:10.5px; color: var(--text-4); padding-top: 4px;">Customize at chrome://extensions/shortcuts</div>
+      </div>
+    </div>
+
+    <!-- Privacy, Help & About -->
+    <div class="stack">
+      <div class="section bp pad"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+        <div class="privacy-header">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          100% Offline &amp; Private
+        </div>
+        <div class="privacy-desc">Minimal permissions, no data collection, no account required. Screenshots are processed locally and never leave your browser.</div>
+      </div>
+
+      <div class="section bp pad"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
         <div class="field-label">Guides &amp; Feedback</div>
-        <div class="field-desc">Tutorials for all capture modes, editor tools &amp; support</div>
+        <div class="field-desc">Tutorials, editor tools &amp; support</div>
+        <div class="help-actions">
+          <a href="https://gofully-extension.vercel.app/uninstall-feedback" target="_blank" class="help-link secondary">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Feedback
+          </a>
+          <a href="help.html" target="_blank" class="help-link primary">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            Help Center
+          </a>
+        </div>
       </div>
-      <div class="help-actions">
-        <a href="https://gofully-extension.vercel.app/uninstall-feedback" target="_blank" class="help-link secondary">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-          </svg>
-          Feedback
-        </a>
-        <a href="help.html" target="_blank" class="help-link primary">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-          </svg>
-          Help Center
-        </a>
-      </div>
-    </div>
-  </div>
 
-  <!-- About -->
-  <div class="section">
-    <h2>About</h2>
-    <div class="field">
-      <div>
+      <div class="section bp pad"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
         <div class="field-label">GoFully v1.1.0</div>
         <div class="field-desc">100% offline. Zero data leaves your device.</div>
       </div>
     </div>
+
   </div>
 
   <div class="footer">GoFully</div>

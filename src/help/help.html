@@ -13,34 +13,35 @@
       src: url("assets/Archivo.woff2") format("woff2");
     }
   </style>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
       --blue:      #1667F2;
       --blue-h:    #1257D8;
-      --blue-bg:   #EDF1FE;
-      --blue-bd:   #BDD0FB;
+      --blue-bg:   rgba(22,103,242,.08);
+      --blue-bd:   rgba(22,103,242,.25);
 
-      --text:      #101828;
-      --text-2:    #344054;
-      --text-3:    #667085;
-      --text-4:    #98A2B3;
+      --text:      #1d1f20;
+      --text-2:    rgba(29,31,32,.6);
+      --text-3:    rgba(29,31,32,.45);
+      --text-4:    rgba(29,31,32,.35);
 
-      --border:    #E3E8EF;
-      --border-h:  #C8D0D9;
-      --surface:   #F7F8FA;
-      --white:     #FFFFFF;
+      --border:    rgba(29,31,32,.12);
+      --border-h:  rgba(29,31,32,.25);
+      --surface:   #f2f2f3;
+      --white:     #f2f2f3;
 
       --green:     #027A48;
-      --green-bg:  #ECFDF3;
-      --green-bd:  #A6F4C5;
+      --green-bg:  rgba(2,122,72,.08);
+      --green-bd:  rgba(2,122,72,.25);
     }
 
     body {
-      background-color: var(--surface);
+      background-color: #e9e9ea;
       color: var(--text);
-      font-family: 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Barlow', 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
       line-height: 1.5;
       min-height: 100vh;
@@ -48,9 +49,19 @@
       flex-direction: column;
     }
 
-    /* ─── GOFULLY HEADER (BLUE / WHITE BRAND IDENTITY) ─── */
+    /* ─── BLUEPRINT FRAME ─── */
+    .bp { position: relative; }
+    .bp > .cm { position: absolute; width: 8px; height: 8px; color: rgba(29,31,32,.2); }
+    .bp > .cm::before { content: ""; position: absolute; left: 3px; top: 0; width: 1px; height: 100%; background: currentColor; }
+    .bp > .cm::after  { content: ""; position: absolute; top: 3px; left: 0; width: 100%; height: 1px; background: currentColor; }
+    .bp > .cm.tl { top: -4px; left: -4px; }
+    .bp > .cm.tr { top: -4px; right: -4px; }
+    .bp > .cm.bl { bottom: -4px; left: -4px; }
+    .bp > .cm.br { bottom: -4px; right: -4px; }
+
+    /* ─── GOFULLY HEADER ─── */
     .top-nav {
-      background: var(--white);
+      background: var(--surface);
       height: 56px;
       padding: 0 32px;
       display: flex;
@@ -60,7 +71,6 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
     }
 
     .nav-brand {
@@ -83,27 +93,30 @@
       display: block;
       object-fit: contain;
       border-radius: 0;
-      box-shadow: 0 1px 3px rgba(22, 103, 242, 0.25);
     }
 
     .wm {
+      font-family: 'Barlow Condensed', sans-serif;
       font-size: 17px;
-      font-weight: 800;
-      letter-spacing: -0.4px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
       line-height: 1;
     }
-    .wm-go   { color: var(--text); font-weight: 600; }
-    .wm-full { color: var(--blue); font-weight: 800; }
-    .wm-y    { color: var(--blue); opacity: 0.7; font-weight: 800; }
+    .wm-go   { color: var(--text); font-weight: 500; }
+    .wm-full { color: var(--blue); font-weight: 600; }
+    .wm-y    { color: var(--blue); opacity: 0.7; font-weight: 600; }
 
     .nav-tag {
-      font-size: 11.5px;
-      background: var(--blue-bg);
-      border: 1px solid var(--blue-bd);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      background: transparent;
+      border: 1px solid var(--border);
       padding: 4px 10px;
       border-radius: 0;
       font-weight: 600;
-      color: var(--blue);
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: var(--text-3);
     }
 
     /* ─── MAIN CONTAINER ─── */
@@ -124,23 +137,25 @@
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      font-size: 11px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10.5px;
       font-weight: 600;
       color: var(--blue);
       background: var(--blue-bg);
       border: 1px solid var(--blue-bd);
-      padding: 2px 8px;
+      padding: 5px 10px;
       border-radius: 0;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.06em;
     }
 
     .page-title {
-      font-size: 24px;
-      font-weight: 800;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 30px;
+      font-weight: 600;
       color: var(--text);
-      letter-spacing: -0.5px;
+      letter-spacing: -0.01em;
       margin-bottom: 6px;
     }
 
@@ -158,23 +173,16 @@
     }
 
     .help-accordion {
-      background: var(--white);
+      background: var(--surface);
       border-radius: 0;
       border: 1px solid var(--border);
-      box-shadow: 0 1px 3px rgba(16, 24, 40, 0.03);
-      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      transition: border-color 0.15s ease;
       overflow: hidden;
     }
 
-    .help-accordion:hover {
-      border-color: var(--border-h);
-      box-shadow: 0 3px 8px rgba(16, 24, 40, 0.05);
-    }
+    .help-accordion:hover { border-color: var(--border-h); }
 
-    .help-accordion.open {
-      border-color: var(--blue-bd);
-      box-shadow: 0 4px 12px rgba(22, 103, 242, 0.06);
-    }
+    .help-accordion.open { border-color: var(--blue-bd); }
 
     .help-header {
       width: 100%;
@@ -218,8 +226,10 @@
     }
 
     .help-title {
-      font-size: 13.5px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
       font-weight: 600;
+      letter-spacing: 0.01em;
       color: var(--text);
       display: flex;
       align-items: center;
@@ -322,10 +332,10 @@
     .footer {
       text-align: center;
       padding: 20px;
-      color: var(--text-3);
+      color: var(--text-4);
       font-size: 11.5px;
       border-top: 1px solid var(--border);
-      background: var(--white);
+      background: var(--surface);
     }
 
     /* ─── REDUCED MOTION ─── */
@@ -346,17 +356,20 @@
   <!-- GOFULLY THEMED NAVBAR -->
   <header class="top-nav">
     <div class="nav-brand">
-      <span class="wm" style="font-size:18px; font-weight:800; color:var(--text);">Gofully</span>
+      <div style="width:28px; height:28px; flex-shrink:0; display:flex; align-items:center; justify-content:center; background:var(--blue); border:1px solid var(--border);">
+        <img src="assets/icon-48.png" alt="" style="width:100%; height:100%; object-fit:contain; padding:2px;">
+      </div>
+      <span class="wm">Go<span class="accent" style="color:var(--blue);">Fully</span></span>
     </div>
     <div style="display:flex; align-items:center; gap:10px;">
-      <a href="https://gofully-extension.vercel.app/uninstall-feedback" target="_blank" style="display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:600; color:var(--text-2); background:var(--surface); border:1px solid var(--border); padding:4px 10px; border-radius:0; text-decoration:none;">
+      <a href="https://gofully-extension.vercel.app/uninstall-feedback" target="_blank" style="display:inline-flex; align-items:center; gap:5px; font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:600; letter-spacing:0.02em; text-transform:uppercase; color:var(--text-2); background:transparent; border:1px solid var(--border); padding:6px 12px; border-radius:0; text-decoration:none;">
         <!-- Hugeicons: message-01 -->
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
         </svg>
         Send Feedback
       </a>
-      <div class="nav-tag">v1.0.0 Help &amp; Guides</div>
+      <div class="nav-tag">v1.1.0 Help &amp; Guides</div>
     </div>
   </header>
 
@@ -371,7 +384,7 @@
     <div class="help-list">
 
       <!-- 1. Full Page -->
-      <div class="help-accordion open">
+      <div class="help-accordion open bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
         <h2><button class="help-header" aria-expanded="true">
           <div class="help-title-wrap">
             <div class="help-num-badge">1</div>
@@ -396,7 +409,7 @@
       </div>
 
       <!-- 2. Visible Area -->
-      <div class="help-accordion">
+      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
         <h2><button class="help-header" aria-expanded="false">
           <div class="help-title-wrap">
             <div class="help-num-badge">2</div>
@@ -416,7 +429,7 @@
       </div>
 
       <!-- 3. Selected Area -->
-      <div class="help-accordion">
+      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
         <h2><button class="help-header" aria-expanded="false">
           <div class="help-title-wrap">
             <div class="help-num-badge">3</div>
@@ -437,7 +450,7 @@
       </div>
 
       <!-- 4. Scrolling Area -->
-      <div class="help-accordion">
+      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
         <h2><button class="help-header" aria-expanded="false">
           <div class="help-title-wrap">
             <div class="help-num-badge">4</div>
@@ -459,7 +472,7 @@
       </div>
 
       <!-- 5. Capture Text (OCR) -->
-      <div class="help-accordion">
+      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
         <h2><button class="help-header" aria-expanded="false">
           <div class="help-title-wrap">
             <div class="help-num-badge">5</div>
@@ -483,7 +496,7 @@
       </div>
 
       <!-- 6. Crop, Zoom & Annotation Studio -->
-      <div class="help-accordion">
+      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
         <h2><button class="help-header" aria-expanded="false">
           <div class="help-title-wrap">
             <div class="help-num-badge">6</div>
@@ -507,7 +520,7 @@
       </div>
 
       <!-- 7. Copy & Export Options -->
-      <div class="help-accordion">
+      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
         <h2><button class="help-header" aria-expanded="false">
           <div class="help-title-wrap">
             <div class="help-num-badge">7</div>
@@ -528,7 +541,7 @@
       </div>
 
       <!-- 8. Keyboard Shortcuts -->
-      <div class="help-accordion">
+      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
         <h2><button class="help-header" aria-expanded="false">
           <div class="help-title-wrap">
             <div class="help-num-badge">8</div>
@@ -552,7 +565,7 @@
       </div>
 
       <!-- 9. Privacy & Safety -->
-      <div class="help-accordion">
+      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
         <h2><button class="help-header" aria-expanded="false">
           <div class="help-title-wrap">
             <div class="help-num-badge">9</div>

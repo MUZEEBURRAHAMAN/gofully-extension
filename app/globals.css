@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700;1,900&family=Geist+Mono:wght@400;500;600;700&family=Geist:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700;1,900&family=Geist+Mono:wght@400;500;600;700&family=Geist:wght@400;500;600;700;800&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap");
 @import "tailwindcss";
 
 :root {
@@ -7,6 +7,22 @@
   --primary-blue: #136CDE;
   --primary-blue-hover: #177BF7;
   --primary-blue-light: #D2E5FF;
+
+  /* ── Industry design system (GoFully Redesign) ──
+     Blueprint-framed layout on the Industry system, kept on GoFully's own
+     brand blue (matching src/ui/design-system.ts) rather than the generic
+     steel accent — scoped under .gf-industry so it can live alongside the
+     dark OriginKit theme below without token collisions. */
+  --gf-color-bg: #f2f2f3;
+  --gf-color-surface: #e9e9ea;
+  --gf-color-text: #1d1f20;
+  --gf-color-accent: #1667F2;
+  --gf-color-accent-600: #1257D8;
+  --gf-color-accent-700: #0E4AB8;
+  --gf-color-accent-900: #1d2d3d;
+  --gf-color-divider: color-mix(in srgb, #1d1f20 16%, transparent);
+  --gf-font-heading: 'Barlow Condensed', system-ui, sans-serif;
+  --gf-font-body: 'Barlow', system-ui, sans-serif;
 }
 
 *, *::before, *::after {
@@ -44,4 +60,49 @@ h1, h2, h3, h4, h5, h6, p, span, a, button, input, textarea, select {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #334155;
+}
+
+/* ── Industry blueprint theme ──────────────────────────────────────────
+   The GoFully Redesign landing page opts out of the dark OriginKit body
+   theme above and into this light steel-blue wireframe look. */
+.gf-industry {
+  background: var(--gf-color-bg);
+  color: var(--gf-color-text);
+  font-family: var(--gf-font-body);
+}
+.gf-industry h1, .gf-industry h2, .gf-industry h3, .gf-industry h4 {
+  font-family: var(--gf-font-heading);
+  font-weight: 600;
+}
+.gf-blueprint {
+  position: relative;
+  border: 1px solid var(--gf-color-divider);
+}
+.gf-blueprint > .gf-corner {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  color: color-mix(in srgb, var(--gf-color-text) 55%, transparent);
+}
+.gf-blueprint > .gf-corner::before,
+.gf-blueprint > .gf-corner::after {
+  content: "";
+  position: absolute;
+  background: currentColor;
+}
+.gf-blueprint > .gf-corner::before { left: 5px; top: 0; width: 1px; height: 100%; }
+.gf-blueprint > .gf-corner::after  { top: 5px; left: 0; width: 100%; height: 1px; }
+.gf-blueprint > .gf-corner.tl { top: -6px; left: -6px; }
+.gf-blueprint > .gf-corner.tr { top: -6px; right: -6px; }
+.gf-blueprint > .gf-corner.bl { bottom: -6px; left: -6px; }
+.gf-blueprint > .gf-corner.br { bottom: -6px; right: -6px; }
+
+.gf-duotone { position: relative; overflow: hidden; }
+.gf-duotone::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(--gf-color-accent);
+  mix-blend-mode: color;
 }

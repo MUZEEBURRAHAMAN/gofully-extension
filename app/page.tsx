@@ -1,169 +1,341 @@
 "use client";
 
-import Hero26 from "@/components/originkit/hero-26";
-import { SiteFooter } from "@/components/footer";
+import Link from "next/link";
+import { BlueprintFrame } from "@/components/blueprint-frame";
 
-const FEATURES = [
+const CWS_URL =
+  "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
+
+const NAV_LINKS = [
+  { label: "Product", href: "#how-it-works" },
+  { label: "Features", href: "#features" },
+  { label: "Security", href: "/security" },
+  { label: "Support", href: "/support" },
+  { label: "FAQ", href: "/faq" },
+];
+
+const STEPS = [
   {
-    number: "01",
-    tag: "CAPTURE ENGINE",
-    title: "Full-Page Scrolling Capture",
-    description:
-      "Seamlessly capture full-height websites, complex dashboards, and infinite scroll feeds. GoFully automatically scrolls the page, waits for lazy-loaded content, suppresses sticky navigation bars, and composes a pixel-perfect high-res canvas with zero overlap.",
-    footerPill: "AUTOMATED VIEWPORT STITCHING • ZERO OVERLAP",
+    n: 1,
+    title: "CAPTURE THE PAGE",
+    body: "Pick full page, visible area, a custom region, or a scrolling feed. GoFully stitches it into one clean image.",
     image: "/features/feature-1.webp",
-    alt: "Full-Page Scrolling Capture Showcase",
+    alt: "Full-page capture in progress",
   },
   {
-    number: "02",
-    tag: "LOCAL OCR & WASM",
-    title: "On-Device Text & Code Extraction",
-    description:
-      "Extract readable text, code snippets, and structured tables from any graphic or screen region in milliseconds. Embedded local WebAssembly models execute directly on your CPU with zero cloud transmission or network latency.",
-    footerPill: "ON-DEVICE WASM ENGINE • ZERO LATENCY • 100% OFFLINE",
-    image: "/features/feature-2.webp",
-    alt: "Local WebAssembly OCR Extraction Showcase",
-  },
-  {
-    number: "03",
-    tag: "VISUAL EDITOR & REDACTION",
-    title: "CleanShot-Grade Annotation Studio",
-    description:
-      "Mark up screenshots with auto-incrementing step bubbles, curved arrows, spotlight magnifiers, callouts, and geometric shapes. Instantly blur or pixelate sensitive API keys, passwords, and PII before sharing.",
-    footerPill: "STEP MARKERS • ARROWS • SENSITIVE DATA REDACTION",
+    n: 2,
+    title: "ANNOTATE & REDACT",
+    body: "Call out what matters with arrows, shapes, and text. Blur anything sensitive before it ships.",
     image: "/features/feature-3.webp",
-    alt: "Visual Annotation Studio Showcase",
+    alt: "Annotated screenshot with arrows and callouts in the GoFully editor",
   },
   {
-    number: "04",
-    tag: "EXPORT & INTEGRATIONS",
-    title: "4K Lossless & Multi-Page PDF Export",
-    description:
-      "Generate clean paginated multi-page PDF documents or download 4K crisp PNG and WebP files ready for presentations and client reports. Or copy directly to your system clipboard in a single stroke.",
-    footerPill: "4K PNG • LOSSLESS WEBP • PAGINATED MULTI-PAGE PDF",
+    n: 3,
+    title: "EXPORT INSTANTLY",
+    body: "Copy to clipboard, save as PNG, or export a PDF — straight from the result bar, no dialogs.",
     image: "/features/feature-4.webp",
-    alt: "4K Lossless & PDF Export Showcase",
+    alt: "GoFully result bar with copy, PNG, and PDF export options",
+    contain: true,
   },
 ];
 
+const FEATURES = [
+  {
+    tag: "Capture Engine",
+    title: "Full-page scrolling capture",
+    body: "Seamlessly capture full-height websites, dashboards, and infinite feeds. GoFully scrolls the page, waits for lazy-loaded content, and stitches a pixel-perfect canvas with zero overlap.",
+    image: "/features/feature-1.webp",
+    alt: "Full-page scrolling capture of a long webpage",
+    reverse: false,
+  },
+  {
+    tag: "Local OCR",
+    title: "On-device text extraction",
+    body: "Extract readable text, code snippets, and structured tables from any region in milliseconds. A local WebAssembly model runs on your CPU — zero cloud transmission, zero latency.",
+    image: "/features/feature-2.webp",
+    alt: "On-device OCR text extraction result",
+    reverse: true,
+  },
+  {
+    tag: "Visual Editor",
+    title: "Annotate & redact",
+    body: "Mark up screenshots with arrows, callouts, and shapes. Instantly blur or pixelate sensitive API keys, passwords, and PII before you share.",
+    image: "/features/feature-3.webp",
+    alt: "Annotated screenshot showing arrows, callouts, and highlights in the GoFully editor",
+    reverse: false,
+  },
+  {
+    tag: "Export",
+    title: "Flexible export",
+    body: "Generate a paginated PDF, download a crisp PNG or WebP, or copy straight to your clipboard — all from the result bar, right after you capture.",
+    image: "/features/feature-4.webp",
+    alt: "GoFully result bar with copy, PNG, and PDF export options",
+    reverse: true,
+    contain: true,
+  },
+];
+
+function Kicker({ children }: { children: React.ReactNode }) {
+  return (
+    <span
+      className="inline-block border font-[var(--gf-font-heading)] font-semibold uppercase"
+      style={{
+        borderColor: "rgba(22,103,242,.25)",
+        background: "rgba(22,103,242,.06)",
+        color: "var(--gf-color-accent)",
+        fontSize: "10.5px",
+        letterSpacing: "0.06em",
+        padding: "6px 14px",
+      }}
+    >
+      {children}
+    </span>
+  );
+}
+
+function SectionKicker({ children }: { children: React.ReactNode }) {
+  return (
+    <span
+      className="inline-block border font-[var(--gf-font-heading)] font-semibold uppercase"
+      style={{
+        borderColor: "rgba(29,31,32,.15)",
+        color: "rgba(29,31,32,.45)",
+        fontSize: "10.5px",
+        letterSpacing: "0.06em",
+        padding: "5px 12px",
+      }}
+    >
+      {children}
+    </span>
+  );
+}
+
+function CTAButton({
+  href,
+  children,
+  dark,
+}: {
+  href: string;
+  children: React.ReactNode;
+  dark?: boolean;
+}) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className="relative inline-flex items-center justify-center gap-2 border font-[var(--gf-font-heading)] font-semibold cursor-pointer"
+      style={{
+        height: 48,
+        padding: "0 26px",
+        background: "var(--gf-color-accent)",
+        color: "#fff",
+        fontSize: 14,
+        letterSpacing: "0.02em",
+        borderColor: "rgba(29,31,32,.12)",
+      }}
+    >
+      {children}
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M5 12h14" />
+        <path d="m12 5 7 7-7 7" />
+      </svg>
+      <span className="absolute -top-1 -left-1 w-2.5 h-2.5">
+        <span className="absolute left-1 top-0 w-px h-full bg-white/40" />
+        <span className="absolute top-1 left-0 w-full h-px bg-white/40" />
+      </span>
+      <span className="absolute -top-1 -right-1 w-2.5 h-2.5">
+        <span className="absolute right-1 top-0 w-px h-full bg-white/40" />
+        <span className="absolute top-1 left-0 w-full h-px bg-white/40" />
+      </span>
+      <span className="absolute -bottom-1 -left-1 w-2.5 h-2.5">
+        <span className="absolute left-1 top-0 w-px h-full bg-white/40" />
+        <span className="absolute bottom-1 left-0 w-full h-px bg-white/40" />
+      </span>
+      <span className="absolute -bottom-1 -right-1 w-2.5 h-2.5">
+        <span className="absolute right-1 top-0 w-px h-full bg-white/40" />
+        <span className="absolute bottom-1 left-0 w-full h-px bg-white/40" />
+      </span>
+    </a>
+  );
+}
+
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[#070B14] text-slate-100 font-sans">
-      {/* NATIVE ORIGINKIT HERO 26 */}
-      <Hero26 />
-
-      {/* CORE FEATURES SHOWCASE SECTION */}
-      <section id="features" className="relative py-28 px-6 lg:px-8 border-t border-slate-800/80 bg-[#070b14]">
-        <div className="mx-auto max-w-7xl">
-          {/* Header */}
-          <div className="text-center max-w-3xl mx-auto mb-20">
-            <span className="inline-block bg-[#000] border border-[#136CDE]/40 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-wider text-[#D2E5FF]">
-              Core Features
-            </span>
-            <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-5xl text-white">
-              Powerful Features for Modern Workflows
-            </h2>
-            <p className="mt-4 text-base text-slate-400">
-              Engineered from the ground up to capture, extract, annotate, and deliver pixel-perfect visual intelligence with zero cloud latency.
-            </p>
+    <div className="gf-industry min-h-screen">
+      {/* Nav */}
+      <div
+        className="flex items-center justify-between border-b"
+        style={{ height: 72, padding: "0 48px", borderColor: "rgba(29,31,32,.1)" }}
+      >
+        <div className="flex items-center gap-2.5">
+          <div
+            className="flex items-center justify-center border"
+            style={{ width: 28, height: 28, background: "var(--gf-color-accent)", borderColor: "rgba(29,31,32,.12)" }}
+          >
+            <img src="/assets/icon-48.png" alt="GoFully" className="w-full h-full object-contain p-0.5" />
           </div>
-
-          {/* Sequential Feature Showcases */}
-          <div className="space-y-12">
-            {FEATURES.map((feature, idx) => (
-              <div
-                key={idx}
-                className="group border border-slate-800 bg-[#0a0f1d] grid grid-cols-1 lg:grid-cols-12 overflow-hidden transition-all duration-200 hover:border-[#136CDE]/60"
-              >
-                {/* Left Column: Content */}
-                <div className="relative p-8 lg:p-14 flex flex-col justify-between lg:col-span-5 border-b lg:border-b-0 lg:border-r border-slate-800/80">
-                  <div>
-                    {/* Feature Tag */}
-                    <div className="inline-block border border-[#136CDE]/40 bg-[#136CDE]/15 px-3 py-1 text-xs font-mono font-bold uppercase tracking-wider text-[#D2E5FF]">
-                      {feature.tag}
-                    </div>
-
-                    {/* Feature Title */}
-                    <h3 className="mt-6 text-2xl lg:text-3xl font-bold text-white tracking-tight">
-                      {feature.title}
-                    </h3>
-
-                    {/* Feature Description */}
-                    <p className="mt-4 text-sm lg:text-base text-slate-400 leading-relaxed max-w-lg">
-                      {feature.description}
-                    </p>
-                  </div>
-
-                  {/* Watermark Number & Footer Ticker */}
-                  <div className="mt-12">
-                    <div className="text-6xl lg:text-8xl font-extrabold font-mono text-slate-800/40 select-none tracking-tighter">
-                      {feature.number}
-                    </div>
-                    <div className="mt-4 pt-4 border-t border-slate-800/60 text-xs font-mono uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                      <span className="text-slate-600">|</span>
-                      <span>{feature.footerPill}</span>
-                      <span className="text-slate-600">|</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right Column: Visual Graphic Showcase */}
-                <div className="relative p-6 lg:p-10 flex items-center justify-center bg-[#070b14] lg:col-span-7 overflow-hidden">
-                  {/* Subtle Grid Pattern */}
-                  <div
-                    className="absolute inset-0 opacity-15 pointer-events-none"
-                    style={{
-                      backgroundImage:
-                        "radial-gradient(circle, #136CDE 1px, transparent 1px)",
-                      backgroundSize: "24px 24px",
-                    }}
-                  />
-
-                  {/* Image Display Frame */}
-                  <div className="relative z-10 w-full h-[360px] lg:h-[460px] border border-slate-800 bg-[#0a0f1d] flex items-center justify-center overflow-hidden p-2">
-                    <img
-                      src={feature.image}
-                      alt={feature.alt}
-                      className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-102"
-                      loading="lazy"
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="font-[var(--gf-font-heading)] font-semibold" style={{ fontSize: 18, letterSpacing: "-0.01em" }}>
+            GoFully
           </div>
         </div>
-      </section>
+        <div className="hidden md:flex items-center gap-9 text-[13px] font-medium" style={{ color: "rgba(29,31,32,.55)" }}>
+          {NAV_LINKS.map((l) => (
+            <Link key={l.label} href={l.href} className="hover:text-[var(--gf-color-text)] transition-colors">
+              {l.label}
+            </Link>
+          ))}
+        </div>
+        <a
+          href={CWS_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="relative inline-flex items-center justify-center gap-1.5 border font-[var(--gf-font-heading)] font-semibold cursor-pointer"
+          style={{ height: 38, padding: "0 18px", background: "var(--gf-color-accent)", color: "#fff", fontSize: "12.5px", letterSpacing: "0.02em", borderColor: "rgba(29,31,32,.12)" }}
+        >
+          Add to Chrome
+        </a>
+      </div>
 
-      {/* UNIFIED CALL TO ACTION & PRIVACY SECTION */}
-      <section className="py-28 px-6 lg:px-8 text-center border-t border-slate-800 bg-gradient-to-b from-[#070b14] via-[#080e1c] to-[#040812]">
-        <div className="max-w-4xl mx-auto">
-          <span className="inline-block bg-[#000] border border-[#136CDE]/50 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-wider text-[#D2E5FF] mb-6">
-            100% In-Browser • Zero Cloud Storage
-          </span>
-          <h2 className="text-3xl font-extrabold text-white sm:text-5xl tracking-tight">
-            Ready to Capture Smarter?
-          </h2>
-          <p className="mt-5 text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            Unlike cloud tools that upload your private screenshots to remote servers, GoFully operates entirely within your browser sandbox. 100% free, private, and on-device.
+      {/* Hero */}
+      <div className="text-center" style={{ padding: "100px 48px 90px" }}>
+        <div className="mx-auto" style={{ maxWidth: 720 }}>
+          <Kicker>Chrome Extension · 100% On-Device</Kicker>
+          <div
+            className="font-[var(--gf-font-heading)] font-semibold"
+            style={{ fontSize: 58, lineHeight: 1.05, letterSpacing: "-0.01em", marginTop: 24 }}
+          >
+            Capture anything.
+            <br />
+            Make it clear.
+          </div>
+          <p className="mx-auto" style={{ fontSize: 17, lineHeight: 1.6, color: "rgba(29,31,32,.55)", maxWidth: 560, marginTop: 20 }}>
+            GoFully is a browser extension for capturing webpages, extracting text, annotating screenshots, protecting sensitive information, and exporting polished results — all from your browser.
           </p>
-          <div className="mt-10 flex justify-center gap-4">
+          <div className="flex justify-center gap-3.5" style={{ marginTop: 32 }}>
+            <CTAButton href={CWS_URL}>Add to Chrome — It&apos;s Free</CTAButton>
             <a
-              href="https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 border border-[#136CDE] bg-[#136CDE] px-8 py-4 text-xs font-mono font-bold uppercase tracking-wider text-white shadow-xl shadow-[#136CDE]/30 transition-all hover:bg-[#177BF7] cursor-pointer"
+              href="#how-it-works"
+              className="inline-flex items-center justify-center border font-[var(--gf-font-heading)] font-semibold cursor-pointer"
+              style={{ height: 48, padding: "0 22px", borderColor: "rgba(29,31,32,.15)", color: "rgba(29,31,32,.6)", fontSize: 14, letterSpacing: "0.02em" }}
             >
-              <span>Add to Chrome — It's Free</span>
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
+              See how it works ↓
             </a>
           </div>
+          <div style={{ fontSize: 12, color: "rgba(29,31,32,.35)", marginTop: 20 }}>
+            Free forever &nbsp;·&nbsp; No account required &nbsp;·&nbsp; 100% offline
+          </div>
         </div>
-      </section>
+      </div>
 
-      <SiteFooter />
+      {/* How it works */}
+      <div id="how-it-works" className="border-t" style={{ padding: "80px 48px", borderColor: "rgba(29,31,32,.08)", background: "rgba(29,31,32,.02)" }}>
+        <div className="mx-auto text-center" style={{ maxWidth: 640, marginBottom: 52 }}>
+          <SectionKicker>How It Works</SectionKicker>
+          <div className="font-[var(--gf-font-heading)] font-semibold" style={{ fontSize: 34, letterSpacing: "-0.01em", marginTop: 16 }}>
+            From capture to shareable image in three steps
+          </div>
+        </div>
+        <div className="mx-auto grid grid-cols-1 md:grid-cols-3 gap-7" style={{ maxWidth: 1180 }}>
+          {STEPS.map((s) => (
+            <div key={s.n}>
+              <div className="flex items-center gap-2.5" style={{ marginBottom: 14 }}>
+                <div
+                  className="flex items-center justify-center flex-shrink-0 font-[var(--gf-font-heading)] font-bold"
+                  style={{ width: 26, height: 26, background: "var(--gf-color-accent)", color: "#fff", fontSize: 12 }}
+                >
+                  {s.n}
+                </div>
+                <div className="font-[var(--gf-font-heading)] font-semibold" style={{ fontSize: 16, letterSpacing: "0.01em" }}>
+                  {s.title}
+                </div>
+              </div>
+              <p style={{ fontSize: "12.5px", lineHeight: 1.55, color: "rgba(29,31,32,.5)", margin: "0 0 14px" }}>{s.body}</p>
+              <BlueprintFrame className="p-2">
+                <img
+                  src={s.image}
+                  alt={s.alt}
+                  className={`w-full block ${s.contain ? "object-contain bg-white" : "object-cover"}`}
+                  style={{ aspectRatio: "4/3" }}
+                  loading="lazy"
+                />
+              </BlueprintFrame>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Features */}
+      <div id="features" className="border-t" style={{ padding: "90px 48px", borderColor: "rgba(29,31,32,.08)" }}>
+        <div className="mx-auto text-center" style={{ maxWidth: 640, marginBottom: 64 }}>
+          <SectionKicker>Core Features</SectionKicker>
+          <div className="font-[var(--gf-font-heading)] font-semibold" style={{ fontSize: 34, letterSpacing: "-0.01em", marginTop: 16 }}>
+            Everything you need to capture, clean up, and share
+          </div>
+          <p style={{ fontSize: "14.5px", color: "rgba(29,31,32,.5)", marginTop: 12 }}>
+            Four tools that cover the whole workflow — from first capture to final export.
+          </p>
+        </div>
+
+        <div className="flex flex-col" style={{ gap: 64 }}>
+          {FEATURES.map((f) => (
+            <div key={f.title} className="grid grid-cols-1 md:grid-cols-2 items-center" style={{ gap: 56 }}>
+              <div className={f.reverse ? "md:order-2" : ""}>
+                <Kicker>{f.tag}</Kicker>
+                <div className="font-[var(--gf-font-heading)] font-semibold" style={{ fontSize: 26, letterSpacing: "-0.005em", marginTop: 14 }}>
+                  {f.title}
+                </div>
+                <p style={{ fontSize: 14, lineHeight: 1.65, color: "rgba(29,31,32,.5)", marginTop: 12, maxWidth: 440 }}>{f.body}</p>
+              </div>
+              <BlueprintFrame className={`p-2.5 ${f.reverse ? "md:order-1" : ""}`}>
+                <img
+                  src={f.image}
+                  alt={f.alt}
+                  className={`w-full block ${f.contain ? "object-contain bg-white" : "object-cover"}`}
+                  style={{ aspectRatio: "16/11" }}
+                  loading="lazy"
+                />
+              </BlueprintFrame>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Privacy band */}
+      <div className="text-center" style={{ background: "var(--gf-color-text)", padding: "80px 48px" }}>
+        <span
+          className="inline-block border font-[var(--gf-font-heading)] font-semibold uppercase"
+          style={{ borderColor: "rgba(255,255,255,.2)", background: "rgba(255,255,255,.05)", color: "rgba(255,255,255,.7)", fontSize: "10.5px", letterSpacing: "0.06em", padding: "6px 14px" }}
+        >
+          100% Offline
+        </span>
+        <div className="font-[var(--gf-font-heading)] font-semibold" style={{ fontSize: 32, color: "#fff", letterSpacing: "-0.01em", marginTop: 20 }}>
+          Nothing you capture ever leaves your device
+        </div>
+        <p className="mx-auto" style={{ fontSize: 15, color: "rgba(255,255,255,.55)", maxWidth: 520, marginTop: 14, lineHeight: 1.6 }}>
+          No accounts, no cloud uploads, no telemetry. Every screenshot, extraction, and edit happens locally in your browser.
+        </p>
+        <div style={{ marginTop: 28 }}>
+          <CTAButton href={CWS_URL}>Add to Chrome — It&apos;s Free</CTAButton>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div
+        className="flex items-center justify-between flex-wrap border-t"
+        style={{ padding: "28px 48px", gap: 16, borderColor: "rgba(29,31,32,.08)" }}
+      >
+        <div style={{ fontSize: 12, color: "rgba(29,31,32,.4)" }}>
+          © {new Date().getFullYear()} GoFully — Screenshot Studio
+        </div>
+        <div className="flex" style={{ gap: 22, fontSize: 12, color: "rgba(29,31,32,.5)" }}>
+          <Link href="/privacy" className="hover:text-[var(--gf-color-text)] transition-colors">Privacy</Link>
+          <Link href="/terms" className="hover:text-[var(--gf-color-text)] transition-colors">Terms</Link>
+          <Link href="/security" className="hover:text-[var(--gf-color-text)] transition-colors">Security</Link>
+          <Link href="/faq" className="hover:text-[var(--gf-color-text)] transition-colors">FAQ</Link>
+          <Link href="/support" className="hover:text-[var(--gf-color-text)] transition-colors">Support</Link>
+        </div>
+      </div>
     </div>
   );
 }
