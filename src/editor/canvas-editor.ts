@@ -216,6 +216,17 @@ async function loadScreenshot(url: string, resetAnnotations = false): Promise<vo
       scaleX: fitScale, scaleY: fitScale,
       selectable: false, evented: false, erasable: false,
       originX: "left", originY: "top",
+      // Fabric caches each object's render as a bitmap at its CURRENT
+      // displayed scale by default. The background image is normally shown
+      // at fitScale (often a small fraction, to fit a tall full-page capture
+      // in the editor viewport) — with caching on, an upscaled export
+      // (toDataURL with a multiplier, or the annotated-export path in
+      // exportToBlob) could render from that low-res cached bitmap instead
+      // of the full native-resolution source, producing a correctly-sized
+      // but visibly soft/blurry output. Disabling caching forces every
+      // render — on-screen or export — to draw directly from the original
+      // full-resolution image element.
+      objectCaching: false,
     });
 
     if (resetAnnotations) {
