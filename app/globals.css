@@ -22,7 +22,7 @@
   --gf-color-accent-900: #1d2d3d;
   --gf-color-divider: color-mix(in srgb, #1d1f20 16%, transparent);
   --gf-font-heading: 'Bricolage Grotesque', system-ui, sans-serif;
-  --gf-font-body: 'Barlow', system-ui, sans-serif;
+  --gf-font-body: 'Bricolage Grotesque', system-ui, sans-serif;
 }
 
 *, *::before, *::after {
@@ -81,6 +81,16 @@ h1, h2, h3, h4, h5, h6, p, span, a, button, input, textarea, select {
 .gf-industry {
   background: var(--gf-color-bg);
   color: var(--gf-color-text);
+  font-family: var(--gf-font-body);
+}
+/* The global reset below (h1..h6, p, span, a, button, input, textarea,
+   select { font-family: var(--font-sans) }) sets font-family directly on
+   these tags, which always beats an inherited value from .gf-industry
+   regardless of selector specificity — so paragraphs, links and buttons
+   inside .gf-industry pages kept rendering Archivo instead of the intended
+   body font. This re-asserts it at matching specificity so it actually wins. */
+.gf-industry p, .gf-industry span, .gf-industry a, .gf-industry button,
+.gf-industry input, .gf-industry textarea, .gf-industry select {
   font-family: var(--gf-font-body);
 }
 .gf-industry h1, .gf-industry h2, .gf-industry h3, .gf-industry h4 {
