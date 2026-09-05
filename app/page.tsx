@@ -166,37 +166,39 @@ export default function HomePage() {
   return (
     <div className="gf-industry min-h-screen">
       {/* Nav */}
-      <div
-        className="flex items-center justify-between border-b"
-        style={{ height: 72, padding: "0 80px", borderColor: "rgba(29,31,32,.1)" }}
-      >
-        <div className="flex items-center gap-2.5">
-          <div
-            className="flex items-center justify-center border"
-            style={{ width: 28, height: 28, background: "var(--gf-color-accent)", borderColor: "rgba(29,31,32,.12)" }}
-          >
-            <img src="/assets/icon-48.png" alt="GoFully" className="w-full h-full object-contain p-0.5" />
-          </div>
-          <div className="gf-heading-font font-semibold" style={{ fontSize: 18, letterSpacing: "-0.01em" }}>
-            GoFully
-          </div>
-        </div>
-        <div className="hidden md:flex items-center gap-9 text-[13px] font-medium" style={{ color: "rgba(29,31,32,.55)" }}>
-          {NAV_LINKS.map((l) => (
-            <Link key={l.label} href={l.href} className="hover:text-[var(--gf-color-text)] transition-colors">
-              {l.label}
-            </Link>
-          ))}
-        </div>
-        <a
-          href={CWS_URL}
-          target="_blank"
-          rel="noreferrer"
-          className="relative inline-flex items-center justify-center gap-1.5 border gf-heading-font font-semibold cursor-pointer"
-          style={{ height: 38, padding: "0 18px", background: "var(--gf-color-accent)", color: "#fff", fontSize: "12.5px", letterSpacing: "0.02em", borderColor: "rgba(29,31,32,.12)" }}
+      <div className="border-b" style={{ padding: "0 24px", borderColor: "rgba(29,31,32,.1)" }}>
+        <div
+          className="mx-auto flex items-center justify-between"
+          style={{ height: 72, maxWidth: 1320 }}
         >
-          Add to Chrome
-        </a>
+          <div className="flex items-center gap-2.5">
+            <div
+              className="flex items-center justify-center border"
+              style={{ width: 28, height: 28, background: "var(--gf-color-accent)", borderColor: "rgba(29,31,32,.12)" }}
+            >
+              <img src="/assets/icon-48.png" alt="GoFully" className="w-full h-full object-contain p-0.5" />
+            </div>
+            <div className="gf-heading-font font-semibold" style={{ fontSize: 18, letterSpacing: "-0.01em" }}>
+              GoFully
+            </div>
+          </div>
+          <div className="hidden md:flex items-center gap-9 text-[13px] font-medium" style={{ color: "rgba(29,31,32,.55)" }}>
+            {NAV_LINKS.map((l) => (
+              <Link key={l.label} href={l.href} className="hover:text-[var(--gf-color-text)] transition-colors">
+                {l.label}
+              </Link>
+            ))}
+          </div>
+          <a
+            href={CWS_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="relative inline-flex items-center justify-center gap-1.5 border gf-heading-font font-semibold cursor-pointer"
+            style={{ height: 38, padding: "0 18px", background: "var(--gf-color-accent)", color: "#fff", fontSize: "12.5px", letterSpacing: "0.02em", borderColor: "rgba(29,31,32,.12)" }}
+          >
+            Add to Chrome
+          </a>
+        </div>
       </div>
 
       {/* Hero */}
@@ -241,14 +243,14 @@ export default function HomePage() {
       </ContainerScroll>
 
       {/* How it works */}
-      <div id="how-it-works" className="border-t" style={{ padding: "80px 80px", borderColor: "rgba(29,31,32,.08)", background: "rgba(29,31,32,.02)" }}>
+      <div id="how-it-works" className="border-t" style={{ padding: "80px 24px", borderColor: "rgba(29,31,32,.08)", background: "rgba(29,31,32,.02)" }}>
         <div className="mx-auto text-center" style={{ maxWidth: 640, marginBottom: 52 }}>
           <SectionKicker>How It Works</SectionKicker>
           <div className="gf-heading-font font-semibold" style={{ fontSize: 34, letterSpacing: "-0.01em", marginTop: 16 }}>
             From capture to shareable image in three steps
           </div>
         </div>
-        <div className="mx-auto grid grid-cols-1 md:grid-cols-3 gap-7" style={{ maxWidth: 1180 }}>
+        <div className="mx-auto grid grid-cols-1 md:grid-cols-3 gap-7" style={{ maxWidth: 1320 }}>
           {STEPS.map((s) => (
             <div key={s.n}>
               <div className="flex items-center gap-2.5" style={{ marginBottom: 14 }}>
@@ -278,7 +280,7 @@ export default function HomePage() {
       </div>
 
       {/* Features */}
-      <div id="features" className="border-t" style={{ padding: "90px 80px", borderColor: "rgba(29,31,32,.08)" }}>
+      <div id="features" className="border-t" style={{ padding: "90px 24px", borderColor: "rgba(29,31,32,.08)" }}>
         <div className="mx-auto text-center" style={{ maxWidth: 640, marginBottom: 64 }}>
           <SectionKicker>Core Features</SectionKicker>
           <div className="gf-heading-font font-semibold" style={{ fontSize: 34, letterSpacing: "-0.01em", marginTop: 16 }}>
@@ -289,7 +291,7 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="flex flex-col" style={{ gap: 64 }}>
+        <div className="mx-auto flex flex-col" style={{ gap: 64, maxWidth: 1320 }}>
           {FEATURES.map((f) => (
             <div key={f.title} className="grid grid-cols-1 md:grid-cols-2 items-center" style={{ gap: 56 }}>
               <div className={f.reverse ? "md:order-2" : ""}>
@@ -314,7 +316,7 @@ export default function HomePage() {
       </div>
 
       {/* Privacy band */}
-      <div className="text-center" style={{ background: "var(--gf-color-text)", padding: "80px 80px" }}>
+      <div className="text-center" style={{ background: "var(--gf-color-text)", padding: "80px 24px" }}>
         <span
           className="inline-block border gf-heading-font font-semibold uppercase"
           style={{ borderColor: "rgba(255,255,255,.2)", background: "rgba(255,255,255,.05)", color: "rgba(255,255,255,.7)", fontSize: "10.5px", letterSpacing: "0.06em", padding: "6px 14px" }}
@@ -333,20 +335,22 @@ export default function HomePage() {
       </div>
 
       {/* Footer */}
-      <div
-        className="flex items-center justify-between flex-wrap border-t"
-        style={{ padding: "28px 80px", gap: 16, borderColor: "rgba(29,31,32,.08)" }}
-      >
-        <div style={{ fontSize: 12, color: "rgba(29,31,32,.4)" }}>
-          © {new Date().getFullYear()} GoFully — Screenshot Studio
-        </div>
-        <div className="flex" style={{ gap: 22, fontSize: 12, color: "rgba(29,31,32,.5)" }}>
-          <Link href="/privacy" className="hover:text-[var(--gf-color-text)] transition-colors">Privacy</Link>
-          <Link href="/terms" className="hover:text-[var(--gf-color-text)] transition-colors">Terms</Link>
-          <Link href="/security" className="hover:text-[var(--gf-color-text)] transition-colors">Security</Link>
-          <Link href="/faq" className="hover:text-[var(--gf-color-text)] transition-colors">FAQ</Link>
-          <Link href="/support" className="hover:text-[var(--gf-color-text)] transition-colors">Support</Link>
-          <Link href="/roadmap" className="hover:text-[var(--gf-color-text)] transition-colors">Roadmap</Link>
+      <div className="border-t" style={{ padding: "28px 24px", borderColor: "rgba(29,31,32,.08)" }}>
+        <div
+          className="mx-auto flex items-center justify-between flex-wrap"
+          style={{ gap: 16, maxWidth: 1320 }}
+        >
+          <div style={{ fontSize: 12, color: "rgba(29,31,32,.4)" }}>
+            © {new Date().getFullYear()} GoFully — Screenshot Studio
+          </div>
+          <div className="flex" style={{ gap: 22, fontSize: 12, color: "rgba(29,31,32,.5)" }}>
+            <Link href="/privacy" className="hover:text-[var(--gf-color-text)] transition-colors">Privacy</Link>
+            <Link href="/terms" className="hover:text-[var(--gf-color-text)] transition-colors">Terms</Link>
+            <Link href="/security" className="hover:text-[var(--gf-color-text)] transition-colors">Security</Link>
+            <Link href="/faq" className="hover:text-[var(--gf-color-text)] transition-colors">FAQ</Link>
+            <Link href="/support" className="hover:text-[var(--gf-color-text)] transition-colors">Support</Link>
+            <Link href="/roadmap" className="hover:text-[var(--gf-color-text)] transition-colors">Roadmap</Link>
+          </div>
         </div>
       </div>
     </div>

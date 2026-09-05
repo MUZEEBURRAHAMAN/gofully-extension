@@ -77,42 +77,41 @@ export default function RoadmapPage() {
   return (
     <div className="gf-industry min-h-screen">
       {/* Nav */}
-      <div
-        className="flex items-center justify-between border-b"
-        style={{ height: 72, padding: "0 80px", borderColor: "rgba(29,31,32,.1)" }}
-      >
-        <Link href="/" className="flex items-center gap-2.5">
-          <div
-            className="flex items-center justify-center border"
-            style={{ width: 28, height: 28, background: "var(--gf-color-accent)", borderColor: "rgba(29,31,32,.12)" }}
-          >
-            <img src="/assets/icon-48.png" alt="GoFully" className="w-full h-full object-contain p-0.5" />
-          </div>
-          <div className="gf-heading-font font-semibold" style={{ fontSize: 18, letterSpacing: "-0.01em" }}>
-            GoFully
-          </div>
-        </Link>
-        <div className="hidden md:flex items-center gap-9 text-[13px] font-medium" style={{ color: "rgba(29,31,32,.55)" }}>
-          {NAV_LINKS.map((l) => (
-            <Link
-              key={l.label}
-              href={l.href}
-              className="transition-colors"
-              style={l.active ? { color: "var(--gf-color-accent)", fontWeight: 600 } : undefined}
+      <div className="border-b" style={{ padding: "0 24px", borderColor: "rgba(29,31,32,.1)" }}>
+        <div className="mx-auto flex items-center justify-between" style={{ height: 72, maxWidth: 1320 }}>
+          <Link href="/" className="flex items-center gap-2.5">
+            <div
+              className="flex items-center justify-center border"
+              style={{ width: 28, height: 28, background: "var(--gf-color-accent)", borderColor: "rgba(29,31,32,.12)" }}
             >
-              {l.label}
-            </Link>
-          ))}
+              <img src="/assets/icon-48.png" alt="GoFully" className="w-full h-full object-contain p-0.5" />
+            </div>
+            <div className="gf-heading-font font-semibold" style={{ fontSize: 18, letterSpacing: "-0.01em" }}>
+              GoFully
+            </div>
+          </Link>
+          <div className="hidden md:flex items-center gap-9 text-[13px] font-medium" style={{ color: "rgba(29,31,32,.55)" }}>
+            {NAV_LINKS.map((l) => (
+              <Link
+                key={l.label}
+                href={l.href}
+                className="transition-colors"
+                style={l.active ? { color: "var(--gf-color-accent)", fontWeight: 600 } : undefined}
+              >
+                {l.label}
+              </Link>
+            ))}
+          </div>
+          <a
+            href={CWS_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="relative inline-flex items-center justify-center gap-1.5 border gf-heading-font font-semibold cursor-pointer"
+            style={{ height: 38, padding: "0 18px", background: "var(--gf-color-accent)", color: "#fff", fontSize: "12.5px", letterSpacing: "0.02em", borderColor: "rgba(29,31,32,.12)" }}
+          >
+            Add to Chrome
+          </a>
         </div>
-        <a
-          href={CWS_URL}
-          target="_blank"
-          rel="noreferrer"
-          className="relative inline-flex items-center justify-center gap-1.5 border gf-heading-font font-semibold cursor-pointer"
-          style={{ height: 38, padding: "0 18px", background: "var(--gf-color-accent)", color: "#fff", fontSize: "12.5px", letterSpacing: "0.02em", borderColor: "rgba(29,31,32,.12)" }}
-        >
-          Add to Chrome
-        </a>
       </div>
 
       {/* Header + timeline share one centered column so the whole page
@@ -275,7 +274,7 @@ export default function RoadmapPage() {
       </div>
 
       {/* CTA band */}
-      <div className="text-center" style={{ background: "#1d1f20", padding: "76px 80px" }}>
+      <div className="text-center" style={{ background: "#1d1f20", padding: "76px 24px" }}>
         <div className="gf-heading-font font-semibold" style={{ fontSize: 30, color: "#fff", letterSpacing: "-0.01em" }}>
           Try it on your next screenshot
         </div>
@@ -294,16 +293,15 @@ export default function RoadmapPage() {
       </div>
 
       {/* Footer */}
-      <div
-        className="flex items-center justify-between flex-wrap border-t"
-        style={{ padding: "28px 80px", gap: 16, borderColor: "rgba(29,31,32,.08)" }}
-      >
-        <div style={{ fontSize: 12, color: "rgba(29,31,32,.5)" }}>
-          © {new Date().getFullYear()} GoFully — Screenshot Studio
-        </div>
-        <div className="flex" style={{ gap: 22, fontSize: 12, color: "rgba(29,31,32,.5)" }}>
-          <Link href="/privacy" className="hover:text-[var(--gf-color-text)] transition-colors">Privacy</Link>
-          <Link href="/terms" className="hover:text-[var(--gf-color-text)] transition-colors">Terms</Link>
+      <div className="border-t" style={{ padding: "28px 24px", borderColor: "rgba(29,31,32,.08)" }}>
+        <div className="mx-auto flex items-center justify-between flex-wrap" style={{ gap: 16, maxWidth: 1320 }}>
+          <div style={{ fontSize: 12, color: "rgba(29,31,32,.5)" }}>
+            © {new Date().getFullYear()} GoFully — Screenshot Studio
+          </div>
+          <div className="flex" style={{ gap: 22, fontSize: 12, color: "rgba(29,31,32,.5)" }}>
+            <Link href="/privacy" className="hover:text-[var(--gf-color-text)] transition-colors">Privacy</Link>
+            <Link href="/terms" className="hover:text-[var(--gf-color-text)] transition-colors">Terms</Link>
+          </div>
         </div>
       </div>
     </div>
