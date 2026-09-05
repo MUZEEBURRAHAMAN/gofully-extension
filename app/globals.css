@@ -35,20 +35,11 @@
    win against it. These need their own !important, scoped to the mockup
    only, at higher specificity than the universal selector. */
 .gf-mockup-frame {
-  border-radius: 48px !important;
+  border-radius: 32px !important;
 }
 .gf-mockup-screen,
 .gf-mockup-screen img {
-  border-radius: 36px !important;
-}
-@media (min-width: 768px) {
-  .gf-mockup-frame {
-    border-radius: 72px !important;
-  }
-  .gf-mockup-screen,
-  .gf-mockup-screen img {
-    border-radius: 56px !important;
-  }
+  border-radius: 24px !important;
 }
 
 body {
