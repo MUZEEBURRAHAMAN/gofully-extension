@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { BlueprintFrame } from "@/components/blueprint-frame";
 
 const reasons = [
@@ -30,22 +31,49 @@ export default function UninstallFeedbackPage() {
   }
 
   return (
-    <div className="gf-industry min-h-screen flex flex-col items-center justify-center px-6 py-16">
-      <div className="w-full max-w-md">
-        {/* Logo */}
-        <div className="flex items-center gap-2.5 mb-8">
-          <div
-            className="flex items-center justify-center border"
-            style={{ width: 28, height: 28, background: "var(--gf-color-accent)", borderColor: "rgba(29,31,32,.12)" }}
-          >
-            <img src="/assets/icon-48.png" alt="GoFully" className="w-full h-full object-contain p-0.5" />
-          </div>
-          <span className="gf-heading-font font-semibold" style={{ fontSize: 16, color: "rgba(29,31,32,.4)" }}>
-            GoFully
-          </span>
-        </div>
+    <div className="gf-industry min-h-screen relative overflow-hidden">
+      {/* Dimmed backdrop — the page reads as a modal/dialog sitting over the
+          site rather than a standalone form, matching how this screen
+          actually appears (a confirmation layered over whatever brought
+          the user here). A faint corner-mark grid keeps it from being a
+          flat void while staying consistent with the blueprint theme. */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(circle at 30% 20%, rgba(22,103,242,.06), transparent 55%), var(--gf-color-bg)",
+        }}
+      />
+      <div className="absolute inset-0" style={{ background: "rgba(29,31,32,.5)", backdropFilter: "blur(3px)" }} />
 
-        {submitted ? (
+      <div className="relative min-h-screen flex flex-col items-center justify-center px-6 py-16">
+        <BlueprintFrame
+          className="w-full max-w-md bg-white"
+          style={{ padding: "36px 32px", boxShadow: "0 24px 64px rgba(15,23,42,.35)" }}
+        >
+          <Link
+            href="/"
+            aria-label="Close"
+            className="absolute flex items-center justify-center border cursor-pointer"
+            style={{ top: 14, right: 14, width: 26, height: 26, borderColor: "rgba(29,31,32,.15)", color: "rgba(29,31,32,.45)" }}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+          </Link>
+
+          {/* Logo */}
+          <div className="flex items-center gap-2.5 mb-8">
+            <div
+              className="flex items-center justify-center border"
+              style={{ width: 28, height: 28, background: "var(--gf-color-accent)", borderColor: "rgba(29,31,32,.12)" }}
+            >
+              <img src="/assets/icon-48.png" alt="GoFully" className="w-full h-full object-contain p-0.5" />
+            </div>
+            <span className="gf-heading-font font-semibold" style={{ fontSize: 16, color: "rgba(29,31,32,.4)" }}>
+              GoFully
+            </span>
+          </div>
+
+          {submitted ? (
           <div className="text-center py-12">
             <BlueprintFrame
               className="mx-auto flex items-center justify-center mb-4"
@@ -173,6 +201,7 @@ export default function UninstallFeedbackPage() {
             </form>
           </>
         )}
+        </BlueprintFrame>
       </div>
     </div>
   );
