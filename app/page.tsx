@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { label: "Security", href: "/security" },
   { label: "Support", href: "/support" },
   { label: "FAQ", href: "/faq" },
+  { label: "Roadmap", href: "/roadmap" },
 ];
 
 const STEPS = [
@@ -334,6 +335,7 @@ export default function HomePage() {
           <Link href="/security" className="hover:text-[var(--gf-color-text)] transition-colors">Security</Link>
           <Link href="/faq" className="hover:text-[var(--gf-color-text)] transition-colors">FAQ</Link>
           <Link href="/support" className="hover:text-[var(--gf-color-text)] transition-colors">Support</Link>
+          <Link href="/roadmap" className="hover:text-[var(--gf-color-text)] transition-colors">Roadmap</Link>
         </div>
       </div>
     </div>
