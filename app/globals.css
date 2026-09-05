@@ -2,7 +2,7 @@
 @import "tailwindcss";
 
 :root {
-  --font-sans: 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Bricolage Grotesque', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'Geist Mono', monospace;
   --primary-blue: #136CDE;
   --primary-blue-hover: #177BF7;
