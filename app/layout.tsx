@@ -1,6 +1,26 @@
 import type { Metadata, Viewport } from "next";
+import { Bricolage_Grotesque, Inter } from "next/font/google";
 import "./globals.css";
 import "@/components/originkit/hero-26.css";
+
+// Loaded (self-hosted at build time) via next/font instead of the old
+// `@import url("https://fonts.googleapis.com/...")` in globals.css — Next's
+// CSS bundler silently drops a remote @import that isn't first in the file
+// (it lands after Tailwind's expanded output), so that import was never
+// actually reaching the browser and the fonts were always falling back.
+const bricolageGrotesque = Bricolage_Grotesque({
+  subsets: ["latin"],
+  weight: "variable",
+  variable: "--font-heading",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: "variable",
+  variable: "--font-sans",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://gofully-extension.vercel.app"),
@@ -79,7 +99,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
+    <html
+      lang="en"
+      className={`dark ${bricolageGrotesque.variable} ${inter.variable}`}
+    >
       <head>
         <script
           type="application/ld+json"

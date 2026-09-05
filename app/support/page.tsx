@@ -80,17 +80,17 @@ export default function SupportPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2" style={{ gap: 18, marginBottom: 18 }}>
                   <div>
                     <label className="gf-heading-font font-semibold uppercase block" style={{ fontSize: 12, letterSpacing: "0.03em", color: "rgba(29,31,32,.5)", marginBottom: 8 }}>Name</label>
-                    <input type="text" required placeholder="Your name" className="w-full border" style={{ height: 44, padding: "0 14px", borderColor: "rgba(29,31,32,.18)", background: "#fff", font: "13.5px 'Bricolage Grotesque', system-ui, sans-serif", color: "#1d1f20", boxSizing: "border-box" }} />
+                    <input type="text" required placeholder="Your name" className="w-full border" style={{ height: 44, padding: "0 14px", borderColor: "rgba(29,31,32,.18)", background: "#fff", font: "13.5px 'Inter', sans-serif", color: "#1d1f20", boxSizing: "border-box" }} />
                   </div>
                   <div>
                     <label className="gf-heading-font font-semibold uppercase block" style={{ fontSize: 12, letterSpacing: "0.03em", color: "rgba(29,31,32,.5)", marginBottom: 8 }}>Email</label>
-                    <input type="email" required placeholder="you@example.com" className="w-full border" style={{ height: 44, padding: "0 14px", borderColor: "rgba(29,31,32,.18)", background: "#fff", font: "13.5px 'Bricolage Grotesque', system-ui, sans-serif", color: "#1d1f20", boxSizing: "border-box" }} />
+                    <input type="email" required placeholder="you@example.com" className="w-full border" style={{ height: 44, padding: "0 14px", borderColor: "rgba(29,31,32,.18)", background: "#fff", font: "13.5px 'Inter', sans-serif", color: "#1d1f20", boxSizing: "border-box" }} />
                   </div>
                 </div>
 
                 <div style={{ marginBottom: 18 }}>
                   <label className="gf-heading-font font-semibold uppercase block" style={{ fontSize: 12, letterSpacing: "0.03em", color: "rgba(29,31,32,.5)", marginBottom: 8 }}>Topic</label>
-                  <select className="w-full border" style={{ height: 44, padding: "0 14px", borderColor: "rgba(29,31,32,.18)", background: "#fff", font: "13.5px 'Bricolage Grotesque', system-ui, sans-serif", color: "#1d1f20", boxSizing: "border-box" }}>
+                  <select className="w-full border" style={{ height: 44, padding: "0 14px", borderColor: "rgba(29,31,32,.18)", background: "#fff", font: "13.5px 'Inter', sans-serif", color: "#1d1f20", boxSizing: "border-box" }}>
                     <option>General question</option>
                     <option>Bug report</option>
                     <option>Feature request</option>
@@ -100,7 +100,7 @@ export default function SupportPage() {
 
                 <div style={{ marginBottom: 26 }}>
                   <label className="gf-heading-font font-semibold uppercase block" style={{ fontSize: 12, letterSpacing: "0.03em", color: "rgba(29,31,32,.5)", marginBottom: 8 }}>Message</label>
-                  <textarea required rows={5} placeholder="How can we help?" className="w-full border" style={{ padding: "12px 14px", borderColor: "rgba(29,31,32,.18)", background: "#fff", font: "13.5px/1.5 'Bricolage Grotesque', system-ui, sans-serif", color: "#1d1f20", boxSizing: "border-box", resize: "vertical" }} />
+                  <textarea required rows={5} placeholder="How can we help?" className="w-full border" style={{ padding: "12px 14px", borderColor: "rgba(29,31,32,.18)", background: "#fff", font: "13.5px/1.5 'Inter', sans-serif", color: "#1d1f20", boxSizing: "border-box", resize: "vertical" }} />
                 </div>
 
                 <button

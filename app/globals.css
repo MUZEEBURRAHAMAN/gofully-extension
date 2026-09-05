@@ -1,8 +1,14 @@
-@import url("https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700;1,900&family=Geist+Mono:wght@400;500;600;700&family=Geist:wght@400;500;600;700;800&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700;1,900&family=Geist+Mono:wght@400;500;600;700&family=Geist:wght@400;500;600;700;800&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap");
 @import "tailwindcss";
 
 :root {
-  --font-sans: 'Bricolage Grotesque', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* Site-wide font pairing: Bricolage Grotesque for headings, Inter for
+     body text — loaded via next/font in layout.tsx (self-hosted, no
+     runtime Google Fonts request) which sets these two variables on
+     <html>. This bare fallback only matters if that ever fails to apply;
+     no system-font names anywhere in the chain. */
+  --font-heading: 'Bricolage Grotesque', sans-serif;
+  --font-sans: 'Inter', sans-serif;
   --font-mono: 'Geist Mono', monospace;
   --primary-blue: #136CDE;
   --primary-blue-hover: #177BF7;
@@ -21,8 +27,8 @@
   --gf-color-accent-700: #0E4AB8;
   --gf-color-accent-900: #1d2d3d;
   --gf-color-divider: color-mix(in srgb, #1d1f20 16%, transparent);
-  --gf-font-heading: 'Bricolage Grotesque', system-ui, sans-serif;
-  --gf-font-body: 'Bricolage Grotesque', system-ui, sans-serif;
+  --gf-font-heading: var(--font-heading);
+  --gf-font-body: var(--font-sans);
 }
 
 *, *::before, *::after {
@@ -51,7 +57,10 @@ body {
   padding: 0;
 }
 
-h1, h2, h3, h4, h5, h6, p, span, a, button, input, textarea, select {
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+p, span, a, button, input, textarea, select {
   font-family: var(--font-sans);
 }
 
