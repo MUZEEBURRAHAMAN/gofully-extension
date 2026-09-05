@@ -80,7 +80,7 @@ const FEATURES = [
 function Kicker({ children }: { children: React.ReactNode }) {
   return (
     <span
-      className="inline-block border font-[var(--gf-font-heading)] font-semibold uppercase"
+      className="inline-block border gf-heading-font font-semibold uppercase"
       style={{
         borderColor: "rgba(22,103,242,.25)",
         background: "rgba(22,103,242,.06)",
@@ -98,7 +98,7 @@ function Kicker({ children }: { children: React.ReactNode }) {
 function SectionKicker({ children }: { children: React.ReactNode }) {
   return (
     <span
-      className="inline-block border font-[var(--gf-font-heading)] font-semibold uppercase"
+      className="inline-block border gf-heading-font font-semibold uppercase"
       style={{
         borderColor: "rgba(29,31,32,.15)",
         color: "rgba(29,31,32,.45)",
@@ -126,7 +126,7 @@ function CTAButton({
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="relative inline-flex items-center justify-center gap-2 border font-[var(--gf-font-heading)] font-semibold cursor-pointer"
+      className="relative inline-flex items-center justify-center gap-2 border gf-heading-font font-semibold cursor-pointer"
       style={{
         height: 48,
         padding: "0 26px",
@@ -168,7 +168,7 @@ export default function HomePage() {
       {/* Nav */}
       <div
         className="flex items-center justify-between border-b"
-        style={{ height: 72, padding: "0 48px", borderColor: "rgba(29,31,32,.1)" }}
+        style={{ height: 72, padding: "0 80px", borderColor: "rgba(29,31,32,.1)" }}
       >
         <div className="flex items-center gap-2.5">
           <div
@@ -177,7 +177,7 @@ export default function HomePage() {
           >
             <img src="/assets/icon-48.png" alt="GoFully" className="w-full h-full object-contain p-0.5" />
           </div>
-          <div className="font-[var(--gf-font-heading)] font-semibold" style={{ fontSize: 18, letterSpacing: "-0.01em" }}>
+          <div className="gf-heading-font font-semibold" style={{ fontSize: 18, letterSpacing: "-0.01em" }}>
             GoFully
           </div>
         </div>
@@ -192,7 +192,7 @@ export default function HomePage() {
           href={CWS_URL}
           target="_blank"
           rel="noreferrer"
-          className="relative inline-flex items-center justify-center gap-1.5 border font-[var(--gf-font-heading)] font-semibold cursor-pointer"
+          className="relative inline-flex items-center justify-center gap-1.5 border gf-heading-font font-semibold cursor-pointer"
           style={{ height: 38, padding: "0 18px", background: "var(--gf-color-accent)", color: "#fff", fontSize: "12.5px", letterSpacing: "0.02em", borderColor: "rgba(29,31,32,.12)" }}
         >
           Add to Chrome
@@ -205,7 +205,7 @@ export default function HomePage() {
           <div className="mx-auto" style={{ maxWidth: 720 }}>
             <Kicker>Chrome Extension · 100% On-Device</Kicker>
             <div
-              className="font-[var(--gf-font-heading)] font-semibold"
+              className="gf-heading-font font-semibold"
               style={{ fontSize: 58, lineHeight: 1.05, letterSpacing: "-0.01em", marginTop: 24, color: "var(--gf-color-text)" }}
             >
               Capture anything.
@@ -219,7 +219,7 @@ export default function HomePage() {
               <CTAButton href={CWS_URL}>Add to Chrome — It&apos;s Free</CTAButton>
               <a
                 href="#how-it-works"
-                className="inline-flex items-center justify-center border font-[var(--gf-font-heading)] font-semibold cursor-pointer"
+                className="inline-flex items-center justify-center border gf-heading-font font-semibold cursor-pointer"
                 style={{ height: 48, padding: "0 22px", borderColor: "rgba(29,31,32,.15)", color: "rgba(29,31,32,.6)", fontSize: 14, letterSpacing: "0.02em" }}
               >
                 See how it works ↓
@@ -241,10 +241,10 @@ export default function HomePage() {
       </ContainerScroll>
 
       {/* How it works */}
-      <div id="how-it-works" className="border-t" style={{ padding: "80px 48px", borderColor: "rgba(29,31,32,.08)", background: "rgba(29,31,32,.02)" }}>
+      <div id="how-it-works" className="border-t" style={{ padding: "80px 80px", borderColor: "rgba(29,31,32,.08)", background: "rgba(29,31,32,.02)" }}>
         <div className="mx-auto text-center" style={{ maxWidth: 640, marginBottom: 52 }}>
           <SectionKicker>How It Works</SectionKicker>
-          <div className="font-[var(--gf-font-heading)] font-semibold" style={{ fontSize: 34, letterSpacing: "-0.01em", marginTop: 16 }}>
+          <div className="gf-heading-font font-semibold" style={{ fontSize: 34, letterSpacing: "-0.01em", marginTop: 16 }}>
             From capture to shareable image in three steps
           </div>
         </div>
@@ -253,12 +253,12 @@ export default function HomePage() {
             <div key={s.n}>
               <div className="flex items-center gap-2.5" style={{ marginBottom: 14 }}>
                 <div
-                  className="flex items-center justify-center flex-shrink-0 font-[var(--gf-font-heading)] font-bold"
+                  className="flex items-center justify-center flex-shrink-0 gf-heading-font font-bold"
                   style={{ width: 26, height: 26, background: "var(--gf-color-accent)", color: "#fff", fontSize: 12 }}
                 >
                   {s.n}
                 </div>
-                <div className="font-[var(--gf-font-heading)] font-semibold" style={{ fontSize: 16, letterSpacing: "0.01em" }}>
+                <div className="gf-heading-font font-semibold" style={{ fontSize: 16, letterSpacing: "0.01em" }}>
                   {s.title}
                 </div>
               </div>
@@ -278,10 +278,10 @@ export default function HomePage() {
       </div>
 
       {/* Features */}
-      <div id="features" className="border-t" style={{ padding: "90px 48px", borderColor: "rgba(29,31,32,.08)" }}>
+      <div id="features" className="border-t" style={{ padding: "90px 80px", borderColor: "rgba(29,31,32,.08)" }}>
         <div className="mx-auto text-center" style={{ maxWidth: 640, marginBottom: 64 }}>
           <SectionKicker>Core Features</SectionKicker>
-          <div className="font-[var(--gf-font-heading)] font-semibold" style={{ fontSize: 34, letterSpacing: "-0.01em", marginTop: 16 }}>
+          <div className="gf-heading-font font-semibold" style={{ fontSize: 34, letterSpacing: "-0.01em", marginTop: 16 }}>
             Everything you need to capture, clean up, and share
           </div>
           <p style={{ fontSize: "14.5px", color: "rgba(29,31,32,.5)", marginTop: 12 }}>
@@ -294,7 +294,7 @@ export default function HomePage() {
             <div key={f.title} className="grid grid-cols-1 md:grid-cols-2 items-center" style={{ gap: 56 }}>
               <div className={f.reverse ? "md:order-2" : ""}>
                 <Kicker>{f.tag}</Kicker>
-                <div className="font-[var(--gf-font-heading)] font-semibold" style={{ fontSize: 26, letterSpacing: "-0.005em", marginTop: 14 }}>
+                <div className="gf-heading-font font-semibold" style={{ fontSize: 26, letterSpacing: "-0.005em", marginTop: 14 }}>
                   {f.title}
                 </div>
                 <p style={{ fontSize: 14, lineHeight: 1.65, color: "rgba(29,31,32,.5)", marginTop: 12, maxWidth: 440 }}>{f.body}</p>
@@ -314,14 +314,14 @@ export default function HomePage() {
       </div>
 
       {/* Privacy band */}
-      <div className="text-center" style={{ background: "var(--gf-color-text)", padding: "80px 48px" }}>
+      <div className="text-center" style={{ background: "var(--gf-color-text)", padding: "80px 80px" }}>
         <span
-          className="inline-block border font-[var(--gf-font-heading)] font-semibold uppercase"
+          className="inline-block border gf-heading-font font-semibold uppercase"
           style={{ borderColor: "rgba(255,255,255,.2)", background: "rgba(255,255,255,.05)", color: "rgba(255,255,255,.7)", fontSize: "10.5px", letterSpacing: "0.06em", padding: "6px 14px" }}
         >
           100% Offline
         </span>
-        <div className="font-[var(--gf-font-heading)] font-semibold" style={{ fontSize: 32, color: "#fff", letterSpacing: "-0.01em", marginTop: 20 }}>
+        <div className="gf-heading-font font-semibold" style={{ fontSize: 32, color: "#fff", letterSpacing: "-0.01em", marginTop: 20 }}>
           Nothing you capture ever leaves your device
         </div>
         <p className="mx-auto" style={{ fontSize: 15, color: "rgba(255,255,255,.55)", maxWidth: 520, marginTop: 14, lineHeight: 1.6 }}>
@@ -335,7 +335,7 @@ export default function HomePage() {
       {/* Footer */}
       <div
         className="flex items-center justify-between flex-wrap border-t"
-        style={{ padding: "28px 48px", gap: 16, borderColor: "rgba(29,31,32,.08)" }}
+        style={{ padding: "28px 80px", gap: 16, borderColor: "rgba(29,31,32,.08)" }}
       >
         <div style={{ fontSize: 12, color: "rgba(29,31,32,.4)" }}>
           © {new Date().getFullYear()} GoFully — Screenshot Studio

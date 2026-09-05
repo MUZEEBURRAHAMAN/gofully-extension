@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700;1,900&family=Geist+Mono:wght@400;500;600;700&family=Geist:wght@400;500;600;700;800&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700;1,900&family=Geist+Mono:wght@400;500;600;700&family=Geist:wght@400;500;600;700;800&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&display=swap");
 @import "tailwindcss";
 
 :root {
@@ -21,7 +21,7 @@
   --gf-color-accent-700: #0E4AB8;
   --gf-color-accent-900: #1d2d3d;
   --gf-color-divider: color-mix(in srgb, #1d1f20 16%, transparent);
-  --gf-font-heading: 'Barlow Condensed', system-ui, sans-serif;
+  --gf-font-heading: 'Bricolage Grotesque', system-ui, sans-serif;
   --gf-font-body: 'Barlow', system-ui, sans-serif;
 }
 
@@ -86,6 +86,15 @@ h1, h2, h3, h4, h5, h6, p, span, a, button, input, textarea, select {
 .gf-industry h1, .gf-industry h2, .gf-industry h3, .gf-industry h4 {
   font-family: var(--gf-font-heading);
   font-weight: 600;
+}
+/* Real class, not a Tailwind arbitrary value: `font-[var(--gf-font-heading)]`
+   never actually compiled to a font-family declaration (Tailwind treats a
+   `font-[...]` arbitrary value as a font-weight candidate first), so every
+   "heading" built from a styled <div> instead of a real h1-h4 silently fell
+   back to the body font. This is the fix — used directly on any element
+   that needs the heading typeface but isn't a real heading tag. */
+.gf-heading-font {
+  font-family: var(--gf-font-heading);
 }
 .gf-blueprint {
   position: relative;

@@ -53,7 +53,7 @@ function TimelineRow({
     <div className="grid grid-cols-[80px_28px_1fr] md:grid-cols-[108px_28px_1fr] gap-x-5">
       <div className="pt-1.5">
         <span
-          className="inline-block border font-[var(--gf-font-heading)] font-semibold"
+          className="inline-block border gf-heading-font font-semibold"
           style={{ padding: "4px 9px", fontSize: 11, letterSpacing: "0.04em", ...tagStyle }}
         >
           {tag}
@@ -79,7 +79,7 @@ export default function RoadmapPage() {
       {/* Nav */}
       <div
         className="flex items-center justify-between border-b"
-        style={{ height: 72, padding: "0 48px", borderColor: "rgba(29,31,32,.1)" }}
+        style={{ height: 72, padding: "0 80px", borderColor: "rgba(29,31,32,.1)" }}
       >
         <Link href="/" className="flex items-center gap-2.5">
           <div
@@ -88,7 +88,7 @@ export default function RoadmapPage() {
           >
             <img src="/assets/icon-48.png" alt="GoFully" className="w-full h-full object-contain p-0.5" />
           </div>
-          <div className="font-[var(--gf-font-heading)] font-semibold" style={{ fontSize: 18, letterSpacing: "-0.01em" }}>
+          <div className="gf-heading-font font-semibold" style={{ fontSize: 18, letterSpacing: "-0.01em" }}>
             GoFully
           </div>
         </Link>
@@ -108,7 +108,7 @@ export default function RoadmapPage() {
           href={CWS_URL}
           target="_blank"
           rel="noreferrer"
-          className="relative inline-flex items-center justify-center gap-1.5 border font-[var(--gf-font-heading)] font-semibold cursor-pointer"
+          className="relative inline-flex items-center justify-center gap-1.5 border gf-heading-font font-semibold cursor-pointer"
           style={{ height: 38, padding: "0 18px", background: "var(--gf-color-accent)", color: "#fff", fontSize: "12.5px", letterSpacing: "0.02em", borderColor: "rgba(29,31,32,.12)" }}
         >
           Add to Chrome
@@ -120,14 +120,14 @@ export default function RoadmapPage() {
       <div style={{ maxWidth: 960, margin: "0 auto" }}>
 
       {/* Header */}
-      <div style={{ padding: "72px 48px 56px" }}>
+      <div style={{ padding: "72px 80px 56px" }}>
         <span
-          className="inline-block border font-[var(--gf-font-heading)] font-semibold uppercase"
+          className="inline-block border gf-heading-font font-semibold uppercase"
           style={{ borderColor: "rgba(22,103,242,.25)", background: "rgba(22,103,242,.06)", color: "var(--gf-color-accent)", fontSize: "10.5px", letterSpacing: "0.06em", padding: "5px 12px" }}
         >
           Roadmap
         </span>
-        <div className="font-[var(--gf-font-heading)] font-semibold" style={{ fontSize: 44, letterSpacing: "-0.01em", marginTop: 20 }}>
+        <div className="gf-heading-font font-semibold" style={{ fontSize: 44, letterSpacing: "-0.01em", marginTop: 20 }}>
           The complete journey
         </div>
         <p style={{ fontSize: 15, color: "rgba(29,31,32,.55)", marginTop: 16, lineHeight: 1.6, maxWidth: 640 }}>
@@ -136,7 +136,7 @@ export default function RoadmapPage() {
       </div>
 
       {/* Timeline */}
-      <div style={{ padding: "8px 48px 90px" }}>
+      <div style={{ padding: "8px 80px 90px" }}>
         <div>
 
           {/* Origin */}
@@ -146,7 +146,7 @@ export default function RoadmapPage() {
             dotStyle={{ background: "#1d1f20", borderColor: "#1d1f20" }}
           >
             <BlueprintFrame className="p-6" style={{ background: "#fff", maxWidth: 600 }} markColor="rgba(29,31,32,.15)">
-              <div className="font-[var(--gf-font-heading)] font-semibold" style={{ fontSize: 20 }}>
+              <div className="gf-heading-font font-semibold" style={{ fontSize: 20 }}>
                 Cloud tools upload before you can even edit
               </div>
               <p className="mt-2" style={{ fontSize: "13.5px", color: "rgba(29,31,32,.6)", lineHeight: 1.6 }}>
@@ -166,7 +166,7 @@ export default function RoadmapPage() {
             dotStyle={{ background: "#1d1f20", borderColor: "#1d1f20" }}
           >
             <BlueprintFrame className="p-6" style={{ background: "#fff", maxWidth: 600 }} markColor="rgba(29,31,32,.15)">
-              <div className="font-[var(--gf-font-heading)] font-semibold" style={{ fontSize: 20 }}>
+              <div className="gf-heading-font font-semibold" style={{ fontSize: 20 }}>
                 Capture, read, and mark it up — all on-device
               </div>
               <p className="mt-2" style={{ fontSize: "13.5px", color: "rgba(29,31,32,.6)", lineHeight: 1.6 }}>
@@ -174,7 +174,7 @@ export default function RoadmapPage() {
                 up, and export — with zero server round-trip at any step.
               </p>
 
-              <div className="font-[var(--gf-font-heading)] font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
+              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
                 Full-page capture
               </div>
               <ul className="mt-2.5 flex flex-col gap-2">
@@ -185,7 +185,7 @@ export default function RoadmapPage() {
                 <img src="/features/feature-1.webp" alt="Full-page capture of a long webpage" className="w-full h-full object-cover object-top" />
               </div>
 
-              <div className="font-[var(--gf-font-heading)] font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 22 }}>
+              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 22 }}>
                 Read what&apos;s on screen
               </div>
               <ul className="mt-2.5 flex flex-col gap-2">
@@ -195,7 +195,7 @@ export default function RoadmapPage() {
                 <img src="/features/feature-2.webp" alt="On-device OCR text extraction result" className="w-full h-full object-cover object-top" />
               </div>
 
-              <div className="font-[var(--gf-font-heading)] font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 22 }}>
+              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 22 }}>
                 Mark it up, keep it private
               </div>
               <ul className="mt-2.5 flex flex-col gap-2">
@@ -227,7 +227,7 @@ export default function RoadmapPage() {
             dotStyle={{ background: "var(--gf-color-accent)", borderColor: "var(--gf-color-accent)", boxShadow: "0 0 0 4px rgba(22,103,242,.15)" }}
           >
             <div className="p-6 border" style={{ borderColor: "rgba(22,103,242,.3)", background: "rgba(22,103,242,.04)", maxWidth: 600 }}>
-              <div className="font-[var(--gf-font-heading)] font-semibold" style={{ fontSize: 20 }}>
+              <div className="gf-heading-font font-semibold" style={{ fontSize: 20 }}>
                 A complete redesign, top to bottom
               </div>
               <p className="mt-2" style={{ fontSize: "13.5px", color: "rgba(29,31,32,.6)", lineHeight: 1.6 }}>
@@ -252,7 +252,7 @@ export default function RoadmapPage() {
             connector={false}
           >
             <div className="p-6 border" style={{ borderStyle: "dashed", borderColor: "rgba(22,103,242,.35)", background: "#fff", maxWidth: 600 }}>
-              <div className="font-[var(--gf-font-heading)] font-semibold" style={{ fontSize: 20 }}>
+              <div className="gf-heading-font font-semibold" style={{ fontSize: 20 }}>
                 Screen recording, GoFully Studio, and more
               </div>
               <p className="mt-2" style={{ fontSize: "13.5px", color: "rgba(29,31,32,.6)", lineHeight: 1.6 }}>
@@ -275,8 +275,8 @@ export default function RoadmapPage() {
       </div>
 
       {/* CTA band */}
-      <div className="text-center" style={{ background: "#1d1f20", padding: "76px 48px" }}>
-        <div className="font-[var(--gf-font-heading)] font-semibold" style={{ fontSize: 30, color: "#fff", letterSpacing: "-0.01em" }}>
+      <div className="text-center" style={{ background: "#1d1f20", padding: "76px 80px" }}>
+        <div className="gf-heading-font font-semibold" style={{ fontSize: 30, color: "#fff", letterSpacing: "-0.01em" }}>
           Try it on your next screenshot
         </div>
         <p className="mx-auto" style={{ fontSize: "14.5px", color: "rgba(255,255,255,.55)", maxWidth: 480, marginTop: 12 }}>
@@ -286,7 +286,7 @@ export default function RoadmapPage() {
           href={CWS_URL}
           target="_blank"
           rel="noreferrer"
-          className="relative inline-flex items-center justify-center gap-2 border font-[var(--gf-font-heading)] font-semibold cursor-pointer"
+          className="relative inline-flex items-center justify-center gap-2 border gf-heading-font font-semibold cursor-pointer"
           style={{ height: 46, padding: "0 24px", background: "var(--gf-color-accent)", color: "#fff", fontSize: "13.5px", letterSpacing: "0.02em", borderColor: "rgba(29,31,32,.12)", marginTop: 26 }}
         >
           Add to Chrome — It&apos;s Free
@@ -296,7 +296,7 @@ export default function RoadmapPage() {
       {/* Footer */}
       <div
         className="flex items-center justify-between flex-wrap border-t"
-        style={{ padding: "28px 48px", gap: 16, borderColor: "rgba(29,31,32,.08)" }}
+        style={{ padding: "28px 80px", gap: 16, borderColor: "rgba(29,31,32,.08)" }}
       >
         <div style={{ fontSize: 12, color: "rgba(29,31,32,.5)" }}>
           © {new Date().getFullYear()} GoFully — Screenshot Studio

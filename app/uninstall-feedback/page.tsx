@@ -40,7 +40,7 @@ export default function UninstallFeedbackPage() {
           >
             <img src="/assets/icon-48.png" alt="GoFully" className="w-full h-full object-contain p-0.5" />
           </div>
-          <span className="font-[var(--gf-font-heading)] font-semibold" style={{ fontSize: 16, color: "rgba(29,31,32,.4)" }}>
+          <span className="gf-heading-font font-semibold" style={{ fontSize: 16, color: "rgba(29,31,32,.4)" }}>
             GoFully
           </span>
         </div>
@@ -55,7 +55,7 @@ export default function UninstallFeedbackPage() {
                 <path d="M5 13l4 4L19 7" />
               </svg>
             </BlueprintFrame>
-            <h2 className="font-[var(--gf-font-heading)] font-semibold" style={{ fontSize: 22 }}>
+            <h2 className="gf-heading-font font-semibold" style={{ fontSize: 22 }}>
               Thanks for your feedback
             </h2>
             <p className="mt-3 text-sm" style={{ color: "rgba(29,31,32,.5)" }}>
@@ -76,7 +76,7 @@ export default function UninstallFeedbackPage() {
           </div>
         ) : (
           <>
-            <h1 className="font-[var(--gf-font-heading)] font-semibold" style={{ fontSize: 26, letterSpacing: "-0.01em", marginBottom: 6 }}>
+            <h1 className="gf-heading-font font-semibold" style={{ fontSize: 26, letterSpacing: "-0.01em", marginBottom: 6 }}>
               Sorry to see you go
             </h1>
             <p className="text-sm mb-6" style={{ color: "rgba(29,31,32,.45)" }}>
