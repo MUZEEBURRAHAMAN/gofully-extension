@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { BlueprintFrame } from "@/components/blueprint-frame";
+import { ContainerScroll } from "@/components/ui/container-scroll-animation";
 
 const CWS_URL =
   "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
@@ -199,35 +200,45 @@ export default function HomePage() {
       </div>
 
       {/* Hero */}
-      <div className="text-center" style={{ padding: "100px 48px 90px" }}>
-        <div className="mx-auto" style={{ maxWidth: 720 }}>
-          <Kicker>Chrome Extension · 100% On-Device</Kicker>
-          <div
-            className="font-[var(--gf-font-heading)] font-semibold"
-            style={{ fontSize: 58, lineHeight: 1.05, letterSpacing: "-0.01em", marginTop: 24 }}
-          >
-            Capture anything.
-            <br />
-            Make it clear.
-          </div>
-          <p className="mx-auto" style={{ fontSize: 17, lineHeight: 1.6, color: "rgba(29,31,32,.55)", maxWidth: 560, marginTop: 20 }}>
-            GoFully is a browser extension for capturing webpages, extracting text, annotating screenshots, protecting sensitive information, and exporting polished results — all from your browser.
-          </p>
-          <div className="flex justify-center gap-3.5" style={{ marginTop: 32 }}>
-            <CTAButton href={CWS_URL}>Add to Chrome — It&apos;s Free</CTAButton>
-            <a
-              href="#how-it-works"
-              className="inline-flex items-center justify-center border font-[var(--gf-font-heading)] font-semibold cursor-pointer"
-              style={{ height: 48, padding: "0 22px", borderColor: "rgba(29,31,32,.15)", color: "rgba(29,31,32,.6)", fontSize: 14, letterSpacing: "0.02em" }}
+      <ContainerScroll
+        titleComponent={
+          <div className="mx-auto" style={{ maxWidth: 720 }}>
+            <Kicker>Chrome Extension · 100% On-Device</Kicker>
+            <div
+              className="font-[var(--gf-font-heading)] font-semibold"
+              style={{ fontSize: 58, lineHeight: 1.05, letterSpacing: "-0.01em", marginTop: 24, color: "var(--gf-color-text)" }}
             >
-              See how it works ↓
-            </a>
+              Capture anything.
+              <br />
+              Make it clear.
+            </div>
+            <p className="mx-auto" style={{ fontSize: 17, lineHeight: 1.6, color: "rgba(29,31,32,.55)", maxWidth: 560, marginTop: 20 }}>
+              GoFully is a browser extension for capturing webpages, extracting text, annotating screenshots, protecting sensitive information, and exporting polished results — all from your browser.
+            </p>
+            <div className="flex justify-center gap-3.5" style={{ marginTop: 32 }}>
+              <CTAButton href={CWS_URL}>Add to Chrome — It&apos;s Free</CTAButton>
+              <a
+                href="#how-it-works"
+                className="inline-flex items-center justify-center border font-[var(--gf-font-heading)] font-semibold cursor-pointer"
+                style={{ height: 48, padding: "0 22px", borderColor: "rgba(29,31,32,.15)", color: "rgba(29,31,32,.6)", fontSize: 14, letterSpacing: "0.02em" }}
+              >
+                See how it works ↓
+              </a>
+            </div>
+            <div style={{ fontSize: 12, color: "rgba(29,31,32,.35)", marginTop: 20 }}>
+              Free forever &nbsp;·&nbsp; No account required &nbsp;·&nbsp; 100% offline
+            </div>
           </div>
-          <div style={{ fontSize: 12, color: "rgba(29,31,32,.35)", marginTop: 20 }}>
-            Free forever &nbsp;·&nbsp; No account required &nbsp;·&nbsp; 100% offline
-          </div>
-        </div>
-      </div>
+        }
+      >
+        {/* Sample mockup image — swap for a real product screenshot when ready */}
+        <img
+          src="/features/feature-3.webp"
+          alt="GoFully annotation editor showing arrows and callouts on a captured screenshot"
+          className="mx-auto rounded-2xl object-cover h-full w-full object-top"
+          draggable={false}
+        />
+      </ContainerScroll>
 
       {/* How it works */}
       <div id="how-it-works" className="border-t" style={{ padding: "80px 48px", borderColor: "rgba(29,31,32,.08)", background: "rgba(29,31,32,.02)" }}>
