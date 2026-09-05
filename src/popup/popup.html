@@ -105,6 +105,7 @@
     .hdr-right { display: flex; gap: 2px; }
 
     .icon-btn {
+      position: relative;
       width: 32px; height: 32px;
       display: flex; align-items: center; justify-content: center;
       border: none; background: transparent; cursor: pointer;
@@ -114,6 +115,27 @@
     }
     .icon-btn:hover { color: var(--text-2); background: var(--surface); }
     .icon-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
+
+    /* Tooltip — same dark styled tooltip used in the editor toolbar, so
+       hover labels look consistent across the whole app instead of the
+       browser's native title tooltip. */
+    .icon-btn .tip {
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      background: #1d1f20;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #f2f2f3;
+      font-size: 10.5px;
+      font-weight: 500;
+      padding: 3px 8px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .12s;
+      z-index: 100;
+    }
+    .icon-btn:hover .tip { opacity: 1; }
 
     /* ─── BLUEPRINT FRAME (Industry design system) ───
        Hairline border + four "+" registration marks at the corners, used
@@ -752,18 +774,20 @@
     </span>
   </div>
   <div class="hdr-right">
-    <button class="icon-btn" id="helpBtn" title="How Features Work (Help Guide)">
+    <button class="icon-btn" id="helpBtn">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"/>
         <line x1="12" y1="16" x2="12" y2="12"/>
         <line x1="12" y1="8" x2="12.01" y2="8"/>
       </svg>
+      <span class="tip">How Features Work (Help Guide)</span>
     </button>
-    <button class="icon-btn" id="settingsBtn" title="Settings">
+    <button class="icon-btn" id="settingsBtn">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="3"/>
         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
       </svg>
+      <span class="tip">Settings</span>
     </button>
   </div>
 </div>

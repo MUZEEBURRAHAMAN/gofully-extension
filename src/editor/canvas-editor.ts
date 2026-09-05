@@ -1156,14 +1156,16 @@ function setupExportButtons(): void {
     aspectLocked = !aspectLocked;
     lockBtn.classList.toggle("locked", aspectLocked);
     lockBtn.setAttribute("aria-pressed", String(aspectLocked));
-    lockBtn.title = aspectLocked ? "Aspect ratio locked" : "Aspect ratio unlocked";
     // Closed vs open shackle — same body, so only the shackle path changes.
+    // Rebuilds the whole button, so the hover tooltip span is regenerated
+    // here too instead of relying on a native title attribute.
     lockBtn.innerHTML =
       `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" ` +
       `stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">` +
       `<rect x="4" y="11" width="16" height="10" rx="2"/>` +
       (aspectLocked ? `<path d="M8 11V7a4 4 0 0 1 8 0v4"/>` : `<path d="M8 11V7a4 4 0 0 1 7.5-2"/>`) +
-      `</svg>`;
+      `</svg>` +
+      `<span class="tip">${aspectLocked ? "Aspect ratio locked" : "Aspect ratio unlocked"}</span>`;
   });
 
   wInput?.addEventListener("input", () => {

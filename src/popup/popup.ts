@@ -225,14 +225,18 @@ function applyPageSupportState(support: PageSupportResult): void {
       button.title = support.message || "Capture is unavailable on this page";
     });
 
-    // Populate and show the unsupported notice panel
+    // Populate the unsupported notice panel, but don't show it stacked
+    // underneath onboarding — the two together push each other around and
+    // duplicate "here's what you can't do yet" messaging on a first run.
+    // dismissOnboarding() re-applies the stored state so this reappears
+    // right after onboarding closes, if the page is still unsupported.
     if (unsupportedTitle && support.title) {
       unsupportedTitle.textContent = support.title;
     }
     if (unsupportedDesc && support.message) {
       unsupportedDesc.textContent = support.message;
     }
-    unsupportedPanel.classList.add("active");
+    unsupportedPanel.classList.toggle("active", !onboarding.classList.contains("active"));
   } else {
     // Enable all mode buttons
     modeButtons.forEach((btn) => {
@@ -431,6 +435,9 @@ function dismissOnboarding(): void {
   chrome.storage.local.set({ gf_onboarded: true });
   onboarding.classList.remove("active");
   modesSection.style.display = "grid";
+  // The unsupported-page notice was suppressed while onboarding covered it —
+  // show it now if the active tab still isn't capturable.
+  applyPageSupportState(currentSupportState);
 }
 
 let onboardingSlide = 1;

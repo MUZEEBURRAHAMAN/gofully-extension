@@ -38,6 +38,15 @@
         ],
         "createdAt": "2026-09-04T17:39:13.909Z",
         "reason": "pre-existing choice from an earlier commit (style: apply #136CDE as primary blue and Geist Mono for monospace across entire site), not introduced by the GoFully Redesign import work"
+      },
+      {
+        "rule": "dark-glow",
+        "value": "*",
+        "files": [
+          "src/popup/popup.html"
+        ],
+        "createdAt": "2026-09-05T05:48:15.846Z",
+        "reason": "pre-existing subtle 4-6% opacity elevation shadow on a light hover surface (mode-btn:hover, var(--shadow-sm)), not a neon glow on dark bg; predates this session's redesign work"
       }
     ]
   }

@@ -121,6 +121,7 @@
       border-radius: 0;
     }
     .hdr-zoom-btn {
+      position: relative;
       width: 26px;
       height: 26px;
       display: flex;
@@ -141,6 +142,7 @@
       transform: scale(0.92);
     }
     .hdr-zoom-val {
+      position: relative;
       font-size: 11px;
       font-weight: 700;
       color: var(--text);
@@ -261,15 +263,22 @@
       font-weight: 600;
     }
 
-    /* Tooltip */
-    .tool-btn .tip {
+    /* Tooltip — shared by every icon-only control in the toolbar, so hover
+       tooltips look and behave the same everywhere instead of some buttons
+       using this and others falling back to the browser's native title
+       tooltip. */
+    .tool-btn .tip,
+    .hdr-zoom-btn .tip,
+    .hdr-zoom-val .tip,
+    .tool-expand-btn .tip,
+    .export-resize-lock .tip {
       position: absolute;
       top: calc(100% + 6px);
       left: 50%;
       transform: translateX(-50%);
       background: #1d1f20;
       border: 1px solid rgba(255,255,255,0.1);
-      color: rgba(29,31,32,.05);
+      color: #f2f2f3;
       font-size: 10.5px;
       font-weight: 500;
       padding: 3px 8px;
@@ -281,7 +290,11 @@
       z-index: 100;
       box-shadow: 0 4px 12px rgba(0,0,0,0.25);
     }
-    .tool-btn:hover .tip { opacity: 1; }
+    .tool-btn:hover .tip,
+    .hdr-zoom-btn:hover .tip,
+    .hdr-zoom-val:hover .tip,
+    .tool-expand-btn:hover .tip,
+    .export-resize-lock:hover .tip { opacity: 1; }
 
     /* Color swatches */
     .color-group {
@@ -594,6 +607,7 @@
       color: rgba(29,31,32,.35);
     }
     .export-resize-lock {
+      position: relative;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -730,7 +744,7 @@
       transform: translateX(-50%) translateY(12px);
       background: #1d1f20;
       border: 1px solid rgba(255,255,255,0.1);
-      color: rgba(29,31,32,.05);
+      color: #f2f2f3;
       padding: 6px 16px;
       border-radius: 0;
       font-size: 12px; font-weight: 600;
@@ -768,17 +782,17 @@
       border: 1px solid rgba(255,255,255,0.15);
       padding: 4px 12px;
       border-radius: 0;
-      font-size: 12px; font-weight: 700; color: rgba(29,31,32,.05);
+      font-size: 12px; font-weight: 700; color: #f2f2f3;
       letter-spacing: .02em;
     }
-    .crop-size-badge svg { color: rgba(29,31,32,.35); }
+    .crop-size-badge svg { color: rgba(242,242,243,.5); }
     #cropSizeDisplay { font-variant-numeric: tabular-nums; }
     #cropPosDisplay  {
-      font-size: 10.5px; font-weight: 500; color: rgba(29,31,32,.35);
+      font-size: 10.5px; font-weight: 500; color: rgba(242,242,243,.5);
       min-width: 80px; font-variant-numeric: tabular-nums;
     }
     .crop-hint-text {
-      font-size: 11px; font-weight: 500; color: rgba(29,31,32,.35);
+      font-size: 11px; font-weight: 500; color: rgba(242,242,243,.5);
     }
 
     .crop-top-btn {
@@ -788,8 +802,8 @@
       font-family: inherit; cursor: pointer; letter-spacing: .02em;
       transition: background .1s, color .1s;
     }
-    .crop-top-btn.ghost  { background: transparent; color: rgba(29,31,32,.35); border: 1px solid rgba(255,255,255,0.15); }
-    .crop-top-btn.ghost:hover  { background: rgba(255,255,255,0.1); color: rgba(29,31,32,.05); }
+    .crop-top-btn.ghost  { background: transparent; color: rgba(242,242,243,.5); border: 1px solid rgba(255,255,255,0.15); }
+    .crop-top-btn.ghost:hover  { background: rgba(255,255,255,0.1); color: #f2f2f3; }
     .crop-top-btn.primary { background: #1667F2; color: #fff; }
     .crop-top-btn.primary:hover { background: #1257D8; }
 
@@ -814,12 +828,12 @@
       border-radius: 0;
       border: 1px solid transparent;
       background: transparent;
-      color: rgba(29,31,32,.35); font-size: 11px; font-weight: 600;
+      color: rgba(242,242,243,.5); font-size: 11px; font-weight: 600;
       font-family: inherit; cursor: pointer;
       transition: background .1s, color .1s, border-color .1s;
       letter-spacing: .02em;
     }
-    .ratio-btn:hover { background: rgba(255,255,255,0.08); color: rgba(29,31,32,.05); }
+    .ratio-btn:hover { background: rgba(255,255,255,0.08); color: #f2f2f3; }
     .ratio-btn.active {
       background: #1667F2;
       border-color: #1667F2;
@@ -902,16 +916,17 @@
 
   <!-- Left Header Zoom Controls -->
   <div class="hdr-zoom-group">
-    <button class="hdr-zoom-btn" id="hdr-zoom-out-btn" title="Zoom Out (⌘-)">
+    <button class="hdr-zoom-btn" id="hdr-zoom-out-btn">
       <!-- Hugeicons: zoom-out-area / minus-sign -->
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="11" cy="11" r="8"/>
         <line x1="21" y1="21" x2="16.65" y2="16.65"/>
         <line x1="8" y1="11" x2="14" y2="11"/>
       </svg>
+      <span class="tip">Zoom Out (⌘-)</span>
     </button>
-    <span class="hdr-zoom-val" id="hdr-zoom-val" title="Reset Zoom to 100%">100%</span>
-    <button class="hdr-zoom-btn" id="hdr-zoom-in-btn" title="Zoom In (⌘+)">
+    <span class="hdr-zoom-val" id="hdr-zoom-val">100%<span class="tip">Reset Zoom to 100%</span></span>
+    <button class="hdr-zoom-btn" id="hdr-zoom-in-btn">
       <!-- Hugeicons: zoom-in-area / plus-sign -->
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="11" cy="11" r="8"/>
@@ -919,6 +934,7 @@
         <line x1="11" y1="8" x2="11" y2="14"/>
         <line x1="8" y1="11" x2="14" y2="11"/>
       </svg>
+      <span class="tip">Zoom In (⌘+)</span>
     </button>
   </div>
 
@@ -943,7 +959,7 @@
         </svg>
         <span class="tip">Arrow (A)</span>
       </button>
-      <div class="tool-expand-btn" id="arrow-expand" title="Arrow options">▾</div>
+      <div class="tool-expand-btn" id="arrow-expand">▾<span class="tip">Arrow options</span></div>
       <div class="tool-dropdown-menu" id="arrow-menu">
         <button class="tool-dropdown-item active" data-arrow-type="straight">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 19L19 5M19 5H12M19 5V12"/></svg>
@@ -1038,7 +1054,7 @@
         </svg>
         <span class="tip">Blur / Redact (B)</span>
       </button>
-      <div class="tool-expand-btn" id="blur-expand" title="Blur options">▾</div>
+      <div class="tool-expand-btn" id="blur-expand">▾<span class="tip">Blur options</span></div>
       <div class="tool-dropdown-menu" id="blur-menu">
         <button class="tool-dropdown-item active" data-blur-type="glass">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/></svg>
@@ -1205,7 +1221,7 @@
               <input type="number" id="export-w" placeholder="W" min="1" max="16000">
               <span class="export-resize-x">×</span>
               <input type="number" id="export-h" placeholder="H" min="1" max="16000">
-              <button class="export-resize-lock locked" id="resize-lock-btn" title="Lock aspect ratio" aria-pressed="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></button>
+              <button class="export-resize-lock locked" id="resize-lock-btn" aria-pressed="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span class="tip">Lock aspect ratio</span></button>
             </div>
           </div>
         </div>

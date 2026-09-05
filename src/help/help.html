@@ -17,6 +17,12 @@
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+    /* Reserve the scrollbar gutter up front — expanding an accordion item
+       can push the page past one viewport, and without this the scrollbar
+       that then appears narrows the content area and visibly shifts every
+       card sideways ("shaking"). */
+    html { scrollbar-gutter: stable; }
+
     :root {
       --blue:      #1667F2;
       --blue-h:    #1257D8;
