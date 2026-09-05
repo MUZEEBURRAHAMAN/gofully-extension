@@ -115,8 +115,12 @@ export default function RoadmapPage() {
         </a>
       </div>
 
+      {/* Header + timeline share one centered column so the whole page
+          doesn't read as flush-left with a large dead gap on wide screens. */}
+      <div style={{ maxWidth: 960, margin: "0 auto" }}>
+
       {/* Header */}
-      <div style={{ padding: "72px 48px 56px", maxWidth: 640 }}>
+      <div style={{ padding: "72px 48px 56px" }}>
         <span
           className="inline-block border font-[var(--gf-font-heading)] font-semibold uppercase"
           style={{ borderColor: "rgba(22,103,242,.25)", background: "rgba(22,103,242,.06)", color: "var(--gf-color-accent)", fontSize: "10.5px", letterSpacing: "0.06em", padding: "5px 12px" }}
@@ -126,14 +130,14 @@ export default function RoadmapPage() {
         <div className="font-[var(--gf-font-heading)] font-semibold" style={{ fontSize: 44, letterSpacing: "-0.01em", marginTop: 20 }}>
           The complete journey
         </div>
-        <p style={{ fontSize: 15, color: "rgba(29,31,32,.55)", marginTop: 16, lineHeight: 1.6 }}>
+        <p style={{ fontSize: 15, color: "rgba(29,31,32,.55)", marginTop: 16, lineHeight: 1.6, maxWidth: 640 }}>
           From the problem that started GoFully to what&apos;s shipped today and what&apos;s coming next.
         </p>
       </div>
 
       {/* Timeline */}
       <div style={{ padding: "8px 48px 90px" }}>
-        <div style={{ maxWidth: 860 }}>
+        <div>
 
           {/* Origin */}
           <TimelineRow
@@ -266,6 +270,8 @@ export default function RoadmapPage() {
           </TimelineRow>
 
         </div>
+      </div>
+
       </div>
 
       {/* CTA band */}
