@@ -1,8 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { BlueprintFrame } from "@/components/blueprint-frame";
 import { ContainerScroll } from "@/components/ui/container-scroll-animation";
+import { SiteNav } from "@/components/site-nav";
+import { SiteFooterIndustry } from "@/components/site-footer-industry";
 
 const CWS_URL =
   "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
@@ -165,41 +166,7 @@ function CTAButton({
 export default function HomePage() {
   return (
     <div className="gf-industry min-h-screen">
-      {/* Nav */}
-      <div className="border-b" style={{ padding: "0 24px", borderColor: "rgba(29,31,32,.1)" }}>
-        <div
-          className="mx-auto flex items-center justify-between"
-          style={{ height: 72, maxWidth: 1320 }}
-        >
-          <div className="flex items-center gap-2.5">
-            <div
-              className="flex items-center justify-center border"
-              style={{ width: 28, height: 28, background: "var(--gf-color-accent)", borderColor: "rgba(29,31,32,.12)" }}
-            >
-              <img src="/assets/icon-48.png" alt="GoFully" className="w-full h-full object-contain p-0.5" />
-            </div>
-            <div className="gf-heading-font font-semibold" style={{ fontSize: 18, letterSpacing: "-0.01em" }}>
-              GoFully
-            </div>
-          </div>
-          <div className="hidden md:flex items-center gap-9 text-[13px] font-medium" style={{ color: "rgba(29,31,32,.55)" }}>
-            {NAV_LINKS.map((l) => (
-              <Link key={l.label} href={l.href} className="hover:text-[var(--gf-color-text)] transition-colors">
-                {l.label}
-              </Link>
-            ))}
-          </div>
-          <a
-            href={CWS_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="relative inline-flex items-center justify-center gap-1.5 border gf-heading-font font-semibold cursor-pointer"
-            style={{ height: 38, padding: "0 18px", background: "var(--gf-color-accent)", color: "#fff", fontSize: "12.5px", letterSpacing: "0.02em", borderColor: "rgba(29,31,32,.12)" }}
-          >
-            Add to Chrome
-          </a>
-        </div>
-      </div>
+      <SiteNav links={NAV_LINKS} />
 
       {/* Hero */}
       <ContainerScroll
@@ -208,7 +175,7 @@ export default function HomePage() {
             <Kicker>Chrome Extension · 100% On-Device</Kicker>
             <div
               className="gf-heading-font font-semibold"
-              style={{ fontSize: 58, lineHeight: 1.05, letterSpacing: "-0.01em", marginTop: 24, color: "var(--gf-color-text)" }}
+              style={{ fontSize: "clamp(34px, 9vw, 58px)", lineHeight: 1.05, letterSpacing: "-0.01em", marginTop: 24, color: "var(--gf-color-text)" }}
             >
               Capture anything.
               <br />
@@ -246,7 +213,7 @@ export default function HomePage() {
       <div id="how-it-works" className="border-t" style={{ padding: "80px 24px", borderColor: "rgba(29,31,32,.08)", background: "rgba(29,31,32,.02)" }}>
         <div className="mx-auto text-center" style={{ maxWidth: 640, marginBottom: 52 }}>
           <SectionKicker>How It Works</SectionKicker>
-          <div className="gf-heading-font font-semibold" style={{ fontSize: 34, letterSpacing: "-0.01em", marginTop: 16 }}>
+          <div className="gf-heading-font font-semibold" style={{ fontSize: "clamp(24px, 6vw, 34px)", letterSpacing: "-0.01em", marginTop: 16 }}>
             From capture to shareable image in three steps
           </div>
         </div>
@@ -283,7 +250,7 @@ export default function HomePage() {
       <div id="features" className="border-t" style={{ padding: "90px 24px", borderColor: "rgba(29,31,32,.08)" }}>
         <div className="mx-auto text-center" style={{ maxWidth: 640, marginBottom: 64 }}>
           <SectionKicker>Core Features</SectionKicker>
-          <div className="gf-heading-font font-semibold" style={{ fontSize: 34, letterSpacing: "-0.01em", marginTop: 16 }}>
+          <div className="gf-heading-font font-semibold" style={{ fontSize: "clamp(24px, 6vw, 34px)", letterSpacing: "-0.01em", marginTop: 16 }}>
             Everything you need to capture, clean up, and share
           </div>
           <p style={{ fontSize: "14.5px", color: "rgba(29,31,32,.5)", marginTop: 12 }}>
@@ -323,7 +290,7 @@ export default function HomePage() {
         >
           100% Offline
         </span>
-        <div className="gf-heading-font font-semibold" style={{ fontSize: 32, color: "#fff", letterSpacing: "-0.01em", marginTop: 20 }}>
+        <div className="gf-heading-font font-semibold" style={{ fontSize: "clamp(24px, 6vw, 32px)", color: "#fff", letterSpacing: "-0.01em", marginTop: 20 }}>
           Nothing you capture ever leaves your device
         </div>
         <p className="mx-auto" style={{ fontSize: 15, color: "rgba(255,255,255,.55)", maxWidth: 520, marginTop: 14, lineHeight: 1.6 }}>
@@ -334,25 +301,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="border-t" style={{ padding: "28px 24px", borderColor: "rgba(29,31,32,.08)" }}>
-        <div
-          className="mx-auto flex items-center justify-between flex-wrap"
-          style={{ gap: 16, maxWidth: 1320 }}
-        >
-          <div style={{ fontSize: 12, color: "rgba(29,31,32,.4)" }}>
-            © {new Date().getFullYear()} GoFully — Screenshot Studio
-          </div>
-          <div className="flex" style={{ gap: 22, fontSize: 12, color: "rgba(29,31,32,.5)" }}>
-            <Link href="/privacy" className="hover:text-[var(--gf-color-text)] transition-colors">Privacy</Link>
-            <Link href="/terms" className="hover:text-[var(--gf-color-text)] transition-colors">Terms</Link>
-            <Link href="/security" className="hover:text-[var(--gf-color-text)] transition-colors">Security</Link>
-            <Link href="/faq" className="hover:text-[var(--gf-color-text)] transition-colors">FAQ</Link>
-            <Link href="/support" className="hover:text-[var(--gf-color-text)] transition-colors">Support</Link>
-            <Link href="/roadmap" className="hover:text-[var(--gf-color-text)] transition-colors">Roadmap</Link>
-          </div>
-        </div>
-      </div>
+      <SiteFooterIndustry />
     </div>
   );
 }

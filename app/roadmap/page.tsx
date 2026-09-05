@@ -1,7 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { BlueprintFrame } from "@/components/blueprint-frame";
+import { SiteNav } from "@/components/site-nav";
+import { SiteFooterIndustry } from "@/components/site-footer-industry";
 
 const CWS_URL =
   "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
@@ -76,57 +77,21 @@ function TimelineRow({
 export default function RoadmapPage() {
   return (
     <div className="gf-industry min-h-screen">
-      {/* Nav */}
-      <div className="border-b" style={{ padding: "0 24px", borderColor: "rgba(29,31,32,.1)" }}>
-        <div className="mx-auto flex items-center justify-between" style={{ height: 72, maxWidth: 1320 }}>
-          <Link href="/" className="flex items-center gap-2.5">
-            <div
-              className="flex items-center justify-center border"
-              style={{ width: 28, height: 28, background: "var(--gf-color-accent)", borderColor: "rgba(29,31,32,.12)" }}
-            >
-              <img src="/assets/icon-48.png" alt="GoFully" className="w-full h-full object-contain p-0.5" />
-            </div>
-            <div className="gf-heading-font font-semibold" style={{ fontSize: 18, letterSpacing: "-0.01em" }}>
-              GoFully
-            </div>
-          </Link>
-          <div className="hidden md:flex items-center gap-9 text-[13px] font-medium" style={{ color: "rgba(29,31,32,.55)" }}>
-            {NAV_LINKS.map((l) => (
-              <Link
-                key={l.label}
-                href={l.href}
-                className="transition-colors"
-                style={l.active ? { color: "var(--gf-color-accent)", fontWeight: 600 } : undefined}
-              >
-                {l.label}
-              </Link>
-            ))}
-          </div>
-          <a
-            href={CWS_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="relative inline-flex items-center justify-center gap-1.5 border gf-heading-font font-semibold cursor-pointer"
-            style={{ height: 38, padding: "0 18px", background: "var(--gf-color-accent)", color: "#fff", fontSize: "12.5px", letterSpacing: "0.02em", borderColor: "rgba(29,31,32,.12)" }}
-          >
-            Add to Chrome
-          </a>
-        </div>
-      </div>
+      <SiteNav links={NAV_LINKS} />
 
       {/* Header + timeline share one centered column so the whole page
           doesn't read as flush-left with a large dead gap on wide screens. */}
       <div style={{ maxWidth: 960, margin: "0 auto" }}>
 
       {/* Header */}
-      <div style={{ padding: "72px 80px 56px" }}>
+      <div className="px-6 md:px-20" style={{ paddingTop: 72, paddingBottom: 56 }}>
         <span
           className="inline-block border gf-heading-font font-semibold uppercase"
           style={{ borderColor: "rgba(22,103,242,.25)", background: "rgba(22,103,242,.06)", color: "var(--gf-color-accent)", fontSize: "10.5px", letterSpacing: "0.06em", padding: "5px 12px" }}
         >
           Roadmap
         </span>
-        <div className="gf-heading-font font-semibold" style={{ fontSize: 44, letterSpacing: "-0.01em", marginTop: 20 }}>
+        <div className="gf-heading-font font-semibold" style={{ fontSize: "clamp(28px, 7.5vw, 44px)", letterSpacing: "-0.01em", marginTop: 20 }}>
           The complete journey
         </div>
         <p style={{ fontSize: 15, color: "rgba(29,31,32,.55)", marginTop: 16, lineHeight: 1.6, maxWidth: 640 }}>
@@ -135,7 +100,7 @@ export default function RoadmapPage() {
       </div>
 
       {/* Timeline */}
-      <div style={{ padding: "8px 80px 90px" }}>
+      <div className="px-6 md:px-20" style={{ paddingTop: 8, paddingBottom: 90 }}>
         <div>
 
           {/* Origin */}
@@ -275,7 +240,7 @@ export default function RoadmapPage() {
 
       {/* CTA band */}
       <div className="text-center" style={{ background: "#1d1f20", padding: "76px 24px" }}>
-        <div className="gf-heading-font font-semibold" style={{ fontSize: 30, color: "#fff", letterSpacing: "-0.01em" }}>
+        <div className="gf-heading-font font-semibold" style={{ fontSize: "clamp(22px, 5.5vw, 30px)", color: "#fff", letterSpacing: "-0.01em" }}>
           Try it on your next screenshot
         </div>
         <p className="mx-auto" style={{ fontSize: "14.5px", color: "rgba(255,255,255,.55)", maxWidth: 480, marginTop: 12 }}>
@@ -292,18 +257,7 @@ export default function RoadmapPage() {
         </a>
       </div>
 
-      {/* Footer */}
-      <div className="border-t" style={{ padding: "28px 24px", borderColor: "rgba(29,31,32,.08)" }}>
-        <div className="mx-auto flex items-center justify-between flex-wrap" style={{ gap: 16, maxWidth: 1320 }}>
-          <div style={{ fontSize: 12, color: "rgba(29,31,32,.5)" }}>
-            © {new Date().getFullYear()} GoFully — Screenshot Studio
-          </div>
-          <div className="flex" style={{ gap: 22, fontSize: 12, color: "rgba(29,31,32,.5)" }}>
-            <Link href="/privacy" className="hover:text-[var(--gf-color-text)] transition-colors">Privacy</Link>
-            <Link href="/terms" className="hover:text-[var(--gf-color-text)] transition-colors">Terms</Link>
-          </div>
-        </div>
-      </div>
+      <SiteFooterIndustry activeHref="/roadmap" />
     </div>
   );
 }

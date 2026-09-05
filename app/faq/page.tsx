@@ -1,119 +1,103 @@
 "use client";
 
-import { SiteNav } from "@/components/navbar";
-import { SiteFooter } from "@/components/footer";
-import { useState } from "react";
+import Link from "next/link";
+import { BlueprintFrame } from "@/components/blueprint-frame";
+import { SiteNav } from "@/components/site-nav";
+import { SiteFooterIndustry } from "@/components/site-footer-industry";
 
-const ALL_FAQS = [
+const CWS_URL =
+  "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
+
+const NAV_LINKS = [
+  { label: "Product", href: "/#how-it-works" },
+  { label: "Features", href: "/#features" },
+  { label: "Security", href: "/security" },
+  { label: "Support", href: "/support" },
+  { label: "FAQ", href: "/faq", active: true },
+];
+
+const FAQ_GROUPS = [
   {
     category: "General",
     items: [
-      {
-        q: "What is GoFully?",
-        a: "GoFully is an all-in-one Chrome extension that lets you capture full-height scrolling webpages, extract text with local OCR, annotate visuals with arrows and step markers, redact sensitive details, and export to 4K PNG or PDF.",
-      },
-      {
-        q: "Is GoFully free to use?",
-        a: "Yes. GoFully is free to install and use directly from the Chrome Web Store.",
-      },
+      { q: "Is GoFully free?", a: "Yes — free forever, with no account required to use any feature." },
+      { q: "Which browsers does it support?", a: "Chrome and other Chromium-based browsers, including Edge and Brave." },
+      { q: "Do I need to sign up?", a: "No. Install the extension and start capturing right away — there's no account system at all." },
     ],
   },
   {
-    category: "Privacy & Technical",
+    category: "Privacy & Security",
     items: [
+      { q: "Does anything get uploaded to a server?", a: "No. Capture, OCR, and editing all run locally in your browser — nothing is transmitted." },
       {
-        q: "Does GoFully send my screenshots to any server?",
-        a: "No. GoFully runs 100% locally in your browser sandbox using WebAssembly and HTML5 Canvas. No image data, extracted text, or user telemetry is transmitted.",
+        q: "What permissions does the extension need?",
+        a: (
+          <>Just enough to capture the active tab, save exports, and copy to your clipboard. See the <Link href="/security" style={{ color: "var(--gf-color-accent)", fontWeight: 600 }}>security page</Link> for the full breakdown.</>
+        ),
       },
-      {
-        q: "Does OCR require an internet connection?",
-        a: "No. The WebAssembly OCR engine is completely self-contained in the extension and works offline with zero latency.",
-      },
+      { q: "Is my captured data stored anywhere?", a: "Only locally on your device, and only until you export or discard the result." },
     ],
   },
   {
-    category: "Capture & Export",
+    category: "Capture & Editing",
     items: [
-      {
-        q: "How does full-page stitching handle sticky headers?",
-        a: "GoFully detects fixed and sticky navigation bars, temporarily hides them during scrolling captures, and renders a clean seamless full-height image.",
-      },
-      {
-        q: "Can I export multi-page PDFs?",
-        a: "Yes. You can export paginated standard A4/Letter PDFs or single full-height continuous document pages.",
-      },
+      { q: "What capture modes are supported?", a: "Full page, visible area, a custom selected region, or a scrolling feed." },
+      { q: "Can I redact sensitive information?", a: "Yes — blur or pixelate any region before you export or share the result." },
+      { q: "What export formats are available?", a: "Copy to clipboard, save as PNG, or export a paginated PDF." },
+    ],
+  },
+  {
+    category: "Troubleshooting",
+    items: [
+      { q: "The extension isn't capturing the full page", a: "Refresh the page and try again — some sites delay content until you scroll, which the first pass can miss." },
+      { q: "OCR isn't recognizing text correctly", a: "Accuracy depends on image clarity — zoom in on small or low-contrast text before extracting." },
     ],
   },
 ];
 
 export default function FAQPage() {
-  const [openMap, setOpenMap] = useState<{ [key: string]: boolean }>({
-    "0-0": true,
-    "1-0": true,
-  });
-
-  const toggle = (id: string) => {
-    setOpenMap((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-
   return (
-    <div className="min-h-screen bg-[#070b14] text-slate-100 font-sans flex flex-col justify-between">
-      <SiteNav />
+    <div className="gf-industry min-h-screen">
+      <SiteNav links={NAV_LINKS} />
 
-      <main className="mx-auto w-full max-w-6xl px-6 py-20 lg:px-8 flex-1">
-        <div className="text-center max-w-3xl mx-auto">
-          <span className="inline-block bg-[#000] border border-[#136CDE]/40 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-wider text-[#D2E5FF]">
-            Knowledge Base
+      {/* Hero */}
+      <div className="text-center" style={{ padding: "88px 24px 64px" }}>
+        <div className="mx-auto" style={{ maxWidth: 700 }}>
+          <span className="inline-block border gf-heading-font font-semibold uppercase" style={{ borderColor: "rgba(22,103,242,.25)", background: "rgba(22,103,242,.06)", color: "var(--gf-color-accent)", fontSize: "10.5px", letterSpacing: "0.06em", padding: "6px 14px" }}>
+            FAQ
           </span>
-          <h1 className="mt-4 text-3xl font-extrabold text-white sm:text-5xl tracking-tight">
-            Frequently Asked Questions
-          </h1>
-          <p className="mt-4 text-base text-slate-400">
-            Find answers to common questions about features, privacy, and workflows.
+          <div className="gf-heading-font font-semibold" style={{ fontSize: "clamp(30px, 8vw, 48px)", lineHeight: 1.08, letterSpacing: "-0.01em", marginTop: 22 }}>
+            Questions, answered
+          </div>
+          <p className="mx-auto" style={{ fontSize: "15.5px", lineHeight: 1.6, color: "rgba(29,31,32,.55)", maxWidth: 520, marginTop: 18 }}>
+            Everything you need to know about capturing, editing, and exporting with GoFully. Can&apos;t find it here?{" "}
+            <Link href="/support" style={{ color: "var(--gf-color-accent)", fontWeight: 600 }}>Contact us</Link>.
           </p>
         </div>
+      </div>
 
-        <div className="mt-16 space-y-12">
-          {ALL_FAQS.map((group, gIdx) => (
-            <div key={gIdx} className="space-y-4">
-              <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-[#D2E5FF] flex items-center gap-2">
-                <span className="inline-block h-1.5 w-1.5 bg-[#136CDE]" />
+      {/* FAQ categories */}
+      <div style={{ padding: "0 24px 90px" }}>
+        <div className="mx-auto flex flex-col" style={{ maxWidth: 880, gap: 40 }}>
+          {FAQ_GROUPS.map((group) => (
+            <BlueprintFrame key={group.category} className="bg-white">
+              <div className="gf-heading-font font-semibold uppercase border-b" style={{ padding: "22px 32px", borderColor: "rgba(29,31,32,.1)", fontSize: 13, letterSpacing: "0.06em", color: "var(--gf-color-accent)" }}>
                 {group.category}
-              </h2>
-              <div className="space-y-3">
-                {group.items.map((item, iIdx) => {
-                  const id = `${gIdx}-${iIdx}`;
-                  const isOpen = !!openMap[id];
-                  return (
-                    <div
-                      key={iIdx}
-                      className="border border-slate-800 bg-[#0d1424] transition-colors hover:border-[#136CDE]/60"
-                    >
-                      <button
-                        type="button"
-                        onClick={() => toggle(id)}
-                        className="w-full flex items-center justify-between p-6 text-left font-medium text-white cursor-pointer"
-                      >
-                        <span className="text-base font-semibold">{item.q}</span>
-                        <span className="ml-4 flex h-6 w-6 items-center justify-center border border-slate-700 bg-slate-800/80 text-slate-300 text-sm font-bold font-mono">
-                          {isOpen ? "−" : "+"}
-                        </span>
-                      </button>
-                      {isOpen && (
-                        <div className="px-6 pb-6 text-sm text-slate-300 leading-relaxed border-t border-slate-800/80 pt-4">
-                          {item.a}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
               </div>
-            </div>
+              <div style={{ padding: "8px 32px 8px" }}>
+                {group.items.map((item, i) => (
+                  <div key={item.q} style={{ padding: "18px 0", borderBottom: i < group.items.length - 1 ? "1px solid rgba(29,31,32,.08)" : undefined }}>
+                    <div className="gf-heading-font font-semibold" style={{ fontSize: 16 }}>{item.q}</div>
+                    <p className="mt-1.5" style={{ fontSize: "13.5px", lineHeight: 1.6, color: "rgba(29,31,32,.55)" }}>{item.a}</p>
+                  </div>
+                ))}
+              </div>
+            </BlueprintFrame>
           ))}
         </div>
-      </main>
+      </div>
 
-      <SiteFooter />
+      <SiteFooterIndustry activeHref="/faq" />
     </div>
   );
 }
