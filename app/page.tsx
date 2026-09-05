@@ -235,7 +235,7 @@ export default function HomePage() {
         <img
           src="/features/feature-3.webp"
           alt="GoFully annotation editor showing arrows and callouts on a captured screenshot"
-          className="mx-auto rounded-2xl object-cover h-full w-full object-top"
+          className="mx-auto rounded-[28px] md:rounded-[36px] object-cover h-full w-full object-top"
           draggable={false}
         />
       </ContainerScroll>
