@@ -432,51 +432,68 @@ if (!(window as any).__snapforge_result_bar_listener_registered) {
       sendResponse({ shown: true });
       return true;
     }
-    if (message.type === "CAPTURE_STARTING") {
-      showCapturingToast(message.payload?.mode);
-      sendResponse({ shown: true });
-      return true;
-    }
     return false;
   });
 }
 
-function showCapturingToast(mode?: string): void {
-  const modeName: Record<string, string> = {
-    "full-page": "Full Page",
-    "visible-area": "Visible Area",
-  };
-  const modeText = modeName[mode || ""] || "Screenshot";
+// Ensure any stale in-page progress overlay is immediately purged from DOM
+document.querySelectorAll("#gofully-progress-overlay").forEach((el) => el.remove());
 
-  const toast = document.createElement("div");
-  toast.id = "snapforge-capturing-toast";
-  toast.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: #1667F2;
-    color: white;
-    padding: 12px 18px;
-    border-radius: 0;
-    box-shadow: 0 8px 16px rgba(22,103,242,0.25);
-    font-family: ${FONT_STACK};
-    font-size: 13px;
-    font-weight: 600;
-    z-index: 2147483647;
-    pointer-events: none;
-    animation: slideIn 0.2s ease;
-  `;
-  toast.textContent = `Capturing ${modeText}...`;
+// In-page keyboard shortcut listener:
+// Cmd/Ctrl/Alt + Shift + F (Full Page)
+// Cmd/Ctrl/Alt + Shift + V (Visible Area)
+// Cmd/Ctrl/Alt + Shift + A (Selected Area)
+function handleCaptureShortcut(e: KeyboardEvent): void {
+  const hasModifier = (e.metaKey || e.ctrlKey || e.altKey) && e.shiftKey;
+  if (!hasModifier) return;
 
-  const styleEl = document.createElement("style");
-  styleEl.textContent = `@keyframes slideIn { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }`;
-  document.head.appendChild(styleEl);
+  const target = e.target as HTMLElement | null;
+  if (
+    target &&
+    (target.tagName === "INPUT" ||
+      target.tagName === "TEXTAREA" ||
+      target.isContentEditable)
+  ) {
+    return;
+  }
 
-  document.body.appendChild(toast);
+  const key = (e.key || "").toLowerCase();
+  const code = e.code || "";
 
-  // Remove after 3 seconds or when capture completes
-  setTimeout(() => {
-    toast.remove();
-    styleEl.remove();
-  }, 3000);
+  const isF = code === "KeyF" || key === "f" || code === "Digit1" || key === "1";
+  const isV = code === "KeyV" || key === "v" || code === "Digit3" || key === "3";
+  const isA = code === "KeyA" || key === "a" || code === "Digit4" || key === "4";
+
+  if (isF) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    chrome.runtime.sendMessage({
+      type: "START_CAPTURE",
+      payload: { mode: "full-page" },
+    }).catch(() => {});
+  } else if (isV) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    chrome.runtime.sendMessage({
+      type: "START_CAPTURE",
+      payload: { mode: "visible-area" },
+    }).catch(() => {});
+  } else if (isA) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    chrome.runtime.sendMessage({
+      type: "INIT_INTERACTIVE_MODE",
+      payload: { mode: "selected-area" },
+      mode: "selected-area",
+    }).catch(() => {});
+  }
+}
+
+if (!(window as any).__gofully_shortcut_listener_registered) {
+  (window as any).__gofully_shortcut_listener_registered = true;
+  window.addEventListener("keydown", handleCaptureShortcut, true);
+  document.addEventListener("keydown", handleCaptureShortcut, true);
 }

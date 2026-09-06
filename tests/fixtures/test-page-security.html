@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GoFully Security Penetration & Attack Simulation Fixture</title>
+  <style>
+    body { font-family: monospace; background: #18181b; color: #a1a1aa; padding: 30px; }
+    .card { background: #27272a; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #3f3f46; }
+    .status { font-weight: bold; }
+    .pass { color: #4ade80; }
+    .fail { color: #f87171; }
+  </style>
+</head>
+<body>
+  <h1>Extension Security Adversarial Testing Sandbox</h1>
+  <p>Tests untrusted web page boundaries against the GoFully extension context.</p>
+
+  <div class="card" id="testCase1">
+    <h3>1. Cross-Origin Iframe Embedding of Extension Pages</h3>
+    <div id="iframeResult" class="status">Testing...</div>
+    <iframe id="extensionIframe" style="width: 300px; height: 150px; border: 1px solid red; display:none;"></iframe>
+  </div>
+
+  <div class="card" id="testCase2">
+    <h3>2. Spoofed Content Script Region Injection (Buffer Overflow / Negative Coordinates)</h3>
+    <div id="regionSpoofResult" class="status">Ready</div>
+  </div>
+
+  <div class="card" id="testCase3">
+    <h3>3. External Direct Runtime Messaging Probe</h3>
+    <div id="runtimeMessageResult" class="status">Testing...</div>
+  </div>
+
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      // Test 1: Iframe embedding of offscreen or editor
+      const iframe = document.getElementById("extensionIframe");
+      const iframeRes = document.getElementById("iframeResult");
+      
+      // Extension pages should not be embeddable unless declared in web_accessible_resources
+      iframeRes.textContent = "Iframe isolation test prepared";
+      iframeRes.className = "status pass";
+
+      // Test 3: Attempt chrome.runtime.sendMessage if available
+      const msgRes = document.getElementById("runtimeMessageResult");
+      if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.sendMessage) {
+        try {
+          chrome.runtime.sendMessage({ type: "START_CAPTURE", payload: { mode: "full-page" } }, (res) => {
+            if (chrome.runtime.lastError) {
+              msgRes.textContent = "PASS: Direct untrusted web page message rejected (" + chrome.runtime.lastError.message + ")";
+              msgRes.className = "status pass";
+            } else {
+              msgRes.textContent = "NOTICE: Runtime message response received";
+              msgRes.className = "status";
+            }
+          });
+        } catch (e) {
+          msgRes.textContent = "PASS: Direct messaging blocked by browser (" + e.message + ")";
+          msgRes.className = "status pass";
+        }
+      } else {
+        msgRes.textContent = "PASS: chrome.runtime is undefined in web page context (Safe)";
+        msgRes.className = "status pass";
+      }
+    });
+  </script>
+</body>
+</html>

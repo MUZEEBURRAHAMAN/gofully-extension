@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GoFully OCR & HIPAA Sensitive Document Fixture</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Courier New", Courier, monospace; background: #ffffff; color: #000000; padding: 40px; }
+    .document {
+      width: 700px;
+      margin: 0 auto;
+      border: 2px solid #000000;
+      padding: 40px;
+      background: #ffffff;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h1 { font-size: 24px; text-align: center; margin-bottom: 24px; text-transform: uppercase; letter-spacing: 1px; }
+    .header-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+    .header-table td { border: 1px solid #000000; padding: 8px 12px; font-size: 14px; }
+    .section-title { font-weight: bold; margin: 16px 0 8px 0; font-size: 16px; text-transform: uppercase; border-bottom: 1px solid #000; }
+    p { font-size: 14px; line-height: 1.6; margin-bottom: 12px; }
+    .phi-data { font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="document" id="ocrDoc">
+    <h1>CLINICAL PATIENT INTAKE RECORD</h1>
+    
+    <table class="header-table">
+      <tr>
+        <td><strong>PATIENT ID:</strong> <span class="phi-data" id="patientId">MED-98421-X</span></td>
+        <td><strong>DATE:</strong> 2026-09-06</td>
+      </tr>
+      <tr>
+        <td><strong>NAME:</strong> <span class="phi-data" id="patientName">Jane H. Doe</span></td>
+        <td><strong>DOB:</strong> <span class="phi-data">1984-11-23</span></td>
+      </tr>
+      <tr>
+        <td colspan="2"><strong>FACILITY:</strong> Metro Health Science Center - Cardiology Unit</td>
+      </tr>
+    </table>
+
+    <div class="section-title">DIAGNOSTIC SUMMARY</div>
+    <p id="diagSummary">
+      Patient presents with normal cardiac sinus rhythm. Blood pressure recorded at 120/80 mmHg.
+      Pulse rate: 72 bpm. Temperature: 98.6 F. Oxygen saturation: 99% on room air.
+    </p>
+
+    <div class="section-title">LABORATORY RESULTS & CODE SPECIFICATION</div>
+    <p id="labResults">
+      GLUCOSE LEVEL: 95 mg/dL (NORMAL RANGE 70-99).
+      TOTAL CHOLESTEROL: 180 mg/dL.
+      MEDICATION PRESCRIBED: ATORVASTATIN 10MG ONCE DAILY.
+    </p>
+
+    <div class="section-title">HIPAA CONFIDENTIALITY NOTICE</div>
+    <p style="font-size: 11px; color: #333333;" id="confidentialNotice">
+      WARNING: This document contains Protected Health Information (PHI) governed by HIPAA §164.312.
+      Unauthorized distribution, cloud transmission, or reproduction without appropriate authorization is strictly prohibited.
+    </p>
+  </div>
+</body>
+</html>

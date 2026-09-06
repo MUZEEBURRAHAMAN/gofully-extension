@@ -75,15 +75,11 @@ export function hideStickyElements(): StickyElement[] {
 }
 
 export function restoreStickyElements(): void {
-  const elements = findStickyElements();
-  for (const el of elements) {
-    el.style.removeProperty("display");
-  }
-
   for (const saved of hiddenElements) {
     try {
       const el = document.querySelector(saved.selector) as HTMLElement;
       if (el) {
+        el.style.removeProperty("display");
         if (saved.originalDisplay) {
           el.style.display = saved.originalDisplay;
         }

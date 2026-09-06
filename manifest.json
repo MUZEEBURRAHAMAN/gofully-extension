@@ -23,6 +23,9 @@
     "service_worker": "service-worker.js",
     "type": "module"
   },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+  },
   "permissions": [
     "activeTab",
     "tabs",
@@ -57,22 +60,22 @@
     },
     "capture-full-page": {
       "suggested_key": {
-        "default": "Alt+Shift+F",
-        "mac": "Alt+Shift+F"
+        "default": "Ctrl+Shift+F",
+        "mac": "Command+Shift+F"
       },
       "description": "Capture full page"
     },
     "capture-visible": {
       "suggested_key": {
-        "default": "Alt+Shift+V",
-        "mac": "Alt+Shift+V"
+        "default": "Ctrl+Shift+V",
+        "mac": "Command+Shift+V"
       },
       "description": "Capture visible area"
     },
     "capture-selected-area": {
       "suggested_key": {
-        "default": "Alt+Shift+S",
-        "mac": "Alt+Shift+S"
+        "default": "Ctrl+Shift+A",
+        "mac": "Command+Shift+A"
       },
       "description": "Capture selected area"
     }

@@ -7,16 +7,28 @@ export async function generatePDF(
   watermarkUrl?: string
 ): Promise<Blob> {
   const dataUrl = await blobToDataUrl(imageBlob);
-  const img = new Image();
-  img.src = dataUrl;
-  await new Promise<void>((resolve, reject) => {
-    img.onload = () => resolve();
-    img.onerror = () => reject(new Error("Failed to load image for PDF"));
-  });
+  let imgWidth = 0;
+  let imgHeight = 0;
+
+  if (typeof createImageBitmap === "function") {
+    const bitmap = await createImageBitmap(imageBlob);
+    imgWidth = bitmap.width;
+    imgHeight = bitmap.height;
+    if (typeof bitmap.close === "function") bitmap.close();
+  } else if (typeof Image !== "undefined") {
+    const img = new Image();
+    img.src = dataUrl;
+    await new Promise<void>((resolve, reject) => {
+      img.onload = () => resolve();
+      img.onerror = () => reject(new Error("Failed to load image for PDF"));
+    });
+    imgWidth = img.width;
+    imgHeight = img.height;
+  }
 
   const PX_TO_PT = 0.75; // Standard 96 DPI CSS/web rendering: 1px = 0.75pt
-  const pageW = Math.round(img.width * PX_TO_PT);
-  const fullH  = Math.round(img.height * PX_TO_PT);
+  const pageW = Math.round(imgWidth * PX_TO_PT);
+  const fullH  = Math.round(imgHeight * PX_TO_PT);
 
   // PDF spec allows up to 14400pt (~200 in) per page
   const MAX_PAGE_H = 14400;

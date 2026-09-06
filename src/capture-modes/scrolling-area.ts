@@ -395,10 +395,14 @@ async function captureFrame(
     // frames — auto mode used to hide it for the entire capture, leaving
     // the user with no visible sign anything was happening for 10-20+
     // seconds even though it was working correctly.
+    const tab = await chrome.tabs.get(tabId).catch(() => null);
+    if (tab?.windowId) {
+      await chrome.tabs.update(tabId, { active: true }).catch(() => {});
+    }
     await hideAllExtensionUI(tabId);
     let dataUrl: string;
     try {
-      dataUrl = await captureVisibleTabWithRetry();
+      dataUrl = await captureVisibleTabWithRetry(tab?.windowId);
     } finally {
       void showAllExtensionUI(tabId);
     }
@@ -444,10 +448,12 @@ async function captureFrame(
   }
 }
 
-async function captureVisibleTabWithRetry(maxRetries = 3): Promise<string> {
+async function captureVisibleTabWithRetry(windowId?: number, maxRetries = 3): Promise<string> {
   for (let i = 0; i < maxRetries; i++) {
     try {
-      return await chrome.tabs.captureVisibleTab({ format: "png" });
+      return windowId !== undefined
+        ? await chrome.tabs.captureVisibleTab(windowId, { format: "png" })
+        : await chrome.tabs.captureVisibleTab({ format: "png" });
     } catch (e: any) {
       if (e?.message?.includes("MAX_CAPTURE") && i < maxRetries - 1) {
         await sleep(1000);
@@ -456,7 +462,9 @@ async function captureVisibleTabWithRetry(maxRetries = 3): Promise<string> {
       throw e;
     }
   }
-  return await chrome.tabs.captureVisibleTab({ format: "png" });
+  return windowId !== undefined
+    ? await chrome.tabs.captureVisibleTab(windowId, { format: "png" })
+    : await chrome.tabs.captureVisibleTab({ format: "png" });
 }
 
 // ─── Stitching ───────────────────────────────────────────────────────────────

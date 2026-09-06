@@ -13,13 +13,23 @@ import { isSupportedCapturePage } from "../utils/url-validator";
 import { dataUrlToBlob } from "../utils/image";
 
 // Uninstall feedback URL configuration pointing to live Vercel deployment
-chrome.runtime.onInstalled.addListener((details) => {
+chrome.runtime.onInstalled.addListener(async (details) => {
   if (chrome.runtime.setUninstallURL) {
     chrome.runtime.setUninstallURL("https://gofully-extension.vercel.app/uninstall-feedback");
   }
   if (details.reason === "install") {
     chrome.storage.local.set({ gf_onboarded: false });
   }
+
+  // Inject content scripts into already open tabs so shortcuts work without page reload
+  try {
+    const tabs = await chrome.tabs.query({ url: ["http://*/*", "https://*/*"] });
+    for (const tab of tabs) {
+      if (tab.id) {
+        injectContentScripts(tab.id).catch(() => {});
+      }
+    }
+  } catch {}
 });
 
 // A periodic heartbeat call isn't enough to stop Chrome from tearing down
@@ -135,17 +145,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       tabId?: number;
     };
 
-    const senderTabId = sender.tab?.id || tabId;
+    const targetTabId = tabId ?? sender.tab?.id;
 
-    // Show "Capturing..." indicator on page immediately
-    if (senderTabId && (mode === "full-page" || mode === "visible-area")) {
-      chrome.tabs.sendMessage(senderTabId, {
-        type: "CAPTURE_STARTING",
-        payload: { mode }
-      }).catch(() => {});
+    // Ensure content scripts (including result-bar) are injected first
+    if (targetTabId) {
+      injectContentScripts(targetTabId).catch(() => {});
     }
 
-    handleCapture(mode, region, speed, senderTabId)
+    handleCapture(mode, region, speed, targetTabId)
       .then(async (result) => {
         lastCaptureBlob = result.blob;
         lastCaptureDataUrl = await blobToDataUrl(result.blob);
@@ -169,15 +176,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         // result — the popup already closed itself before the drag even
         // started. Show the on-page result bar ourselves so the user gets
         // a confirmation instead of the capture silently vanishing.
-        if (mode === "selected-area" && senderTabId) {
-          await showResultBarOnTab(senderTabId, payload);
+        if ((mode === "selected-area" || sender.tab?.id) && targetTabId) {
+          await showResultBarOnTab(targetTabId, payload);
         }
 
         sendResponse({ type: "CAPTURE_COMPLETE", payload });
       })
       .catch((error) => {
-        if (mode === "selected-area" && senderTabId) {
-          chrome.tabs.sendMessage(senderTabId, {
+        if (mode === "selected-area" && targetTabId) {
+          chrome.tabs.sendMessage(targetTabId, {
             type: "CAPTURE_ERROR_INLINE",
             payload: { message: error.message },
           }).catch(() => {});
@@ -226,18 +233,43 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // Open editor without embedding image data in the URL (avoids multi-MB
     // base64 strings appearing in browser history).
     const editorUrl = chrome.runtime.getURL("editor.html");
-    chrome.tabs.create({ url: editorUrl });
-    sendResponse({ opened: true });
+
+    (async () => {
+      let targetIndex: number | undefined = undefined;
+      let openerId: number | undefined = undefined;
+
+      if (sender.tab && typeof sender.tab.index === "number") {
+        targetIndex = sender.tab.index + 1;
+        openerId = sender.tab.id;
+      } else {
+        const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (activeTab && typeof activeTab.index === "number") {
+          targetIndex = activeTab.index + 1;
+          openerId = activeTab.id;
+        }
+      }
+
+      await chrome.tabs.create({
+        url: editorUrl,
+        index: targetIndex,
+        openerTabId: openerId,
+      });
+      sendResponse({ opened: true });
+    })().catch((err) => {
+      console.error("Failed to open editor tab next to source:", err);
+      chrome.tabs.create({ url: editorUrl });
+      sendResponse({ opened: true });
+    });
     return true;
   }
 
   if (message.type === "INIT_INTERACTIVE_MODE") {
-    const { mode, tabId } = message.payload as {
-      mode: CaptureMode;
-      tabId: number;
-    };
-    initInteractiveMode(mode, tabId);
-    sendResponse({ started: true });
+    const mode = message.payload?.mode || message.mode;
+    const tabId = message.payload?.tabId || message.tabId || sender.tab?.id;
+    if (tabId) {
+      initInteractiveMode(mode, tabId);
+    }
+    sendResponse({ ok: true, started: true });
     return true;
   }
 
@@ -247,7 +279,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "SCROLLING_REGION_SELECTED") {
     const { speed } = message.payload;
     const tabId = sender.tab?.id;
-    if (!tabId) { sendResponse({ started: false }); return false; }
+    if (!tabId || sender.tab?.url?.startsWith("chrome-extension://")) {
+      sendResponse({ started: false });
+      return false;
+    }
     sanitizeRegion(tabId, message.payload?.region).then((region) => {
     if (!region) return;
     return captureScrollingArea(tabId, region, speed || "medium", (progress) => {
@@ -375,36 +410,59 @@ chrome.commands.onCommand.addListener(async (command) => {
   });
   if (!tab?.id) return;
 
+  await injectContentScripts(tab.id);
+
   if (command === "capture-full-page") {
     try {
-      const result = await captureFullPage(tab.id);
+      const result = await handleCapture("full-page", undefined, undefined, tab.id);
       lastCaptureBlob = result.blob;
       lastCaptureDataUrl = await blobToDataUrl(result.blob);
       lastCaptureResult = { ...result, blob: null as any };
-      await handleExport(result.blob, result, "png");
+      cacheCaptureInSession(lastCaptureDataUrl);
+
+      const payload = {
+        width: result.width,
+        height: result.height,
+        mode: result.mode,
+        method: result.method,
+        url: result.url,
+        title: result.title,
+        timestamp: result.timestamp,
+        dataUrl: lastCaptureDataUrl,
+      };
+
+      await showResultBarOnTab(tab.id, payload);
     } catch (e) {
-      console.error("Keyboard shortcut capture failed:", e);
+      console.error("Keyboard shortcut capture-full-page failed:", e);
     }
   }
 
   if (command === "capture-visible") {
     try {
-      const result = await captureVisibleArea(tab.id);
+      const result = await handleCapture("visible-area", undefined, undefined, tab.id);
       lastCaptureBlob = result.blob;
       lastCaptureDataUrl = await blobToDataUrl(result.blob);
       lastCaptureResult = { ...result, blob: null as any };
-      await handleExport(result.blob, result, "png");
+      cacheCaptureInSession(lastCaptureDataUrl);
+
+      const payload = {
+        width: result.width,
+        height: result.height,
+        mode: result.mode,
+        method: result.method,
+        url: result.url,
+        title: result.title,
+        timestamp: result.timestamp,
+        dataUrl: lastCaptureDataUrl,
+      };
+
+      await showResultBarOnTab(tab.id, payload);
     } catch (e) {
-      console.error("Keyboard shortcut capture failed:", e);
+      console.error("Keyboard shortcut capture-visible failed:", e);
     }
   }
 
   if (command === "capture-selected-area") {
-    // Previously sent an "INIT_REGION_SELECTOR" message that nothing ever
-    // listened for, and never injected region-selector.js in the first
-    // place — the shortcut was a complete no-op. initInteractiveMode is
-    // the same path the popup's "Selected Area" button uses (injects the
-    // content script, then sends the message it actually listens for).
     await initInteractiveMode("selected-area", tab.id);
   }
 });
@@ -451,6 +509,13 @@ async function handleCapture(
       type: "CAPTURE_PROGRESS",
       payload: progress,
     }).catch(() => {});
+
+    if (targetTabId) {
+      chrome.tabs.sendMessage(targetTabId, {
+        type: "CAPTURE_PROGRESS",
+        payload: progress,
+      }).catch(() => {});
+    }
   };
 
   switch (mode) {
@@ -458,7 +523,7 @@ async function handleCapture(
       return captureFullPage(targetTabId!, sendProgress);
 
     case "visible-area":
-      return captureVisibleArea(targetTabId!);
+      return captureVisibleArea(targetTabId!, sendProgress);
 
     case "selected-area":
       if (!region) throw new Error("Region required for selected-area mode");
@@ -581,6 +646,7 @@ async function injectContentScripts(tabId: number): Promise<void> {
         "page-analyzer.js",
         "sticky-manager.js",
         "lazy-loader.js",
+        "result-bar.js",
       ],
     });
   } catch {

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GoFully Test Page - Nested Scroll Container</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; padding: 40px; }
+    .layout { display: flex; gap: 30px; height: 85vh; }
+    .sidebar { width: 280px; background: #1e293b; border-radius: 12px; padding: 24px; border: 1px solid #334155; }
+    .main-panel { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+    
+    /* Dedicated nested scroll container */
+    .chat-scroll-container {
+      flex: 1;
+      background: #1e293b;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      padding: 24px;
+      overflow-y: auto;
+      height: 350px;
+      max-height: 350px;
+    }
+    .message {
+      background: #334155;
+      padding: 16px 20px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      border-left: 4px solid #38bdf8;
+    }
+    .message.alt {
+      background: #273549;
+      border-left: 4px solid #10b981;
+    }
+    .message h4 { font-size: 15px; margin-bottom: 6px; color: #38bdf8; }
+    .message.alt h4 { color: #10b981; }
+    .message p { font-size: 14px; color: #cbd5e1; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <h1>GoFully Nested Scroll Container Testing Fixture</h1>
+  <p style="color:#94a3b8; margin: 8px 0 24px 0;">This page tests detection and scrolling of inner overflow-y containers independently of the window scroll.</p>
+
+  <div class="layout">
+    <div class="sidebar">
+      <h3>Fixed Control Sidebar</h3>
+      <p style="margin-top: 12px; color: #94a3b8; font-size: 13px;">This panel does not scroll. It verifies that region targeting accurately isolates the scrollable target container.</p>
+    </div>
+
+    <div class="main-panel">
+      <div id="nestedScrollBox" class="chat-scroll-container">
+        <div class="message"><h4>Item #1 - Initial State</h4><p>Log entry 1: System initialized in high-assurance mode.</p></div>
+        <div class="message alt"><h4>Item #2 - Network Probe</h4><p>Log entry 2: Verified 0 external egress connections.</p></div>
+        <div class="message"><h4>Item #3 - Authorization Check</h4><p>Log entry 3: Session token validated against local key store.</p></div>
+        <div class="message alt"><h4>Item #4 - Container Identification</h4><p>Log entry 4: Inner container tagged with data-gf-scroll-target.</p></div>
+        <div class="message"><h4>Item #5 - Frame Capture Tick 1</h4><p>Log entry 5: High-speed frame read settled with 0 pixel jitter.</p></div>
+        <div class="message alt"><h4>Item #6 - Frame Capture Tick 2</h4><p>Log entry 6: Overlap matrix matches consecutive offset heights.</p></div>
+        <div class="message"><h4>Item #7 - Mid-feed Verification</h4><p>Log entry 7: Scrolling step verified at 85% container height.</p></div>
+        <div class="message alt"><h4>Item #8 - Frame Capture Tick 3</h4><p>Log entry 8: Canvas tile assembly running in offscreen buffer.</p></div>
+        <div class="message"><h4>Item #9 - HIPAA Isolation</h4><p>Log entry 9: Patient records buffered exclusively in RAM.</p></div>
+        <div class="message alt"><h4>Item #10 - Terminal Frame</h4><p>Log entry 10: Scroll boundary reached (scrollTop == maxScrollTop).</p></div>
+        <div class="message"><h4>Item #11 - Stitching Finalization</h4><p>Log entry 11: Canvas merged without repeating sticky UI.</p></div>
+        <div class="message alt"><h4>Item #12 - Complete</h4><p>Log entry 12: Final capture successfully assembled and verified.</p></div>
+        <div class="message"><h4>Item #13 - Extended Payload A</h4><p>Log entry 13: Extended data block ensuring multiple viewport scroll advances.</p></div>
+        <div class="message alt"><h4>Item #14 - Extended Payload B</h4><p>Log entry 14: Verifying frame-to-frame pixel correlation.</p></div>
+        <div class="message"><h4>Item #15 - Extended Payload C</h4><p>Log entry 15: Verifying border-box math in offset alignment.</p></div>
+        <div class="message alt"><h4>Item #16 - Extended Payload D</h4><p>Log entry 16: Additional rows in nested container feed.</p></div>
+        <div class="message"><h4>Item #17 - Extended Payload E</h4><p>Log entry 17: Multi-pass scroll test confirmation.</p></div>
+        <div class="message alt"><h4>Item #18 - Extended Payload F</h4><p>Log entry 18: Bottom threshold boundary verification.</p></div>
+        <div class="message"><h4>Item #19 - Final Record</h4><p>Log entry 19: All test assertions ready for verification.</p></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

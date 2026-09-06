@@ -499,7 +499,62 @@ async function maybeShowOnboarding(): Promise<void> {
   }
 }
 
+function formatShortcutForDisplay(raw: string, isMac: boolean): string {
+  let s = raw;
+  s = s.replace(/⌃/g, isMac ? "Ctrl+" : "Ctrl+");
+  s = s.replace(/⌥/g, isMac ? "Option+" : "Alt+");
+  s = s.replace(/⇧/g, "Shift+");
+  s = s.replace(/⌘/g, isMac ? "Cmd+" : "Ctrl+");
+  s = s.replace(/Command/gi, isMac ? "Cmd" : "Ctrl");
+
+  const parts = s.split("+").map((p) => p.trim()).filter(Boolean);
+  const key = parts[parts.length - 1];
+  const mods = parts.slice(0, -1);
+
+  const hasCmd = mods.some((m) => /^(cmd|command|ctrl)$/i.test(m));
+  const hasAlt = mods.some((m) => /^(alt|option)$/i.test(m));
+  const hasShift = mods.some((m) => /^shift$/i.test(m));
+
+  const ordered: string[] = [];
+  if (hasCmd) ordered.push(isMac ? "Cmd" : "Ctrl");
+  if (hasAlt) ordered.push(isMac ? "Option" : "Alt");
+  if (hasShift) ordered.push("Shift");
+  if (key) ordered.push(key);
+
+  return ordered.join("+");
+}
+
+function updateShortcutLabels(): void {
+  const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPod|iPad/.test(navigator.platform || navigator.userAgent);
+  const mod = isMac ? "Cmd" : "Ctrl";
+  const defaultShortcuts: Record<string, string> = {
+    "capture-full-page": `${mod}+Shift+F`,
+    "capture-visible": `${mod}+Shift+V`,
+    "capture-selected-area": `${mod}+Shift+A`,
+  };
+
+  document.querySelectorAll<HTMLElement>(".m-kbd[data-command]").forEach((el) => {
+    const cmd = el.dataset.command;
+    if (cmd && defaultShortcuts[cmd]) {
+      el.textContent = defaultShortcuts[cmd];
+    }
+  });
+
+  if (chrome.commands?.getAll) {
+    chrome.commands.getAll((commands) => {
+      commands.forEach((c) => {
+        if (!c.name || !c.shortcut) return;
+        const el = document.querySelector<HTMLElement>(`.m-kbd[data-command="${c.name}"]`);
+        if (el) {
+          el.textContent = formatShortcutForDisplay(c.shortcut, isMac);
+        }
+      });
+    });
+  }
+}
+
 // Run active tab support check and onboarding on popup open
 checkActiveTabSupport();
 loadLastCaptureStatus();
+updateShortcutLabels();
 maybeShowOnboarding();

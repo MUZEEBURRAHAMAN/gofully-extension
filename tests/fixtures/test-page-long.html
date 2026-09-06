@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GoFully Test Page - Long Scrollable Page</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; color: #0f172a; }
+    header.sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: #1e293b;
+      color: #ffffff;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #3b82f6;
+    }
+    .section {
+      padding: 60px 40px;
+      border-bottom: 1px solid #e2e8f0;
+      min-height: 800px;
+    }
+    .section:nth-child(even) { background: #ffffff; }
+    .section:nth-child(odd) { background: #f1f5f9; }
+    h1 { font-size: 28px; margin-bottom: 16px; }
+    h2 { font-size: 22px; margin-bottom: 12px; color: #2563eb; }
+    p { font-size: 16px; line-height: 1.6; margin-bottom: 16px; max-width: 800px; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 24px; }
+    .card { background: white; padding: 20px; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    footer { padding: 40px; background: #0f172a; color: #94a3b8; text-align: center; }
+  </style>
+</head>
+<body>
+  <header class="sticky-header" id="mainHeader">
+    <div style="font-weight: 700; font-size: 20px;">GoFully Test Fixture Header</div>
+    <div>Sticky Nav (Should Not Duplicate on Stitch)</div>
+  </header>
+
+  <div class="section" id="sec-1">
+    <h1>Section 1: Hero & Introduction</h1>
+    <p>This is the first segment of the long scrollable page designed for end-to-end verification of full page captures, visible area captures, and CDP stitching.</p>
+    <div class="grid">
+      <div class="card"><h3>Feature Alpha</h3><p>Validating high fidelity rendering and DPR detection.</p></div>
+      <div class="card"><h3>Feature Beta</h3><p>Validating offscreen canvas rendering and memory handling.</p></div>
+      <div class="card"><h3>Feature Gamma</h3><p>Validating lossless image generation and export formats.</p></div>
+    </div>
+  </div>
+
+  <div class="section" id="sec-2">
+    <h2>Section 2: Detailed Analytics Data</h2>
+    <p>Testing middle viewport scrolling accuracy and automatic scroll speed settling.</p>
+    <div class="grid">
+      <div class="card"><h3>Metric 101</h3><p>Value: 99.98% uptime</p></div>
+      <div class="card"><h3>Metric 102</h3><p>Response latency: 12ms</p></div>
+      <div class="card"><h3>Metric 103</h3><p>Error rate: 0.00%</p></div>
+    </div>
+  </div>
+
+  <div class="section" id="sec-3">
+    <h2>Section 3: Security & Compliance Verification</h2>
+    <p>SOC 2 Type II and HIPAA Security Rule validation points. Notice that content on this page stays strictly in the local browser sandbox.</p>
+    <div class="grid">
+      <div class="card"><h3>Access Controls</h3><p>Encrypted session memory storage.</p></div>
+      <div class="card"><h3>Transmission Security</h3><p>Zero external network egress during capture processing.</p></div>
+      <div class="card"><h3>Audit Logs</h3><p>No ePHI leaked into browser console or telemetry.</p></div>
+    </div>
+  </div>
+
+  <div class="section" id="sec-4">
+    <h2>Section 4: Deep Content & Visual Patterns</h2>
+    <p>Testing scroll termination, bottom threshold detection, and final frame alignment.</p>
+  </div>
+
+  <footer id="pageFooter">
+    <p>End of Page &copy; 2026 GoFully Quality Assurance Suite</p>
+  </footer>
+</body>
+</html>

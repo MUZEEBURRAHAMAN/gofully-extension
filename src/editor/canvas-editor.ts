@@ -33,6 +33,8 @@ let imgNativeW = 0, imgNativeH = 0;
 let dispW = 0, dispH = 0;
 let cssZoom = 1;
 let cropperInstance: Cropper | null = null;
+let isBeautified = false;
+let isCropped = false;
 
 const dimensionsEl = document.getElementById("dimensions")!;
 const zoomEl        = document.getElementById("zoom")!;
@@ -49,6 +51,8 @@ async function init(): Promise<void> {
     preserveObjectStacking: true,
     enableRetinaScaling: true,
   });
+  (window as any).canvas = canvas;
+  (window as any).__fabricCanvas = canvas;
 
   // Rotate cursor: circular arrows SVG as data URI
   const rotateCursorSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path fill="%23333" d="M16 4.5a11.5 11.5 0 0 1 8.35 3.65L21.5 11h9V2l-3.22 3.22A15 15 0 0 0 1.07 17h4.02A11.5 11.5 0 0 1 16 4.5zm0 23A11.5 11.5 0 0 1 7.65 23.85L10.5 21h-9v9l3.22-3.22A15 15 0 0 0 30.93 15h-4.02A11.5 11.5 0 0 1 16 27.5z"/></svg>`;
@@ -381,6 +385,16 @@ function setupCanvasEvents(): void {
       return;
     }
 
+    // Show live dimension badge connected to cursor like selected area
+    const rawEvt = e?.e as MouseEvent | undefined;
+    const badge = document.getElementById("canvasDrawBadge");
+    if (badge && rawEvt && typeof rawEvt.clientX === "number") {
+      badge.style.display = "block";
+      badge.style.left = `${rawEvt.clientX}px`;
+      badge.style.top = `${rawEvt.clientY}px`;
+      badge.textContent = "0 × 0 px";
+    }
+
     tempShape = createShape(currentTool, pt.x, pt.y);
     if (tempShape) canvas.add(tempShape);
   });
@@ -390,9 +404,24 @@ function setupCanvasEvents(): void {
     const pt = getScenePoint(e);
     updateShape(tempShape, currentTool, drawStartX, drawStartY, pt.x, pt.y);
     canvas.requestRenderAll();
+
+    // Live update dimension badge connected to cursor
+    const rawEvt = e?.e as MouseEvent | undefined;
+    const badge = document.getElementById("canvasDrawBadge");
+    if (badge && rawEvt && typeof rawEvt.clientX === "number") {
+      badge.style.left = `${rawEvt.clientX}px`;
+      badge.style.top = `${rawEvt.clientY}px`;
+      const wPx = Math.round(Math.abs(pt.x - drawStartX) * (imgNativeW > 0 && dispW > 0 ? imgNativeW / dispW : 1));
+      const hPx = Math.round(Math.abs(pt.y - drawStartY) * (imgNativeH > 0 && dispH > 0 ? imgNativeH / dispH : 1));
+      badge.textContent = `${wPx} × ${hPx} px`;
+    }
   });
 
   canvas.on("mouse:up", (e: any) => {
+    // Hide live dimension badge
+    const badge = document.getElementById("canvasDrawBadge");
+    if (badge) badge.style.display = "none";
+
     if (!isDrawing) return;
     isDrawing = false;
     if (!tempShape) return;
@@ -464,6 +493,7 @@ function createShape(tool: ToolType, x: number, y: number): any {
         stroke: currentColor,
         strokeWidth: sw,
         strokeUniform: true,
+        originX: "left", originY: "top",
         selectable: false, evented: false,
       });
 
@@ -474,6 +504,7 @@ function createShape(tool: ToolType, x: number, y: number): any {
         stroke: currentColor,
         strokeWidth: sw,
         strokeUniform: true,
+        originX: "left", originY: "top",
         selectable: false, evented: false,
       });
 
@@ -503,6 +534,7 @@ function createShape(tool: ToolType, x: number, y: number): any {
         stroke: "#FFFFFF",
         strokeWidth: 2,
         strokeUniform: true,
+        originX: "left", originY: "top",
         selectable: false, evented: false,
       });
 
@@ -514,6 +546,7 @@ function createShape(tool: ToolType, x: number, y: number): any {
         stroke: "#1667F2",
         strokeWidth: 2,
         strokeDashArray: [6, 4],
+        originX: "left", originY: "top",
         selectable: false, evented: false,
       });
 
@@ -526,6 +559,7 @@ function createShape(tool: ToolType, x: number, y: number): any {
         strokeWidth: 1.5,
         strokeUniform: true,
         strokeDashArray: [5, 4],
+        originX: "left", originY: "top",
         selectable: false, evented: false,
       });
 
@@ -540,15 +574,15 @@ function updateShape(
 ): void {
   const left   = Math.min(x1, x2);
   const top    = Math.min(y1, y2);
-  const width  = Math.abs(x2 - x1);
-  const height = Math.abs(y2 - y1);
+  const width  = Math.max(1, Math.abs(x2 - x1));
+  const height = Math.max(1, Math.abs(y2 - y1));
 
   switch (tool) {
     case "rectangle": case "blur": case "crop": case "callout": case "spotlight":
-      shape.set({ left, top, width, height });
+      shape.set({ originX: "left", originY: "top", left, top, width, height });
       break;
     case "ellipse":
-      shape.set({ left, top, rx: width / 2, ry: height / 2 });
+      shape.set({ originX: "left", originY: "top", left, top, rx: width / 2, ry: height / 2 });
       break;
     case "line": case "arrow":
       shape.set({ x1, y1, x2, y2 });
@@ -788,7 +822,13 @@ async function finaliseBlur(placeholder: any): Promise<void> {
   }
 
   try {
-    const fullDataUrl = canvas.toDataURL({ format: "png", quality: 1, multiplier: 1 });
+    // Hide placeholder box so it is not baked into the blurred bitmap
+    placeholder.visible = false;
+    canvas.renderAll();
+
+    // Export scene at 1:1 dispW/dispH resolution without zoom skew
+    const multiplier = 1 / (cssZoom || 1);
+    const fullDataUrl = canvas.toDataURL({ format: "png", quality: 1, multiplier } as any);
     const src = new Image();
     src.src = fullDataUrl;
     await new Promise<void>((r) => { src.onload = () => r(); });
@@ -927,6 +967,7 @@ function applyCropModal(): void {
   img.src = "";
 
   loadScreenshot(resultDataUrl, true).then(() => {
+    isCropped = true;
     setTool("select");
     saveState();
     showToast("Cropped successfully");
@@ -942,27 +983,40 @@ function nudgeCropBox(dx: number, dy: number): void {
 // ─── Coordinate helper ────────────────────────────────────────────────────────
 
 function getScenePoint(e: any): { x: number; y: number } {
+  try {
+    if (typeof canvas?.getScenePoint === "function" && (e?.e || e)) {
+      const p = canvas.getScenePoint(e?.e || e);
+      if (p && typeof p.x === "number" && !isNaN(p.x)) {
+        return {
+          x: Math.max(0, Math.min(dispW || p.x, p.x)),
+          y: Math.max(0, Math.min(dispH || p.y, p.y)),
+        };
+      }
+    }
+  } catch {}
+
   if (e?.scenePoint && typeof e.scenePoint.x === "number" && !isNaN(e.scenePoint.x)) {
-    return { x: e.scenePoint.x, y: e.scenePoint.y };
+    return {
+      x: Math.max(0, Math.min(dispW || e.scenePoint.x, e.scenePoint.x)),
+      y: Math.max(0, Math.min(dispH || e.scenePoint.y, e.scenePoint.y)),
+    };
   }
 
   const raw: MouseEvent = e?.e || e;
-  if (!raw || typeof raw.clientX !== "number") {
-    return { x: 0, y: 0 };
-  }
-
-  const upperCanvas = canvas.upperCanvasEl || canvas.getElement();
-  const rect = upperCanvas.getBoundingClientRect();
-  const cW = canvas.width || dispW || 1;
-  const cH = canvas.height || dispH || 1;
-
-  if (rect.width > 0 && rect.height > 0) {
-    const x = ((raw.clientX - rect.left) / rect.width) * cW;
-    const y = ((raw.clientY - rect.top) / rect.height) * cH;
-    return {
-      x: Math.max(0, Math.min(cW, x)),
-      y: Math.max(0, Math.min(cH, y)),
-    };
+  const upperCanvas = canvas?.upperCanvasEl || canvas?.getElement?.();
+  if (raw && typeof raw.clientX === "number" && upperCanvas) {
+    const rect = upperCanvas.getBoundingClientRect();
+    if (rect.width > 0 && rect.height > 0) {
+      // Scene coordinates in Fabric correspond directly to logical dispW and dispH
+      const targetW = dispW || 1;
+      const targetH = dispH || 1;
+      const normX = (raw.clientX - rect.left) / rect.width;
+      const normY = (raw.clientY - rect.top) / rect.height;
+      return {
+        x: Math.max(0, Math.min(targetW, normX * targetW)),
+        y: Math.max(0, Math.min(targetH, normY * targetH)),
+      };
+    }
   }
 
   return { x: 0, y: 0 };
@@ -1089,8 +1143,10 @@ async function exportToBlob(): Promise<Blob> {
   // dropdown (Native/1080p HD/4K UHD) decides the target size.
   const dims = getResizeDims() ?? getExportTargetSize();
 
-  // Clean export (or no annotations): bypass Fabric entirely — zero quality loss
-  if (clean || !hasAnnotations) {
+  const isImageModified = isBeautified || isCropped;
+
+  // Clean export (or no annotations) of an UNMODIFIED screenshot: bypass Fabric entirely — zero quality loss
+  if (!isImageModified && !hasAnnotations) {
     const resp = await chrome.runtime.sendMessage({ type: "GET_CAPTURE_BLOB_URL" });
     const dataUrl: string | null = resp?.url ?? null;
     if (dataUrl) {
@@ -1109,19 +1165,25 @@ async function exportToBlob(): Promise<Blob> {
     // Fallback to Fabric if SW returns nothing
   }
 
-  // Annotated export: render via Fabric at the resolved export multiplier —
+  // Annotated or modified (Beautified / Cropped) export: render via Fabric at the resolved export multiplier —
   // native resolution, or upscaled further when Quality is set to 1080p HD
   // or 4K UHD and native resolution doesn't already meet that target.
   const multiplier = getExportMultiplier();
 
-  if (clean) {
+  if (clean && hasAnnotations) {
     annotations.forEach((o) => o.set("visible", false));
     canvas.renderAll();
   }
 
-  const dataUrl = canvas.toDataURL({ format: "png", quality: 1, multiplier, imageSmoothingEnabled: true, imageSmoothingQuality: "high" } as any);
+  const dataUrl = canvas.toDataURL({
+    format: "png",
+    quality: 1,
+    multiplier,
+    imageSmoothingEnabled: true,
+    imageSmoothingQuality: "high",
+  } as any);
 
-  if (clean) {
+  if (clean && hasAnnotations) {
     annotations.forEach((o) => o.set("visible", true));
     canvas.renderAll();
   }
@@ -1534,34 +1596,44 @@ function setupBeautifier(): void {
     beautifyActive = !beautifyActive;
     panel.classList.toggle("open", beautifyActive);
     btn.classList.toggle("active", beautifyActive);
-    if (beautifyActive) toolNameEl.textContent = "Screenshot Beautifier";
+    if (beautifyActive) {
+      toolNameEl.textContent = "Screenshot Beautifier";
+      if (!originalScreenshotUrl && backgroundImage) {
+        const multiplier = imgNativeW > 0 ? imgNativeW / dispW : Math.max(1, 1 / fitScale);
+        originalScreenshotUrl = canvas.toDataURL({ format: "png", quality: 1, multiplier } as any);
+      }
+    }
   });
 
-  // Background swatches
+  // Background swatches — click to immediately swap background on the original screenshot
   panel.querySelectorAll<HTMLElement>(".bf-bg-swatch").forEach((sw) => {
     sw.addEventListener("click", () => {
       panel.querySelectorAll(".bf-bg-swatch").forEach((s) => s.classList.remove("active"));
       sw.classList.add("active");
+      applyBeautify(false);
     });
   });
 
-  // Frame buttons
+  // Frame buttons — click to immediately swap/apply frame
   panel.querySelectorAll<HTMLElement>(".bf-frame-btn").forEach((b) => {
     b.addEventListener("click", () => {
       panel.querySelectorAll(".bf-frame-btn").forEach((x) => x.classList.remove("active"));
       b.classList.add("active");
+      applyBeautify(false);
     });
   });
 
-  // Ratio buttons
+  // Ratio buttons — click to immediately apply ratio
   panel.querySelectorAll<HTMLElement>(".bf-ratio-btn").forEach((b) => {
     b.addEventListener("click", () => {
       panel.querySelectorAll(".bf-ratio-btn").forEach((x) => x.classList.remove("active"));
       b.classList.add("active");
+      applyBeautify(false);
     });
   });
 
-  // Slider value displays
+  // Slider value displays and auto-apply
+  let beautifySliderDebounce: any = null;
   const sliders: [string, string, string][] = [
     ["bf-padding", "bf-padding-val", "px"],
     ["bf-radius", "bf-radius-val", "px"],
@@ -1573,17 +1645,25 @@ function setupBeautifier(): void {
     const sl = document.getElementById(id) as HTMLInputElement;
     const vl = document.getElementById(valId);
     if (sl && vl) {
-      sl.addEventListener("input", () => { vl.textContent = sl.value + suffix; });
+      sl.addEventListener("input", () => {
+        vl.textContent = sl.value + suffix;
+        if (originalScreenshotUrl) {
+          clearTimeout(beautifySliderDebounce);
+          beautifySliderDebounce = setTimeout(() => {
+            applyBeautify(false);
+          }, 150);
+        }
+      });
     }
   }
 
   // Apply
-  document.getElementById("bf-apply-btn")?.addEventListener("click", applyBeautify);
+  document.getElementById("bf-apply-btn")?.addEventListener("click", () => applyBeautify(true));
   // Reset
   document.getElementById("bf-reset-btn")?.addEventListener("click", resetBeautify);
 }
 
-async function applyBeautify(): Promise<void> {
+async function applyBeautify(showToastMsg = true): Promise<void> {
   if (!backgroundImage) { showToast("No image to beautify"); return; }
 
   // Save original if not saved yet
@@ -1603,9 +1683,8 @@ async function applyBeautify(): Promise<void> {
   const frameType = document.querySelector<HTMLElement>(".bf-frame-btn.active")?.dataset.frame || "none";
   const ratioStr = document.querySelector<HTMLElement>(".bf-ratio-btn.active")?.dataset.ratio || "";
 
-  // Get current canvas as image (with annotations)
-  const multiplier = imgNativeW > 0 ? imgNativeW / dispW : Math.max(1, 1 / fitScale);
-  const srcDataUrl = canvas.toDataURL({ format: "png", quality: 1, multiplier } as any);
+  // ALWAYS use the original screenshot image as source to prevent nesting/stacking
+  const srcDataUrl = originalScreenshotUrl;
 
   const srcImg = new Image();
   srcImg.src = srcDataUrl;
@@ -1711,8 +1790,9 @@ async function applyBeautify(): Promise<void> {
   // Load result into editor
   const resultUrl = oc.toDataURL("image/png");
   await loadScreenshot(resultUrl, true);
+  isBeautified = true;
   saveState();
-  showToast("Beautify applied");
+  if (showToastMsg) showToast("Beautify applied");
 }
 
 function roundedRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number): void {
@@ -1733,15 +1813,16 @@ function drawMacFrame(ctx: CanvasRenderingContext2D, x: number, y: number, w: nu
   ctx.save();
   // Frame background with top rounded corners
   ctx.beginPath();
-  ctx.moveTo(x + radius, y);
-  ctx.lineTo(x + w - radius, y);
-  ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+  const r = Math.min(radius, 16);
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
   ctx.lineTo(x + w, y + h);
   ctx.lineTo(x, y + h);
-  ctx.lineTo(x, y + radius);
-  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
   ctx.closePath();
-  ctx.fillStyle = "#E8E8E8";
+  ctx.fillStyle = "#E5E5E7";
   ctx.fill();
 
   // Traffic light dots
@@ -1828,9 +1909,27 @@ function drawBrowserFrame(ctx: CanvasRenderingContext2D, x: number, y: number, w
 }
 
 async function resetBeautify(): Promise<void> {
+  const panel = document.getElementById("beautifyPanel");
   if (originalScreenshotUrl) {
-    await loadScreenshot(originalScreenshotUrl, true);
+    const orig = originalScreenshotUrl;
     originalScreenshotUrl = null;
+    await loadScreenshot(orig, true);
+    isBeautified = false;
+    if (panel) {
+      panel.querySelectorAll(".bf-bg-swatch").forEach((s, idx) => s.classList.toggle("active", idx === 0));
+      panel.querySelectorAll(".bf-frame-btn").forEach((s, idx) => s.classList.toggle("active", idx === 0));
+      panel.querySelectorAll(".bf-ratio-btn").forEach((s, idx) => s.classList.toggle("active", idx === 0));
+      const pad = document.getElementById("bf-padding") as HTMLInputElement;
+      if (pad) { pad.value = "40"; const v = document.getElementById("bf-padding-val"); if (v) v.textContent = "40px"; }
+      const rad = document.getElementById("bf-radius") as HTMLInputElement;
+      if (rad) { rad.value = "12"; const v = document.getElementById("bf-radius-val"); if (v) v.textContent = "12px"; }
+      const shd = document.getElementById("bf-shadow") as HTMLInputElement;
+      if (shd) { shd.value = "30"; const v = document.getElementById("bf-shadow-val"); if (v) v.textContent = "30px"; }
+      const opc = document.getElementById("bf-shadow-opacity") as HTMLInputElement;
+      if (opc) { opc.value = "40"; const v = document.getElementById("bf-shadow-opacity-val"); if (v) v.textContent = "40%"; }
+      const nse = document.getElementById("bf-noise") as HTMLInputElement;
+      if (nse) { nse.value = "0"; const v = document.getElementById("bf-noise-val"); if (v) v.textContent = "0%"; }
+    }
     saveState();
     showToast("Reset to original");
   } else {

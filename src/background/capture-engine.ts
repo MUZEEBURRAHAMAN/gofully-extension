@@ -17,12 +17,24 @@ export async function captureFullPage(
   tabId: number,
   onProgress?: (progress: CaptureProgress) => void
 ): Promise<CaptureResult> {
+  onProgress?.({
+    phase: "preparing",
+    current: 1,
+    total: 3,
+  });
+
   const dimensions = await prepareFullPageLayout(tabId);
   try {
     const method = await getCaptureMethod(dimensions.scrollHeight);
 
     if (method === "cdp") {
       try {
+        onProgress?.({
+          phase: "capturing",
+          current: 1,
+          total: 3,
+        });
+
         // position:sticky/fixed elements (nav bars, sidebars, campaign
         // banners) can visually repeat down the page in a CDP screenshot
         // this tall — captureBeyondViewport renders in internal tiles, and
@@ -33,7 +45,13 @@ export async function captureFullPage(
         // independent hide/restore cycle, so the two never overlap.
         await chrome.tabs.sendMessage(tabId, { type: "HIDE_STICKY" }).catch(() => {});
         try {
-          return await captureWithCDP(tabId, dimensions);
+          const res = await captureWithCDP(tabId, dimensions);
+          onProgress?.({
+            phase: "stitching",
+            current: 2,
+            total: 3,
+          });
+          return res;
         } finally {
           await chrome.tabs.sendMessage(tabId, { type: "RESTORE_STICKY" }).catch(() => {});
         }
@@ -50,12 +68,27 @@ export async function captureFullPage(
 }
 
 export async function captureVisibleArea(
-  tabId: number
+  tabId: number,
+  onProgress?: (progress: CaptureProgress) => void
 ): Promise<CaptureResult> {
-  const dataUrl = await chrome.tabs.captureVisibleTab({ format: "png" });
+  onProgress?.({
+    phase: "capturing",
+    current: 1,
+    total: 1,
+  });
+  const tab = await chrome.tabs.get(tabId);
+  if (tab.windowId) {
+    await chrome.tabs.update(tabId, { active: true }).catch(() => {});
+  }
+  const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, { format: "png" });
   const blob = dataUrlToBlob(dataUrl);
   const img = await loadImage(dataUrl);
-  const tab = await chrome.tabs.get(tabId);
+
+  onProgress?.({
+    phase: "done",
+    current: 1,
+    total: 1,
+  });
 
   return {
     blob,
@@ -73,7 +106,11 @@ export async function captureSelectedArea(
   tabId: number,
   region: CaptureRegion
 ): Promise<CaptureResult> {
-  const dataUrl = await chrome.tabs.captureVisibleTab({ format: "png" });
+  const tab = await chrome.tabs.get(tabId);
+  if (tab.windowId) {
+    await chrome.tabs.update(tabId, { active: true }).catch(() => {});
+  }
+  const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, { format: "png" });
   const img = await loadImage(dataUrl);
   const [{ result: vpWidth }] = await chrome.scripting.executeScript({
     target: { tabId },
@@ -92,7 +129,6 @@ export async function captureSelectedArea(
   ctx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
 
   const blob = await canvas.convertToBlob({ type: "image/png" });
-  const tab = await chrome.tabs.get(tabId);
 
   return {
     blob,

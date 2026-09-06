@@ -9,7 +9,10 @@
     "start": "next start",
     "build:extension": "node build.mjs",
     "package:extension": "node build.mjs && cd dist && zip -r ../gofully-extension.zip . -x '*.DS_Store' '*__MACOSX*' 'features/*' 'originkit/*' 'sitemap.xml' 'robots.txt' && cd ..",
-    "dev:extension": "vite"
+    "dev:extension": "vite",
+    "test": "playwright test",
+    "test:e2e": "playwright test tests/e2e",
+    "test:security": "playwright test tests/security"
   },
   "keywords": [
     "chrome-extension",
@@ -20,6 +23,7 @@
   "author": "GoFully",
   "license": "MIT",
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@types/chrome": "^0.2.6",
     "@types/node": "^26.2.0",
     "typescript": "^7.0.2",

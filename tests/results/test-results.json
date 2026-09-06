@@ -1,0 +1,440 @@
+{
+  "config": {
+    "argv": [
+      "/Users/muzeeburrahaman/.nvm/versions/node/v24.2.0/bin/node",
+      "/Users/muzeeburrahaman/Documents/full page screenshot/node_modules/.bin/playwright",
+      "test",
+      "tests/e2e/07-editor-comprehensive-qa.spec.ts"
+    ],
+    "configFile": "/Users/muzeeburrahaman/Documents/full page screenshot/playwright.config.ts",
+    "rootDir": "/Users/muzeeburrahaman/Documents/full page screenshot/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/muzeeburrahaman/Documents/full page screenshot/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/Users/muzeeburrahaman/Documents/full page screenshot/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "tests/results/test-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": {
+      "command": "node tests/fixtures/server.mjs",
+      "port": 8085,
+      "reuseExistingServer": true,
+      "timeout": 15000
+    }
+  },
+  "suites": [
+    {
+      "title": "e2e/07-editor-comprehensive-qa.spec.ts",
+      "file": "e2e/07-editor-comprehensive-qa.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "07 - Comprehensive Editor QA Test Suite (Senior QA 12+ YOE Standards)",
+          "file": "e2e/07-editor-comprehensive-qa.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "TC-QA-ED-001 [Tab Order]: OPEN_EDITOR message opens tab immediately adjacent to source tab",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2871,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T12:32:45.064Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b8ca40451d6f07ab3946-76311fc2a90b47c93982",
+              "file": "e2e/07-editor-comprehensive-qa.spec.ts",
+              "line": 39,
+              "column": 3
+            },
+            {
+              "title": "TC-QA-ED-002 [Connected Cursor & Live HUD]: Shape drag connects pixel-perfectly with cursor and displays live badge",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2192,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T12:32:47.964Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b8ca40451d6f07ab3946-a2f453fd41f9c75145d8",
+              "file": "e2e/07-editor-comprehensive-qa.spec.ts",
+              "line": 80,
+              "column": 3
+            },
+            {
+              "title": "TC-QA-ED-003 [All Shape Tools]: Connected drawing works for Ellipse, Line, Arrow, Callout, Spotlight",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2184,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T12:32:50.171Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b8ca40451d6f07ab3946-68b7c358afad4d35e8d9",
+              "file": "e2e/07-editor-comprehensive-qa.spec.ts",
+              "line": 142,
+              "column": 3
+            },
+            {
+              "title": "TC-QA-ED-004 [Blur & Redact Alignment]: Glass blur, Pixelate, and Blackout redact correctly without artifacts",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2422,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T12:32:52.363Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b8ca40451d6f07ab3946-bd02a3c841a752488976",
+              "file": "e2e/07-editor-comprehensive-qa.spec.ts",
+              "line": 187,
+              "column": 3
+            },
+            {
+              "title": "TC-QA-ED-005 [Beautify Background Swapping]: Switching backgrounds swaps rather than stacking/nesting frames",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3374,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T12:32:54.793Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b8ca40451d6f07ab3946-3f4aa54fbd240f9e1f5c",
+              "file": "e2e/07-editor-comprehensive-qa.spec.ts",
+              "line": 240,
+              "column": 3
+            },
+            {
+              "title": "TC-QA-ED-006 [Beautify Reset & Frame Transitions]: Reset restores original screenshot dimensions without residual styles",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3024,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T12:32:58.176Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b8ca40451d6f07ab3946-fb5287cee229b7411a49",
+              "file": "e2e/07-editor-comprehensive-qa.spec.ts",
+              "line": 291,
+              "column": 3
+            },
+            {
+              "title": "TC-QA-ED-007 [Keyboard Shortcuts]: Fast single-key switching between editing tools",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1662,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T12:33:01.206Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b8ca40451d6f07ab3946-088f186b352968fdc938",
+              "file": "e2e/07-editor-comprehensive-qa.spec.ts",
+              "line": 336,
+              "column": 3
+            },
+            {
+              "title": "TC-QA-ED-008 [Export Flow]: Export dropdown menu exposes PNG, WebP, PDF, and Copy",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1302,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T12:33:02.876Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b8ca40451d6f07ab3946-e93a55b6336aae32dc1d",
+              "file": "e2e/07-editor-comprehensive-qa.spec.ts",
+              "line": 378,
+              "column": 3
+            },
+            {
+              "title": "TC-QA-ED-009 [Zoom Relocation & Shape Alignment]: Zoom group is on right after delete button and shapes track cursor without offset",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2070,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T12:33:04.185Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b8ca40451d6f07ab3946-8df9c8a58510289e7d62",
+              "file": "e2e/07-editor-comprehensive-qa.spec.ts",
+              "line": 404,
+              "column": 3
+            },
+            {
+              "title": "TC-QA-ED-010 [Beautify Export Accuracy]: Exported image includes applied Beautify background, frame, and padding",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3432,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-06T12:33:06.264Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b8ca40451d6f07ab3946-da61d55ee1aae1fea56f",
+              "file": "e2e/07-editor-comprehensive-qa.spec.ts",
+              "line": 472,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-06T12:32:44.479Z",
+    "duration": 25278.041999999998,
+    "expected": 10,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
