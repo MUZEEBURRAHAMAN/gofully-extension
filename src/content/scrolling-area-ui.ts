@@ -442,6 +442,11 @@ function buildCapturePanel(): void {
     width: `${PANEL_W}px`, padding: "12px", display: "flex",
     flexDirection: "column", gap: "10px",
     zIndex: "2147483647", pointerEvents: "auto",
+    // Safety net for the rare case a small browser window still can't fit
+    // everything below: the whole panel scrolls internally instead of
+    // clipping Done/Cancel off-screen with no way to reach them.
+    maxHeight: `calc(100vh - ${PANEL_MARGIN * 2}px)`,
+    overflowY: "auto",
   });
 
   const head = document.createElement("div");
@@ -473,10 +478,16 @@ function buildCapturePanel(): void {
   });
   speedWarnEl.innerHTML = `${Icon.warning(12)}<span>Scroll more slowly</span>`;
 
+  // The thumbnail is a scaled preview of the *entire* capture so far, so its
+  // height grows with every frame — on a long scroll it was pushing Done/
+  // Cancel further down the panel until they fell off-screen entirely. Capped
+  // here and top-aligned so it reads as "a peek at what's captured" rather
+  // than a full preview, and Done/Cancel stay put right below it.
   const shot = document.createElement("div");
   Object.assign(shot.style, {
     borderRadius: "8px", overflow: "hidden", border: `1px solid ${T.border}`,
     background: T.surfaceSunken, display: "none",
+    maxHeight: "150px", flexShrink: "0",
   });
   previewImg = document.createElement("img");
   Object.assign(previewImg.style, { width: "100%", display: "block" });
@@ -484,7 +495,7 @@ function buildCapturePanel(): void {
   (previewImg as any).__wrap = shot;
 
   const footer = document.createElement("div");
-  Object.assign(footer.style, { display: "flex", flexDirection: "column", gap: "5px" });
+  Object.assign(footer.style, { display: "flex", flexDirection: "column", gap: "5px", flexShrink: "0" });
   footer.append(
     makeButton({ label: "Done", icon: Icon.check(13), tone: "success", onClick: finishManual, block: true }),
     makeButton({ label: "Cancel", tone: "ghost", onClick: cancelManual, block: true, small: true })
