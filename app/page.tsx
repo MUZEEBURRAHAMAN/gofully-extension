@@ -206,6 +206,9 @@ export default function HomePage() {
           alt="GoFully annotation editor showing arrows and callouts on a captured screenshot"
           className="mx-auto object-cover h-full w-full object-top"
           draggable={false}
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
         />
       </ContainerScroll>
 
@@ -239,6 +242,7 @@ export default function HomePage() {
                   className={`w-full block ${s.contain ? "object-contain bg-white" : "object-cover"}`}
                   style={{ aspectRatio: "4/3" }}
                   loading="lazy"
+                  decoding="async"
                 />
               </BlueprintFrame>
             </div>
@@ -275,6 +279,7 @@ export default function HomePage() {
                   className={`w-full block ${f.contain ? "object-contain bg-white" : "object-cover"}`}
                   style={{ aspectRatio: "16/11" }}
                   loading="lazy"
+                  decoding="async"
                 />
               </BlueprintFrame>
             </div>
