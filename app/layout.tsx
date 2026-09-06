@@ -28,11 +28,6 @@ export const metadata: Metadata = {
   description:
     "GoFully is a powerful Chrome extension for capturing full webpages, extracting text with local WebAssembly OCR, annotating screenshots, and exporting in 4K or PDF — 100% on-device.",
   icons: {
-    // The nav/footer icon-XX.png files are the bare glyph (no fill) because
-    // they sit inside their own blue badge container — dropped straight into
-    // a browser tab or iOS home screen with no container of its own, that
-    // same file all but disappears. These favicon-*.png files are the same
-    // mark pre-composited onto the accent-blue background instead.
     icon: [
       { url: "/favicon-16.png", sizes: "16x16", type: "image/png" },
       { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },

@@ -62,12 +62,7 @@ export default function UninstallFeedbackPage() {
 
           {/* Logo */}
           <div className="flex items-center gap-2.5 mb-8">
-            <div
-              className="flex items-center justify-center border"
-              style={{ width: 28, height: 28, background: "var(--gf-color-accent)", borderColor: "rgba(29,31,32,.12)" }}
-            >
-              <img src="/assets/icon-48.png" alt="GoFully" className="w-full h-full object-contain p-0.5" />
-            </div>
+            <img src="/new%20logo%20concept.png" alt="GoFully" className="h-8 w-8 object-contain" />
             <span className="gf-heading-font font-semibold" style={{ fontSize: 16, color: "rgba(29,31,32,.4)" }}>
               GoFully
             </span>

@@ -15,12 +15,11 @@ export function SiteNav({ links }: { links: NavLink[] }) {
     <div className="border-b relative" style={{ padding: "0 24px", borderColor: "rgba(29,31,32,.1)" }}>
       <div className="mx-auto flex items-center justify-between" style={{ height: 72, maxWidth: 1320 }}>
         <Link href="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
-          <div
-            className="flex items-center justify-center border"
-            style={{ width: 28, height: 28, background: "var(--gf-color-accent)", borderColor: "rgba(29,31,32,.12)" }}
-          >
-            <img src="/assets/icon-48.png" alt="GoFully" className="w-full h-full object-contain p-0.5" />
-          </div>
+          <img
+            src="/new%20logo%20concept.png"
+            alt="GoFully"
+            className="h-10 w-10 object-contain"
+          />
           <div className="gf-heading-font font-semibold" style={{ fontSize: 18, letterSpacing: "-0.01em" }}>
             GoFully
           </div>

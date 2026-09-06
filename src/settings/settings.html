@@ -73,13 +73,9 @@
       width: 28px;
       height: 28px;
       flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--blue);
-      border: 1px solid var(--border);
+      display: block;
+      object-fit: contain;
     }
-    .logo-mark img { width: 100%; height: 100%; object-fit: contain; padding: 2px; }
 
     h1 {
       font-size: 20px;
@@ -299,7 +295,7 @@
 </head>
 <body>
   <div class="page-header">
-    <div class="logo-mark"><img src="assets/icon-128.png" alt=""></div>
+    <img class="logo-mark" src="assets/icon-128.png" alt="GoFully">
     <div>
       <h1>GoFully Settings</h1>
       <p class="subtitle">Configure your capture and export preferences</p>
