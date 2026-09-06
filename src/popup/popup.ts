@@ -92,7 +92,8 @@ copyBtn.addEventListener("click", async () => {
     const res = await fetch(currentBlobUrl);
     const blob = await res.blob();
     const pngBlob = blob.type === "image/png" ? blob : await convertToPng(blob);
-    await navigator.clipboard.write([new ClipboardItem({ "image/png": pngBlob })]);
+    const uhdBlob = await upscaleToUHD(pngBlob);
+    await navigator.clipboard.write([new ClipboardItem({ "image/png": uhdBlob })]);
     const label = copyBtn.querySelector("span") ?? copyBtn;
     const orig = label.textContent ?? "Copy";
     label.textContent = "Copied!";
@@ -110,6 +111,30 @@ async function convertToPng(blob: Blob): Promise<Blob> {
   const ctx = canvas.getContext("2d")!;
   ctx.drawImage(bitmap, 0, 0);
   return canvas.convertToBlob({ type: "image/png" });
+}
+
+// This quick popup Copy button has no Quality dropdown of its own (that only
+// lives in the full editor) — it was copying the raw captured resolution
+// as-is, which reads as "low quality" once pasted somewhere that displays it
+// larger. Match the editor's default (4K UHD) here too: upscale only when
+// the capture is smaller than 3840×2160, so an already-large capture is
+// left untouched instead of being needlessly re-encoded.
+const UHD_W = 3840, UHD_H = 2160;
+async function upscaleToUHD(blob: Blob): Promise<Blob> {
+  try {
+    const bitmap = await createImageBitmap(blob);
+    const { width: w, height: h } = bitmap;
+    if (w >= UHD_W || h >= UHD_H) return blob;
+    const scale = Math.max(UHD_W / w, UHD_H / h);
+    const canvas = new OffscreenCanvas(Math.round(w * scale), Math.round(h * scale));
+    const ctx = canvas.getContext("2d")!;
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    return await canvas.convertToBlob({ type: "image/png" });
+  } catch {
+    return blob;
+  }
 }
 
 savePngBtn.addEventListener("click", async () => {
