@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "GoFully",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Capture full pages, visible areas, scrolling regions, and extract text with local OCR. Built-in visual editor and PDF export.",
   "icons": {
     "16": "assets/icon-16.png",

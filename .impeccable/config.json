@@ -47,6 +47,15 @@
         ],
         "createdAt": "2026-09-05T05:48:15.846Z",
         "reason": "pre-existing subtle 4-6% opacity elevation shadow on a light hover surface (mode-btn:hover, var(--shadow-sm)), not a neon glow on dark bg; predates this session's redesign work"
+      },
+      {
+        "rule": "gray-on-color",
+        "value": "*",
+        "files": [
+          "app/layout.tsx"
+        ],
+        "createdAt": "2026-09-06T16:15:20.681Z",
+        "reason": "text-slate-100 on bg-[#070b14] is light-on-dark, high contrast — false positive"
       }
     ]
   }

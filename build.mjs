@@ -26,6 +26,11 @@ const contentScripts = [
 for (const name of contentScripts) {
   await build({
     configFile: false,
+    // configFile: false means vite.config.ts's publicDir: false doesn't
+    // apply here — without repeating it, each of these 7 separate builds
+    // would independently re-copy the whole (shared, Next.js) public/
+    // folder into dist/ on its own.
+    publicDir: false,
     build: {
       outDir: dist,
       emptyOutDir: false,
@@ -55,12 +60,10 @@ if (existsSync(resolve(__dirname, "public/robots.txt"))) {
 if (existsSync(resolve(__dirname, "public/sitemap.xml"))) {
   cpSync(resolve(__dirname, "public/sitemap.xml"), resolve(dist, "sitemap.xml"));
 }
-if (existsSync(resolve(__dirname, "public/gofully-wordmark.png"))) {
-  cpSync(resolve(__dirname, "public/gofully-wordmark.png"), resolve(dist, "gofully-wordmark.png"));
-}
-if (existsSync(resolve(__dirname, "public/gofully-wordmark-dark.png"))) {
-  cpSync(resolve(__dirname, "public/gofully-wordmark-dark.png"), resolve(dist, "gofully-wordmark-dark.png"));
-}
+// gofully-wordmark(-dark).png were previously copied here too, but nothing
+// in popup/editor/settings/help.html references them — they're the
+// website's Open Graph images, not used by the extension. Dropped to keep
+// the Chrome Web Store upload from carrying 1.15MB of dead weight.
 
 // Step 4: Copy assets (icons)
 console.log("Step 4: Copying assets...");

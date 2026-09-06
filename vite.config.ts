@@ -6,6 +6,12 @@ import react from "@vitejs/plugin-react";
 // This config handles the ES module entries (popup, settings, editor, service-worker)
 export default defineConfig({
   plugins: [react()],
+  // This repo's `public/` is the Next.js website's public folder, not the
+  // extension's — Vite's default publicDir would otherwise silently copy
+  // all of it (favicons, wordmark PNGs, the site logo, features/, etc.)
+  // into dist/ on every build. build.mjs already copies every asset the
+  // extension actually needs via its own explicit cpSync calls below.
+  publicDir: false,
   build: {
     outDir: "dist",
     emptyOutDir: true,

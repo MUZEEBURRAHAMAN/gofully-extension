@@ -45,6 +45,12 @@ const STEPS = [
 const FEATURES = [
   {
     tag: "Capture Engine",
+    icon: (
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2" />
+        <circle cx="12" cy="12" r="3" />
+      </svg>
+    ),
     title: "Full-page scrolling capture",
     body: "Seamlessly capture full-height websites, dashboards, and infinite feeds. GoFully scrolls the page, waits for lazy-loaded content, and stitches a pixel-perfect canvas with zero overlap.",
     image: "/features/feature-1.webp",
@@ -53,6 +59,12 @@ const FEATURES = [
   },
   {
     tag: "Local OCR",
+    icon: (
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 7V4h3M17 4h3v3M4 17v3h3M17 20h3v-3" />
+        <path d="M8 9h8M12 9v7" />
+      </svg>
+    ),
     title: "On-device text extraction",
     body: "Extract readable text, code snippets, and structured tables from any region in milliseconds. A local WebAssembly model runs on your CPU — zero cloud transmission, zero latency.",
     image: "/features/feature-2.webp",
@@ -61,6 +73,12 @@ const FEATURES = [
   },
   {
     tag: "Visual Editor",
+    icon: (
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+        <path d="m15 5 4 4" />
+      </svg>
+    ),
     title: "Annotate & redact",
     body: "Mark up screenshots with arrows, callouts, and shapes. Instantly blur or pixelate sensitive API keys, passwords, and PII before you share.",
     image: "/features/feature-3.webp",
@@ -69,6 +87,13 @@ const FEATURES = [
   },
   {
     tag: "Export",
+    icon: (
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="17 8 12 3 7 8" />
+        <line x1="12" y1="3" x2="12" y2="15" />
+      </svg>
+    ),
     title: "Flexible export",
     body: "Generate a paginated PDF, download a crisp PNG or WebP, or copy straight to your clipboard — all from the result bar, right after you capture.",
     image: "/features/feature-4.webp",
@@ -78,10 +103,10 @@ const FEATURES = [
   },
 ];
 
-function Kicker({ children }: { children: React.ReactNode }) {
+function Kicker({ children, icon }: { children: React.ReactNode; icon?: React.ReactNode }) {
   return (
     <span
-      className="inline-block border gf-heading-font font-semibold uppercase"
+      className="inline-flex items-center gap-1.5 border gf-heading-font font-semibold uppercase"
       style={{
         borderColor: "rgba(22,103,242,.25)",
         background: "rgba(22,103,242,.06)",
@@ -91,15 +116,16 @@ function Kicker({ children }: { children: React.ReactNode }) {
         padding: "6px 14px",
       }}
     >
-      {children}
+      {icon && <span className="flex-shrink-0 flex items-center justify-center">{icon}</span>}
+      <span>{children}</span>
     </span>
   );
 }
 
-function SectionKicker({ children }: { children: React.ReactNode }) {
+function SectionKicker({ children, icon }: { children: React.ReactNode; icon?: React.ReactNode }) {
   return (
     <span
-      className="inline-block border gf-heading-font font-semibold uppercase"
+      className="inline-flex items-center gap-1.5 border gf-heading-font font-semibold uppercase"
       style={{
         borderColor: "rgba(29,31,32,.15)",
         color: "rgba(29,31,32,.45)",
@@ -108,7 +134,8 @@ function SectionKicker({ children }: { children: React.ReactNode }) {
         padding: "5px 12px",
       }}
     >
-      {children}
+      {icon && <span className="flex-shrink-0 flex items-center justify-center">{icon}</span>}
+      <span>{children}</span>
     </span>
   );
 }
@@ -172,7 +199,16 @@ export default function HomePage() {
       <ContainerScroll
         titleComponent={
           <div className="mx-auto" style={{ maxWidth: 720 }}>
-            <Kicker>Chrome Extension · 100% On-Device</Kicker>
+            <Kicker
+              icon={
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  <path d="m9 12 2 2 4-4" />
+                </svg>
+              }
+            >
+              Chrome Extension · 100% On-Device
+            </Kicker>
             <div
               className="gf-heading-font font-semibold"
               style={{ fontSize: "clamp(34px, 9vw, 58px)", lineHeight: 1.05, letterSpacing: "-0.01em", marginTop: 24, color: "var(--gf-color-text)" }}
@@ -215,7 +251,16 @@ export default function HomePage() {
       {/* How it works */}
       <div id="how-it-works" className="border-t" style={{ padding: "80px 24px", borderColor: "rgba(29,31,32,.08)", background: "rgba(29,31,32,.02)" }}>
         <div className="mx-auto text-center" style={{ maxWidth: 640, marginBottom: 52 }}>
-          <SectionKicker>How It Works</SectionKicker>
+          <SectionKicker
+            icon={
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 6h16M4 12h16M4 18h9" />
+                <polyline points="16 15 19 18 16 21" />
+              </svg>
+            }
+          >
+            How It Works
+          </SectionKicker>
           <div className="gf-heading-font font-semibold" style={{ fontSize: "clamp(24px, 6vw, 34px)", letterSpacing: "-0.01em", marginTop: 16 }}>
             From capture to shareable image in three steps
           </div>
@@ -253,7 +298,15 @@ export default function HomePage() {
       {/* Features */}
       <div id="features" className="border-t" style={{ padding: "90px 24px", borderColor: "rgba(29,31,32,.08)" }}>
         <div className="mx-auto text-center" style={{ maxWidth: 640, marginBottom: 64 }}>
-          <SectionKicker>Core Features</SectionKicker>
+          <SectionKicker
+            icon={
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z" />
+              </svg>
+            }
+          >
+            Core Features
+          </SectionKicker>
           <div className="gf-heading-font font-semibold" style={{ fontSize: "clamp(24px, 6vw, 34px)", letterSpacing: "-0.01em", marginTop: 16 }}>
             Everything you need to capture, clean up, and share
           </div>
@@ -266,7 +319,7 @@ export default function HomePage() {
           {FEATURES.map((f) => (
             <div key={f.title} className="grid grid-cols-1 md:grid-cols-2 items-center" style={{ gap: 56 }}>
               <div className={f.reverse ? "md:order-2" : ""}>
-                <Kicker>{f.tag}</Kicker>
+                <Kicker icon={f.icon}>{f.tag}</Kicker>
                 <div className="gf-heading-font font-semibold" style={{ fontSize: 26, letterSpacing: "-0.005em", marginTop: 14 }}>
                   {f.title}
                 </div>
@@ -290,10 +343,14 @@ export default function HomePage() {
       {/* Privacy band */}
       <div className="text-center" style={{ background: "var(--gf-color-text)", padding: "80px 24px" }}>
         <span
-          className="inline-block border gf-heading-font font-semibold uppercase"
+          className="inline-flex items-center gap-1.5 border gf-heading-font font-semibold uppercase"
           style={{ borderColor: "rgba(255,255,255,.2)", background: "rgba(255,255,255,.05)", color: "rgba(255,255,255,.7)", fontSize: "10.5px", letterSpacing: "0.06em", padding: "6px 14px" }}
         >
-          100% Offline
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          <span>100% Offline</span>
         </span>
         <div className="gf-heading-font font-semibold" style={{ fontSize: "clamp(24px, 6vw, 32px)", color: "#fff", letterSpacing: "-0.01em", marginTop: 20 }}>
           Nothing you capture ever leaves your device
