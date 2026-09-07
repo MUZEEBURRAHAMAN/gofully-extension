@@ -88,7 +88,7 @@ export default function GoFullPageAlternativePage() {
         </div>
       </div>
 
-      {/* Timely context, factual, cited */}
+      {/* Timely context — factual and cited */}
       <div style={{ padding: "0 24px 56px" }}>
         <BlueprintFrame className="mx-auto bg-white" style={{ maxWidth: 880, padding: "22px 28px" }}>
           <p style={{ fontSize: "13px", lineHeight: 1.7, color: "rgba(29,31,32,.6)" }}>
