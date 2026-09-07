@@ -74,10 +74,12 @@ export default function GoFullPageAlternativePage() {
       {/* Hero */}
       <div className="text-center" style={{ padding: "88px 24px 56px" }}>
         <div className="mx-auto" style={{ maxWidth: 720 }}>
-          <span className="inline-block border gf-heading-font font-semibold uppercase" style={{ borderColor: "rgba(22,103,242,.25)", background: "rgba(22,103,242,.06)", color: "var(--gf-color-accent)", fontSize: "10.5px", letterSpacing: "0.06em", padding: "6px 14px" }}>
-            Alternatives
-          </span>
-          <h1 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(28px, 7vw, 44px)", lineHeight: 1.1, letterSpacing: "-0.01em", marginTop: 22 }}>
+          <div className="flex justify-center gap-2 mb-4">
+            <Link href="/alternatives" className="inline-block border gf-heading-font font-semibold uppercase hover:underline" style={{ borderColor: "rgba(22,103,242,.25)", background: "rgba(22,103,242,.06)", color: "var(--gf-color-accent)", fontSize: "10.5px", letterSpacing: "0.06em", padding: "6px 14px" }}>
+              ← All Alternatives
+            </Link>
+          </div>
+          <h1 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(28px, 7vw, 44px)", lineHeight: 1.1, letterSpacing: "-0.01em", marginTop: 16 }}>
             GoFully vs GoFullPage
           </h1>
           <p className="mx-auto" style={{ fontSize: "15.5px", lineHeight: 1.6, color: "rgba(29,31,32,.55)", maxWidth: 600, marginTop: 18 }}>

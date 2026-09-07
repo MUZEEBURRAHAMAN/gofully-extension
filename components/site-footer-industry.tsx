@@ -8,8 +8,7 @@ const ALL_LINKS = [
   { label: "Security", href: "/security" },
   { label: "FAQ", href: "/faq" },
   { label: "Support", href: "/support" },
-  { label: "Roadmap", href: "/roadmap" },
-  { label: "GoFullPage Alternative", href: "/alternatives/gofullpage" },
+  { label: "Alternatives", href: "/alternatives" },
 ];
 
 export function SiteFooterIndustry({
