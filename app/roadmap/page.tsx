@@ -95,7 +95,7 @@ export default function RoadmapPage() {
           The complete journey
         </div>
         <p style={{ fontSize: 15, color: "rgba(29,31,32,.55)", marginTop: 16, lineHeight: 1.6, maxWidth: 640 }}>
-          From the problem that started GoFully to what&apos;s shipped today and what&apos;s coming next.
+          What&apos;s shipping next, and the full journey that got GoFully here.
         </p>
       </div>
 
@@ -103,22 +103,110 @@ export default function RoadmapPage() {
       <div className="px-6 md:px-20" style={{ paddingTop: 8, paddingBottom: 90 }}>
         <div>
 
-          {/* Origin */}
+          {/* v1.1.2 upcoming */}
           <TimelineRow
-            tag="ORIGIN"
-            tagStyle={{ borderColor: "rgba(29,31,32,.2)", color: "#1d1f20" }}
-            dotStyle={{ background: "#1d1f20", borderColor: "#1d1f20" }}
+            tag="v1.1.2"
+            tagStyle={{ background: "var(--gf-color-accent)", color: "#fff", borderColor: "var(--gf-color-accent)" }}
+            status="UPCOMING"
+            statusColor="var(--gf-color-accent)"
+            dotStyle={{ background: "var(--gf-color-accent)", borderColor: "var(--gf-color-accent)", boxShadow: "0 0 0 4px rgba(22,103,242,.15)" }}
           >
-            <BlueprintFrame className="p-6" style={{ background: "#fff", maxWidth: 600 }} markColor="rgba(29,31,32,.15)">
+            <div className="p-6 border" style={{ borderColor: "rgba(22,103,242,.3)", background: "rgba(22,103,242,.04)", maxWidth: 600 }}>
               <div className="gf-heading-font font-semibold" style={{ fontSize: 20 }}>
-                Cloud tools upload before you can even edit
+                Personalization, a stronger editor, and a better Beautify
               </div>
               <p className="mt-2" style={{ fontSize: "13.5px", color: "rgba(29,31,32,.6)", lineHeight: 1.6 }}>
-                Every other screenshot tool sends the capture to a server first — your screen, in someone else&apos;s
-                cloud, before you&apos;ve even cropped it. GoFully started as a bet that the whole workflow could run
-                locally instead.
+                The next release, in active development.
               </p>
-            </BlueprintFrame>
+
+              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
+                Personalize
+              </div>
+              <ul className="mt-2.5 flex flex-col gap-2">
+                <OutlineBullet>Language options for the interface.</OutlineBullet>
+                <OutlineBullet>Light and dark theme options.</OutlineBullet>
+                <OutlineBullet>OCR language selection — recognize text beyond English.</OutlineBullet>
+              </ul>
+
+              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
+                Editor tools
+              </div>
+              <ul className="mt-2.5 flex flex-col gap-2">
+                <OutlineBullet>Highlighter tool, for drawing attention instead of hiding it.</OutlineBullet>
+                <OutlineBullet>Shape tool consolidated into one button with a dropdown.</OutlineBullet>
+                <OutlineBullet>Upgraded text tool — color, font, and size controls, right where you need them.</OutlineBullet>
+                <OutlineBullet>Custom keyboard shortcuts for editor tools.</OutlineBullet>
+              </ul>
+
+              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
+                Beautify
+              </div>
+              <ul className="mt-2.5 flex flex-col gap-2">
+                <OutlineBullet>Save your own background, frame, and padding as a reusable preset.</OutlineBullet>
+                <OutlineBullet>Multi-image collage layouts — arrange 2-3 captures in one composition.</OutlineBullet>
+                <OutlineBullet>A gradient and pattern background library.</OutlineBullet>
+                <OutlineBullet>More device frames, including phone and Windows-style.</OutlineBullet>
+              </ul>
+
+              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
+                Export &amp; workflow
+              </div>
+              <ul className="mt-2.5 flex flex-col gap-2">
+                <OutlineBullet>Export capture + OCR&apos;d text as Markdown.</OutlineBullet>
+                <OutlineBullet>Optional URL and timestamp stamp on capture.</OutlineBullet>
+                <OutlineBullet>&quot;Copy as&quot; quick actions after OCR — plain text or structured JSON.</OutlineBullet>
+              </ul>
+            </div>
+          </TimelineRow>
+
+          {/* Later / unscheduled */}
+          <TimelineRow
+            tag="LATER"
+            tagStyle={{ borderColor: "rgba(29,31,32,.25)", color: "rgba(29,31,32,.55)" }}
+            dotStyle={{ background: "transparent", borderColor: "rgba(29,31,32,.4)", borderStyle: "dashed", borderWidth: 1.5 }}
+          >
+            <div className="p-6 border" style={{ borderStyle: "dashed", borderColor: "rgba(29,31,32,.2)", background: "#fff", maxWidth: 600 }}>
+              <div className="gf-heading-font font-semibold" style={{ fontSize: 20 }}>
+                Bigger bets, not scheduled yet
+              </div>
+              <p className="mt-2" style={{ fontSize: "13.5px", color: "rgba(29,31,32,.6)", lineHeight: 1.6 }}>
+                On the list, but further out.
+              </p>
+              <ul className="mt-3.5 flex flex-col gap-2">
+                <OutlineBullet><strong style={{ color: "#1d1f20" }}>Multi-tab batch capture</strong> — capture several open tabs in one action, export as one file.</OutlineBullet>
+                <OutlineBullet><strong style={{ color: "#1d1f20" }}>Structured table extraction</strong> — detect tables in a capture and export as CSV, not just flat text.</OutlineBullet>
+                <OutlineBullet><strong style={{ color: "#1d1f20" }}>Auto-detect sensitive info</strong> — suggest redaction boxes for emails, phone numbers, and similar patterns automatically.</OutlineBullet>
+                <OutlineBullet><strong style={{ color: "#1d1f20" }}>Screen recording</strong> — capture short clips, not just stills.</OutlineBullet>
+                <OutlineBullet><strong style={{ color: "#1d1f20" }}>GoFully Studio</strong> — a standalone workspace for organizing and editing captures beyond the popup.</OutlineBullet>
+                <OutlineBullet><strong style={{ color: "#1d1f20" }}>Video annotation</strong> — the same arrows, callouts, and blur tools, extended to recordings.</OutlineBullet>
+              </ul>
+              <div className="mt-4 p-3.5 border" style={{ borderColor: "rgba(29,31,32,.15)", background: "rgba(29,31,32,.03)", fontSize: "12.5px" }}>
+                <strong style={{ color: "#1d1f20" }}>Have a request?</strong> This list is still forming — tell us what you&apos;d use next.
+              </div>
+            </div>
+          </TimelineRow>
+
+          {/* v1.1.1 shipped */}
+          <TimelineRow
+            tag="v1.1.1"
+            tagStyle={{ borderColor: "rgba(29,31,32,.2)", color: "#1d1f20" }}
+            status="SHIPPED"
+            statusColor="rgba(29,31,32,.5)"
+            dotStyle={{ background: "#1d1f20", borderColor: "#1d1f20" }}
+          >
+            <div className="p-6 border" style={{ borderColor: "rgba(29,31,32,.12)", background: "#fff", maxWidth: 600 }}>
+              <div className="gf-heading-font font-semibold" style={{ fontSize: 20 }}>
+                A visual refresh and a pass through the backlog
+              </div>
+              <p className="mt-2" style={{ fontSize: "13.5px", color: "rgba(29,31,32,.6)", lineHeight: 1.6 }}>
+                Icons, defaults, and reported issues cleaned up across the whole extension.
+              </p>
+              <ul className="mt-3.5 flex flex-col gap-2">
+                <Bullet>Logo now visible everywhere it appears — popup, editor, toolbar icon, and the extensions page.</Bullet>
+                <Bullet>4K UHD is now the default export and copy quality, in both the editor and the popup&apos;s quick-copy.</Bullet>
+                <Bullet>Fixed reported bugs across capture, OCR, and export.</Bullet>
+              </ul>
+            </div>
           </TimelineRow>
 
           {/* v1.0.0 shipped */}
@@ -182,111 +270,23 @@ export default function RoadmapPage() {
             </BlueprintFrame>
           </TimelineRow>
 
-          {/* v1.1.1 shipped */}
+          {/* Origin */}
           <TimelineRow
-            tag="v1.1.1"
+            tag="ORIGIN"
             tagStyle={{ borderColor: "rgba(29,31,32,.2)", color: "#1d1f20" }}
-            status="SHIPPED"
-            statusColor="rgba(29,31,32,.5)"
             dotStyle={{ background: "#1d1f20", borderColor: "#1d1f20" }}
-          >
-            <div className="p-6 border" style={{ borderColor: "rgba(29,31,32,.12)", background: "#fff", maxWidth: 600 }}>
-              <div className="gf-heading-font font-semibold" style={{ fontSize: 20 }}>
-                A visual refresh and a pass through the backlog
-              </div>
-              <p className="mt-2" style={{ fontSize: "13.5px", color: "rgba(29,31,32,.6)", lineHeight: 1.6 }}>
-                Icons, defaults, and reported issues cleaned up across the whole extension.
-              </p>
-              <ul className="mt-3.5 flex flex-col gap-2">
-                <Bullet>Logo now visible everywhere it appears — popup, editor, toolbar icon, and the extensions page.</Bullet>
-                <Bullet>4K UHD is now the default export and copy quality, in both the editor and the popup&apos;s quick-copy.</Bullet>
-                <Bullet>Fixed reported bugs across capture, OCR, and export.</Bullet>
-              </ul>
-            </div>
-          </TimelineRow>
-
-          {/* v1.1.2 upcoming */}
-          <TimelineRow
-            tag="v1.1.2"
-            tagStyle={{ background: "var(--gf-color-accent)", color: "#fff", borderColor: "var(--gf-color-accent)" }}
-            status="UPCOMING"
-            statusColor="var(--gf-color-accent)"
-            dotStyle={{ background: "var(--gf-color-accent)", borderColor: "var(--gf-color-accent)", boxShadow: "0 0 0 4px rgba(22,103,242,.15)" }}
-          >
-            <div className="p-6 border" style={{ borderColor: "rgba(22,103,242,.3)", background: "rgba(22,103,242,.04)", maxWidth: 600 }}>
-              <div className="gf-heading-font font-semibold" style={{ fontSize: 20 }}>
-                Personalization, a stronger editor, and a better Beautify
-              </div>
-              <p className="mt-2" style={{ fontSize: "13.5px", color: "rgba(29,31,32,.6)", lineHeight: 1.6 }}>
-                The next release, in active development.
-              </p>
-
-              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
-                Personalize
-              </div>
-              <ul className="mt-2.5 flex flex-col gap-2">
-                <OutlineBullet>Language options for the interface.</OutlineBullet>
-                <OutlineBullet>Light and dark theme options.</OutlineBullet>
-                <OutlineBullet>OCR language selection — recognize text beyond English.</OutlineBullet>
-              </ul>
-
-              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
-                Editor tools
-              </div>
-              <ul className="mt-2.5 flex flex-col gap-2">
-                <OutlineBullet>Highlighter tool, for drawing attention instead of hiding it.</OutlineBullet>
-                <OutlineBullet>Shape tool consolidated into one button with a dropdown.</OutlineBullet>
-                <OutlineBullet>Upgraded text tool — color, font, and size controls, right where you need them.</OutlineBullet>
-                <OutlineBullet>Custom keyboard shortcuts for editor tools.</OutlineBullet>
-              </ul>
-
-              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
-                Beautify
-              </div>
-              <ul className="mt-2.5 flex flex-col gap-2">
-                <OutlineBullet>Save your own background, frame, and padding as a reusable preset.</OutlineBullet>
-                <OutlineBullet>Multi-image collage layouts — arrange 2-3 captures in one composition.</OutlineBullet>
-                <OutlineBullet>A gradient and pattern background library.</OutlineBullet>
-                <OutlineBullet>More device frames, including phone and Windows-style.</OutlineBullet>
-              </ul>
-
-              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
-                Export &amp; workflow
-              </div>
-              <ul className="mt-2.5 flex flex-col gap-2">
-                <OutlineBullet>Export capture + OCR&apos;d text as Markdown.</OutlineBullet>
-                <OutlineBullet>Optional URL and timestamp stamp on capture.</OutlineBullet>
-                <OutlineBullet>&quot;Copy as&quot; quick actions after OCR — plain text or structured JSON.</OutlineBullet>
-              </ul>
-            </div>
-          </TimelineRow>
-
-          {/* Later / unscheduled */}
-          <TimelineRow
-            tag="LATER"
-            tagStyle={{ borderColor: "rgba(29,31,32,.25)", color: "rgba(29,31,32,.55)" }}
-            dotStyle={{ background: "transparent", borderColor: "rgba(29,31,32,.4)", borderStyle: "dashed", borderWidth: 1.5 }}
             connector={false}
           >
-            <div className="p-6 border" style={{ borderStyle: "dashed", borderColor: "rgba(29,31,32,.2)", background: "#fff", maxWidth: 600 }}>
+            <BlueprintFrame className="p-6" style={{ background: "#fff", maxWidth: 600 }} markColor="rgba(29,31,32,.15)">
               <div className="gf-heading-font font-semibold" style={{ fontSize: 20 }}>
-                Bigger bets, not scheduled yet
+                Cloud tools upload before you can even edit
               </div>
               <p className="mt-2" style={{ fontSize: "13.5px", color: "rgba(29,31,32,.6)", lineHeight: 1.6 }}>
-                On the list, but further out.
+                Every other screenshot tool sends the capture to a server first — your screen, in someone else&apos;s
+                cloud, before you&apos;ve even cropped it. GoFully started as a bet that the whole workflow could run
+                locally instead.
               </p>
-              <ul className="mt-3.5 flex flex-col gap-2">
-                <OutlineBullet><strong style={{ color: "#1d1f20" }}>Multi-tab batch capture</strong> — capture several open tabs in one action, export as one file.</OutlineBullet>
-                <OutlineBullet><strong style={{ color: "#1d1f20" }}>Structured table extraction</strong> — detect tables in a capture and export as CSV, not just flat text.</OutlineBullet>
-                <OutlineBullet><strong style={{ color: "#1d1f20" }}>Auto-detect sensitive info</strong> — suggest redaction boxes for emails, phone numbers, and similar patterns automatically.</OutlineBullet>
-                <OutlineBullet><strong style={{ color: "#1d1f20" }}>Screen recording</strong> — capture short clips, not just stills.</OutlineBullet>
-                <OutlineBullet><strong style={{ color: "#1d1f20" }}>GoFully Studio</strong> — a standalone workspace for organizing and editing captures beyond the popup.</OutlineBullet>
-                <OutlineBullet><strong style={{ color: "#1d1f20" }}>Video annotation</strong> — the same arrows, callouts, and blur tools, extended to recordings.</OutlineBullet>
-              </ul>
-              <div className="mt-4 p-3.5 border" style={{ borderColor: "rgba(29,31,32,.15)", background: "rgba(29,31,32,.03)", fontSize: "12.5px" }}>
-                <strong style={{ color: "#1d1f20" }}>Have a request?</strong> This list is still forming — tell us what you&apos;d use next.
-              </div>
-            </div>
+            </BlueprintFrame>
           </TimelineRow>
 
         </div>
