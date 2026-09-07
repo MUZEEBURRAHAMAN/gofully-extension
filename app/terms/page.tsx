@@ -1,188 +1,267 @@
-import { SiteNav } from "@/components/navbar";
-import { SiteFooter } from "@/components/footer";
+import { SiteNav } from "@/components/site-nav";
+import { SiteFooterIndustry } from "@/components/site-footer-industry";
+import { BlueprintFrame } from "@/components/blueprint-frame";
+
+const NAV_LINKS = [
+  { label: "Product", href: "/#how-it-works" },
+  { label: "Features", href: "/#features" },
+  { label: "Security", href: "/security" },
+  { label: "Support", href: "/support" },
+  { label: "FAQ", href: "/faq" },
+];
+
+function SectionNum({ n }: { n: string }) {
+  return (
+    <span className="gf-heading-font font-semibold" style={{ color: "var(--gf-color-accent)" }}>
+      {n}
+    </span>
+  );
+}
+
+function Bullet({ children }: { children: React.ReactNode }) {
+  return (
+    <li className="flex gap-3" style={{ fontSize: "13.5px", lineHeight: 1.6, color: "rgba(29,31,32,.6)" }}>
+      <span className="mt-[9px] h-[5px] w-[5px] flex-shrink-0" style={{ background: "var(--gf-color-accent)" }} />
+      <span>{children}</span>
+    </li>
+  );
+}
+
+function LegalBox({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mt-3.5" style={{ border: "1px solid rgba(29,31,32,.12)", background: "rgba(29,31,32,.03)", padding: "20px 24px" }}>
+      {children}
+    </div>
+  );
+}
+
+function LegalP({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="mt-3 first:mt-0" style={{ font: "12px/1.65 ui-monospace, Menlo, monospace", color: "rgba(29,31,32,.6)", textTransform: "uppercase" }}>
+      {children}
+    </p>
+  );
+}
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-[#070b14] text-slate-100 font-sans flex flex-col justify-between">
-      <SiteNav />
+    <div className="gf-industry min-h-screen">
+      <SiteNav links={NAV_LINKS} />
 
-      <main className="mx-auto w-full max-w-5xl px-6 py-20 lg:px-8 flex-1">
-        <span className="inline-block bg-[#000] border border-[#136CDE]/40 px-3.5 py-1 text-xs font-mono font-bold uppercase tracking-wider text-[#D2E5FF]">
-          Legal & Compliance
-        </span>
-        <h1 className="mt-4 text-3xl font-extrabold text-white sm:text-5xl tracking-tight">
-          Terms of Service
-        </h1>
-        <div className="mt-3 flex items-center gap-4 text-xs font-mono uppercase text-slate-400">
-          <span>Effective Date: August 21, 2026</span>
-          <span>•</span>
-          <span>Version 2.4</span>
-          <span>•</span>
-          <span className="text-[#D2E5FF]">Binding Legal Agreement</span>
+      {/* Header */}
+      <div className="text-center" style={{ padding: "72px 24px 48px" }}>
+        <div className="mx-auto" style={{ maxWidth: 760 }}>
+          <span
+            className="inline-block border gf-heading-font font-semibold uppercase"
+            style={{ borderColor: "rgba(22,103,242,.25)", background: "rgba(22,103,242,.06)", color: "var(--gf-color-accent)", fontSize: "10.5px", letterSpacing: "0.06em", padding: "6px 14px" }}
+          >
+            Legal &amp; Compliance
+          </span>
+          <div
+            className="gf-heading-font font-semibold"
+            style={{ fontSize: "clamp(30px, 8vw, 48px)", lineHeight: 1.08, letterSpacing: "-0.01em", marginTop: 22 }}
+          >
+            Terms of Service
+          </div>
+          <div
+            className="flex items-center justify-center flex-wrap gf-heading-font font-semibold uppercase"
+            style={{ gap: 10, marginTop: 18, fontSize: 11, letterSpacing: "0.04em", color: "rgba(29,31,32,.4)" }}
+          >
+            <span>Effective Date: August 21, 2026</span>
+            <span>&middot;</span>
+            <span>Version 2.4</span>
+            <span>&middot;</span>
+            <span style={{ color: "var(--gf-color-accent)" }}>Binding Legal Agreement</span>
+          </div>
         </div>
+      </div>
 
-        <div className="mt-12 space-y-12 text-sm text-slate-300 leading-relaxed border border-slate-800 bg-[#0d1424] p-8 lg:p-14">
-          {/* Introduction */}
-          <div className="border-b border-slate-800/80 pb-8">
-            <h2 className="text-xl font-bold text-white mb-3 flex items-center gap-2">
-              <span className="text-[#136CDE]">§</span> Agreement to Terms
-            </h2>
-            <p className="text-slate-300">
-              These Terms of Service ("Terms", "Agreement") constitute a legally binding contract between you ("User", "you", or "your") and GoFully ("GoFully", "we", "us", or "our") governing your installation, access, and use of the GoFully Chrome browser extension, website (<a href="https://gofully-extension.vercel.app" className="text-[#D2E5FF] underline">https://gofully-extension.vercel.app</a>), and associated software products (collectively, the "Software" or "Service").
-            </p>
-            <p className="mt-3 text-slate-400">
-              By downloading, installing, enabling, or using GoFully from the Google Chrome Web Store or our website, you expressly agree to be bound by these Terms. If you do not agree to all terms and conditions herein, you must immediately uninstall and discontinue use of the Software.
-            </p>
-          </div>
-
-          {/* Section 1: License Grant & Scope */}
-          <div>
-            <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-              <span className="text-[#136CDE]">1.</span> License Grant & Permitted Use
-            </h2>
-            <p className="mb-3">
-              Subject to your compliance with these Terms, GoFully grants you a revocable, non-exclusive, non-transferable, non-sublicensable, limited personal and commercial license to install and use the Software on devices owned or controlled by you:
-            </p>
-            <ul className="list-disc pl-5 space-y-2 text-slate-400">
-              <li><strong>Personal & Commercial Use:</strong> You are permitted to use the Software for personal workflows, educational projects, and internal commercial/business screenshot captures, annotations, and document exports.</li>
-              <li><strong>Free License:</strong> The Software is provided free of charge subject to these terms and applicable Google Chrome Web Store policies.</li>
-            </ul>
-          </div>
-
-          {/* Section 2: Restrictions & Prohibited Conduct */}
-          <div>
-            <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-              <span className="text-[#136CDE]">2.</span> Use Restrictions & Prohibited Conduct
-            </h2>
-            <p className="mb-3">
-              You agree that you will NOT, under any circumstances, engage in or assist any third party with the following prohibited activities:
-            </p>
-            <ul className="list-disc pl-5 space-y-2 text-slate-400">
-              <li>Reverse engineer, decompile, disassemble, or attempt to derive the source code of any non-open-source component of the Software.</li>
-              <li>Circumvent, disable, or tamper with security features, sandboxing mechanisms, or permissions scoped within the browser environment.</li>
-              <li>Redistribute, sell, lease, sublicense, repackage, or distribute the extension bundle under unauthorized brand names.</li>
-              <li>Use the Software to capture, OCR extract, annotate, or transmit copyrighted materials, trade secrets, confidential documents, or proprietary graphics without explicit legal authorization or fair use rights.</li>
-              <li>Use the Software to bypass paywalls, digital rights management (DRM) restrictions, or content protection mechanisms on third-party websites.</li>
-              <li>Use the Software for any unlawful, harassing, defamatory, fraudulent, or malicious purpose.</li>
-            </ul>
-          </div>
-
-          {/* Section 3: Intellectual Property & User Generated Content */}
-          <div>
-            <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-              <span className="text-[#136CDE]">3.</span> Intellectual Property & Ownership of Captures
-            </h2>
-            <div className="space-y-4 text-slate-300">
-              <p>
-                <strong>GoFully Intellectual Property:</strong> All trademarks, logos, visual assets, software architecture, user interface designs, codebases, and brand elements associated with GoFully are the exclusive intellectual property of GoFully and its licensors, protected under copyright and trademark laws.
+      {/* Body */}
+      <div style={{ padding: "0 24px 100px" }}>
+        <BlueprintFrame className="mx-auto bg-white" style={{ maxWidth: 880, padding: "0" }}>
+          <div style={{ padding: "40px 40px 8px" }}>
+            <div className="pb-9" style={{ borderBottom: "1px solid rgba(29,31,32,.08)" }}>
+              <div className="gf-heading-font font-semibold flex items-center gap-2" style={{ fontSize: 19 }}>
+                <span style={{ color: "var(--gf-color-accent)" }}>&sect;</span> Agreement to Terms
+              </div>
+              <p className="mt-3" style={{ fontSize: "13.5px", lineHeight: 1.7, color: "rgba(29,31,32,.6)" }}>
+                These Terms of Service (&ldquo;Terms&rdquo;, &ldquo;Agreement&rdquo;) constitute a legally binding contract between you (&ldquo;User&rdquo;, &ldquo;you&rdquo;, or &ldquo;your&rdquo;) and GoFully (&ldquo;GoFully&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;, or &ldquo;our&rdquo;) governing your installation, access, and use of the GoFully Chrome browser extension, website (
+                <a href="https://gofully-extension.vercel.app" style={{ color: "var(--gf-color-accent)", textDecoration: "underline" }}>https://gofully-extension.vercel.app</a>
+                ), and associated software products (collectively, the &ldquo;Software&rdquo; or &ldquo;Service&rdquo;).
               </p>
-              <p>
-                <strong>User Content Ownership:</strong> You retain 100% full ownership, rights, and title to all screenshots, visual annotations, drawings, redacted graphics, extracted OCR text, and exported PDF/PNG documents created using the Software. GoFully claims zero ownership, license, or access to your generated files. Because all processing occurs locally on your machine, we never receive or store copies of your work.
+              <p className="mt-3" style={{ fontSize: "13.5px", lineHeight: 1.7, color: "rgba(29,31,32,.6)" }}>
+                By downloading, installing, enabling, or using GoFully from the Google Chrome Web Store or our website, you expressly agree to be bound by these Terms. If you do not agree to all terms and conditions herein, you must immediately uninstall and discontinue use of the Software.
               </p>
             </div>
           </div>
 
-          {/* Section 4: Privacy & Client-Side Execution */}
-          <div>
-            <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-              <span className="text-[#136CDE]">4.</span> Privacy & On-Device Processing
-            </h2>
-            <p>
-              Your privacy is of paramount importance. Our data practices are governed by our <a href="/privacy" className="text-[#D2E5FF] underline">Privacy Policy</a>, which is incorporated into these Terms by reference. You acknowledge and agree that GoFully operates locally within your browser sandbox and transmits zero image, video, or extracted text data to our servers.
-            </p>
-          </div>
-
-          {/* Section 5: Disclaimer of Warranties */}
-          <div>
-            <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-              <span className="text-[#136CDE]">5.</span> Disclaimer of Warranties ("AS IS" & "AS AVAILABLE")
-            </h2>
-            <div className="border border-slate-800 bg-[#070b14] p-5 text-xs text-slate-400 space-y-3 font-mono leading-relaxed">
-              <p className="uppercase text-slate-300 font-bold">
-                TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW:
+          <div className="flex flex-col" style={{ padding: "0 40px", gap: 40 }}>
+            {/* 1 */}
+            <div style={{ paddingTop: 32 }}>
+              <div className="gf-heading-font font-semibold flex items-center gap-2" style={{ fontSize: 16 }}>
+                <SectionNum n="1." /> License Grant &amp; Permitted Use
+              </div>
+              <p className="mt-3 mb-3" style={{ fontSize: "13.5px", lineHeight: 1.6, color: "rgba(29,31,32,.6)" }}>
+                Subject to your compliance with these Terms, GoFully grants you a revocable, non-exclusive, non-transferable, non-sublicensable, limited personal and commercial license to install and use the Software on devices owned or controlled by you:
               </p>
-              <p>
-                THE SOFTWARE, WEBSITE, AND SERVICES ARE PROVIDED ON AN "AS IS" AND "AS AVAILABLE" BASIS WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, NON-INFRINGEMENT, OR FREEDOM FROM COMPUTER VIRUSES OR BUGS.
-              </p>
-              <p>
-                WE DO NOT WARRANT THAT (A) THE SOFTWARE WILL MEET YOUR SPECIFIC REQUIREMENTS, (B) SCREENSHOT STITCHING OR OCR EXTRACTION WILL BE 100% ERROR-FREE ACROSS ALL COMPLEX WEB ARCHITECTURES (E.G. VIRTUALIZED DOMS, CROSS-ORIGIN IFRAMES, OR HEAVY CANVAS ANIMATIONS), (C) DEFECTS WILL BE IMMEDIATELY CORRECTED, OR (D) THE OPERATION OF THE EXTENSION WILL BE UNINTERRUPTED.
-              </p>
-            </div>
-          </div>
-
-          {/* Section 6: Limitation of Liability */}
-          <div>
-            <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-              <span className="text-[#136CDE]">6.</span> Limitation of Liability
-            </h2>
-            <div className="border border-slate-800 bg-[#070b14] p-5 text-xs text-slate-400 space-y-3 font-mono leading-relaxed">
-              <p>
-                IN NO EVENT SHALL GOFULLY, ITS DIRECTORS, EMPLOYEES, PARTNERS, AGENTS, OR AFFILIATES BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, PUNITIVE, OR EXEMPLARY DAMAGES, INCLUDING BUT NOT LIMITED TO LOSS OF PROFITS, DATA, USE, GOODWILL, BUSINESS INTERRUPTION, OR OTHER INTANGIBLE LOSSES RESULTING FROM:
-              </p>
-              <ul className="list-disc pl-5 space-y-1 text-slate-400">
-                <li>YOUR ACCESS TO, USE OF, OR INABILITY TO ACCESS OR USE THE SOFTWARE;</li>
-                <li>ANY INACCURACIES IN CAPTURED IMAGES, EXTRACTED OCR TEXT, OR GENERATED PDFS;</li>
-                <li>UNINTENTIONAL EXPOSURE OF UNREDACTED SENSITIVE INFORMATION SHARED BY YOU TO THIRD PARTIES;</li>
-                <li>ANY THIRD-PARTY WEBPAGE BEHAVIOR, SCRIPT INTERFERENCE, OR BROWSER CRASHES.</li>
+              <ul className="flex flex-col gap-2">
+                <Bullet><strong style={{ color: "#1d1f20" }}>Personal &amp; Commercial Use:</strong> You are permitted to use the Software for personal workflows, educational projects, and internal commercial/business screenshot captures, annotations, and document exports.</Bullet>
+                <Bullet><strong style={{ color: "#1d1f20" }}>Free License:</strong> The Software is provided free of charge subject to these terms and applicable Google Chrome Web Store policies.</Bullet>
               </ul>
-              <p>
-                IN ALL CASES, OUR AGGREGATE TOTAL LIABILITY UNDER THESE TERMS SHALL NOT EXCEED THE TOTAL AMOUNT PAID BY YOU TO GOFULLY IN THE TWELVE (12) MONTHS PRECEDING THE CLAIM (OR $50.00 USD IF NO PAYMENTS WERE MADE).
+            </div>
+
+            {/* 2 */}
+            <div>
+              <div className="gf-heading-font font-semibold flex items-center gap-2" style={{ fontSize: 16 }}>
+                <SectionNum n="2." /> Use Restrictions &amp; Prohibited Conduct
+              </div>
+              <p className="mt-3 mb-3" style={{ fontSize: "13.5px", lineHeight: 1.6, color: "rgba(29,31,32,.6)" }}>
+                You agree that you will NOT, under any circumstances, engage in or assist any third party with the following prohibited activities:
+              </p>
+              <ul className="flex flex-col gap-2">
+                <Bullet>Reverse engineer, decompile, disassemble, or attempt to derive the source code of any non-open-source component of the Software.</Bullet>
+                <Bullet>Circumvent, disable, or tamper with security features, sandboxing mechanisms, or permissions scoped within the browser environment.</Bullet>
+                <Bullet>Redistribute, sell, lease, sublicense, repackage, or distribute the extension bundle under unauthorized brand names.</Bullet>
+                <Bullet>Use the Software to capture, OCR extract, annotate, or transmit copyrighted materials, trade secrets, confidential documents, or proprietary graphics without explicit legal authorization or fair use rights.</Bullet>
+                <Bullet>Use the Software to bypass paywalls, digital rights management (DRM) restrictions, or content protection mechanisms on third-party websites.</Bullet>
+                <Bullet>Use the Software for any unlawful, harassing, defamatory, fraudulent, or malicious purpose.</Bullet>
+              </ul>
+            </div>
+
+            {/* 3 */}
+            <div>
+              <div className="gf-heading-font font-semibold flex items-center gap-2" style={{ fontSize: 16 }}>
+                <SectionNum n="3." /> Intellectual Property &amp; Ownership of Captures
+              </div>
+              <p className="mt-3" style={{ fontSize: "13.5px", lineHeight: 1.7, color: "rgba(29,31,32,.6)" }}>
+                <strong style={{ color: "#1d1f20" }}>GoFully Intellectual Property:</strong> All trademarks, logos, visual assets, software architecture, user interface designs, codebases, and brand elements associated with GoFully are the exclusive intellectual property of GoFully and its licensors, protected under copyright and trademark laws.
+              </p>
+              <p className="mt-3" style={{ fontSize: "13.5px", lineHeight: 1.7, color: "rgba(29,31,32,.6)" }}>
+                <strong style={{ color: "#1d1f20" }}>User Content Ownership:</strong> You retain 100% full ownership, rights, and title to all screenshots, visual annotations, drawings, redacted graphics, extracted OCR text, and exported PDF/PNG documents created using the Software. GoFully claims zero ownership, license, or access to your generated files. Because all processing occurs locally on your machine, we never receive or store copies of your work.
               </p>
             </div>
-          </div>
 
-          {/* Section 7: Indemnification */}
-          <div>
-            <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-              <span className="text-[#136CDE]">7.</span> Indemnification
-            </h2>
-            <p>
-              You agree to defend, indemnify, and hold harmless GoFully and its officers, directors, employees, and agents from and against any third-party claims, damages, obligations, losses, liabilities, costs, or expenses (including reasonable attorneys' fees) arising from: (a) your use of or access to the Software, (b) your violation of any provision of these Terms, (c) your violation of any third-party right (including copyright, trademark, privacy, or proprietary rights) in connection with captured web visuals, or (d) any claim that content captured or distributed by you caused damage to a third party.
-            </p>
-          </div>
+            {/* 4 */}
+            <div>
+              <div className="gf-heading-font font-semibold flex items-center gap-2" style={{ fontSize: 16 }}>
+                <SectionNum n="4." /> Privacy &amp; On-Device Processing
+              </div>
+              <p className="mt-3" style={{ fontSize: "13.5px", lineHeight: 1.7, color: "rgba(29,31,32,.6)" }}>
+                Your privacy is of paramount importance. Our data practices are governed by our{" "}
+                <a href="/privacy" style={{ color: "var(--gf-color-accent)", fontWeight: 600 }}>Privacy Policy</a>, which is incorporated into these Terms by reference. You acknowledge and agree that GoFully operates locally within your browser sandbox and transmits zero image, video, or extracted text data to our servers.
+              </p>
+            </div>
 
-          {/* Section 8: Termination */}
-          <div>
-            <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-              <span className="text-[#136CDE]">8.</span> Termination & Survival
-            </h2>
-            <p>
-              You may terminate this Agreement at any time by uninstalling the GoFully extension and discontinuing all use of our services. We reserve the right to suspend, terminate, or discontinue the Software, with or without cause or notice, at any time. All provisions of these Terms which by their nature should survive termination shall survive (including ownership provisions, warranty disclaimers, indemnity, and limitations of liability).
-            </p>
-          </div>
+            {/* 5 */}
+            <div>
+              <div className="gf-heading-font font-semibold flex items-center gap-2" style={{ fontSize: 16 }}>
+                <SectionNum n="5." /> Disclaimer of Warranties (&ldquo;AS IS&rdquo; &amp; &ldquo;AS AVAILABLE&rdquo;)
+              </div>
+              <LegalBox>
+                <div className="gf-heading-font font-semibold" style={{ fontSize: 12, letterSpacing: "0.03em", marginBottom: 10 }}>
+                  TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW:
+                </div>
+                <LegalP>
+                  The Software, website, and services are provided on an &ldquo;as is&rdquo; and &ldquo;as available&rdquo; basis without warranties of any kind, either express, implied, statutory, or otherwise, including but not limited to implied warranties of merchantability, fitness for a particular purpose, title, non-infringement, or freedom from computer viruses or bugs.
+                </LegalP>
+                <LegalP>
+                  We do not warrant that (a) the software will meet your specific requirements, (b) screenshot stitching or OCR extraction will be 100% error-free across all complex web architectures (e.g. virtualized DOMs, cross-origin iframes, or heavy canvas animations), (c) defects will be immediately corrected, or (d) the operation of the extension will be uninterrupted.
+                </LegalP>
+              </LegalBox>
+            </div>
 
-          {/* Section 9: Governing Law & Jurisdiction */}
-          <div>
-            <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-              <span className="text-[#136CDE]">9.</span> Governing Law & Dispute Resolution
-            </h2>
-            <p>
-              These Terms shall be governed by and construed in accordance with the laws of the State of Delaware, United States, without regard to its conflict of law principles. Any legal suit, action, or proceeding arising out of or related to these Terms or the Software shall be instituted exclusively in the federal or state courts located in Delaware, and you consent to personal jurisdiction and venue in such courts.
-            </p>
-          </div>
+            {/* 6 */}
+            <div>
+              <div className="gf-heading-font font-semibold flex items-center gap-2" style={{ fontSize: 16 }}>
+                <SectionNum n="6." /> Limitation of Liability
+              </div>
+              <LegalBox>
+                <LegalP>
+                  In no event shall GoFully, its directors, employees, partners, agents, or affiliates be liable for any indirect, incidental, special, consequential, punitive, or exemplary damages, including but not limited to loss of profits, data, use, goodwill, business interruption, or other intangible losses resulting from:
+                </LegalP>
+                <ul className="mt-3 flex flex-col gap-1.5">
+                  <li style={{ font: "11.5px/1.6 ui-monospace, Menlo, monospace", color: "rgba(29,31,32,.6)", textTransform: "uppercase", paddingLeft: 14, position: "relative" }}>
+                    <span style={{ position: "absolute", left: 0, top: 6, width: 4, height: 4, background: "var(--gf-color-accent)" }} />
+                    Your access to, use of, or inability to access or use the Software;
+                  </li>
+                  <li style={{ font: "11.5px/1.6 ui-monospace, Menlo, monospace", color: "rgba(29,31,32,.6)", textTransform: "uppercase", paddingLeft: 14, position: "relative" }}>
+                    <span style={{ position: "absolute", left: 0, top: 6, width: 4, height: 4, background: "var(--gf-color-accent)" }} />
+                    Any inaccuracies in captured images, extracted OCR text, or generated PDFs;
+                  </li>
+                  <li style={{ font: "11.5px/1.6 ui-monospace, Menlo, monospace", color: "rgba(29,31,32,.6)", textTransform: "uppercase", paddingLeft: 14, position: "relative" }}>
+                    <span style={{ position: "absolute", left: 0, top: 6, width: 4, height: 4, background: "var(--gf-color-accent)" }} />
+                    Unintentional exposure of unredacted sensitive information shared by you to third parties;
+                  </li>
+                  <li style={{ font: "11.5px/1.6 ui-monospace, Menlo, monospace", color: "rgba(29,31,32,.6)", textTransform: "uppercase", paddingLeft: 14, position: "relative" }}>
+                    <span style={{ position: "absolute", left: 0, top: 6, width: 4, height: 4, background: "var(--gf-color-accent)" }} />
+                    Any third-party webpage behavior, script interference, or browser crashes.
+                  </li>
+                </ul>
+                <LegalP>
+                  In all cases, our aggregate total liability under these Terms shall not exceed the total amount paid by you to GoFully in the twelve (12) months preceding the claim (or $50.00 USD if no payments were made).
+                </LegalP>
+              </LegalBox>
+            </div>
 
-          {/* Section 10: Entire Agreement & Contact */}
-          <div className="border-t border-slate-800/80 pt-8">
-            <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-              <span className="text-[#136CDE]">10.</span> Entire Agreement & Contact Inquiries
-            </h2>
-            <p className="text-slate-400 mb-4">
-              These Terms, together with our Privacy Policy, constitute the entire agreement between you and GoFully regarding the Software. If any provision of these Terms is held to be invalid or unenforceable, the remaining provisions shall continue in full force and effect.
-            </p>
-            <div className="flex flex-wrap items-center gap-4 text-xs font-mono uppercase">
-              <a
-                href="/support"
-                className="border border-[#136CDE] bg-[#136CDE]/15 px-4 py-2 text-[#D2E5FF] hover:bg-[#136CDE] hover:text-white transition-colors"
-              >
-                GoFully Legal & Support Desk →
-              </a>
-              <span className="text-slate-400 font-mono">Legal Contact: <a href="mailto:rahamanmuzeeb1108@gmail.com" className="text-[#D2E5FF] underline">rahamanmuzeeb1108@gmail.com</a></span>
+            {/* 7 */}
+            <div>
+              <div className="gf-heading-font font-semibold flex items-center gap-2" style={{ fontSize: 16 }}>
+                <SectionNum n="7." /> Indemnification
+              </div>
+              <p className="mt-3" style={{ fontSize: "13.5px", lineHeight: 1.7, color: "rgba(29,31,32,.6)" }}>
+                You agree to defend, indemnify, and hold harmless GoFully and its officers, directors, employees, and agents from and against any third-party claims, damages, obligations, losses, liabilities, costs, or expenses (including reasonable attorneys&rsquo; fees) arising from: (a) your use of or access to the Software, (b) your violation of any provision of these Terms, (c) your violation of any third-party right (including copyright, trademark, privacy, or proprietary rights) in connection with captured web visuals, or (d) any claim that content captured or distributed by you caused damage to a third party.
+              </p>
+            </div>
+
+            {/* 8 */}
+            <div>
+              <div className="gf-heading-font font-semibold flex items-center gap-2" style={{ fontSize: 16 }}>
+                <SectionNum n="8." /> Termination &amp; Survival
+              </div>
+              <p className="mt-3" style={{ fontSize: "13.5px", lineHeight: 1.7, color: "rgba(29,31,32,.6)" }}>
+                You may terminate this Agreement at any time by uninstalling the GoFully extension and discontinuing all use of our services. We reserve the right to suspend, terminate, or discontinue the Software, with or without cause or notice, at any time. All provisions of these Terms which by their nature should survive termination shall survive (including ownership provisions, warranty disclaimers, indemnity, and limitations of liability).
+              </p>
+            </div>
+
+            {/* 9 */}
+            <div>
+              <div className="gf-heading-font font-semibold flex items-center gap-2" style={{ fontSize: 16 }}>
+                <SectionNum n="9." /> Governing Law &amp; Dispute Resolution
+              </div>
+              <p className="mt-3" style={{ fontSize: "13.5px", lineHeight: 1.7, color: "rgba(29,31,32,.6)" }}>
+                These Terms shall be governed by and construed in accordance with the laws of the State of Delaware, United States, without regard to its conflict of law principles. Any legal suit, action, or proceeding arising out of or related to these Terms or the Software shall be instituted exclusively in the federal or state courts located in Delaware, and you consent to personal jurisdiction and venue in such courts.
+              </p>
+            </div>
+
+            {/* 10 */}
+            <div className="pt-2" style={{ paddingBottom: 40, borderTop: "1px solid rgba(29,31,32,.08)", paddingTop: 32 }}>
+              <div className="gf-heading-font font-semibold flex items-center gap-2" style={{ fontSize: 16 }}>
+                <SectionNum n="10." /> Entire Agreement &amp; Contact Inquiries
+              </div>
+              <p className="mt-3 mb-5" style={{ fontSize: "13.5px", lineHeight: 1.7, color: "rgba(29,31,32,.6)" }}>
+                These Terms, together with our Privacy Policy, constitute the entire agreement between you and GoFully regarding the Software. If any provision of these Terms is held to be invalid or unenforceable, the remaining provisions shall continue in full force and effect.
+              </p>
+              <div className="flex items-center flex-wrap" style={{ gap: 18 }}>
+                <a
+                  href="/support"
+                  className="inline-flex items-center justify-center gf-heading-font font-semibold"
+                  style={{ height: 40, padding: "0 18px", background: "var(--gf-color-accent)", color: "#fff", fontSize: "12.5px", letterSpacing: "0.02em" }}
+                >
+                  GoFully Legal &amp; Support Desk &rarr;
+                </a>
+                <span style={{ fontSize: 12, color: "rgba(29,31,32,.5)" }}>
+                  Legal Contact:{" "}
+                  <a href="mailto:rahamanmuzeeb1108@gmail.com" style={{ color: "var(--gf-color-accent)", fontFamily: "ui-monospace, Menlo, monospace" }}>
+                    rahamanmuzeeb1108@gmail.com
+                  </a>
+                </span>
+              </div>
             </div>
           </div>
-        </div>
-      </main>
+        </BlueprintFrame>
+      </div>
 
-      <SiteFooter />
+      <SiteFooterIndustry activeHref="/terms" />
     </div>
   );
 }
