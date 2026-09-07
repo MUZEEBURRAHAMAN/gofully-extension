@@ -22,23 +22,22 @@ const STEPS = [
     n: 1,
     title: "CAPTURE THE PAGE",
     body: "Pick full page, visible area, a custom region, or a scrolling feed. GoFully stitches it into one clean image.",
-    image: "/features/feature-1.webp",
-    alt: "Full-page capture in progress",
+    image: "/features/capture.webp",
+    alt: "GoFully capture options showing full page, visible area, and scrolling area",
   },
   {
     n: 2,
     title: "ANNOTATE & REDACT",
     body: "Call out what matters with arrows, shapes, and text. Blur anything sensitive before it ships.",
-    image: "/features/feature-3.webp",
-    alt: "Annotated screenshot with arrows and callouts in the GoFully editor",
+    image: "/features/annotate.webp",
+    alt: "GoFully annotation editor with redact, blur, and markup tools",
   },
   {
     n: 3,
     title: "EXPORT INSTANTLY",
     body: "Copy to clipboard, save as PNG, or export a PDF — straight from the result bar, no dialogs.",
-    image: "/features/feature-4.webp",
-    alt: "GoFully result bar with copy, PNG, and PDF export options",
-    contain: true,
+    image: "/features/export.webp",
+    alt: "GoFully result options with copy, PNG, WebP, PDF, and edit",
   },
 ];
 
@@ -53,8 +52,8 @@ const FEATURES = [
     ),
     title: "Full-page scrolling capture",
     body: "Seamlessly capture full-height websites, dashboards, and infinite feeds. GoFully scrolls the page, waits for lazy-loaded content, and stitches a pixel-perfect canvas with zero overlap.",
-    image: "/features/feature-1.webp",
-    alt: "Full-page scrolling capture of a long webpage",
+    image: "/features/feature-capture.webp",
+    alt: "Full-page scrolling capture showing clean capture of a long webpage",
     reverse: false,
   },
   {
@@ -67,8 +66,8 @@ const FEATURES = [
     ),
     title: "On-device text extraction",
     body: "Extract readable text, code snippets, and structured tables from any region in milliseconds. A local WebAssembly model runs on your CPU — zero cloud transmission, zero latency.",
-    image: "/features/feature-2.webp",
-    alt: "On-device OCR text extraction result",
+    image: "/features/feature-ocr.webp",
+    alt: "On-device OCR text extraction with instant copy",
     reverse: true,
   },
   {
@@ -81,9 +80,26 @@ const FEATURES = [
     ),
     title: "Annotate & redact",
     body: "Mark up screenshots with arrows, callouts, and shapes. Instantly blur or pixelate sensitive API keys, passwords, and PII before you share.",
-    image: "/features/feature-3.webp",
-    alt: "Annotated screenshot showing arrows, callouts, and highlights in the GoFully editor",
+    image: "/features/feature-annotate.webp",
+    alt: "Annotated screenshot showing markup, callouts, and redaction tools in GoFully editor",
     reverse: false,
+  },
+  {
+    tag: "Beautify",
+    icon: (
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
+        <path d="M20 3v4" />
+        <path d="M22 5h-4" />
+        <path d="M4 17v2" />
+        <path d="M5 18H3" />
+      </svg>
+    ),
+    title: "Screenshot beautifier & mockups",
+    body: "Transform raw screenshots into polished, presentation-ready assets. Customize vibrant backgrounds, add window frames, tweak padding and rounded corners, and apply soft drop shadows.",
+    image: "/features/feature-beautify.webp",
+    alt: "GoFully screenshot beautifier with customizable backgrounds, padding, shadows, and frame mockups",
+    reverse: true,
   },
   {
     tag: "Export",
@@ -96,10 +112,9 @@ const FEATURES = [
     ),
     title: "Flexible export",
     body: "Generate a paginated PDF, download a crisp PNG or WebP, or copy straight to your clipboard — all from the result bar, right after you capture.",
-    image: "/features/feature-4.webp",
-    alt: "GoFully result bar with copy, PNG, and PDF export options",
-    reverse: true,
-    contain: true,
+    image: "/features/feature-export.webp",
+    alt: "GoFully result bar with copy, PNG, WebP, and PDF export options",
+    reverse: false,
   },
 ];
 
@@ -236,11 +251,11 @@ export default function HomePage() {
           </div>
         }
       >
-        {/* Sample mockup image — swap for a real product screenshot when ready */}
+        {/* Hero tab mockup */}
         <img
-          src="/features/feature-3.webp"
-          alt="GoFully annotation editor showing arrows and callouts on a captured screenshot"
-          className="mx-auto object-cover h-full w-full object-top"
+          src="/features/hero_cover.webp"
+          alt="GoFully Screenshot Beautifier interface with full annotation and styling tools"
+          className="mx-auto object-contain h-full w-full object-center"
           draggable={false}
           loading="eager"
           fetchPriority="high"
@@ -284,8 +299,8 @@ export default function HomePage() {
                 <img
                   src={s.image}
                   alt={s.alt}
-                  className={`w-full block ${s.contain ? "object-contain bg-white" : "object-cover"}`}
-                  style={{ aspectRatio: "4/3" }}
+                  className="w-full block object-cover"
+                  style={{ aspectRatio: "3/2" }}
                   loading="lazy"
                   decoding="async"
                 />
@@ -311,7 +326,7 @@ export default function HomePage() {
             Everything you need to capture, clean up, and share
           </div>
           <p style={{ fontSize: "14.5px", color: "rgba(29,31,32,.5)", marginTop: 12 }}>
-            Four tools that cover the whole workflow — from first capture to final export.
+            Five tools that cover the whole workflow — from first capture to final export.
           </p>
         </div>
 
@@ -329,8 +344,8 @@ export default function HomePage() {
                 <img
                   src={f.image}
                   alt={f.alt}
-                  className={`w-full block ${f.contain ? "object-contain bg-white" : "object-cover"}`}
-                  style={{ aspectRatio: "16/11" }}
+                  className="w-full block object-cover"
+                  style={{ aspectRatio: "3/2" }}
                   loading="lazy"
                   decoding="async"
                 />
