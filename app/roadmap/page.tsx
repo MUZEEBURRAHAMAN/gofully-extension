@@ -188,15 +188,49 @@ export default function RoadmapPage() {
           >
             <div className="p-6 border" style={{ borderColor: "rgba(29,31,32,.12)", background: "#fff", maxWidth: 600 }}>
               <div className="gf-heading-font font-semibold" style={{ fontSize: 20 }}>
-                A visual refresh and a pass through the backlog
+                A complete redesign, top to bottom
               </div>
               <p className="mt-2" style={{ fontSize: "13.5px", color: "rgba(29,31,32,.6)", lineHeight: 1.6 }}>
-                Icons, defaults, and reported issues cleaned up across the whole extension.
+                Every screen rebuilt on one consistent design system, refreshed onboarding, and export bugs that had
+                been broken for a while.
               </p>
-              <ul className="mt-3.5 flex flex-col gap-2">
-                <Bullet>Logo now visible everywhere it appears — popup, editor, toolbar icon, and the extensions page.</Bullet>
+
+              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
+                Redesign
+              </div>
+              <ul className="mt-2.5 flex flex-col gap-2">
+                <Bullet>Editor, popup, and every screen rebuilt on one consistent design system — zero-radius corners, CleanShot-style interactivity, unified icons and spacing.</Bullet>
+                <Bullet>New logo integrated everywhere it appears — popup, editor, toolbar icon, favicons, and the extensions page.</Bullet>
+                <Bullet>An accessibility pass across the whole extension — fixed contrast, heading structure, and motion issues.</Bullet>
+              </ul>
+
+              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
+                Onboarding &amp; polish
+              </div>
+              <ul className="mt-2.5 flex flex-col gap-2">
+                <Bullet>Fixed tooltip contrast and consistency, plus a shake bug on the help page.</Bullet>
+                <Bullet>Fixed an onboarding overlap that could hide part of the first-run flow.</Bullet>
+                <Bullet>Done and Cancel buttons no longer scroll off-screen during scrolling capture.</Bullet>
+              </ul>
+
+              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
+                Beautify &amp; export
+              </div>
+              <ul className="mt-2.5 flex flex-col gap-2">
+                <Bullet>Beautify and crop are now correctly included in exports — previously dropped in some cases.</Bullet>
                 <Bullet>4K UHD is now the default export and copy quality, in both the editor and the popup&apos;s quick-copy.</Bullet>
-                <Bullet>Fixed reported bugs across capture, OCR, and export.</Bullet>
+                <Bullet>Fixed blurry exports caused by an image-caching bug.</Bullet>
+                <Bullet>Fixed the export quality dropdown (Native / 1080p HD / 4K UHD) having no effect on the actual output.</Bullet>
+              </ul>
+
+              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
+                Bug fixes
+              </div>
+              <ul className="mt-2.5 flex flex-col gap-2">
+                <Bullet>Fixed full-page capture only grabbing the viewport on pages with nested scroll containers.</Bullet>
+                <Bullet>Fixed capture sound being missing or broken across capture modes.</Bullet>
+                <Bullet>Fixed uninstall-feedback links pointing at the wrong URL.</Bullet>
+                <Bullet>Removed dead legacy marketing files that were being bundled into the extension package.</Bullet>
               </ul>
             </div>
           </TimelineRow>
