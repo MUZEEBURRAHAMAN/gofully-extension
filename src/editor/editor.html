@@ -78,6 +78,7 @@
       user-select: none;
       text-decoration: none;
       cursor: default;
+      flex-shrink: 0;
     }
     .brand-logo {
       width: 24px;
@@ -118,6 +119,7 @@
       padding: 2px 4px;
       border: 1px solid var(--bar-bd);
       border-radius: 0;
+      flex-shrink: 0;
     }
     .hdr-zoom-btn {
       position: relative;
@@ -160,6 +162,7 @@
       align-items: center;
       gap: 3px;
       padding: 0 4px;
+      flex-shrink: 0;
     }
     .tbar-group.bp {
       border: 1px solid rgba(29,31,32,.08);
@@ -174,7 +177,25 @@
       flex-shrink: 0;
     }
 
-    .tbar-spacer { flex: 1; }
+    /* The toolbar keeps growing as tools get added, and on a real laptop
+       window (1440px, 1366px, even smaller with any side panel open) there
+       isn't room for everything — it used to just overflow silently, pushing
+       Quality/Export/Done past the right edge of the window with no way to
+       reach them. This wraps the tool groups so THEY scroll instead, while
+       the essential right-side actions (history, zoom, quality, export)
+       stay put via flex-shrink: 0 below and are never the thing that gives. */
+    .tbar-scroll {
+      display: flex;
+      align-items: center;
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: thin;
+    }
+    .tbar-scroll::-webkit-scrollbar { height: 5px; }
+    .tbar-scroll::-webkit-scrollbar-thumb { background: rgba(29,31,32,.18); }
+    .tbar-scroll::-webkit-scrollbar-track { background: transparent; }
 
     /* Tool button */
     .tool-btn {
@@ -301,6 +322,7 @@
       align-items: center;
       gap: 6px;
       padding: 0 6px;
+      flex-shrink: 0;
     }
 
     .color-swatch {
@@ -320,6 +342,7 @@
       align-items: center;
       gap: 6px;
       padding: 0 6px;
+      flex-shrink: 0;
     }
     .stroke-label { font-size: 11px; font-weight: 600; color: var(--muted); }
     .stroke-group input[type="range"] {
@@ -517,6 +540,7 @@
       align-items: center;
       gap: 6px;
       position: relative;
+      flex-shrink: 0;
     }
 
     /* Export dropdown */
@@ -936,6 +960,11 @@
 
   <div class="tbar-sep"></div>
 
+  <!-- Tool groups scroll horizontally when the window is too narrow to fit
+       everything, instead of silently pushing Quality/Export/Done off the
+       right edge of the toolbar with no way to reach them. -->
+  <div class="tbar-scroll">
+
   <!-- Drawing tools — blueprint-framed group -->
   <div class="tbar-group bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
 
@@ -1145,7 +1174,7 @@
     </button>
   </div>
 
-  <div class="tbar-spacer"></div>
+  </div><!-- /.tbar-scroll -->
 
   <!-- History -->
   <div class="tbar-group">
