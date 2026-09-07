@@ -11,6 +11,25 @@ A modern, high-performance Chrome extension for capturing full pages, viewports,
 
 ---
 
+## 📍 Status & Roadmap
+
+**Current version: `v1.1.1`** — live on the Chrome Web Store.
+
+Recently shipped:
+- Logo/icon now visible everywhere it appears (popup, editor, toolbar icon, extensions page)
+- 4K UHD is now the default export and copy quality, in both the editor and the popup's quick-copy
+- Fixed reported bugs across capture, OCR, and export
+
+**Coming in `v1.1.2`** (in active development):
+- **Personalize** — UI language options, light/dark theme, OCR language selection
+- **Editor tools** — highlighter tool, shape tool consolidated into one button with a dropdown, upgraded text tool (color/font/size controls), custom keyboard shortcuts for editor tools
+- **Beautify** — save your own background/frame/padding as a reusable preset, multi-image collage layouts, a gradient/pattern background library, more device frames
+- **Export & workflow** — export capture + OCR'd text as Markdown, optional URL + timestamp stamp on capture, "copy as" quick actions after OCR
+
+Full detail and what's further out (multi-tab batch capture, auto-redact detection, screen recording) is on the **[public roadmap](https://gofully-extension.vercel.app/roadmap)**.
+
+---
+
 ## Comparison: GoFully vs. Other Tools
 
 | Feature / Standard | GoFullPage | Awesome Screenshot | Lightshot | **GoFully** |
@@ -30,9 +49,9 @@ A modern, high-performance Chrome extension for capturing full pages, viewports,
 ### 📸 Capture Modes
 | Mode | Shortcut | Description |
 |---|---|---|
-| **Full Page** | `⌥⇧F` / `Alt+Shift+F` | Captures entire scrollable document with CDP & scroll-stitch fallback, smart sticky element handling, and lazy-load pre-triggering |
-| **Visible Area** | `⌥⇧V` / `Alt+Shift+V` | Captures exactly what's visible in your current viewport instantly |
-| **Selected Area** | — | Interactive overlay with precise dimensions & snap guides to drag-select any custom region |
+| **Full Page** | `Ctrl+Shift+F` (`⌘+Shift+F` on Mac) | Captures entire scrollable document with CDP & scroll-stitch fallback, smart sticky element handling, and lazy-load pre-triggering |
+| **Visible Area** | `Ctrl+Shift+V` (`⌘+Shift+V` on Mac) | Captures exactly what's visible in your current viewport instantly |
+| **Selected Area** | `Ctrl+Shift+A` (`⌘+Shift+A` on Mac) | Interactive overlay with precise dimensions & snap guides to drag-select any custom region |
 | **Scrolling Area** | — | Select any fixed rectangular viewport area and automatically scroll-and-stitch its contents |
 | **Capture Text (OCR)** | — | Drag-select any region on any webpage or image to extract and copy recognized text instantly via local OCR |
 
@@ -79,8 +98,9 @@ A modern, high-performance Chrome extension for capturing full pages, viewports,
 | Shortcut | Action |
 |---|---|
 | `Alt+S` | Open GoFully popup |
-| `Alt+Shift+F` / `⌥⇧F` | Capture full page |
-| `Alt+Shift+V` / `⌥⇧V` | Capture visible viewport |
+| `Ctrl+Shift+F` (`⌘+Shift+F`) | Capture full page |
+| `Ctrl+Shift+V` (`⌘+Shift+V`) | Capture visible viewport |
+| `Ctrl+Shift+A` (`⌘+Shift+A`) | Capture selected area |
 
 #### Annotation Editor Shortcuts
 | Key | Action |
