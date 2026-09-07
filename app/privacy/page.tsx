@@ -1,6 +1,20 @@
+import type { Metadata } from "next";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
 import { BlueprintFrame } from "@/components/blueprint-frame";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy — GoFully Screenshot Extension",
+  description:
+    "GoFully does not collect, track, or transmit any user data. All screenshot capture, annotation, and OCR runs 100% locally on your machine.",
+  alternates: { canonical: "https://gofully-extension.vercel.app/privacy" },
+  openGraph: {
+    title: "Privacy Policy — GoFully Screenshot Extension",
+    description: "100% private and on-device. No telemetry, no tracking, no cloud servers.",
+    url: "https://gofully-extension.vercel.app/privacy",
+    siteName: "GoFully",
+  },
+};
 
 const NAV_LINKS = [
   { label: "Product", href: "/#how-it-works" },

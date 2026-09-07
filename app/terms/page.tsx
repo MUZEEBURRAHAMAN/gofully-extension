@@ -1,6 +1,19 @@
+import type { Metadata } from "next";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
 import { BlueprintFrame } from "@/components/blueprint-frame";
+
+export const metadata: Metadata = {
+  title: "Terms of Service — GoFully",
+  description: "Terms of service and usage conditions for the GoFully Chrome Extension.",
+  alternates: { canonical: "https://gofully-extension.vercel.app/terms" },
+  openGraph: {
+    title: "Terms of Service — GoFully",
+    description: "Terms of service and usage conditions for GoFully.",
+    url: "https://gofully-extension.vercel.app/terms",
+    siteName: "GoFully",
+  },
+};
 
 const NAV_LINKS = [
   { label: "Product", href: "/#how-it-works" },
