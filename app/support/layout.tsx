@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { BreadcrumbJsonLd } from "@/components/breadcrumb-jsonld";
 
 export const metadata: Metadata = {
   title: "Support & Help Center — GoFully",
@@ -13,5 +14,10 @@ export const metadata: Metadata = {
 };
 
 export default function SupportLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <>
+      <BreadcrumbJsonLd name="Support" path="/support" />
+      {children}
+    </>
+  );
 }

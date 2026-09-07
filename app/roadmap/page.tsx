@@ -200,7 +200,7 @@ export default function RoadmapPage() {
               </p>
               <ul className="mt-3.5 flex flex-col gap-2">
                 <Bullet>Popup, editor toolbar, and result screens redesigned with consistent icons, spacing, and type.</Bullet>
-                <Bullet>Fixed the full backlog of reported bugs across capture, OCR, and export.</Bullet>
+                <Bullet>Fixed reported bugs across capture, OCR, and export.</Bullet>
                 <Bullet>Shareable capture links, and support for Firefox and Edge alongside Chrome.</Bullet>
               </ul>
             </div>

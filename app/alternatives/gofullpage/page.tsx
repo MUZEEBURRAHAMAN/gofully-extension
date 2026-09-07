@@ -3,6 +3,7 @@ import Link from "next/link";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
 import { BlueprintFrame } from "@/components/blueprint-frame";
+import { BreadcrumbJsonLd } from "@/components/breadcrumb-jsonld";
 
 const CWS_URL =
   "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
@@ -50,9 +51,24 @@ function Check({ yes }: { yes: boolean }) {
   );
 }
 
+const webPageJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "https://gofully-extension.vercel.app/alternatives/gofullpage#webpage",
+  url: "https://gofully-extension.vercel.app/alternatives/gofullpage",
+  name: "GoFully vs GoFullPage",
+  isPartOf: { "@id": "https://gofully-extension.vercel.app/#website" },
+  dateModified: "2026-09-07",
+};
+
 export default function GoFullPageAlternativePage() {
   return (
     <div className="gf-industry min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }}
+      />
+      <BreadcrumbJsonLd name="GoFully vs GoFullPage" path="/alternatives/gofullpage" />
       <SiteNav links={NAV_LINKS} />
 
       {/* Hero */}
@@ -74,11 +90,15 @@ export default function GoFullPageAlternativePage() {
       <div style={{ padding: "0 24px 56px" }}>
         <BlueprintFrame className="mx-auto bg-white" style={{ maxWidth: 880, padding: "22px 28px" }}>
           <p style={{ fontSize: "13px", lineHeight: 1.7, color: "rgba(29,31,32,.6)" }}>
-            <strong style={{ color: "var(--gf-color-text)" }}>Note:</strong> GoFullPage briefly lost its Chrome Web Store listing in August 2026 over a policy dispute and, per{" "}
-            <a href="https://gofullpage.com/" target="_blank" rel="noopener noreferrer" style={{ color: "var(--gf-color-accent)", fontWeight: 600 }}>
-              GoFullPage&apos;s own site
+            <strong style={{ color: "var(--gf-color-text)" }}>Note:</strong> GoFullPage&apos;s Chrome Web Store listing was temporarily removed on{" "}
+            <a href="https://blog.gofullpage.com/2026/08/11/gofullpage-chrome-update/" target="_blank" rel="noopener noreferrer" style={{ color: "var(--gf-color-accent)", fontWeight: 600 }}>
+              August 11, 2026
             </a>
-            , was still routing installs through a beta build as of early September 2026. GoFully has always shipped as a single, directly-installable Chrome Web Store listing.
+            {" "}over a copyright dispute involving one design element — the developers were explicit that it was{" "}
+            <a href="https://blog.gofullpage.com/2026/08/14/gofullpage-chrome-update-a-progress-report/" target="_blank" rel="noopener noreferrer" style={{ color: "var(--gf-color-accent)", fontWeight: 600 }}>
+              not a security issue
+            </a>
+            . It was restored by late August 2026, though GoFullPage&apos;s own homepage still noted a beta-build workaround as of early September. GoFully has always shipped as a single, directly-installable Chrome Web Store listing with no removal history.
           </p>
         </BlueprintFrame>
       </div>

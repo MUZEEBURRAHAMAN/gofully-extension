@@ -16,8 +16,10 @@ export function SiteNav({ links }: { links: NavLink[] }) {
       <div className="mx-auto flex items-center justify-between" style={{ height: 72, maxWidth: 1320 }}>
         <Link href="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
           <img
-            src="/logo.png"
+            src="/logo-nav.png"
             alt="GoFully"
+            width={40}
+            height={40}
             className="h-10 w-10 object-contain"
           />
           <div className="gf-heading-font font-semibold" style={{ fontSize: 18, letterSpacing: "-0.01em" }}>

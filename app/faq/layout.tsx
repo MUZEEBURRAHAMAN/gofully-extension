@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { BreadcrumbJsonLd } from "@/components/breadcrumb-jsonld";
 
 export const metadata: Metadata = {
   title: "Frequently Asked Questions — GoFully",
@@ -41,6 +42,7 @@ export default function FAQLayout({ children }: { children: React.ReactNode }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
+      <BreadcrumbJsonLd name="FAQ" path="/faq" />
       {children}
     </>
   );

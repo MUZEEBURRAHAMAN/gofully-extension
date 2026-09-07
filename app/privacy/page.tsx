@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
 import { BlueprintFrame } from "@/components/blueprint-frame";
+import { BreadcrumbJsonLd } from "@/components/breadcrumb-jsonld";
 
 export const metadata: Metadata = {
   title: "Privacy Policy — GoFully Screenshot Extension",
@@ -63,6 +64,7 @@ function Bullet({ children }: { children: React.ReactNode }) {
 export default function PrivacyPage() {
   return (
     <div className="gf-industry min-h-screen">
+      <BreadcrumbJsonLd name="Privacy Policy" path="/privacy" />
       <SiteNav links={NAV_LINKS} />
 
       {/* Header */}
