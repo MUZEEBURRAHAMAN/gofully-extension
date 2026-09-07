@@ -38,10 +38,10 @@ const ROWS = [
   { feature: "Annotation & markup tools", gofully: "Free & Unrestricted", nimbus: "Basic free / Premium advanced", gofullyYes: true, nimbusYes: false },
   { feature: "Redaction (blur & mosaic)", gofully: "Free", nimbus: "Limited on Free tier", gofullyYes: true, nimbusYes: false },
   { feature: "Screenshot beautifier & mockups", gofully: "Free", nimbus: "Not offered", gofullyYes: true, nimbusYes: false },
-  { feature: "Paginated PDF export", gofully: "Free", nimbus: "Requires Nimbus Pro ($7/mo)", gofullyYes: true, nimbusYes: false },
+  { feature: "Paginated PDF export", gofully: "Free", nimbus: "Requires paid tier", gofullyYes: true, nimbusYes: false },
   { feature: "Extension footprint / Performance", gofully: "Ultra-lightweight, 0 background memory", nimbus: "Heavy suite (bundled with notes & workspace)", gofullyYes: true, nimbusYes: false },
-  { feature: "Cloud sync & mandatory account", gofully: "No account, 100% offline", nimbus: "Pushes account creation and cloud storage", gofullyYes: true, nimbusYes: false },
-  { feature: "Price", gofully: "100% Free", nimbus: "Freemium ($7.00 / month)", gofullyYes: true, nimbusYes: false },
+  { feature: "Cloud sync & account", gofully: "No account, 100% offline", nimbus: "Account pushed on first use", gofullyYes: true, nimbusYes: false },
+  { feature: "Price", gofully: "100% Free", nimbus: "Freemium, paid plans from ~$5/mo", gofullyYes: true, nimbusYes: false },
 ];
 
 function Check({ yes }: { yes: boolean }) {

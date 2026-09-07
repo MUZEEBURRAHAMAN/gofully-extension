@@ -193,26 +193,27 @@ export default function ExtractUnselectableTextGuidePage() {
               </ul>
             </section>
 
-            {/* CTA */}
-            <div className="bg-neutral-900 text-white p-6 text-center space-y-3">
-              <h3 className="gf-heading-font font-semibold text-[20px]">
-                Copy unselectable text effortlessly
-              </h3>
-              <p className="text-[13.5px] text-neutral-400 max-w-md mx-auto">
-                No accounts, no cloud uploads, and 100% on-device OCR. Extract text from any webpage or image.
-              </p>
-              <a
-                href={CWS_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs px-6 py-2.5 uppercase tracking-wide transition-colors"
-              >
-                Add GoFully to Chrome — It&apos;s Free
-              </a>
-            </div>
-
           </BlueprintFrame>
         </div>
+      </div>
+
+      {/* CTA */}
+      <div className="text-center" style={{ background: "#1d1f20", padding: "64px 24px" }}>
+        <h2 className="gf-heading-font font-semibold" style={{ fontSize: 28, color: "#fff", letterSpacing: "-0.01em" }}>
+          Copy unselectable text effortlessly
+        </h2>
+        <p className="mx-auto" style={{ fontSize: "14.5px", color: "rgba(255,255,255,.55)", maxWidth: 460, marginTop: 12, lineHeight: 1.6 }}>
+          No accounts, no cloud uploads, and 100% on-device OCR. Extract text from any webpage or image.
+        </p>
+        <a
+          href={CWS_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center gf-heading-font font-semibold"
+          style={{ height: 44, padding: "0 24px", background: "var(--gf-color-accent)", color: "#fff", fontSize: 13, letterSpacing: "0.02em", marginTop: 22 }}
+        >
+          Add to Chrome — It&apos;s Free
+        </a>
       </div>
 
       <SiteFooterIndustry activeHref="/guides" />

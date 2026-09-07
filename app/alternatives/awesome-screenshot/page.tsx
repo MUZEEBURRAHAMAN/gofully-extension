@@ -34,13 +34,13 @@ const ROWS = [
   { feature: "Full page scrolling capture", gofully: "Yes", awesome: "Yes", gofullyYes: true, awesomeYes: true },
   { feature: "Visible area capture", gofully: "Yes", awesome: "Yes", gofullyYes: true, awesomeYes: true },
   { feature: "Selected region capture", gofully: "Yes", awesome: "Yes", gofullyYes: true, awesomeYes: true },
-  { feature: "Local WebAssembly OCR", gofully: "Yes, 100% on-device", awesome: "Paid / Cloud-dependent", gofullyYes: true, awesomeYes: false },
-  { feature: "Annotation & markup tools", gofully: "Unlimited & Free", awesome: "Limited on Free Tier", gofullyYes: true, awesomeYes: false },
-  { feature: "Redaction (blur / mosaic)", gofully: "Free & Instant", awesome: "Limited tools on Free", gofullyYes: true, awesomeYes: false },
+  { feature: "Local WebAssembly OCR", gofully: "Yes, 100% on-device", awesome: "Not offered", gofullyYes: true, awesomeYes: false },
+  { feature: "Annotation & markup tools", gofully: "Unlimited & Free", awesome: "Basic tools on Free tier", gofullyYes: true, awesomeYes: false },
+  { feature: "Redaction (blur / mosaic)", gofully: "Free & Instant", awesome: "Included, capped at 100 screenshots on Free", gofullyYes: true, awesomeYes: false },
   { feature: "Screenshot beautifier & mockups", gofully: "Free", awesome: "Not offered", gofullyYes: true, awesomeYes: false },
   { feature: "Paginated PDF export", gofully: "Free", awesome: "Requires Paid Plan", gofullyYes: true, awesomeYes: false },
-  { feature: "Account required", gofully: "Never", awesome: "Yes, mandatory login", gofullyYes: true, awesomeYes: false },
-  { feature: "Data storage / Privacy", gofully: "100% Local / In-browser", awesome: "Cloud uploads & third-party storage", gofullyYes: true, awesomeYes: false },
+  { feature: "Account required", gofully: "Never", awesome: "Required for paid tiers", gofullyYes: true, awesomeYes: false },
+  { feature: "Data storage / Privacy", gofully: "100% Local / In-browser", awesome: "Cloud-first, with a local-save option", gofullyYes: true, awesomeYes: false },
   { feature: "Price", gofully: "Free forever", awesome: "$6.00 / month ($72/yr)", gofullyYes: true, awesomeYes: false },
 ];
 
@@ -84,7 +84,7 @@ export default function AwesomeScreenshotAlternativePage() {
             GoFully vs Awesome Screenshot
           </h1>
           <p className="mx-auto" style={{ fontSize: "15.5px", lineHeight: 1.6, color: "rgba(29,31,32,.55)", maxWidth: 620, marginTop: 18 }}>
-            Awesome Screenshot started as a simple capture extension, but has grown into a heavy cloud platform with mandatory logins, monthly subscriptions, and cloud storage privacy risks. GoFully was built to bring back fast, 100% offline, free browser captures.
+            Awesome Screenshot started as a simple capture extension, but has grown into a cloud-first platform built around accounts, monthly subscriptions, and team sharing. GoFully was built to bring back fast, 100% offline, free browser captures.
           </p>
         </div>
       </div>
@@ -102,7 +102,7 @@ export default function AwesomeScreenshotAlternativePage() {
           <BlueprintFrame className="bg-white p-6">
             <h2 className="gf-heading-font font-semibold text-[17px] mb-2">100% Local Privacy</h2>
             <p style={{ fontSize: "13px", lineHeight: 1.65, color: "rgba(29,31,32,.55)" }}>
-              Capturing sensitive dashboards or API keys? Awesome Screenshot routes captures through cloud storage. GoFully processes pixels and OCR locally inside your browser memory — zero telemetry.
+              Capturing sensitive dashboards or API keys? Awesome Screenshot is built around cloud sync and sharing by default. GoFully processes pixels and OCR locally inside your browser memory — zero telemetry, no cloud step at all.
             </p>
           </BlueprintFrame>
 
