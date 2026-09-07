@@ -174,6 +174,7 @@ export default function RootLayout({
       className={`dark ${bricolageGrotesque.variable} ${inter.variable}`}
     >
       <head>
+        <meta name="google-site-verification" content="GjxLZnMKWrl0IzHC4J6K8B03R5riBt-uVERSerMOBF8" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

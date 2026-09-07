@@ -9,6 +9,7 @@ const ALL_LINKS = [
   { label: "FAQ", href: "/faq" },
   { label: "Support", href: "/support" },
   { label: "Roadmap", href: "/roadmap" },
+  { label: "GoFullPage Alternative", href: "/alternatives/gofullpage" },
 ];
 
 export function SiteFooterIndustry({
