@@ -7,8 +7,8 @@ const ALL_LINKS = [
   { label: "Terms", href: "/terms" },
   { label: "Security", href: "/security" },
   { label: "FAQ", href: "/faq" },
-  { label: "Support", href: "/support" },
   { label: "Alternatives", href: "/alternatives" },
+  { label: "Guides", href: "/guides" },
 ];
 
 export function SiteFooterIndustry({
