@@ -22,14 +22,6 @@ export const metadata: Metadata = {
   },
 };
 
-const NAV_LINKS = [
-  { label: "Product", href: "/#how-it-works" },
-  { label: "Features", href: "/#features" },
-  { label: "Security", href: "/security" },
-  { label: "Support", href: "/support" },
-  { label: "FAQ", href: "/faq" },
-];
-
 const ROWS = [
   { feature: "Full page scrolling capture", gofully: "Yes", awesome: "Yes", gofullyYes: true, awesomeYes: true },
   { feature: "Visible area capture", gofully: "Yes", awesome: "Yes", gofullyYes: true, awesomeYes: true },
@@ -70,7 +62,7 @@ export default function AwesomeScreenshotAlternativePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }}
       />
       <BreadcrumbJsonLd name="GoFully vs Awesome Screenshot" path="/alternatives/awesome-screenshot" />
-      <SiteNav links={NAV_LINKS} />
+      <SiteNav />
 
       {/* Hero */}
       <div className="text-center" style={{ padding: "88px 24px 56px" }}>

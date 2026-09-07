@@ -8,14 +8,6 @@ import { SiteFooterIndustry } from "@/components/site-footer-industry";
 const CWS_URL =
   "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
 
-const NAV_LINKS = [
-  { label: "Product", href: "/#how-it-works" },
-  { label: "Features", href: "/#features" },
-  { label: "Security", href: "/security" },
-  { label: "Support", href: "/support" },
-  { label: "FAQ", href: "/faq", active: true },
-];
-
 const FAQ_GROUPS = [
   {
     category: "General",
@@ -58,7 +50,7 @@ const FAQ_GROUPS = [
 export default function FAQPage() {
   return (
     <div className="gf-industry min-h-screen">
-      <SiteNav links={NAV_LINKS} />
+      <SiteNav />
 
       {/* Hero */}
       <div className="text-center" style={{ padding: "88px 24px 64px" }}>

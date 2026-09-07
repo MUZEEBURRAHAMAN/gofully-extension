@@ -22,14 +22,6 @@ export const metadata: Metadata = {
   },
 };
 
-const NAV_LINKS = [
-  { label: "Product", href: "/#how-it-works" },
-  { label: "Features", href: "/#features" },
-  { label: "Security", href: "/security" },
-  { label: "Support", href: "/support" },
-  { label: "FAQ", href: "/faq" },
-];
-
 const ROWS = [
   { feature: "Full page scrolling capture", gofully: "Yes", fireshot: "Yes", gofullyYes: true, fireshotYes: true },
   { feature: "Visible area capture", gofully: "Yes", fireshot: "Yes", gofullyYes: true, fireshotYes: true },
@@ -70,7 +62,7 @@ export default function FireShotAlternativePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }}
       />
       <BreadcrumbJsonLd name="GoFully vs FireShot" path="/alternatives/fireshot" />
-      <SiteNav links={NAV_LINKS} />
+      <SiteNav />
 
       {/* Hero */}
       <div className="text-center" style={{ padding: "88px 24px 56px" }}>

@@ -22,14 +22,6 @@ export const metadata: Metadata = {
   },
 };
 
-const NAV_LINKS = [
-  { label: "Product", href: "/#how-it-works" },
-  { label: "Features", href: "/#features" },
-  { label: "Alternatives", href: "/alternatives" },
-  { label: "Guides", href: "/guides" },
-  { label: "FAQ", href: "/faq" },
-];
-
 const howToJsonLd = {
   "@context": "https://schema.org",
   "@type": "HowTo",
@@ -72,7 +64,7 @@ export default function ExtractUnselectableTextGuidePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
       />
       <BreadcrumbJsonLd name="Extract Unselectable Text Guide" path="/guides/how-to-extract-unselectable-text" />
-      <SiteNav links={NAV_LINKS} />
+      <SiteNav />
 
       {/* Header */}
       <div className="text-center" style={{ padding: "80px 24px 44px" }}>

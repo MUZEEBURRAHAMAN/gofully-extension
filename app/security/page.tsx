@@ -7,14 +7,6 @@ import { SiteFooterIndustry } from "@/components/site-footer-industry";
 const CWS_URL =
   "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
 
-const NAV_LINKS = [
-  { label: "Product", href: "/#how-it-works" },
-  { label: "Features", href: "/#features" },
-  { label: "Security", href: "/security", active: true },
-  { label: "Support", href: "/support" },
-  { label: "FAQ", href: "/faq" },
-];
-
 const STEPS = [
   {
     n: "CAPTURE",
@@ -83,7 +75,7 @@ function SectionKicker({ children }: { children: React.ReactNode }) {
 export default function SecurityPage() {
   return (
     <div className="gf-industry min-h-screen">
-      <SiteNav links={NAV_LINKS} />
+      <SiteNav />
 
       {/* Hero */}
       <div className="text-center" style={{ padding: "88px 24px 72px" }}>

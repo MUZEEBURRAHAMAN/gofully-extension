@@ -16,14 +16,6 @@ export const metadata: Metadata = {
   },
 };
 
-const NAV_LINKS = [
-  { label: "Product", href: "/#how-it-works" },
-  { label: "Features", href: "/#features" },
-  { label: "Security", href: "/security" },
-  { label: "Support", href: "/support" },
-  { label: "FAQ", href: "/faq" },
-];
-
 function SectionNum({ n }: { n: string }) {
   return (
     <span className="gf-heading-font font-semibold" style={{ color: "var(--gf-color-accent)" }}>
@@ -61,7 +53,7 @@ export default function TermsPage() {
   return (
     <div className="gf-industry min-h-screen">
       <BreadcrumbJsonLd name="Terms of Service" path="/terms" />
-      <SiteNav links={NAV_LINKS} />
+      <SiteNav />
 
       {/* Header */}
       <div className="text-center" style={{ padding: "72px 24px 48px" }}>

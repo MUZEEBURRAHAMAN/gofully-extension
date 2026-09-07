@@ -22,14 +22,6 @@ export const metadata: Metadata = {
   },
 };
 
-const NAV_LINKS = [
-  { label: "Product", href: "/#how-it-works" },
-  { label: "Features", href: "/#features" },
-  { label: "Security", href: "/security" },
-  { label: "Support", href: "/support" },
-  { label: "FAQ", href: "/faq" },
-];
-
 const ROWS: { feature: string; gofully: string; gofullpage: string; gofullyYes: boolean; gofullpageYes: boolean }[] = [
   { feature: "Full page scrolling capture", gofully: "Yes", gofullpage: "Yes", gofullyYes: true, gofullpageYes: true },
   { feature: "Visible area capture", gofully: "Yes", gofullpage: "No", gofullyYes: true, gofullpageYes: false },
@@ -69,7 +61,7 @@ export default function GoFullPageAlternativePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }}
       />
       <BreadcrumbJsonLd name="GoFully vs GoFullPage" path="/alternatives/gofullpage" />
-      <SiteNav links={NAV_LINKS} />
+      <SiteNav />
 
       {/* Hero */}
       <div className="text-center" style={{ padding: "88px 24px 56px" }}>

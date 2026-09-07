@@ -10,14 +10,6 @@ const CWS_URL =
   "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
 const REPO_URL = "https://github.com/MUZEEBURRAHAMAN/gofully-extension";
 
-const NAV_LINKS = [
-  { label: "Product", href: "/#how-it-works" },
-  { label: "Features", href: "/#features" },
-  { label: "Security", href: "/security" },
-  { label: "Support", href: "/support", active: true },
-  { label: "FAQ", href: "/faq" },
-];
-
 const CHANNELS = [
   {
     title: "Email support",
@@ -45,7 +37,7 @@ export default function SupportPage() {
 
   return (
     <div className="gf-industry min-h-screen">
-      <SiteNav links={NAV_LINKS} />
+      <SiteNav />
 
       {/* Hero */}
       <div className="text-center" style={{ padding: "88px 24px 64px" }}>

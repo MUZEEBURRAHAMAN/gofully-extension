@@ -7,14 +7,6 @@ import { SiteFooterIndustry } from "@/components/site-footer-industry";
 const CWS_URL =
   "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
 
-const NAV_LINKS = [
-  { label: "Product", href: "/#how-it-works" },
-  { label: "Features", href: "/#features" },
-  { label: "Security", href: "/security" },
-  { label: "Support", href: "/support" },
-  { label: "Roadmap", href: "/roadmap", active: true },
-];
-
 function Bullet({ children }: { children: React.ReactNode }) {
   return (
     <li className="flex gap-3 text-[13px] leading-[1.55]" style={{ color: "rgba(29,31,32,.65)" }}>
@@ -77,7 +69,7 @@ function TimelineRow({
 export default function RoadmapPage() {
   return (
     <div className="gf-industry min-h-screen">
-      <SiteNav links={NAV_LINKS} />
+      <SiteNav />
 
       {/* Header + timeline share one centered column so the whole page
           doesn't read as flush-left with a large dead gap on wide screens. */}

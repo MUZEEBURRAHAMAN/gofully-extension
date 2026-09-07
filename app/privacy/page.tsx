@@ -17,14 +17,6 @@ export const metadata: Metadata = {
   },
 };
 
-const NAV_LINKS = [
-  { label: "Product", href: "/#how-it-works" },
-  { label: "Features", href: "/#features" },
-  { label: "Security", href: "/security" },
-  { label: "Support", href: "/support" },
-  { label: "FAQ", href: "/faq" },
-];
-
 const PERMISSIONS = [
   {
     name: "activeTab",
@@ -65,7 +57,7 @@ export default function PrivacyPage() {
   return (
     <div className="gf-industry min-h-screen">
       <BreadcrumbJsonLd name="Privacy Policy" path="/privacy" />
-      <SiteNav links={NAV_LINKS} />
+      <SiteNav />
 
       {/* Header */}
       <div className="text-center" style={{ padding: "72px 24px 48px" }}>

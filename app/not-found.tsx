@@ -8,14 +8,6 @@ import { SiteFooterIndustry } from "@/components/site-footer-industry";
 const CWS_URL =
   "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
 
-const NAV_LINKS = [
-  { label: "Product", href: "/#how-it-works" },
-  { label: "Features", href: "/#features" },
-  { label: "Security", href: "/security" },
-  { label: "Support", href: "/support" },
-  { label: "FAQ", href: "/faq" },
-];
-
 const SUGGESTED_LINKS = [
   {
     title: "How It Works",
@@ -70,7 +62,7 @@ const SUGGESTED_LINKS = [
 export default function NotFoundPage() {
   return (
     <div className="gf-industry min-h-screen flex flex-col justify-between">
-      <SiteNav links={NAV_LINKS} />
+      <SiteNav />
 
       <main className="flex-1" style={{ padding: "80px 24px 96px" }}>
         <div className="mx-auto text-center" style={{ maxWidth: 760 }}>

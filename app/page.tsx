@@ -8,15 +8,6 @@ import { SiteFooterIndustry } from "@/components/site-footer-industry";
 const CWS_URL =
   "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
 
-const NAV_LINKS = [
-  { label: "Product", href: "#how-it-works" },
-  { label: "Features", href: "#features" },
-  { label: "Security", href: "/security" },
-  { label: "Support", href: "/support" },
-  { label: "FAQ", href: "/faq" },
-  { label: "Roadmap", href: "/roadmap" },
-];
-
 const STEPS = [
   {
     n: 1,
@@ -208,7 +199,7 @@ function CTAButton({
 export default function HomePage() {
   return (
     <div className="gf-industry min-h-screen">
-      <SiteNav links={NAV_LINKS} />
+      <SiteNav />
 
       {/* Hero */}
       <ContainerScroll

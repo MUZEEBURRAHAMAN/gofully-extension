@@ -2,17 +2,31 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const CWS_URL =
   "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
 
-export type NavLink = { label: string; href: string; active?: boolean };
+export type NavLink = { label: string; href: string };
 
-export function SiteNav({ links }: { links: NavLink[] }) {
+// Single source of truth for the header nav — every page renders the exact
+// same set, in the exact same order. Do not let individual pages define
+// their own copy; that's how this drifted into 5 different variants before.
+const NAV_LINKS: NavLink[] = [
+  { label: "Product", href: "/#how-it-works" },
+  { label: "Features", href: "/#features" },
+  { label: "Security", href: "/security" },
+  { label: "Support", href: "/support" },
+  { label: "FAQ", href: "/faq" },
+  { label: "Roadmap", href: "/roadmap" },
+];
+
+export function SiteNav() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
-    <div className="border-b relative" style={{ padding: "0 24px", borderColor: "rgba(29,31,32,.1)" }}>
+    <div className="border-b relative" style={{ padding: "0 24px", borderColor: "rgba(29,31,32,.1)", zIndex: 50 }}>
       <div className="mx-auto flex items-center justify-between" style={{ height: 72, maxWidth: 1320 }}>
         <Link href="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
           <img
@@ -28,16 +42,19 @@ export function SiteNav({ links }: { links: NavLink[] }) {
         </Link>
 
         <div className="hidden md:flex items-center gap-9 text-[13px] font-medium" style={{ color: "rgba(29,31,32,.55)" }}>
-          {links.map((l) => (
-            <Link
-              key={l.label}
-              href={l.href}
-              className="transition-colors"
-              style={l.active ? { color: "var(--gf-color-accent)", fontWeight: 600 } : undefined}
-            >
-              {l.label}
-            </Link>
-          ))}
+          {NAV_LINKS.map((l) => {
+            const isActive = pathname === l.href;
+            return (
+              <Link
+                key={l.label}
+                href={l.href}
+                className="transition-colors"
+                style={isActive ? { color: "var(--gf-color-accent)", fontWeight: 600 } : undefined}
+              >
+                {l.label}
+              </Link>
+            );
+          })}
         </div>
 
         <div className="flex items-center gap-2">
@@ -74,23 +91,26 @@ export function SiteNav({ links }: { links: NavLink[] }) {
           style={{ background: "var(--gf-color-bg)", borderColor: "rgba(29,31,32,.1)", zIndex: 40 }}
         >
           <div className="flex flex-col" style={{ padding: "8px 24px 20px" }}>
-            {links.map((l) => (
-              <Link
-                key={l.label}
-                href={l.href}
-                onClick={() => setOpen(false)}
-                className="border-b"
-                style={{
-                  padding: "14px 4px",
-                  borderColor: "rgba(29,31,32,.06)",
-                  fontSize: 14,
-                  fontWeight: l.active ? 600 : 500,
-                  color: l.active ? "var(--gf-color-accent)" : "var(--gf-color-text)",
-                }}
-              >
-                {l.label}
-              </Link>
-            ))}
+            {NAV_LINKS.map((l) => {
+              const isActive = pathname === l.href;
+              return (
+                <Link
+                  key={l.label}
+                  href={l.href}
+                  onClick={() => setOpen(false)}
+                  className="border-b"
+                  style={{
+                    padding: "14px 4px",
+                    borderColor: "rgba(29,31,32,.06)",
+                    fontSize: 14,
+                    fontWeight: isActive ? 600 : 500,
+                    color: isActive ? "var(--gf-color-accent)" : "var(--gf-color-text)",
+                  }}
+                >
+                  {l.label}
+                </Link>
+              );
+            })}
             <a
               href={CWS_URL}
               target="_blank"
