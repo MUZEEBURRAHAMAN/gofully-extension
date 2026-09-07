@@ -224,16 +224,16 @@ export default function HomePage() {
             >
               Chrome Extension · 100% On-Device
             </Kicker>
-            <div
+            <h1
               className="gf-heading-font font-semibold"
-              style={{ fontSize: "clamp(34px, 9vw, 58px)", lineHeight: 1.05, letterSpacing: "-0.01em", marginTop: 24, color: "var(--gf-color-text)" }}
+              style={{ fontSize: "clamp(34px, 7vw, 56px)", lineHeight: 1.08, letterSpacing: "-0.02em", marginTop: 24, color: "var(--gf-color-text)" }}
             >
-              Capture anything.
+              Full Page Screenshot,
               <br />
-              Make it clear.
-            </div>
-            <p className="mx-auto" style={{ fontSize: 17, lineHeight: 1.6, color: "rgba(29,31,32,.55)", maxWidth: 560, marginTop: 20 }}>
-              GoFully is a browser extension for capturing webpages, extracting text, annotating screenshots, protecting sensitive information, and exporting polished results — all from your browser.
+              Scrolling Capture &amp; Local OCR
+            </h1>
+            <p className="mx-auto" style={{ fontSize: 17, lineHeight: 1.6, color: "rgba(29,31,32,.6)", maxWidth: 580, marginTop: 20 }}>
+              GoFully is the all-in-one browser extension for capturing full scrolling webpages, extracting text with local WebAssembly OCR, annotating with CleanShot precision, and exporting in 4K or PDF — 100% free &amp; offline.
             </p>
             <div className="flex justify-center gap-3.5" style={{ marginTop: 32 }}>
               <CTAButton href={CWS_URL}>Add to Chrome — It&apos;s Free</CTAButton>
@@ -276,9 +276,9 @@ export default function HomePage() {
           >
             How It Works
           </SectionKicker>
-          <div className="gf-heading-font font-semibold" style={{ fontSize: "clamp(24px, 6vw, 34px)", letterSpacing: "-0.01em", marginTop: 16 }}>
+          <h2 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(24px, 6vw, 34px)", letterSpacing: "-0.01em", marginTop: 16 }}>
             From capture to shareable image in three steps
-          </div>
+          </h2>
         </div>
         <div className="mx-auto grid grid-cols-1 md:grid-cols-3 gap-7" style={{ maxWidth: 1320 }}>
           {STEPS.map((s) => (
@@ -290,9 +290,9 @@ export default function HomePage() {
                 >
                   {s.n}
                 </div>
-                <div className="gf-heading-font font-semibold" style={{ fontSize: 16, letterSpacing: "0.01em" }}>
+                <h3 className="gf-heading-font font-semibold" style={{ fontSize: 16, letterSpacing: "0.01em" }}>
                   {s.title}
-                </div>
+                </h3>
               </div>
               <p style={{ fontSize: "12.5px", lineHeight: 1.55, color: "rgba(29,31,32,.5)", margin: "0 0 14px" }}>{s.body}</p>
               <BlueprintFrame className="p-2">
@@ -322,9 +322,9 @@ export default function HomePage() {
           >
             Core Features
           </SectionKicker>
-          <div className="gf-heading-font font-semibold" style={{ fontSize: "clamp(24px, 6vw, 34px)", letterSpacing: "-0.01em", marginTop: 16 }}>
+          <h2 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(24px, 6vw, 34px)", letterSpacing: "-0.01em", marginTop: 16 }}>
             Everything you need to capture, clean up, and share
-          </div>
+          </h2>
           <p style={{ fontSize: "14.5px", color: "rgba(29,31,32,.5)", marginTop: 12 }}>
             Five tools that cover the whole workflow — from first capture to final export.
           </p>
@@ -335,9 +335,9 @@ export default function HomePage() {
             <div key={f.title} className="grid grid-cols-1 md:grid-cols-2 items-center" style={{ gap: 56 }}>
               <div className={f.reverse ? "md:order-2" : ""}>
                 <Kicker icon={f.icon}>{f.tag}</Kicker>
-                <div className="gf-heading-font font-semibold" style={{ fontSize: 26, letterSpacing: "-0.005em", marginTop: 14 }}>
+                <h3 className="gf-heading-font font-semibold" style={{ fontSize: 26, letterSpacing: "-0.005em", marginTop: 14 }}>
                   {f.title}
-                </div>
+                </h3>
                 <p style={{ fontSize: 14, lineHeight: 1.65, color: "rgba(29,31,32,.5)", marginTop: 12, maxWidth: 440 }}>{f.body}</p>
               </div>
               <BlueprintFrame className={`p-2.5 ${f.reverse ? "md:order-1" : ""}`}>
@@ -367,9 +367,9 @@ export default function HomePage() {
           </svg>
           <span>100% Offline</span>
         </span>
-        <div className="gf-heading-font font-semibold" style={{ fontSize: "clamp(24px, 6vw, 32px)", color: "#fff", letterSpacing: "-0.01em", marginTop: 20 }}>
+        <h2 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(24px, 6vw, 32px)", color: "#fff", letterSpacing: "-0.01em", marginTop: 20 }}>
           Nothing you capture ever leaves your device
-        </div>
+        </h2>
         <p className="mx-auto" style={{ fontSize: 15, color: "rgba(255,255,255,.55)", maxWidth: 520, marginTop: 14, lineHeight: 1.6 }}>
           No accounts, no cloud uploads, no telemetry. Every screenshot, extraction, and edit happens locally in your browser.
         </p>

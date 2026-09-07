@@ -24,29 +24,73 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://gofully-extension.vercel.app"),
-  title: "GoFully — Full Page Screenshot, Local OCR & Annotation Studio",
+  title: "GoFully — Full Page Screenshot Tool, Scrolling Capture & Local OCR",
+  applicationName: "GoFully",
   description:
-    "GoFully is a powerful Chrome extension for capturing full webpages, extracting text with local WebAssembly OCR, annotating screenshots, and exporting in 4K or PDF — 100% on-device.",
+    "GoFully is a powerful full page screenshot tool and scrolling screen capture Chrome extension. Capture entire webpages, extract text with local OCR, annotate, redact sensitive data, and export in 4K or PDF — 100% free & offline.",
+  keywords: [
+    "full page screenshot",
+    "screenshot",
+    "scrolling screenshot",
+    "screen capture",
+    "screenshot tool",
+    "chrome screenshot extension",
+    "capture webpage",
+    "entire webpage screenshot",
+    "ocr screenshot",
+    "extract text from image",
+    "screenshot editor",
+    "annotate screenshot",
+    "blur screenshot",
+    "screenshot to pdf",
+    "scrolling screen capture",
+    "screen grabber",
+    "webpage capture tool"
+  ],
+  authors: [{ name: "GoFully", url: "https://gofully-extension.vercel.app" }],
+  creator: "GoFully",
+  publisher: "GoFully",
+  category: "Productivity",
+  manifest: "/site.webmanifest",
+  alternates: {
+    canonical: "https://gofully-extension.vercel.app",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   icons: {
     icon: [
-      { url: "/favicon-16.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-48.png", sizes: "48x48", type: "image/png" },
+      { url: "/favicon-96.png", sizes: "96x96", type: "image/png" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
     ],
     shortcut: "/favicon.ico",
-    apple: "/favicon-180.png",
+    apple: "/apple-icon.png",
+  },
+  appleWebApp: {
+    title: "GoFully",
+    statusBarStyle: "black-translucent",
   },
   openGraph: {
     title: "GoFully — Full Page Screenshot & Screen Capture Studio",
     description:
-      "Capture entire webpages, extract text with local OCR, annotate visually, and export in 4K/PDF. 100% private and in-browser.",
+      "Capture entire webpages, extract text with local WebAssembly OCR, annotate visually, blur sensitive data, and export in 4K or PDF — 100% private and in-browser.",
     url: "https://gofully-extension.vercel.app",
     siteName: "GoFully",
     images: [
       {
-        url: "https://gofully-extension.vercel.app/gofully-wordmark.png",
+        url: "https://gofully-extension.vercel.app/og-image.png",
         width: 1200,
         height: 630,
-        alt: "GoFully Screenshot Studio",
+        alt: "GoFully — Full Page Screenshot Tool & Local OCR",
       },
     ],
     locale: "en_US",
@@ -54,9 +98,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "GoFully — Full Page Screenshot Studio",
-    description: "Capture, OCR, annotate, redact, and export full webpages in seconds.",
-    images: ["https://gofully-extension.vercel.app/gofully-wordmark.png"],
+    title: "GoFully — Full Page Screenshot & Screen Capture Studio",
+    description: "Capture, OCR, annotate, redact, and export full scrolling webpages in seconds. Free & 100% on-device.",
+    images: ["https://gofully-extension.vercel.app/og-image.png"],
   },
 };
 
@@ -72,9 +116,10 @@ const jsonLd = {
     {
       "@type": "SoftwareApplication",
       "@id": "https://gofully-extension.vercel.app/#software",
-      "name": "GoFully",
-      "applicationCategory": "BrowserApplication",
-      "operatingSystem": "Google Chrome, Chromium, Brave, Edge",
+      "name": "GoFully: Full Page Screenshot & OCR",
+      "alternateName": "GoFully Screenshot Tool",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Google Chrome, Chromium, Brave, Microsoft Edge",
       "offers": {
         "@type": "Offer",
         "price": "0",
@@ -83,15 +128,37 @@ const jsonLd = {
       "description":
         "High-performance Chrome extension for full-page scrolling screenshots, on-device WebAssembly OCR text extraction, CleanShot-grade visual annotations, and PDF/4K exports.",
       "url": "https://gofully-extension.vercel.app/",
+      "image": "https://gofully-extension.vercel.app/logo.png",
+      "screenshot": "https://gofully-extension.vercel.app/og-image.png",
+      "softwareVersion": "1.1.1",
       "installUrl": "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc",
+      "featureList": [
+        "Full page scrolling screenshot capture",
+        "Selected region and visible area capture",
+        "On-device WebAssembly OCR text extraction",
+        "Visual annotation studio with arrows, callouts, and step numbers",
+        "Privacy redaction with blur and pixelation",
+        "Screenshot mockup beautifier with gradient backgrounds",
+        "Instant export to PNG, WebP, 4K UHD, and paginated PDF"
+      ],
     },
     {
       "@type": "WebSite",
       "@id": "https://gofully-extension.vercel.app/#website",
       "url": "https://gofully-extension.vercel.app/",
       "name": "GoFully",
+      "alternateName": ["GoFully Extension", "GoFully Screenshot Tool", "GoFully Full Page Screenshot"],
       "description":
-        "The complete web capture, local OCR, and visual annotation studio for Chrome.",
+        "The complete web capture, full page screenshot, local OCR, and visual annotation studio for Chrome.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "GoFully",
+        "url": "https://gofully-extension.vercel.app/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://gofully-extension.vercel.app/logo.png"
+        }
+      }
     },
   ],
 };
