@@ -24,6 +24,15 @@ export const metadata: Metadata = {
 
 const GUIDES = [
   {
+    slug: "screenshot-tool-for-developers-and-qa",
+    title: "The Screenshot Workflow Built for Developers & QA",
+    subtitle:
+      "Why full-page capture, redaction, OCR, and PDF export matter for bug reports and QA tickets — and how to use them in one workflow.",
+    tag: "Use Case",
+    readTime: "5 min read",
+    date: "Updated September 2026",
+  },
+  {
     slug: "best-full-page-screenshot-extensions",
     title: "Best Full Page Screenshot Extensions for Chrome (2026)",
     subtitle:

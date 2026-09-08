@@ -56,7 +56,7 @@ const FEATURES = [
       </svg>
     ),
     title: "On-device text extraction",
-    body: "Extract readable text, code snippets, and structured tables from any region in milliseconds. A local WebAssembly model runs on your CPU — zero cloud transmission, zero latency.",
+    body: "Extract readable text, code snippets, and structured tables from any region in milliseconds. Most screenshot tools that offer OCR send your image to a server first — GoFully runs a local WebAssembly model directly on your CPU, so a screenshot of a contract, a password field, or an internal dashboard never leaves your machine to get its text read.",
     image: "/features/feature-ocr.webp",
     alt: "On-device OCR text extraction with instant copy",
     reverse: true,
@@ -70,7 +70,7 @@ const FEATURES = [
       </svg>
     ),
     title: "Annotate & redact",
-    body: "Mark up screenshots with arrows, callouts, and shapes. Instantly blur or pixelate sensitive API keys, passwords, and PII before you share.",
+    body: "Mark up screenshots with arrows, callouts, and shapes. Instantly blur or pixelate sensitive API keys, passwords, and PII before you share — the kind of redaction most competitors either don't offer at all, or lock behind a paid plan.",
     image: "/features/feature-annotate.webp",
     alt: "Annotated screenshot showing markup, callouts, and redaction tools in GoFully editor",
     reverse: false,
@@ -87,7 +87,7 @@ const FEATURES = [
       </svg>
     ),
     title: "Screenshot beautifier & mockups",
-    body: "Transform raw screenshots into polished, presentation-ready assets. Customize vibrant backgrounds, add window frames, tweak padding and rounded corners, and apply soft drop shadows.",
+    body: "Transform raw screenshots into polished, presentation-ready assets. Customize vibrant backgrounds, add window frames, tweak padding and rounded corners, and apply soft drop shadows — the same kind of output tools like CleanShot charge a subscription for, included free.",
     image: "/features/feature-beautify.webp",
     alt: "GoFully screenshot beautifier with customizable backgrounds, padding, shadows, and frame mockups",
     reverse: true,
@@ -219,12 +219,12 @@ export default function HomePage() {
               className="gf-heading-font font-semibold"
               style={{ fontSize: "clamp(34px, 7vw, 56px)", lineHeight: 1.08, letterSpacing: "-0.02em", marginTop: 24, color: "var(--gf-color-text)" }}
             >
-              Full Page Screenshot,
+              One Extension.
               <br />
-              Scrolling Capture &amp; Local OCR
+              Every Screenshot Job.
             </h1>
-            <p className="mx-auto" style={{ fontSize: 17, lineHeight: 1.6, color: "rgba(29,31,32,.6)", maxWidth: 580, marginTop: 20 }}>
-              GoFully is the all-in-one browser extension for capturing full scrolling webpages, extracting text with local WebAssembly OCR, annotating with CleanShot precision, and exporting in 4K or PDF — 100% free &amp; offline.
+            <p className="mx-auto" style={{ fontSize: 17, lineHeight: 1.6, color: "rgba(29,31,32,.6)", maxWidth: 600, marginTop: 20 }}>
+              Capture full scrolling pages or any region, extract text with local WebAssembly OCR, annotate and redact sensitive info, then beautify and export in 4K or PDF — all in one browser extension, 100% free and offline.
             </p>
             <div className="flex justify-center gap-3.5" style={{ marginTop: 32 }}>
               <CTAButton href={CWS_URL}>Add to Chrome — It&apos;s Free</CTAButton>
@@ -343,6 +343,151 @@ export default function HomePage() {
               </BlueprintFrame>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Use cases */}
+      <div className="border-t" style={{ padding: "90px 24px", borderColor: "rgba(29,31,32,.08)", background: "rgba(29,31,32,.02)" }}>
+        <div className="mx-auto text-center" style={{ maxWidth: 640, marginBottom: 56 }}>
+          <SectionKicker
+            icon={
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            }
+          >
+            Use Cases
+          </SectionKicker>
+          <h2 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(24px, 6vw, 34px)", letterSpacing: "-0.01em", marginTop: 16 }}>
+            Built for how you actually work
+          </h2>
+          <p style={{ fontSize: "14.5px", color: "rgba(29,31,32,.5)", marginTop: 12 }}>
+            One tool, four very different jobs.
+          </p>
+        </div>
+        <div className="mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6" style={{ maxWidth: 1000 }}>
+          {[
+            {
+              title: "Developers & QA",
+              body: "Document a bug with a full-page capture, annotate exactly what's broken, and export a clean PDF for the ticket — no cropping five separate screenshots together.",
+              icon: (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gf-color-accent)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="16 18 22 12 16 6" />
+                  <polyline points="8 6 2 12 8 18" />
+                </svg>
+              ),
+            },
+            {
+              title: "Writers & researchers",
+              body: "Pull text out of a paywalled article screenshot, a scanned PDF page, or a chart nobody made selectable, and paste it straight into your notes.",
+              icon: (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gf-color-accent)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <line x1="16" y1="13" x2="8" y2="13" />
+                  <line x1="16" y1="17" x2="8" y2="17" />
+                </svg>
+              ),
+            },
+            {
+              title: "Privacy & compliance teams",
+              body: "Redact account numbers, names, or internal URLs before a screenshot goes into a shared doc or a support ticket — done locally, so the unredacted version never touches a server in the first place.",
+              icon: (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gf-color-accent)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+              ),
+            },
+            {
+              title: "Anyone sharing screenshots publicly",
+              body: "Run a raw capture through Beautify before it goes on social media or in a blog post, instead of pasting a bare browser window.",
+              icon: (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gf-color-accent)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="18" cy="5" r="3" />
+                  <circle cx="6" cy="12" r="3" />
+                  <circle cx="18" cy="19" r="3" />
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                </svg>
+              ),
+            },
+          ].map((u) => (
+            <BlueprintFrame key={u.title} className="bg-white p-7">
+              <div className="flex items-center justify-center flex-shrink-0" style={{ width: 40, height: 40, background: "rgba(22,103,242,.08)", border: "1px solid rgba(22,103,242,.2)", marginBottom: 16 }}>
+                {u.icon}
+              </div>
+              <h3 className="gf-heading-font font-semibold" style={{ fontSize: 17, letterSpacing: "-0.005em" }}>
+                {u.title}
+              </h3>
+              <p style={{ fontSize: 13.5, lineHeight: 1.65, color: "rgba(29,31,32,.55)", marginTop: 10 }}>
+                {u.body}
+              </p>
+            </BlueprintFrame>
+          ))}
+        </div>
+      </div>
+
+      {/* Differentiation */}
+      <div className="border-t" style={{ padding: "90px 24px", borderColor: "rgba(29,31,32,.08)", background: "rgba(29,31,32,.02)" }}>
+        <div className="mx-auto text-center" style={{ maxWidth: 640, marginBottom: 44 }}>
+          <SectionKicker
+            icon={
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+            }
+          >
+            Why GoFully
+          </SectionKicker>
+          <h2 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(24px, 6vw, 34px)", letterSpacing: "-0.01em", marginTop: 16 }}>
+            Why not just use Chrome&apos;s built-in screenshot tool?
+          </h2>
+          <p style={{ fontSize: "14.5px", color: "rgba(29,31,32,.5)", marginTop: 12 }}>
+            DevTools works, right up until it doesn&apos;t.
+          </p>
+        </div>
+        <div className="mx-auto grid grid-cols-1 md:grid-cols-2 gap-px border" style={{ background: "rgba(29,31,32,.12)", borderColor: "rgba(29,31,32,.12)", maxWidth: 900 }}>
+          <div className="bg-white p-7 md:p-8">
+            <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 12, letterSpacing: "0.04em", color: "rgba(29,31,32,.4)", marginBottom: 18 }}>
+              Chrome DevTools
+            </div>
+            <ul className="flex flex-col gap-3">
+              {[
+                "Skips images that load on scroll — they show up blank",
+                "Ignores sticky headers, so they repeat down the page",
+                "Exports a flat PNG and nothing else",
+                "No text extraction, redaction, or annotation, at all",
+              ].map((t) => (
+                <li key={t} className="flex items-start gap-2.5" style={{ fontSize: "13.5px", color: "rgba(29,31,32,.5)" }}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(29,31,32,.3)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 mt-[2px]"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="p-7 md:p-8" style={{ background: "rgba(22,103,242,.03)" }}>
+            <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 12, letterSpacing: "0.04em", color: "var(--gf-color-accent)", marginBottom: 18 }}>
+              GoFully
+            </div>
+            <ul className="flex flex-col gap-3">
+              {[
+                "Waits for lazy-loaded content before it captures",
+                "Auto-detects and hides repeating sticky elements",
+                "Exports PNG, WebP, or a paginated PDF",
+                "Local OCR, one-click redaction, and full annotation built in",
+              ].map((t) => (
+                <li key={t} className="flex items-start gap-2.5" style={{ fontSize: "13.5px", color: "rgba(29,31,32,.7)", fontWeight: 500 }}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--gf-color-accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 mt-[2px]"><path d="M20 6 9 17l-5-5" /></svg>
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
 
