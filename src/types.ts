@@ -108,6 +108,9 @@ export interface Settings {
   captureCountdown: 0 | 1 | 2 | 3;
   skipStickyHeaders: boolean;
   defaultExportFormat: "png" | "webp";
+  editorShortcuts: Record<string, string>;
+  captureStamp: boolean;
+  theme: "light" | "dark" | "system";
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -122,4 +125,7 @@ export const DEFAULT_SETTINGS: Settings = {
   captureCountdown: 0,
   skipStickyHeaders: false,
   defaultExportFormat: "png",
+  editorShortcuts: {},
+  captureStamp: false,
+  theme: "system",
 };

@@ -1,3 +1,8 @@
+import { applyTheme, watchTheme } from "../utils/theme";
+
+applyTheme();
+watchTheme();
+
 const accordions = document.querySelectorAll(".help-accordion");
 
 accordions.forEach((acc) => {

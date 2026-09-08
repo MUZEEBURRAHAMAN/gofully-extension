@@ -5,6 +5,10 @@ import {
 import Cropper from "cropperjs";
 import { canvasRGBA } from "stackblur-canvas";
 import { generatePDF } from "../export/pdf-generator";
+import { applyTheme, watchTheme } from "../utils/theme";
+
+applyTheme();
+watchTheme();
 
 type ToolType =
   | "select" | "arrow" | "rectangle" | "ellipse" | "callout" | "line"
@@ -35,6 +39,49 @@ let cssZoom = 1;
 let cropperInstance: Cropper | null = null;
 let isBeautified = false;
 let isCropped = false;
+
+// ─── Keyboard shortcut map ──────────────────────────────────────────────────
+
+const DEFAULT_SHORTCUTS: Record<ToolType, string> = {
+  select: "v", arrow: "a", rectangle: "r", ellipse: "e",
+  callout: "c", line: "l", freedraw: "p", text: "t",
+  spotlight: "s", blur: "b", step: "n", crop: "x", highlight: "h",
+};
+
+let activeShortcuts: Record<ToolType, string> = { ...DEFAULT_SHORTCUTS };
+let keyToTool: Record<string, ToolType> = {};
+
+function rebuildKeyToTool(): void {
+  keyToTool = {};
+  (Object.keys(activeShortcuts) as ToolType[]).forEach((tool) => {
+    keyToTool[activeShortcuts[tool]] = tool;
+  });
+}
+rebuildKeyToTool();
+
+async function loadShortcuts(): Promise<void> {
+  try {
+    const stored = await chrome.storage.sync.get("settings");
+    const custom = (stored.settings as any)?.editorShortcuts as Record<string, string> | undefined;
+    if (custom) {
+      activeShortcuts = { ...DEFAULT_SHORTCUTS, ...custom } as Record<ToolType, string>;
+      rebuildKeyToTool();
+    }
+  } catch {
+    // Storage unavailable — fall back to defaults
+  }
+}
+
+function applyShortcutLabels(): void {
+  (Object.keys(activeShortcuts) as ToolType[]).forEach((tool) => {
+    const btn = document.querySelector(`[data-tool="${tool}"]`);
+    const tip = btn?.querySelector(".tip");
+    if (!tip) return;
+    const key = activeShortcuts[tool].toUpperCase();
+    const withKey = tip.textContent?.replace(/\s*\([A-Z0-9]\)$/, "").trim() ?? "";
+    tip.textContent = `${withKey} (${key})`;
+  });
+}
 
 const dimensionsEl = document.getElementById("dimensions")!;
 const zoomEl        = document.getElementById("zoom")!;
@@ -71,6 +118,8 @@ async function init(): Promise<void> {
   setupColorPicker();
   setupStrokeControl();
   setupExportButtons();
+  await loadShortcuts();
+  applyShortcutLabels();
   setupKeyboardShortcuts();
   setupCanvasEvents();
 
@@ -1675,12 +1724,8 @@ function setupKeyboardShortcuts(): void {
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "d" && activeObj) { e.preventDefault(); duplicateSelected(); return; }
 
     if (!e.metaKey && !e.ctrlKey && !e.shiftKey) {
-      const map: Record<string, ToolType> = {
-        v: "select", a: "arrow", r: "rectangle", e: "ellipse",
-        c: "callout", l: "line", p: "freedraw", t: "text",
-        s: "spotlight", b: "blur", n: "step", x: "crop", h: "highlight",
-      };
-      if (map[e.key]) setTool(map[e.key]);
+      const tool = keyToTool[e.key.toLowerCase()];
+      if (tool) setTool(tool);
     }
   });
 }
@@ -1715,6 +1760,8 @@ function dataUrlToBlob(dataUrl: string): Blob {
 
 let beautifyActive = false;
 let originalScreenshotUrl: string | null = null;
+let collageImages: string[] = [];
+let collageLayout: "row" | "column" = "row";
 
 function setupBeautifier(): void {
   const panel = document.getElementById("beautifyPanel");
@@ -1791,6 +1838,139 @@ function setupBeautifier(): void {
   document.getElementById("bf-apply-btn")?.addEventListener("click", () => applyBeautify(true));
   // Reset
   document.getElementById("bf-reset-btn")?.addEventListener("click", resetBeautify);
+}
+
+function loadImageElement(src: string): Promise<HTMLImageElement> {
+  const img = new Image();
+  img.src = src;
+  return new Promise((resolve) => { img.onload = () => resolve(img); });
+}
+
+// Lays additional images out alongside the main screenshot (same height for
+// a row, same width for a column) and flattens them into one canvas, which
+// applyBeautify() then treats exactly like a single screenshot — background,
+// padding, shadow, and frame all apply to the whole collage as one shape.
+async function buildCollageComposite(
+  mainImg: HTMLImageElement,
+  extraDataUrls: string[],
+  layout: "row" | "column",
+  radius: number
+): Promise<{ canvas: HTMLCanvasElement; w: number; h: number }> {
+  const extraImgs = await Promise.all(extraDataUrls.map(loadImageElement));
+  const allImgs = [mainImg, ...extraImgs];
+  const gap = Math.round(Math.max(mainImg.naturalWidth, mainImg.naturalHeight) * 0.025) || 16;
+
+  let tileSizes: { w: number; h: number }[];
+  let totalW: number, totalH: number;
+
+  if (layout === "row") {
+    const targetH = mainImg.naturalHeight;
+    tileSizes = allImgs.map((img) => {
+      const scale = targetH / img.naturalHeight;
+      return { w: Math.round(img.naturalWidth * scale), h: targetH };
+    });
+    totalW = tileSizes.reduce((sum, t) => sum + t.w, 0) + gap * (allImgs.length - 1);
+    totalH = targetH;
+  } else {
+    const targetW = mainImg.naturalWidth;
+    tileSizes = allImgs.map((img) => {
+      const scale = targetW / img.naturalWidth;
+      return { w: targetW, h: Math.round(img.naturalHeight * scale) };
+    });
+    totalW = targetW;
+    totalH = tileSizes.reduce((sum, t) => sum + t.h, 0) + gap * (allImgs.length - 1);
+  }
+
+  const canvas = document.createElement("canvas");
+  canvas.width = totalW;
+  canvas.height = totalH;
+  const ctx = canvas.getContext("2d")!;
+
+  let cursor = 0;
+  allImgs.forEach((img, i) => {
+    const { w, h } = tileSizes[i];
+    const x = layout === "row" ? cursor : 0;
+    const y = layout === "row" ? 0 : cursor;
+    ctx.save();
+    if (radius > 0) {
+      roundedRect(ctx, x, y, w, h, Math.min(radius, Math.min(w, h) / 2));
+      ctx.clip();
+    }
+    ctx.drawImage(img, x, y, w, h);
+    ctx.restore();
+    cursor += (layout === "row" ? w : h) + gap;
+  });
+
+  return { canvas, w: totalW, h: totalH };
+}
+
+function renderCollageThumbs(): void {
+  const container = document.getElementById("bf-collage-thumbs");
+  const layoutRow = document.getElementById("bf-collage-layout-row");
+  if (!container) return;
+  container.innerHTML = "";
+
+  collageImages.forEach((dataUrl, i) => {
+    const thumb = document.createElement("div");
+    thumb.className = "bf-collage-thumb";
+
+    const img = document.createElement("img");
+    img.src = dataUrl;
+
+    const removeBtn = document.createElement("button");
+    removeBtn.className = "bf-collage-thumb-remove";
+    removeBtn.textContent = "×";
+    removeBtn.addEventListener("click", () => {
+      collageImages.splice(i, 1);
+      renderCollageThumbs();
+      if (originalScreenshotUrl) applyBeautify(false);
+    });
+
+    thumb.appendChild(img);
+    thumb.appendChild(removeBtn);
+    container.appendChild(thumb);
+  });
+
+  if (layoutRow) layoutRow.style.display = collageImages.length > 0 ? "flex" : "none";
+}
+
+function setupCollage(): void {
+  const addBtn = document.getElementById("bf-collage-add-btn");
+  const fileInput = document.getElementById("bf-collage-file-input") as HTMLInputElement | null;
+  if (!addBtn || !fileInput) return;
+
+  addBtn.addEventListener("click", () => fileInput.click());
+
+  fileInput.addEventListener("change", async () => {
+    const files = Array.from(fileInput.files || []);
+    fileInput.value = "";
+    if (!files.length || collageImages.length >= 2) return;
+
+    const room = 2 - collageImages.length;
+    const toRead = files.slice(0, room);
+    const dataUrls = await Promise.all(
+      toRead.map(
+        (file) =>
+          new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.readAsDataURL(file);
+          })
+      )
+    );
+    collageImages.push(...dataUrls);
+    renderCollageThumbs();
+    if (originalScreenshotUrl) applyBeautify(false);
+  });
+
+  document.querySelectorAll<HTMLElement>(".bf-collage-layout-btn").forEach((b) => {
+    b.addEventListener("click", () => {
+      document.querySelectorAll(".bf-collage-layout-btn").forEach((x) => x.classList.remove("active"));
+      b.classList.add("active");
+      collageLayout = b.dataset.collageLayout as "row" | "column";
+      if (originalScreenshotUrl) applyBeautify(false);
+    });
+  });
 }
 
 interface BeautifyPreset {
@@ -1917,12 +2097,20 @@ async function applyBeautify(showToastMsg = true): Promise<void> {
   // ALWAYS use the original screenshot image as source to prevent nesting/stacking
   const srcDataUrl = originalScreenshotUrl;
 
-  const srcImg = new Image();
-  srcImg.src = srcDataUrl;
-  await new Promise<void>((r) => { srcImg.onload = () => r(); });
+  const mainImg = new Image();
+  mainImg.src = srcDataUrl;
+  await new Promise<void>((r) => { mainImg.onload = () => r(); });
 
-  const srcW = srcImg.naturalWidth;
-  const srcH = srcImg.naturalHeight;
+  let srcImg: CanvasImageSource = mainImg;
+  let srcW = mainImg.naturalWidth;
+  let srcH = mainImg.naturalHeight;
+
+  if (collageImages.length > 0) {
+    const composite = await buildCollageComposite(mainImg, collageImages, collageLayout, radius);
+    srcImg = composite.canvas;
+    srcW = composite.w;
+    srcH = composite.h;
+  }
 
   // Frame bar height (in native pixels, scaled proportionally)
   const frameBarH = frameType !== "none" ? Math.round(Math.max(28, srcH * 0.035)) : 0;
@@ -2265,6 +2453,10 @@ async function resetBeautify(): Promise<void> {
       if (opc) { opc.value = "40"; const v = document.getElementById("bf-shadow-opacity-val"); if (v) v.textContent = "40%"; }
       const nse = document.getElementById("bf-noise") as HTMLInputElement;
       if (nse) { nse.value = "0"; const v = document.getElementById("bf-noise-val"); if (v) v.textContent = "0%"; }
+      collageImages = [];
+      collageLayout = "row";
+      panel.querySelectorAll(".bf-collage-layout-btn").forEach((s, idx) => s.classList.toggle("active", idx === 0));
+      renderCollageThumbs();
     }
     saveState();
     showToast("Reset to original");
@@ -2276,3 +2468,4 @@ async function resetBeautify(): Promise<void> {
 init();
 setupBeautifier();
 setupBeautifyPresets();
+setupCollage();

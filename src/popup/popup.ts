@@ -3,6 +3,10 @@ import { copyToClipboard } from "../export/clipboard";
 import { generatePDF } from "../export/pdf-generator";
 import { generateFilename } from "../utils/image";
 import { isSupportedCapturePage, type PageSupportResult } from "../utils/url-validator";
+import { applyTheme, watchTheme } from "../utils/theme";
+
+applyTheme();
+watchTheme();
 
 const onboarding = document.getElementById("onboarding")!;
 const onboardingNext = document.getElementById("onboardingNext")!;

@@ -18,24 +18,48 @@
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
+      --ink:       29,31,32;
       --bg:        #d4d4d7;
       --bar:       #f2f2f3;
-      --bar-bd:    rgba(29,31,32,.12);
-      --hover:     rgba(29,31,32,.06);
+      --bar-bd:    rgba(var(--ink),.12);
+      --hover:     rgba(var(--ink),.06);
       --blue:      #1667F2;
       --blue-h:    #1257D8;
       --text:      #1d1f20;
-      --muted:     rgba(29,31,32,.4);
-      --border:    rgba(29,31,32,.12);
+      --muted:     rgba(var(--ink),.4);
+      --border:    rgba(var(--ink),.12);
       --green:     #027A48;
 
-      --text-2:    rgba(29,31,32,.6);
-      --text-4:    rgba(29,31,32,.35);
+      --text-2:    rgba(var(--ink),.6);
+      --text-4:    rgba(var(--ink),.35);
       --surface:   #f2f2f3;
-      --sunken:    rgba(29,31,32,.05);
+      --sunken:    rgba(var(--ink),.05);
 
       --r-sm:      0px;
       --r-md:      0px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --ink:     255,255,255;
+        --bg:      #18181a;
+        --bar:     #232326;
+        --blue:    #4C8DFF;
+        --blue-h:  #6BA0FF;
+        --text:    #F2F2F3;
+        --surface: #232326;
+        --green:   #2FBE79;
+      }
+    }
+    :root[data-theme="dark"] {
+      --ink:     255,255,255;
+      --bg:      #18181a;
+      --bar:     #232326;
+      --blue:    #4C8DFF;
+      --blue-h:  #6BA0FF;
+      --text:    #F2F2F3;
+      --surface: #232326;
+      --green:   #2FBE79;
     }
 
     html, body {
@@ -99,7 +123,7 @@
 
     /* ─── BLUEPRINT FRAME ─── */
     .bp { position: relative; }
-    .bp > .cm { position: absolute; width: 7px; height: 7px; color: rgba(29,31,32,.2); }
+    .bp > .cm { position: absolute; width: 7px; height: 7px; color: rgba(var(--ink),.2); }
     .bp > .cm::before { content: ""; position: absolute; left: 3px; top: 0; width: 1px; height: 100%; background: currentColor; }
     .bp > .cm::after  { content: ""; position: absolute; top: 3px; left: 0; width: 100%; height: 1px; background: currentColor; }
     .bp > .cm.tl { top: -4px; left: -4px; }
@@ -115,7 +139,7 @@
       display: flex;
       align-items: center;
       gap: 2px;
-      background: rgba(29,31,32,.05);
+      background: rgba(var(--ink),.05);
       padding: 2px 4px;
       border: 1px solid var(--bar-bd);
       border-radius: 0;
@@ -136,7 +160,7 @@
       transition: background 0.12s, color 0.12s;
     }
     .hdr-zoom-btn:hover {
-      background: rgba(29,31,32,.12);
+      background: rgba(var(--ink),.12);
       color: var(--text);
     }
     .hdr-zoom-btn:active {
@@ -165,7 +189,7 @@
       flex-shrink: 0;
     }
     .tbar-group.bp {
-      border: 1px solid rgba(29,31,32,.08);
+      border: 1px solid rgba(var(--ink),.08);
       margin: 0 2px;
     }
 
@@ -194,7 +218,7 @@
       scrollbar-width: thin;
     }
     .tbar-scroll::-webkit-scrollbar { height: 5px; }
-    .tbar-scroll::-webkit-scrollbar-thumb { background: rgba(29,31,32,.18); }
+    .tbar-scroll::-webkit-scrollbar-thumb { background: rgba(var(--ink),.18); }
     .tbar-scroll::-webkit-scrollbar-track { background: transparent; }
 
     /* Tool button */
@@ -225,7 +249,7 @@
       bottom: -2px;
       width: 12px;
       height: 12px;
-      background: #f2f2f3;
+      background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 0;
       display: flex;
@@ -244,7 +268,7 @@
       position: absolute;
       top: calc(100% + 6px);
       left: 0;
-      background: #f2f2f3;
+      background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 0;
       box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
@@ -274,7 +298,7 @@
       transition: background 0.1s;
     }
     .tool-dropdown-item:hover {
-      background: rgba(29,31,32,.05);
+      background: rgba(var(--ink),.05);
       color: var(--blue);
     }
     .tool-dropdown-item.active {
@@ -334,7 +358,7 @@
       transition: border-color .1s, transform .12s;
     }
     .color-swatch:hover { transform: scale(1.2); }
-    .color-swatch.active { border-color: #1d1f20; transform: scale(1.15); }
+    .color-swatch.active { border-color: var(--text); transform: scale(1.15); }
 
     /* Stroke width */
     .stroke-group {
@@ -359,7 +383,7 @@
       right: 0;
       width: 280px;
       height: calc(100% - 50px - 24px);
-      background: #f2f2f3;
+      background: var(--surface);
       border-left: 1px solid var(--bar-bd);
       z-index: 20;
       overflow-y: auto;
@@ -371,7 +395,7 @@
 
     .bf-section {
       padding: 14px 16px;
-      border-bottom: 1px solid rgba(29,31,32,.05);
+      border-bottom: 1px solid rgba(var(--ink),.05);
     }
     .bf-section-title {
       font-size: 10px;
@@ -433,7 +457,7 @@
       padding: 6px 0;
       border: 1px solid var(--border);
       border-radius: 0;
-      background: rgba(29,31,32,.05);
+      background: rgba(var(--ink),.05);
       cursor: pointer;
       font-size: 10.5px;
       font-weight: 600;
@@ -442,8 +466,68 @@
       transition: background .12s, border-color .12s;
       text-align: center;
     }
-    .bf-frame-btn:hover { background: rgba(29,31,32,.05); }
+    .bf-frame-btn:hover { background: rgba(var(--ink),.05); }
     .bf-frame-btn.active { background: rgba(22,103,242,.08); border-color: var(--blue); color: var(--blue); }
+
+    .bf-collage-layout-btn {
+      padding: 6px 0;
+      border: 1px solid var(--border);
+      background: rgba(var(--ink),.05);
+      cursor: pointer;
+      font-size: 10.5px;
+      font-weight: 600;
+      font-family: inherit;
+      color: var(--text);
+      transition: background .12s, border-color .12s;
+      text-align: center;
+    }
+    .bf-collage-layout-btn:hover { background: rgba(var(--ink),.05); }
+    .bf-collage-layout-btn.active { background: rgba(22,103,242,.08); border-color: var(--blue); color: var(--blue); }
+
+    /* Plain action buttons that borrow the frame-button look without joining
+       its click-toggle group — .bf-frame-btn is queried generically by
+       setupBeautifier() to drive frame selection, so any other button
+       reusing that exact class gets wired into it by accident. */
+    .bf-small-btn {
+      border: 1px solid var(--border);
+      background: rgba(var(--ink),.05);
+      cursor: pointer;
+      font-size: 10.5px;
+      font-weight: 600;
+      font-family: inherit;
+      color: var(--text);
+      transition: background .12s, border-color .12s;
+      text-align: center;
+    }
+    .bf-small-btn:hover { background: rgba(var(--ink),.12); }
+
+    .bf-collage-thumbs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .bf-collage-thumb {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .bf-collage-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .bf-collage-thumb-remove {
+      position: absolute;
+      top: 0; right: 0;
+      width: 15px; height: 15px;
+      background: rgba(0,0,0,.65);
+      color: #fff;
+      border: none;
+      font-size: 10px;
+      line-height: 15px;
+      text-align: center;
+      cursor: pointer;
+      padding: 0;
+    }
 
     .bf-ratio-grid {
       display: flex;
@@ -454,7 +538,7 @@
       padding: 4px 8px;
       border: 1px solid var(--border);
       border-radius: 0;
-      background: rgba(29,31,32,.05);
+      background: rgba(var(--ink),.05);
       cursor: pointer;
       font-size: 10px;
       font-weight: 600;
@@ -462,7 +546,7 @@
       color: var(--muted);
       transition: background .12s, border-color .12s;
     }
-    .bf-ratio-btn:hover { background: rgba(29,31,32,.05); color: var(--text); }
+    .bf-ratio-btn:hover { background: rgba(var(--ink),.05); color: var(--text); }
     .bf-ratio-btn.active { background: rgba(22,103,242,.08); border-color: var(--blue); color: var(--blue); }
 
     .bf-actions {
@@ -497,7 +581,7 @@
       cursor: pointer;
       transition: background .12s;
     }
-    .bf-reset-btn:hover { background: rgba(29,31,32,.05); color: var(--text); }
+    .bf-reset-btn:hover { background: rgba(var(--ink),.05); color: var(--text); }
 
     /* Export action buttons */
     .export-btn {
@@ -517,13 +601,13 @@
     .export-btn:active { transform: scale(0.96); }
 
     .export-btn.ghost {
-      background: rgba(29,31,32,.05);
-      color: rgba(29,31,32,.6);
-      border: 1px solid rgba(29,31,32,.12);
+      background: rgba(var(--ink),.05);
+      color: rgba(var(--ink),.6);
+      border: 1px solid rgba(var(--ink),.12);
     }
     .export-btn.ghost:hover {
-      background: rgba(29,31,32,.12);
-      color: #1d1f20;
+      background: rgba(var(--ink),.12);
+      color: var(--text);
     }
 
     .export-btn.done {
@@ -550,8 +634,8 @@
     .export-drop-menu {
       display: none;
       position: fixed;
-      background: #f2f2f3;
-      border: 1px solid rgba(29,31,32,.12);
+      background: var(--surface);
+      border: 1px solid rgba(var(--ink),.12);
       box-shadow: 0 8px 24px rgba(15,23,42,0.14);
       min-width: 240px;
       z-index: 9999;
@@ -565,7 +649,7 @@
       padding: 8px 14px;
       font-size: 12px;
       font-weight: 500;
-      color: rgba(29,31,32,.6);
+      color: rgba(var(--ink),.6);
       font-family: inherit;
       background: none;
       border: none;
@@ -574,11 +658,11 @@
       cursor: pointer;
       transition: background .1s;
     }
-    .export-drop-item:hover { background: rgba(29,31,32,.05); color: #1d1f20; }
-    .export-drop-item svg { flex-shrink: 0; color: rgba(29,31,32,.4); }
+    .export-drop-item:hover { background: rgba(var(--ink),.05); color: var(--text); }
+    .export-drop-item svg { flex-shrink: 0; color: rgba(var(--ink),.4); }
     .export-drop-sep {
       height: 1px;
-      background: rgba(29,31,32,.12);
+      background: rgba(var(--ink),.12);
       margin: 4px 0;
     }
     .export-drop-label {
@@ -587,7 +671,7 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.6px;
-      color: rgba(29,31,32,.35);
+      color: rgba(var(--ink),.35);
     }
     /* Export settings panel */
     .export-settings {
@@ -605,7 +689,7 @@
     .export-row-label {
       font-size: 11px;
       font-weight: 600;
-      color: rgba(29,31,32,.6);
+      color: rgba(var(--ink),.6);
       flex-shrink: 0;
     }
     .export-resize-inputs {
@@ -616,35 +700,35 @@
     .export-resize-inputs input {
       width: 58px;
       height: 24px;
-      border: 1px solid rgba(29,31,32,.25);
-      background: rgba(29,31,32,.05);
-      color: #1d1f20;
+      border: 1px solid rgba(var(--ink),.25);
+      background: rgba(var(--ink),.05);
+      color: var(--text);
       font-size: 11px;
       font-family: inherit;
       padding: 0 6px;
       text-align: center;
     }
-    .export-resize-inputs input:focus { outline: none; border-color: #1667F2; }
+    .export-resize-inputs input:focus { outline: none; border-color: var(--blue); }
     .export-resize-x {
       font-size: 10px;
-      color: rgba(29,31,32,.35);
+      color: rgba(var(--ink),.35);
     }
     .export-resize-lock {
       position: relative;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      color: rgba(29,31,32,.4);
+      color: rgba(var(--ink),.4);
       cursor: pointer;
       padding: 4px;
-      border: 1px solid rgba(29,31,32,.25);
+      border: 1px solid rgba(var(--ink),.25);
       border-radius: 0;
-      background: rgba(29,31,32,.05);
+      background: rgba(var(--ink),.05);
       line-height: 0;
       transition: color .14s ease, border-color .14s ease, background .14s ease;
     }
-    .export-resize-lock:hover { color: #1d1f20; border-color: rgba(29,31,32,.35); }
-    .export-resize-lock.locked { color: #1667F2; border-color: #1667F2; background: rgba(22,103,242,.08); }
+    .export-resize-lock:hover { color: var(--text); border-color: rgba(var(--ink),.35); }
+    .export-resize-lock.locked { color: var(--blue); border-color: var(--blue); background: rgba(22,103,242,.08); }
     /* Annotations toggle */
     .annot-toggle {
       display: flex;
@@ -660,7 +744,7 @@
     .annot-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
     .annot-track {
       position: absolute; inset: 0;
-      background: rgba(29,31,32,.25);
+      background: rgba(var(--ink),.25);
       transition: background .15s;
     }
     .annot-track::after {
@@ -671,12 +755,12 @@
       background: #fff;
       transition: transform .15s;
     }
-    .annot-switch input:checked + .annot-track { background: #1667F2; }
+    .annot-switch input:checked + .annot-track { background: var(--blue); }
     .annot-switch input:checked + .annot-track::after { transform: translateX(14px); }
     .annot-toggle-label {
       font-size: 11px;
       font-weight: 600;
-      color: rgba(29,31,32,.6);
+      color: rgba(var(--ink),.6);
     }
 
     #exportQuality {
@@ -684,37 +768,37 @@
       padding: 0 8px;
       border-radius: 0;
       border: 1px solid var(--bar-bd);
-      background: rgba(29,31,32,.05);
-      color: rgba(29,31,32,.6);
+      background: rgba(var(--ink),.05);
+      color: rgba(var(--ink),.6);
       font-size: 11.5px;
       font-weight: 600;
       font-family: inherit;
       cursor: pointer;
       outline: none;
     }
-    #exportQuality:hover { background: rgba(29,31,32,.12); }
+    #exportQuality:hover { background: rgba(var(--ink),.12); }
     #exportQuality:focus-visible {
       outline: 2px solid var(--blue);
       outline-offset: -1px;
     }
-    #exportQuality option { background: #f2f2f3; color: var(--text); }
+    #exportQuality option { background: var(--surface); color: var(--text); }
 
     .tbar-select {
       height: 26px;
       padding: 0 6px;
       border-radius: 4px;
       border: 1px solid var(--bar-bd);
-      background: rgba(29,31,32,.05);
-      color: rgba(29,31,32,.6);
+      background: rgba(var(--ink),.05);
+      color: rgba(var(--ink),.6);
       font-size: 11px;
       font-weight: 600;
       font-family: inherit;
       cursor: pointer;
       outline: none;
     }
-    .tbar-select:hover { background: rgba(29,31,32,.12); }
+    .tbar-select:hover { background: rgba(var(--ink),.12); }
     .tbar-select:focus-visible { outline: 2px solid var(--blue); outline-offset: -1px; }
-    .tbar-select option { background: #f2f2f3; color: var(--text); }
+    .tbar-select option { background: var(--surface); color: var(--text); }
 
     /* ─── CANVAS AREA ─── */
     .canvas-wrap {
@@ -724,12 +808,12 @@
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      background: rgba(29,31,32,.12);
+      background: rgba(var(--ink),.12);
       background-image:
-        linear-gradient(45deg, rgba(29,31,32,.25) 25%, transparent 25%),
-        linear-gradient(-45deg, rgba(29,31,32,.25) 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, rgba(29,31,32,.25) 75%),
-        linear-gradient(-45deg, transparent 75%, rgba(29,31,32,.25) 75%);
+        linear-gradient(45deg, rgba(var(--ink),.25) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(var(--ink),.25) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(var(--ink),.25) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(var(--ink),.25) 75%);
       background-size: 20px 20px;
       background-position: 0 0, 0 10px, 10px -10px, -10px 0;
       padding: 40px;
@@ -790,12 +874,12 @@
     .zoom-btn {
       width: 24px; height: 22px;
       display: flex; align-items: center; justify-content: center;
-      border: 1px solid var(--bar-bd); background: rgba(29,31,32,.05); cursor: pointer;
+      border: 1px solid var(--bar-bd); background: rgba(var(--ink),.05); cursor: pointer;
       color: var(--text); font-size: 13px; font-weight: 700; line-height: 1;
       border-radius: 0;
       transition: color .1s, background .1s;
     }
-    .zoom-btn:hover { background: rgba(29,31,32,.12); color: #1d1f20; }
+    .zoom-btn:hover { background: rgba(var(--ink),.12); color: var(--text); }
 
     /* ─── TOAST ─── */
     .toast {
@@ -1154,7 +1238,7 @@
     <div class="color-swatch" data-color="#8B5CF6" style="background:#8B5CF6" title="Purple"></div>
     <div class="color-swatch" data-color="#EC4899" style="background:#EC4899" title="Pink"></div>
     <div class="color-swatch" data-color="#FFFFFF" style="background:#FFFFFF" title="White"></div>
-    <div class="color-swatch" data-color="#1d1f20" style="background:#1d1f20; border-color:rgba(29,31,32,.6)" title="Black"></div>
+    <div class="color-swatch" data-color="#1d1f20" style="background:#1d1f20; border-color:rgba(var(--ink),.6)" title="Black"></div>
   </div>
 
   <div class="tbar-sep"></div>
@@ -1387,21 +1471,21 @@
   <div class="bf-section">
     <div class="bf-section-title">Presets</div>
     <div class="bf-row" style="justify-content: flex-start; margin-bottom: 8px;">
-      <select id="bf-preset-select" style="flex:1; height:28px; font-size:11.5px; border:1px solid var(--border); background:rgba(29,31,32,.05); color:var(--text);">
+      <select id="bf-preset-select" style="flex:1; height:28px; font-size:11.5px; border:1px solid var(--border); background:rgba(var(--ink),.05); color:var(--text);">
         <option value="">Custom</option>
       </select>
     </div>
     <div class="bf-row" style="justify-content: flex-start; gap: 6px;">
-      <input type="text" id="bf-preset-name" placeholder="Preset name" maxlength="30" style="flex:1; height:28px; padding:0 8px; font-size:11.5px; border:1px solid var(--border); background:rgba(29,31,32,.05); color:var(--text);">
-      <button id="bf-preset-save-btn" class="bf-frame-btn" style="white-space:nowrap; padding:0 12px; height:28px;">Save</button>
+      <input type="text" id="bf-preset-name" placeholder="Preset name" maxlength="30" style="flex:1; height:28px; padding:0 8px; font-size:11.5px; border:1px solid var(--border); background:rgba(var(--ink),.05); color:var(--text);">
+      <button id="bf-preset-save-btn" class="bf-small-btn" style="white-space:nowrap; padding:0 12px; height:28px;">Save</button>
     </div>
   </div>
 
   <div class="bf-section">
     <div class="bf-section-title">Background</div>
     <div class="bf-bg-grid" id="bf-bg-grid">
-      <div class="bf-bg-swatch" data-bg="none" style="background:rgba(29,31,32,.05);position:relative" title="None">
-        <svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="rgba(29,31,32,.25)" stroke-width="2"><line x1="4" y1="4" x2="20" y2="20"/></svg>
+      <div class="bf-bg-swatch" data-bg="none" style="background:rgba(var(--ink),.05);position:relative" title="None">
+        <svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="rgba(var(--ink),.25)" stroke-width="2"><line x1="4" y1="4" x2="20" y2="20"/></svg>
       </div>
       <div class="bf-bg-swatch active" data-bg="linear-gradient(135deg,#667eea,#764ba2)" style="background:linear-gradient(135deg,#667eea,#764ba2)" title="Indigo Purple"></div>
       <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#f093fb,#f5576c)" style="background:linear-gradient(135deg,#f093fb,#f5576c)" title="Pink Red"></div>
@@ -1413,9 +1497,25 @@
       <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#0c3483,#a2b6df)" style="background:linear-gradient(135deg,#0c3483,#a2b6df)" title="Navy"></div>
       <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#1a1a2e,#16213e)" style="background:linear-gradient(135deg,#1a1a2e,#16213e)" title="Dark"></div>
       <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#ff9a9e,#fad0c4)" style="background:linear-gradient(135deg,#ff9a9e,#fad0c4)" title="Coral"></div>
-      <div class="bf-bg-swatch" data-bg="#FFFFFF" style="background:#FFFFFF;border:1px solid rgba(29,31,32,.12)" title="White"></div>
+      <div class="bf-bg-swatch" data-bg="#FFFFFF" style="background:#FFFFFF;border:1px solid rgba(var(--ink),.12)" title="White"></div>
       <div class="bf-bg-swatch" data-bg="pattern:dots" style="background:#1a1a2e radial-gradient(rgba(255,255,255,.35) 1.5px, transparent 1.5px);background-size:10px 10px" title="Dot Grid"></div>
       <div class="bf-bg-swatch" data-bg="pattern:diagonal" style="background:#0c3483 repeating-linear-gradient(45deg, rgba(255,255,255,.18) 0 6px, transparent 6px 14px)" title="Diagonal Stripes"></div>
+    </div>
+  </div>
+
+  <div class="bf-section">
+    <div class="bf-section-title">Collage</div>
+    <div class="bf-row" style="justify-content: flex-start; gap: 6px;">
+      <button class="bf-small-btn" id="bf-collage-add-btn" style="white-space:nowrap; padding:0 12px; height:28px;">+ Add Image</button>
+      <input type="file" id="bf-collage-file-input" accept="image/*" multiple style="display:none">
+    </div>
+    <div class="bf-collage-thumbs" id="bf-collage-thumbs"></div>
+    <div class="bf-row" id="bf-collage-layout-row" style="display:none; margin-top:8px;">
+      <span class="bf-label">Layout</span>
+      <div class="bf-frame-grid" style="flex:1; grid-template-columns: repeat(2, 1fr);">
+        <button class="bf-collage-layout-btn active" data-collage-layout="row">Side by Side</button>
+        <button class="bf-collage-layout-btn" data-collage-layout="column">Stacked</button>
+      </div>
     </div>
   </div>
 

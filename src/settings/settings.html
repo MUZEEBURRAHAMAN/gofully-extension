@@ -18,23 +18,47 @@
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
+      --ink:      29,31,32;
       --blue:     #1667F2;
       --blue-h:   #1257D8;
       --blue-bg:  #EDF1FE;
       --blue-bd:  #BDD0FB;
 
       --text:     #1d1f20;
-      --text-2:   rgba(29,31,32,.6);
-      --text-3:   rgba(29,31,32,.45);
-      --text-4:   rgba(29,31,32,.35);
+      --text-2:   rgba(var(--ink),.6);
+      --text-3:   rgba(var(--ink),.45);
+      --text-4:   rgba(var(--ink),.35);
 
-      --border:   rgba(29,31,32,.12);
-      --border-h: rgba(29,31,32,.25);
+      --border:   rgba(var(--ink),.12);
+      --border-h: rgba(var(--ink),.25);
       --surface:  #f2f2f3;
-      --sunken:   rgba(29,31,32,.05);
+      --sunken:   rgba(var(--ink),.05);
       --white:    #FFFFFF;
 
       --green:    #027A48;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --ink:      255,255,255;
+        --blue:     #4C8DFF;
+        --blue-h:   #6BA0FF;
+        --blue-bg:  rgba(76,141,255,.14);
+        --blue-bd:  rgba(76,141,255,.4);
+        --text:     #F2F2F3;
+        --surface:  #1c1c1e;
+        --green:    #2FBE79;
+      }
+    }
+    :root[data-theme="dark"] {
+      --ink:      255,255,255;
+      --blue:     #4C8DFF;
+      --blue-h:   #6BA0FF;
+      --blue-bg:  rgba(76,141,255,.14);
+      --blue-bd:  rgba(76,141,255,.4);
+      --text:     #F2F2F3;
+      --surface:  #1c1c1e;
+      --green:    #2FBE79;
     }
 
     body {
@@ -155,7 +179,7 @@
       -webkit-appearance: none;
       -moz-appearance: none;
       padding-right: 24px;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'%3E%3Cpath d='M1 1L5 5L9 1' stroke='rgba(29,31,32,.4)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'%3E%3Cpath d='M1 1L5 5L9 1' stroke='rgba(var(--ink),.4)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 8px center;
     }
@@ -220,6 +244,86 @@
       color: var(--text-4);
     }
 
+    /* ─── THEME SEGMENTED CONTROL ─── */
+    .theme-seg {
+      display: flex;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .theme-seg button {
+      height: 28px;
+      padding: 0 12px;
+      background: transparent;
+      border: none;
+      border-left: 1px solid var(--border);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-3);
+      cursor: pointer;
+      transition: background .12s, color .12s;
+    }
+    .theme-seg button:first-child { border-left: none; }
+    .theme-seg button:hover { background: var(--sunken); }
+    .theme-seg button.active { background: var(--blue); color: #fff; }
+
+    /* ─── EDITOR TOOL SHORTCUTS ─── */
+    .shortcut-edit-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--sunken);
+    }
+    .shortcut-edit-row:last-child { border-bottom: none; }
+    .shortcut-edit-row span { font-size: 12px; color: var(--text-2); }
+
+    .shortcut-key-btn {
+      min-width: 34px;
+      height: 26px;
+      padding: 0 8px;
+      background: var(--sunken);
+      border: 1px solid var(--border);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: border-color .12s, background .12s;
+    }
+    .shortcut-key-btn:hover { border-color: var(--border-h); }
+    .shortcut-key-btn.listening {
+      background: var(--blue-bg);
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+    .shortcut-key-btn.conflict {
+      border-color: #B42318;
+      color: #B42318;
+    }
+
+    .shortcut-hint {
+      font-size: 10.5px;
+      color: var(--text-4);
+      padding-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .shortcut-reset-btn {
+      background: none;
+      border: none;
+      color: var(--blue);
+      font-size: 10.5px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      padding: 0;
+    }
+    .shortcut-reset-btn:hover { text-decoration: underline; }
+
     /* ─── PRIVACY SECTION ─── */
     .privacy-header {
       display: flex;
@@ -274,8 +378,8 @@
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%) translateY(80px);
-      background: var(--text);
-      color: var(--white);
+      background: #1d1f20;
+      color: #f2f2f3;
       padding: 8px 20px;
       font-size: 12px;
       font-weight: 600;
@@ -303,6 +407,24 @@
   </div>
 
   <div class="grid">
+
+    <!-- Appearance -->
+    <div class="section bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+      <h2>Appearance</h2>
+      <div class="fields">
+        <div class="field">
+          <div>
+            <div class="field-label">Theme</div>
+            <div class="field-desc">Applies to the popup, editor, and this settings page</div>
+          </div>
+          <div class="theme-seg" id="themeSeg">
+            <button data-theme-choice="light">Light</button>
+            <button data-theme-choice="dark">Dark</button>
+            <button data-theme-choice="system" class="active">System</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Capture Settings -->
     <div class="section bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
@@ -371,6 +493,17 @@
             <span class="slider"></span>
           </label>
         </div>
+
+        <div class="field">
+          <div>
+            <div class="field-label">URL &amp; timestamp stamp</div>
+            <div class="field-desc">Print the page URL and capture time in the corner of every screenshot</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="captureStamp">
+            <span class="slider"></span>
+          </label>
+        </div>
       </div>
     </div>
 
@@ -435,6 +568,18 @@
       </div>
       <div class="fields" style="padding-bottom:14px;">
         <div style="font-size:10.5px; color: var(--text-4); padding-top: 4px;">Customize at chrome://extensions/shortcuts</div>
+      </div>
+    </div>
+
+    <!-- Editor Tool Shortcuts -->
+    <div class="section bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+      <h2>Editor Tool Shortcuts</h2>
+      <div class="fields" id="editorShortcutRows"></div>
+      <div class="fields" style="padding-bottom:14px;">
+        <div class="shortcut-hint">
+          <span>Click a key, then press a new one to reassign.</span>
+          <button class="shortcut-reset-btn" id="resetShortcutsBtn">Reset to defaults</button>
+        </div>
       </div>
     </div>
 

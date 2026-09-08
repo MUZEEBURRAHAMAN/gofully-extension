@@ -3,7 +3,9 @@ import type {
   CaptureResult,
   CaptureRegion,
   ScrollableElementInfo,
+  Settings,
 } from "../types";
+import { DEFAULT_SETTINGS } from "../types";
 import { captureFullPage, captureVisibleArea, captureSelectedArea } from "./capture-engine";
 import { captureScrollingArea } from "../capture-modes/scrolling-area";
 import { createScrollCapturer } from "../capture-modes/scroll-capturer";
@@ -91,6 +93,89 @@ async function blobToDataUrl(blob: Blob): Promise<string> {
   return `data:${blob.type};base64,${btoa(parts.join(""))}`;
 }
 
+function formatStampTimestamp(ts: number): string {
+  const d = new Date(ts);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+function truncateUrl(url: string, max = 64): string {
+  return url.length > max ? `${url.slice(0, max - 1)}…` : url;
+}
+
+// Runs in the service worker itself — MV3 workers support OffscreenCanvas and
+// createImageBitmap natively, so this needs none of the offscreen-document
+// machinery OCR/stitching use for DOM-dependent work.
+async function stampCapture(result: CaptureResult): Promise<Blob> {
+  const bitmap = await createImageBitmap(result.blob);
+  const { width, height } = bitmap;
+
+  // Too narrow for a legible stamp at any font size worth drawing.
+  if (width < 120) {
+    bitmap.close();
+    return result.blob;
+  }
+
+  const canvas = new OffscreenCanvas(width, height);
+  const ctx = canvas.getContext("2d")!;
+  ctx.drawImage(bitmap, 0, 0);
+  bitmap.close();
+
+  const fontSize = Math.max(12, Math.min(22, Math.round(width / 90)));
+  ctx.font = `${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif`;
+
+  const paddingX = fontSize * 0.9;
+  const paddingY = fontSize * 0.6;
+  const margin = Math.max(12, Math.round(width / 120));
+  const maxTextWidth = width - margin * 2 - paddingX * 2;
+
+  const timestampStr = formatStampTimestamp(result.timestamp);
+  let urlStr = truncateUrl(result.url);
+  const buildLabel = (u: string) => `${u}  ·  ${timestampStr}`;
+  let label = buildLabel(urlStr);
+  while (ctx.measureText(label).width > maxTextWidth && urlStr.length > 4) {
+    urlStr = urlStr.replace(/…?$/, "").slice(0, -1);
+    label = buildLabel(`${urlStr}…`);
+  }
+  // Even the timestamp alone doesn't fit — skip the stamp rather than draw
+  // an unreadable clipped box.
+  if (ctx.measureText(buildLabel("")).width > maxTextWidth) {
+    return canvas.convertToBlob({ type: result.blob.type || "image/png" });
+  }
+
+  const textWidth = ctx.measureText(label).width;
+  const boxW = textWidth + paddingX * 2;
+  const boxH = fontSize + paddingY * 2;
+  const boxX = margin;
+  const boxY = height - boxH - margin;
+
+  ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+  if (typeof (ctx as any).roundRect === "function") {
+    ctx.beginPath();
+    (ctx as any).roundRect(boxX, boxY, boxW, boxH, boxH / 4);
+    ctx.fill();
+  } else {
+    ctx.fillRect(boxX, boxY, boxW, boxH);
+  }
+
+  ctx.fillStyle = "#FFFFFF";
+  ctx.textBaseline = "middle";
+  ctx.fillText(label, boxX + paddingX, boxY + boxH / 2);
+
+  return canvas.convertToBlob({ type: result.blob.type || "image/png" });
+}
+
+async function maybeStampCapture(result: CaptureResult): Promise<Blob> {
+  try {
+    const stored = await chrome.storage.sync.get("settings");
+    const settings: Settings = { ...DEFAULT_SETTINGS, ...((stored.settings as Partial<Settings>) || {}) };
+    if (!settings.captureStamp) return result.blob;
+    return await stampCapture(result);
+  } catch {
+    return result.blob;
+  }
+}
+
 // chrome.storage.session holds ~10MB. Large captures are kept in memory only;
 // the editor falls back to asking the worker directly for them.
 const SESSION_CACHE_LIMIT = 8 * 1024 * 1024;
@@ -155,8 +240,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     handleCapture(mode, region, speed, targetTabId)
       .then(async (result) => {
-        lastCaptureBlob = result.blob;
-        lastCaptureDataUrl = await blobToDataUrl(result.blob);
+        lastCaptureBlob = await maybeStampCapture(result);
+        lastCaptureDataUrl = await blobToDataUrl(lastCaptureBlob);
         lastCaptureResult = { ...result, blob: null as any };
         // Persist so editor can load even after SW idle-restart
         cacheCaptureInSession(lastCaptureDataUrl);
@@ -293,8 +378,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       }).catch(() => {});
     })
       .then(async (result) => {
-        lastCaptureBlob = result.blob;
-        lastCaptureDataUrl = await blobToDataUrl(result.blob);
+        lastCaptureBlob = await maybeStampCapture(result);
+        lastCaptureDataUrl = await blobToDataUrl(lastCaptureBlob);
         lastCaptureResult = { ...result, blob: null as any };
         cacheCaptureInSession(lastCaptureDataUrl);
         // Tell scrolling-area-ui to clean up before showing result bar
@@ -357,8 +442,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     activeCapturer = null;
     capturer.finish().then(async (result) => {
       if (!result) { sendResponse({ success: false }); return; }
-      lastCaptureBlob = result.blob;
-      lastCaptureDataUrl = await blobToDataUrl(result.blob);
+      lastCaptureBlob = await maybeStampCapture(result);
+      lastCaptureDataUrl = await blobToDataUrl(lastCaptureBlob);
       lastCaptureResult = { ...result, blob: null as any };
       cacheCaptureInSession(lastCaptureDataUrl);
       await showResultBarOnTab(tabId, {
@@ -416,8 +501,8 @@ chrome.commands.onCommand.addListener(async (command) => {
   if (command === "capture-full-page") {
     try {
       const result = await handleCapture("full-page", undefined, undefined, tab.id);
-      lastCaptureBlob = result.blob;
-      lastCaptureDataUrl = await blobToDataUrl(result.blob);
+      lastCaptureBlob = await maybeStampCapture(result);
+      lastCaptureDataUrl = await blobToDataUrl(lastCaptureBlob);
       lastCaptureResult = { ...result, blob: null as any };
       cacheCaptureInSession(lastCaptureDataUrl);
 
@@ -441,8 +526,8 @@ chrome.commands.onCommand.addListener(async (command) => {
   if (command === "capture-visible") {
     try {
       const result = await handleCapture("visible-area", undefined, undefined, tab.id);
-      lastCaptureBlob = result.blob;
-      lastCaptureDataUrl = await blobToDataUrl(result.blob);
+      lastCaptureBlob = await maybeStampCapture(result);
+      lastCaptureDataUrl = await blobToDataUrl(lastCaptureBlob);
       lastCaptureResult = { ...result, blob: null as any };
       cacheCaptureInSession(lastCaptureDataUrl);
 

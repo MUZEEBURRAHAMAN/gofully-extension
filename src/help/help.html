@@ -24,18 +24,20 @@
     html { scrollbar-gutter: stable; }
 
     :root {
+      --ink:       29,31,32;
+      --bg:        #e9e9ea;
       --blue:      #1667F2;
       --blue-h:    #1257D8;
       --blue-bg:   rgba(22,103,242,.08);
       --blue-bd:   rgba(22,103,242,.25);
 
       --text:      #1d1f20;
-      --text-2:    rgba(29,31,32,.6);
-      --text-3:    rgba(29,31,32,.45);
-      --text-4:    rgba(29,31,32,.35);
+      --text-2:    rgba(var(--ink),.6);
+      --text-3:    rgba(var(--ink),.45);
+      --text-4:    rgba(var(--ink),.35);
 
-      --border:    rgba(29,31,32,.12);
-      --border-h:  rgba(29,31,32,.25);
+      --border:    rgba(var(--ink),.12);
+      --border-h:  rgba(var(--ink),.25);
       --surface:   #f2f2f3;
       --white:     #f2f2f3;
 
@@ -44,8 +46,37 @@
       --green-bd:  rgba(2,122,72,.25);
     }
 
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --ink:      255,255,255;
+        --blue:     #4C8DFF;
+        --blue-h:   #6BA0FF;
+        --blue-bg:  rgba(76,141,255,.14);
+        --blue-bd:  rgba(76,141,255,.4);
+        --bg:       #131314;
+        --text:     #F2F2F3;
+        --surface:  #1c1c1e;
+        --green:    #2FBE79;
+        --green-bg: rgba(47,190,121,.14);
+        --green-bd: rgba(47,190,121,.4);
+      }
+    }
+    :root[data-theme="dark"] {
+      --ink:      255,255,255;
+      --bg:       #131314;
+      --blue:     #4C8DFF;
+      --blue-h:   #6BA0FF;
+      --blue-bg:  rgba(76,141,255,.14);
+      --blue-bd:  rgba(76,141,255,.4);
+      --text:     #F2F2F3;
+      --surface:  #1c1c1e;
+      --green:    #2FBE79;
+      --green-bg: rgba(47,190,121,.14);
+      --green-bd: rgba(47,190,121,.4);
+    }
+
     body {
-      background-color: #e9e9ea;
+      background-color: var(--bg);
       color: var(--text);
       font-family: 'Barlow', 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
@@ -57,7 +88,7 @@
 
     /* ─── BLUEPRINT FRAME ─── */
     .bp { position: relative; }
-    .bp > .cm { position: absolute; width: 8px; height: 8px; color: rgba(29,31,32,.2); }
+    .bp > .cm { position: absolute; width: 8px; height: 8px; color: rgba(var(--ink),.2); }
     .bp > .cm::before { content: ""; position: absolute; left: 3px; top: 0; width: 1px; height: 100%; background: currentColor; }
     .bp > .cm::after  { content: ""; position: absolute; top: 3px; left: 0; width: 100%; height: 1px; background: currentColor; }
     .bp > .cm.tl { top: -4px; left: -4px; }
