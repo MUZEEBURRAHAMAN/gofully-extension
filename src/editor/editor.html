@@ -1232,14 +1232,8 @@
 
   <div class="tbar-sep"></div>
 
-  <!-- Quality + Export -->
+  <!-- Export -->
   <div class="export-group">
-    <select id="exportQuality" title="Export resolution">
-      <option value="native">Native</option>
-      <option value="hd">1080p HD</option>
-      <option value="4k" selected>4K UHD</option>
-    </select>
-
     <div class="export-drop-wrap">
       <button class="export-btn ghost" id="export-menu-btn">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -1253,6 +1247,16 @@
         <!-- Settings panel — stop propagation so clicks here don't close menu -->
         <div class="export-settings" id="export-settings-panel">
           <div class="export-drop-label" style="padding:0 0 2px">Options</div>
+
+          <!-- Quality -->
+          <div class="export-row">
+            <span class="export-row-label">Quality</span>
+            <select id="exportQuality" title="Export resolution">
+              <option value="native">Native</option>
+              <option value="hd">1080p HD</option>
+              <option value="4k" selected>4K UHD</option>
+            </select>
+          </div>
 
           <!-- Annotations toggle -->
           <div class="export-row">
