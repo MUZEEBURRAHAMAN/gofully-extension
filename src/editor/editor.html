@@ -699,6 +699,23 @@
     }
     #exportQuality option { background: #f2f2f3; color: var(--text); }
 
+    .tbar-select {
+      height: 26px;
+      padding: 0 6px;
+      border-radius: 4px;
+      border: 1px solid var(--bar-bd);
+      background: rgba(29,31,32,.05);
+      color: rgba(29,31,32,.6);
+      font-size: 11px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      outline: none;
+    }
+    .tbar-select:hover { background: rgba(29,31,32,.12); }
+    .tbar-select:focus-visible { outline: 2px solid var(--blue); outline-offset: -1px; }
+    .tbar-select option { background: #f2f2f3; color: var(--text); }
+
     /* ─── CANVAS AREA ─── */
     .canvas-wrap {
       flex: 1;
@@ -997,21 +1014,26 @@
       </div>
     </div>
 
-    <button class="tool-btn" data-tool="rectangle" id="tool-rectangle">
-      <!-- Hugeicons: square-dashed-02 / rectangle -->
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="5" width="18" height="14" rx="0"/>
-      </svg>
-      <span class="tip">Rectangle (R)</span>
-    </button>
-
-    <button class="tool-btn" data-tool="ellipse" id="tool-ellipse">
-      <!-- Hugeicons: circle -->
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="8"/>
-      </svg>
-      <span class="tip">Ellipse (E)</span>
-    </button>
+    <div class="tool-dropdown-wrapper">
+      <button class="tool-btn" data-tool="rectangle" id="tool-shape">
+        <!-- Hugeicons: square-dashed-02 / rectangle -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="5" width="18" height="14" rx="0"/>
+        </svg>
+        <span class="tip">Shape (R)</span>
+      </button>
+      <div class="tool-expand-btn" id="shape-expand">▾<span class="tip">Shape options</span></div>
+      <div class="tool-dropdown-menu" id="shape-menu">
+        <button class="tool-dropdown-item active" data-shape-type="rectangle">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="0"/></svg>
+          Rectangle
+        </button>
+        <button class="tool-dropdown-item" data-shape-type="ellipse">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="8"/></svg>
+          Ellipse
+        </button>
+      </div>
+    </div>
 
     <button class="tool-btn" data-tool="callout" id="tool-callout">
       <!-- Hugeicons: comment-01 -->
@@ -1096,6 +1118,14 @@
       </div>
     </div>
 
+    <button class="tool-btn" data-tool="highlight" id="tool-highlight">
+      <!-- Hugeicons: pencil-edit / highlighter -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 11l6-6 4 4-6 6-4-4z"/><path d="M4 20l3-3h3l1-1"/><path d="M13 7l4 4"/>
+      </svg>
+      <span class="tip">Highlighter</span>
+    </button>
+
     <button class="tool-btn" data-tool="crop" id="tool-crop">
       <!-- Hugeicons: crop -->
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -1154,6 +1184,13 @@
     <span class="stroke-label" style="margin-left:4px">Size</span>
     <input type="range" id="fontSize" min="12" max="96" value="24" style="width:60px">
     <span id="fontSizeVal" style="font-size:10px;min-width:24px;text-align:center;color:var(--muted)">24</span>
+    <select id="fontFamily" class="tbar-select" title="Font">
+      <option value="'Caveat', cursive, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif">Handwritten</option>
+      <option value="'Barlow', -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif">Sans</option>
+      <option value="'Archivo', -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif">Modern</option>
+      <option value="Georgia, 'Times New Roman', serif">Serif</option>
+      <option value="'Courier New', monospace">Mono</option>
+    </select>
   </div>
 
   <!-- Rotate -->

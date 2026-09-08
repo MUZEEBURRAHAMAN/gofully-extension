@@ -8,7 +8,7 @@ import { generatePDF } from "../export/pdf-generator";
 
 type ToolType =
   | "select" | "arrow" | "rectangle" | "ellipse" | "callout" | "line"
-  | "freedraw" | "text" | "spotlight" | "blur" | "step" | "crop";
+  | "freedraw" | "text" | "spotlight" | "blur" | "step" | "crop" | "highlight";
 
 type ArrowType = "straight" | "curved";
 type BlurType = "glass" | "pixel" | "redact";
@@ -120,8 +120,20 @@ function setupDropdownMenus(): void {
   blurExpand?.addEventListener("click", (e) => {
     e.stopPropagation();
     arrowMenu?.classList.remove("show");
+    shapeMenu?.classList.remove("show");
     exportDropMenu?.classList.remove("show");
     blurMenu?.classList.toggle("show");
+  });
+
+  // Shape dropdown toggle (Rectangle / Ellipse consolidated into one button)
+  const shapeExpand = document.getElementById("shape-expand");
+  const shapeMenu = document.getElementById("shape-menu");
+  shapeExpand?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    arrowMenu?.classList.remove("show");
+    blurMenu?.classList.remove("show");
+    exportDropMenu?.classList.remove("show");
+    shapeMenu?.classList.toggle("show");
   });
 
   // Export dropdown toggle — use fixed positioning so toolbar z-index doesn't clip it
@@ -131,6 +143,7 @@ function setupDropdownMenus(): void {
     e.stopPropagation();
     arrowMenu?.classList.remove("show");
     blurMenu?.classList.remove("show");
+    shapeMenu?.classList.remove("show");
     const isOpen = exportDropMenu?.classList.contains("show");
     if (!isOpen) openExportMenu();
     else exportDropMenu?.classList.remove("show");
@@ -147,7 +160,23 @@ function setupDropdownMenus(): void {
   document.addEventListener("click", () => {
     arrowMenu?.classList.remove("show");
     blurMenu?.classList.remove("show");
+    shapeMenu?.classList.remove("show");
     document.getElementById("export-drop-menu")?.classList.remove("show");
+  });
+
+  // Shape type selection (Rectangle / Ellipse)
+  document.querySelectorAll("[data-shape-type]").forEach((item) => {
+    item.addEventListener("click", (e) => {
+      e.stopPropagation();
+      document.querySelectorAll("[data-shape-type]").forEach((i) => i.classList.remove("active"));
+      item.classList.add("active");
+      const shapeType = (item as HTMLElement).dataset.shapeType as ToolType;
+      const mainBtn = document.getElementById("tool-shape");
+      if (mainBtn) mainBtn.dataset.tool = shapeType;
+      shapeMenu?.classList.remove("show");
+      setTool(shapeType);
+      showToast(shapeType === "ellipse" ? "Ellipse selected" : "Rectangle selected");
+    });
   });
 
   // Arrow type selection
@@ -318,6 +347,7 @@ function setTool(tool: ToolType): void {
     blur: "Blur / Redaction",
     step: "Step Number Counter",
     crop: "Crop & Resize Image",
+    highlight: "Highlighter",
   };
   toolNameEl.textContent = names[tool] || tool;
 
@@ -559,6 +589,16 @@ function createShape(tool: ToolType, x: number, y: number): any {
         selectable: false, evented: false,
       });
 
+    case "highlight":
+      return new Rect({
+        left: x, top: y, width: 0, height: 0,
+        fill: currentColor,
+        opacity: 0.35,
+        stroke: "transparent",
+        originX: "left", originY: "top",
+        selectable: false, evented: false,
+      });
+
     case "blur":
       return new Rect({
         left: x, top: y, width: 0, height: 0,
@@ -587,7 +627,7 @@ function updateShape(
   const height = Math.max(1, Math.abs(y2 - y1));
 
   switch (tool) {
-    case "rectangle": case "blur": case "crop": case "callout": case "spotlight":
+    case "rectangle": case "blur": case "crop": case "callout": case "spotlight": case "highlight":
       shape.set({ originX: "left", originY: "top", left, top, width, height });
       break;
     case "ellipse":
@@ -1397,6 +1437,7 @@ function setupTextFormatting(): void {
   const italicBtn = document.getElementById("text-italic-btn");
   const sizeSlider = document.getElementById("fontSize") as HTMLInputElement;
   const sizeVal    = document.getElementById("fontSizeVal");
+  const fontSelect = document.getElementById("fontFamily") as HTMLSelectElement;
   if (!group || !boldBtn || !italicBtn || !sizeSlider) return;
 
   canvas.on("selection:created", updateTextFormatUI);
@@ -1413,6 +1454,7 @@ function setupTextFormatting(): void {
     italicBtn!.classList.toggle("active", obj.fontStyle === "italic");
     sizeSlider.value = String(Math.round(obj.fontSize ?? 24));
     if (sizeVal) sizeVal.textContent = sizeSlider.value;
+    if (fontSelect && obj.fontFamily) fontSelect.value = obj.fontFamily;
   }
 
   boldBtn.addEventListener("click", () => {
@@ -1437,6 +1479,13 @@ function setupTextFormatting(): void {
     const obj = canvas.getActiveObject() as any;
     if (!obj) return;
     obj.set("fontSize", val);
+    canvas.renderAll(); saveState();
+  });
+
+  fontSelect?.addEventListener("change", () => {
+    const obj = canvas.getActiveObject() as any;
+    if (!obj) return;
+    obj.set("fontFamily", fontSelect.value);
     canvas.renderAll(); saveState();
   });
 }
@@ -1575,7 +1624,7 @@ function setupKeyboardShortcuts(): void {
       const map: Record<string, ToolType> = {
         v: "select", a: "arrow", r: "rectangle", e: "ellipse",
         c: "callout", l: "line", p: "freedraw", t: "text",
-        s: "spotlight", b: "blur", n: "step", x: "crop",
+        s: "spotlight", b: "blur", n: "step", x: "crop", h: "highlight",
       };
       if (map[e.key]) setTool(map[e.key]);
     }
