@@ -146,7 +146,7 @@ export default function ExtractUnselectableTextGuidePage() {
                   <div>
                     <h3 className="font-semibold text-neutral-800 text-[15px]">Trigger Region Capture</h3>
                     <p className="text-[14px] text-neutral-600 mt-1">
-                      Click the GoFully icon or press the shortcut (<kbd className="bg-neutral-100 border px-1.5 py-0.5 text-xs font-mono">Alt+Shift+A</kbd> on Windows / <kbd className="bg-neutral-100 border px-1.5 py-0.5 text-xs font-mono">Cmd+Shift+A</kbd> on Mac).
+                      Click the GoFully icon or press the shortcut (<kbd className="bg-neutral-100 border px-1.5 py-0.5 text-xs font-mono">Ctrl+Shift+A</kbd> on Windows / <kbd className="bg-neutral-100 border px-1.5 py-0.5 text-xs font-mono">Cmd+Shift+A</kbd> on Mac).
                     </p>
                   </div>
                 </div>

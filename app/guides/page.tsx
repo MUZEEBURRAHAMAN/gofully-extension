@@ -24,6 +24,15 @@ export const metadata: Metadata = {
 
 const GUIDES = [
   {
+    slug: "best-full-page-screenshot-extensions",
+    title: "Best Full Page Screenshot Extensions for Chrome (2026)",
+    subtitle:
+      "A fact-checked comparison of GoFully, GoFullPage, Awesome Screenshot, FireShot, and Nimbus — by capture modes, OCR, and pricing.",
+    tag: "Comparison",
+    readTime: "6 min read",
+    date: "Updated September 2026",
+  },
+  {
     slug: "how-to-take-full-page-screenshot-chrome",
     title: "How to Take a Full Page Screenshot in Chrome Without Cutting Off Content",
     subtitle:

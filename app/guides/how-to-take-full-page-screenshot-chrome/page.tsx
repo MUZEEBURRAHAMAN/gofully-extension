@@ -38,7 +38,7 @@ const howToJsonLd = {
     {
       "@type": "HowToStep",
       name: "Trigger Full Page Capture",
-      text: "Press Alt+Shift+F (or Command+Shift+F on Mac) or click the GoFully extension icon and choose 'Full Page'.",
+      text: "Press Ctrl+Shift+F (or Command+Shift+F on Mac) or click the GoFully extension icon and choose 'Full Page'.",
       url: "https://gofully-extension.vercel.app/guides/how-to-take-full-page-screenshot-chrome#trigger-capture",
     },
     {
@@ -135,7 +135,7 @@ export default function FullPageScreenshotGuidePage() {
                   <div>
                     <h3 className="font-semibold text-neutral-800 text-[15px]">Open the Webpage &amp; Click &quot;Full Page&quot;</h3>
                     <p className="text-[14px] text-neutral-600 mt-1">
-                      Navigate to the target webpage. Click the GoFully icon in your toolbar (or use the shortcut <kbd className="bg-neutral-100 border px-1.5 py-0.5 text-xs font-mono">Alt+Shift+F</kbd> on Windows / <kbd className="bg-neutral-100 border px-1.5 py-0.5 text-xs font-mono">Cmd+Shift+F</kbd> on Mac).
+                      Navigate to the target webpage. Click the GoFully icon in your toolbar (or use the shortcut <kbd className="bg-neutral-100 border px-1.5 py-0.5 text-xs font-mono">Ctrl+Shift+F</kbd> on Windows / <kbd className="bg-neutral-100 border px-1.5 py-0.5 text-xs font-mono">Cmd+Shift+F</kbd> on Mac).
                     </p>
                   </div>
                 </div>
