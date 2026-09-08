@@ -19,6 +19,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   }
   if (details.reason === "install") {
     chrome.storage.local.set({ gf_onboarded: false });
+    chrome.tabs.create({ url: chrome.runtime.getURL("welcome.html") });
   }
 
   // Inject content scripts into already open tabs so shortcuts work without page reload

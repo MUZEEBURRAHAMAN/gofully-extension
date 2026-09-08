@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to GoFully</title>
+  <style>
+    @font-face {
+      font-family: 'Archivo';
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: swap;
+      src: url('assets/Archivo.woff2') format('woff2');
+    }
+  </style>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --blue:     #1667F2;
+      --blue-h:   #1257D8;
+      --blue-a:   #0E4AB8;
+      --blue-bg:  #EDF1FE;
+      --blue-bd:  #BDD0FB;
+
+      --text:     #101828;
+      --text-2:   #344054;
+      --text-3:   #667085;
+      --text-4:   #98A2B3;
+
+      --border:   #E3E8EF;
+      --surface:  #F7F8FA;
+      --white:    #FFFFFF;
+    }
+
+    body {
+      background: var(--white);
+      color: var(--text);
+      font-family: 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.4;
+    }
+
+    svg { display: block; flex-shrink: 0; }
+
+    .bp { position: relative; border: 1px solid var(--border); }
+    .bp > .cm { position: absolute; width: 8px; height: 8px; color: var(--blue-bd); }
+    .bp > .cm::before { content: ""; position: absolute; left: 3px; top: 0; width: 1px; height: 100%; background: currentColor; }
+    .bp > .cm::after  { content: ""; position: absolute; top: 3px; left: 0; width: 100%; height: 1px; background: currentColor; }
+    .bp > .cm.tl { top: -4px; left: -4px; }
+    .bp > .cm.tr { top: -4px; right: -4px; }
+    .bp > .cm.bl { bottom: -4px; left: -4px; }
+    .bp > .cm.br { bottom: -4px; right: -4px; }
+
+    .hdr {
+      height: 60px;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .logo-img { width: 28px; height: 28px; object-fit: contain; }
+    .wm { font-size: 17px; font-weight: 700; letter-spacing: -0.4px; }
+    .wm-go   { color: var(--text-2); font-weight: 500; }
+    .wm-full { color: var(--blue); font-weight: 700; }
+    .wm-y    { color: var(--blue); opacity: 0.45; font-weight: 700; }
+
+    main { max-width: 880px; margin: 0 auto; padding: 56px 32px 72px; text-align: center; }
+
+    .hero-eyebrow {
+      display: inline-block;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-4);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      padding: 5px 12px;
+      margin-bottom: 18px;
+    }
+    .hero-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      margin-bottom: 14px;
+    }
+    .hero-desc {
+      font-size: 15px;
+      color: var(--text-3);
+      max-width: 520px;
+      margin: 0 auto 48px;
+      line-height: 1.6;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      text-align: left;
+      margin-bottom: 40px;
+    }
+    @media (max-width: 640px) {
+      .feature-grid { grid-template-columns: 1fr; }
+    }
+
+    .feature-card { padding: 20px; }
+    .feature-icon {
+      width: 40px; height: 40px;
+      background: var(--blue-bg);
+      color: var(--blue);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 14px;
+    }
+    .feature-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .feature-desc { font-size: 12.5px; color: var(--text-3); line-height: 1.55; }
+    .mode-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .mode-chip {
+      border: 1px solid var(--border);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .mode-chip svg { color: var(--blue); }
+    .mode-chip span {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 11px;
+      letter-spacing: 0.02em;
+    }
+    .feature-shot { margin-top: 14px; padding: 5px; }
+    .feature-shot img { width: 100%; display: block; object-fit: cover; height: 130px; }
+    .feature-tag {
+      display: inline-block;
+      margin-top: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-4);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 9.5px;
+      letter-spacing: 0.05em;
+      padding: 3px 9px;
+    }
+
+    .privacy-note {
+      border: 1px solid var(--border);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 0 auto 40px;
+      max-width: 520px;
+    }
+    .privacy-note svg { color: var(--blue); }
+    .privacy-note span { font-size: 12.5px; color: var(--text-3); }
+
+    .cta-btn {
+      height: 48px;
+      padding: 0 28px;
+      background: var(--blue);
+      border: 1px solid rgba(29,31,32,.12);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--white);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: background .14s;
+    }
+    .cta-btn:hover { background: var(--blue-h); }
+    .cta-btn:active { background: var(--blue-a); }
+    .cta-btn > .cm { color: rgba(255,255,255,.4); }
+
+    .cta-hint { margin-top: 14px; font-size: 12px; color: var(--text-4); }
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="brand">
+    <img class="logo-img" src="assets/icon-128.png" alt="">
+    <span class="wm">
+      <span class="wm-go">Go</span><span class="wm-full">Full</span><span class="wm-y">y</span>
+    </span>
+  </div>
+</div>
+
+<main>
+  <span class="hero-eyebrow">INSTALLED &amp; READY</span>
+  <div class="hero-title">Welcome to GoFully</div>
+  <p class="hero-desc">
+    Full page screenshots, on-device OCR, and a full annotation studio — right from your toolbar.
+    Here's what you can do in your first capture.
+  </p>
+
+  <div class="feature-grid">
+    <div class="feature-card bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+      <div class="feature-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16"></rect><path d="M2 9h20"/></svg>
+      </div>
+      <div class="feature-title">Capture any part of the page</div>
+      <div class="feature-desc">Full pages, visible viewports, custom regions, or long scrolling feeds — pick the mode that fits what's on screen.</div>
+      <div class="mode-grid">
+        <div class="mode-chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16"></rect><path d="M2 9h20"/></svg><span>Full Page</span></div>
+        <div class="mode-chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14"></rect><path d="M8 21h8M12 17v4"/></svg><span>Visible Area</span></div>
+        <div class="mode-chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v4"/><path d="M18 2v4"/><path d="M6 18v4"/><path d="M18 18v4"/><path d="M2 6h4"/><path d="M2 18h4"/><path d="M18 6h4"/><path d="M18 18h4"/></svg><span>Selected Area</span></div>
+        <div class="mode-chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="m8 7 4-4 4 4"/><path d="m8 17 4 4 4-4"/></svg><span>Scrolling Area</span></div>
+      </div>
+    </div>
+
+    <div class="feature-card bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+      <div class="feature-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 8h10"/><path d="M7 12h10"/><path d="M7 16h7"/></svg>
+      </div>
+      <div class="feature-title">Pull text out instantly</div>
+      <div class="feature-desc">Select any region and extract text, code, or table data with on-device OCR — no cloud round-trip, no delay.</div>
+      <div class="feature-shot bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+        <img src="assets/onboarding-ocr.jpg" alt="On-device OCR text extraction result">
+      </div>
+      <span class="feature-tag">ON-DEVICE WASM · 100% OFFLINE</span>
+    </div>
+
+    <div class="feature-card bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+      <div class="feature-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/></svg>
+      </div>
+      <div class="feature-title">Annotate, redact, ship</div>
+      <div class="feature-desc">Mark up with arrows, shapes, and callouts. Blur or pixelate sensitive info before you share.</div>
+      <div class="feature-shot bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+        <img src="assets/onboarding-editor.jpg" alt="Annotated screenshot with arrows and callouts in the GoFully editor">
+      </div>
+    </div>
+
+    <div class="feature-card bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+      <div class="feature-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </div>
+      <div class="feature-title">Export, your way</div>
+      <div class="feature-desc">Copy to your clipboard, save as PNG or WebP, or generate a paginated PDF. Everything stays on your device.</div>
+      <div class="feature-shot bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+        <img src="assets/onboarding-export.jpg" alt="GoFully result bar with copy, PNG, and PDF export options">
+      </div>
+    </div>
+  </div>
+
+  <div class="privacy-note">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    <span>100% offline. No accounts, no cloud uploads, no telemetry.</span>
+  </div>
+
+  <button class="cta-btn bp" id="getStartedBtn"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+    <span>Pin GoFully &amp; start capturing</span>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+  </button>
+  <div class="cta-hint">Click the puzzle-piece icon in your toolbar and pin GoFully for one-click access.</div>
+</main>
+
+<script src="welcome.ts" type="module"></script>
+</body>
+</html>

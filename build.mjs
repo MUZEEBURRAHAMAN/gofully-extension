@@ -155,4 +155,12 @@ const offscreenFixed = offscreenHtml.replace(
 );
 writeFileSync(resolve(dist, "offscreen.html"), offscreenFixed);
 
+// Welcome HTML — replace .ts script reference with .js
+const welcomeHtml = readFileSync(resolve(__dirname, "src/welcome/welcome.html"), "utf8");
+const welcomeFixed = welcomeHtml.replace(
+  /<script\s+src="welcome\.ts"\s+type="module"><\/script>/,
+  '<script type="module" src="welcome.js"></script>'
+);
+writeFileSync(resolve(dist, "welcome.html"), welcomeFixed);
+
 console.log("\nBuild complete! Load dist/ as unpacked extension in Chrome.");

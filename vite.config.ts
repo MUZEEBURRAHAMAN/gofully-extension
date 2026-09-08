@@ -23,6 +23,7 @@ export default defineConfig({
         help: resolve(__dirname, "src/help/help.ts"),
         "canvas-editor": resolve(__dirname, "src/editor/canvas-editor.ts"),
         offscreen: resolve(__dirname, "src/offscreen/canvas-stitcher.ts"),
+        welcome: resolve(__dirname, "src/welcome/welcome.ts"),
       },
       output: {
         entryFileNames: "[name].js",
