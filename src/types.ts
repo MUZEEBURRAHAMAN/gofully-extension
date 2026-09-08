@@ -111,6 +111,8 @@ export interface Settings {
   editorShortcuts: Record<string, string>;
   captureStamp: boolean;
   theme: "light" | "dark" | "system";
+  ocrLanguage: string;
+  language: string;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -128,4 +130,6 @@ export const DEFAULT_SETTINGS: Settings = {
   editorShortcuts: {},
   captureStamp: false,
   theme: "system",
+  ocrLanguage: "eng",
+  language: "system",
 };

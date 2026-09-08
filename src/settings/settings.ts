@@ -1,9 +1,12 @@
 import type { Settings } from "../types";
 import { DEFAULT_SETTINGS } from "../types";
 import { applyTheme, watchTheme } from "../utils/theme";
+import { initI18n, watchLanguage } from "../utils/i18n";
 
 applyTheme();
 watchTheme();
+initI18n();
+watchLanguage(() => {});
 
 let currentTheme: Settings["theme"] = DEFAULT_SETTINGS.theme;
 
@@ -34,6 +37,8 @@ const elements = {
   skipStickyHeaders: document.getElementById("skipStickyHeaders") as HTMLInputElement,
   defaultExportFormat: document.getElementById("defaultExportFormat") as HTMLSelectElement,
   captureStamp: document.getElementById("captureStamp") as HTMLInputElement,
+  ocrLanguage: document.getElementById("ocrLanguage") as HTMLSelectElement,
+  uiLanguage: document.getElementById("uiLanguage") as HTMLSelectElement,
   savedToast: document.getElementById("savedToast")!,
 };
 
@@ -55,6 +60,7 @@ async function loadSettings(): Promise<void> {
   elements.skipStickyHeaders.checked = settings.skipStickyHeaders;
   elements.defaultExportFormat.value = settings.defaultExportFormat;
   elements.captureStamp.checked = settings.captureStamp;
+  elements.ocrLanguage.value = settings.ocrLanguage;
 
   editorShortcuts = { ...DEFAULT_EDITOR_SHORTCUTS, ...(settings.editorShortcuts || {}) };
   renderShortcutRows();
@@ -63,6 +69,8 @@ async function loadSettings(): Promise<void> {
   document.querySelectorAll<HTMLElement>("#themeSeg button").forEach((b) => {
     b.classList.toggle("active", b.dataset.themeChoice === currentTheme);
   });
+
+  elements.uiLanguage.value = settings.language;
 }
 
 async function saveSettings(): Promise<void> {
@@ -81,6 +89,8 @@ async function saveSettings(): Promise<void> {
     editorShortcuts,
     captureStamp: elements.captureStamp.checked,
     theme: currentTheme,
+    ocrLanguage: elements.ocrLanguage.value,
+    language: elements.uiLanguage.value,
   };
 
   await chrome.storage.sync.set({ settings });
@@ -202,6 +212,8 @@ const inputs = [
   elements.skipStickyHeaders,
   elements.defaultExportFormat,
   elements.captureStamp,
+  elements.ocrLanguage,
+  elements.uiLanguage,
 ];
 
 inputs.forEach((el) => el.addEventListener("change", saveSettings));

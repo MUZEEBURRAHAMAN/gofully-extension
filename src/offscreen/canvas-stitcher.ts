@@ -8,7 +8,8 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     return true;
   }
   if (message.type === "PERFORM_OCR") {
-    const { dataUrl } = message.payload as { dataUrl: string };
+    const { dataUrl, lang } = message.payload as { dataUrl: string; lang?: string };
+    const ocrLang = lang || "eng";
     (async () => {
       let worker: any = null;
       try {
@@ -40,8 +41,8 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
           "starting engine"
         );
 
-        await withTimeout(worker.loadLanguage("eng"), "loading language");
-        await withTimeout(worker.initialize("eng"), "initializing engine");
+        await withTimeout(worker.loadLanguage(ocrLang), "loading language");
+        await withTimeout(worker.initialize(ocrLang), "initializing engine");
         const ret: any = await withTimeout(worker.recognize(dataUrl), "recognizing text", 30000);
         const text = (ret?.data?.text || "").trim();
         sendResponse({ text });

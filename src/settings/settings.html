@@ -401,8 +401,8 @@
   <div class="page-header">
     <img class="logo-mark" src="assets/icon-128.png" alt="GoFully">
     <div>
-      <h1>GoFully Settings</h1>
-      <p class="subtitle">Configure your capture and export preferences</p>
+      <h1 data-i18n="settings.title">GoFully Settings</h1>
+      <p class="subtitle" data-i18n="settings.subtitle">Configure your capture and export preferences</p>
     </div>
   </div>
 
@@ -410,30 +410,43 @@
 
     <!-- Appearance -->
     <div class="section bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
-      <h2>Appearance</h2>
+      <h2 data-i18n="settings.appearance.heading">Appearance</h2>
       <div class="fields">
         <div class="field">
           <div>
-            <div class="field-label">Theme</div>
-            <div class="field-desc">Applies to the popup, editor, and this settings page</div>
+            <div class="field-label" data-i18n="settings.appearance.theme.label">Theme</div>
+            <div class="field-desc" data-i18n="settings.appearance.theme.desc">Applies to the popup, editor, and this settings page</div>
           </div>
           <div class="theme-seg" id="themeSeg">
-            <button data-theme-choice="light">Light</button>
-            <button data-theme-choice="dark">Dark</button>
-            <button data-theme-choice="system" class="active">System</button>
+            <button data-theme-choice="light" data-i18n="settings.theme.light">Light</button>
+            <button data-theme-choice="dark" data-i18n="settings.theme.dark">Dark</button>
+            <button data-theme-choice="system" class="active" data-i18n="settings.theme.system">System</button>
           </div>
+        </div>
+
+        <div class="field">
+          <div>
+            <div class="field-label" data-i18n="settings.language.label">Interface language</div>
+            <div class="field-desc" data-i18n="settings.language.desc">Changes the language of the popup and this settings page</div>
+          </div>
+          <select id="uiLanguage">
+            <option value="system">System</option>
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="fr">Français</option>
+          </select>
         </div>
       </div>
     </div>
 
     <!-- Capture Settings -->
     <div class="section bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
-      <h2>Capture</h2>
+      <h2 data-i18n="settings.capture.heading">Capture</h2>
       <div class="fields">
         <div class="field">
           <div>
-            <div class="field-label">Default action after capture</div>
-            <div class="field-desc">What happens when a screenshot is taken</div>
+            <div class="field-label" data-i18n="settings.capture.default_action.label">Default action after capture</div>
+            <div class="field-desc" data-i18n="settings.capture.default_action.desc">What happens when a screenshot is taken</div>
           </div>
           <select id="defaultAction">
             <option value="result-bar">Show result bar</option>
@@ -445,24 +458,24 @@
 
         <div class="field">
           <div>
-            <div class="field-label">Capture delay</div>
-            <div class="field-desc">Wait time between scroll frames (ms)</div>
+            <div class="field-label" data-i18n="settings.capture.delay.label">Capture delay</div>
+            <div class="field-desc" data-i18n="settings.capture.delay.desc">Wait time between scroll frames (ms)</div>
           </div>
           <input type="number" id="captureDelay" min="50" max="1000" step="50" value="150" style="width:70px">
         </div>
 
         <div class="field">
           <div>
-            <div class="field-label">Lazy-load wait time</div>
-            <div class="field-desc">Max time to wait for lazy content (ms)</div>
+            <div class="field-label" data-i18n="settings.capture.lazy_wait.label">Lazy-load wait time</div>
+            <div class="field-desc" data-i18n="settings.capture.lazy_wait.desc">Max time to wait for lazy content (ms)</div>
           </div>
           <input type="number" id="lazyLoadWait" min="500" max="10000" step="500" value="2000" style="width:70px">
         </div>
 
         <div class="field">
           <div>
-            <div class="field-label">Countdown before capture</div>
-            <div class="field-desc">Seconds to wait before starting</div>
+            <div class="field-label" data-i18n="settings.capture.countdown.label">Countdown before capture</div>
+            <div class="field-desc" data-i18n="settings.capture.countdown.desc">Seconds to wait before starting</div>
           </div>
           <select id="captureCountdown" style="width:70px">
             <option value="0">0s</option>
@@ -474,8 +487,8 @@
 
         <div class="field">
           <div>
-            <div class="field-label">Capture sound</div>
-            <div class="field-desc">Play shutter sound on capture</div>
+            <div class="field-label" data-i18n="settings.capture.sound.label">Capture sound</div>
+            <div class="field-desc" data-i18n="settings.capture.sound.desc">Play shutter sound on capture</div>
           </div>
           <label class="toggle">
             <input type="checkbox" id="captureSound" checked>
@@ -485,8 +498,8 @@
 
         <div class="field">
           <div>
-            <div class="field-label">Skip sticky headers</div>
-            <div class="field-desc">Hide fixed elements during full-page capture</div>
+            <div class="field-label" data-i18n="settings.capture.sticky.label">Skip sticky headers</div>
+            <div class="field-desc" data-i18n="settings.capture.sticky.desc">Hide fixed elements during full-page capture</div>
           </div>
           <label class="toggle">
             <input type="checkbox" id="skipStickyHeaders">
@@ -496,25 +509,40 @@
 
         <div class="field">
           <div>
-            <div class="field-label">URL &amp; timestamp stamp</div>
-            <div class="field-desc">Print the page URL and capture time in the corner of every screenshot</div>
+            <div class="field-label" data-i18n="settings.capture.stamp.label">URL &amp; timestamp stamp</div>
+            <div class="field-desc" data-i18n="settings.capture.stamp.desc">Print the page URL and capture time in the corner of every screenshot</div>
           </div>
           <label class="toggle">
             <input type="checkbox" id="captureStamp">
             <span class="slider"></span>
           </label>
         </div>
+
+        <div class="field">
+          <div>
+            <div class="field-label" data-i18n="settings.capture.ocr_lang.label">OCR language</div>
+            <div class="field-desc" data-i18n="settings.capture.ocr_lang.desc">Language used to recognize text in images (bundled, works offline)</div>
+          </div>
+          <select id="ocrLanguage">
+            <option value="eng">English</option>
+            <option value="spa">Spanish</option>
+            <option value="fra">French</option>
+            <option value="deu">German</option>
+            <option value="por">Portuguese</option>
+            <option value="chi_sim">Chinese (Simplified)</option>
+          </select>
+        </div>
       </div>
     </div>
 
     <!-- Export Settings -->
     <div class="section bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
-      <h2>Export</h2>
+      <h2 data-i18n="settings.export.heading">Export</h2>
       <div class="fields">
         <div class="field">
           <div>
-            <div class="field-label">PNG save location</div>
-            <div class="field-desc">Where to save PNG files</div>
+            <div class="field-label" data-i18n="settings.export.png_location.label">PNG save location</div>
+            <div class="field-desc" data-i18n="settings.export.png_location.desc">Where to save PNG files</div>
           </div>
           <select id="pngSaveAs">
             <option value="false">Downloads</option>
@@ -524,8 +552,8 @@
 
         <div class="field">
           <div>
-            <div class="field-label">PDF page size</div>
-            <div class="field-desc">Page format for PDF exports</div>
+            <div class="field-label" data-i18n="settings.export.pdf_size.label">PDF page size</div>
+            <div class="field-desc" data-i18n="settings.export.pdf_size.desc">Page format for PDF exports</div>
           </div>
           <select id="pdfPageSize">
             <option value="a4">A4</option>
@@ -535,8 +563,8 @@
 
         <div class="field">
           <div>
-            <div class="field-label">Include URL in PDF footer</div>
-            <div class="field-desc">Add page URL as watermark</div>
+            <div class="field-label" data-i18n="settings.export.pdf_watermark.label">Include URL in PDF footer</div>
+            <div class="field-desc" data-i18n="settings.export.pdf_watermark.desc">Add page URL as watermark</div>
           </div>
           <label class="toggle">
             <input type="checkbox" id="pdfWatermark">
@@ -546,8 +574,8 @@
 
         <div class="field">
           <div>
-            <div class="field-label">Default image format</div>
-            <div class="field-desc">Format used when saving screenshots</div>
+            <div class="field-label" data-i18n="settings.export.format.label">Default image format</div>
+            <div class="field-desc" data-i18n="settings.export.format.desc">Format used when saving screenshots</div>
           </div>
           <select id="defaultExportFormat">
             <option value="png">PNG</option>
@@ -618,7 +646,7 @@
 
   <div class="footer">GoFully</div>
 
-  <div class="saved-toast" id="savedToast">Settings saved</div>
+  <div class="saved-toast" id="savedToast" data-i18n="settings.saved_toast">Settings saved</div>
 
   <script src="settings.ts" type="module"></script>
 </body>

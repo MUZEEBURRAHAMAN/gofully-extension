@@ -469,9 +469,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       .then(async (result) => {
         const dataUrl = await blobToDataUrl(result.blob);
         await ensureOffscreenDocument();
+        const stored = await chrome.storage.sync.get("settings");
+        const ocrLang = (stored.settings as Partial<Settings> | undefined)?.ocrLanguage || DEFAULT_SETTINGS.ocrLanguage;
         const ocrResp = await chrome.runtime.sendMessage({
           type: "PERFORM_OCR",
-          payload: { dataUrl },
+          payload: { dataUrl, lang: ocrLang },
         });
         if (ocrResp?.error) {
           sendResponse({ error: ocrResp.error });

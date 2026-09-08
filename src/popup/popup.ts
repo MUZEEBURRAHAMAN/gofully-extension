@@ -4,9 +4,12 @@ import { generatePDF } from "../export/pdf-generator";
 import { generateFilename } from "../utils/image";
 import { isSupportedCapturePage, type PageSupportResult } from "../utils/url-validator";
 import { applyTheme, watchTheme } from "../utils/theme";
+import { initI18n, t, watchLanguage } from "../utils/i18n";
 
 applyTheme();
 watchTheme();
+initI18n();
+watchLanguage(() => applyPageSupportState(currentSupportState));
 
 const onboarding = document.getElementById("onboarding")!;
 const onboardingNext = document.getElementById("onboardingNext")!;
@@ -41,6 +44,16 @@ const statusViewBtn = document.getElementById("statusViewBtn")!;
 let currentBlobUrl: string | null = null;
 let currentUrl = "";
 let captureMetadata: any = null;
+const UNSUPPORTED_I18N_KEYS: Partial<Record<PageSupportResult["type"], string>> = {
+  unknown: "unsupported.page_cant_be_captured",
+  restricted: "unsupported.page_cant_be_captured",
+  web_store: "unsupported.webstore",
+  devtools: "unsupported.devtools",
+  browser_internal: "unsupported.browser_internal",
+  extension_page: "unsupported.extension_page",
+  view_source: "unsupported.source_view",
+};
+
 let currentSupportState: PageSupportResult = { supported: true, type: "supported" };
 
 async function readSettings(): Promise<Partial<Settings>> {
@@ -99,13 +112,13 @@ copyBtn.addEventListener("click", async () => {
     const uhdBlob = await upscaleToUHD(pngBlob);
     await navigator.clipboard.write([new ClipboardItem({ "image/png": uhdBlob })]);
     const label = copyBtn.querySelector("span") ?? copyBtn;
-    const orig = label.textContent ?? "Copy";
-    label.textContent = "Copied!";
+    const orig = label.textContent ?? t("action.copy");
+    label.textContent = t("toast.copied");
     copyBtn.style.opacity = "0.75";
     setTimeout(() => { label.textContent = orig; copyBtn.style.opacity = ""; }, 2000);
-    showToast("Copied!");
+    showToast(t("toast.copied"));
   } catch {
-    showToast("Copy failed — try Save PNG");
+    showToast(t("toast.copy_failed"));
   }
 });
 
@@ -147,9 +160,9 @@ savePngBtn.addEventListener("click", async () => {
     const domain = getDomain(currentUrl);
     const filename = generateFilename(domain, "png");
     await chrome.downloads.download({ url: currentBlobUrl, filename, saveAs: false });
-    showToast("Saved as PNG!");
+    showToast(t("toast.saved_png"));
   } catch {
-    showToast("Save failed");
+    showToast(t("toast.save_failed"));
   }
 });
 
@@ -166,9 +179,9 @@ document.getElementById("saveWebpBtn")?.addEventListener("click", async () => {
     const domain = getDomain(currentUrl);
     const filename = generateFilename(domain, "webp");
     await chrome.downloads.download({ url: downloadUrl, filename, saveAs: false });
-    showToast("Saved as WebP!");
+    showToast(t("toast.saved_webp"));
   } catch {
-    showToast("Save failed");
+    showToast(t("toast.save_failed"));
   }
 });
 
@@ -183,7 +196,7 @@ savePdfBtn.addEventListener("click", async () => {
   const btnLabel = savePdfBtn.querySelector("span") ?? savePdfBtn;
   const origText = btnLabel.textContent ?? "Save PDF";
   try {
-    btnLabel.textContent = "Generating...";
+    btnLabel.textContent = t("action.generating");
     savePdfBtn.style.opacity = "0.7";
     (savePdfBtn as HTMLButtonElement).disabled = true;
 
@@ -195,10 +208,10 @@ savePdfBtn.addEventListener("click", async () => {
     const filename = generateFilename(domain, "pdf");
     await chrome.downloads.download({ url: pdfObjUrl, filename, saveAs: false });
     URL.revokeObjectURL(pdfObjUrl);
-    showToast("Saved as PDF!");
+    showToast(t("toast.saved_pdf"));
   } catch (err) {
     console.error("PDF generation error:", err);
-    showToast("PDF generation failed");
+    showToast(t("toast.pdf_failed"));
   } finally {
     btnLabel.textContent = origText;
     savePdfBtn.style.opacity = "";
@@ -246,12 +259,15 @@ function applyPageSupportState(support: PageSupportResult): void {
   const modeButtons = document.querySelectorAll(".mode-btn");
 
   if (!support.supported) {
+    const i18nKeyForTitle = UNSUPPORTED_I18N_KEYS[support.type];
+    const disabledTitle = i18nKeyForTitle ? t(`${i18nKeyForTitle}.message`) : support.message || "";
+
     // Disable all mode buttons and add title tooltip
     modeButtons.forEach((btn) => {
       const button = btn as HTMLButtonElement;
       button.disabled = true;
       button.setAttribute("aria-disabled", "true");
-      button.title = support.message || "Capture is unavailable on this page";
+      button.title = disabledTitle;
     });
 
     // Populate the unsupported notice panel, but don't show it stacked
@@ -259,11 +275,12 @@ function applyPageSupportState(support: PageSupportResult): void {
     // duplicate "here's what you can't do yet" messaging on a first run.
     // dismissOnboarding() re-applies the stored state so this reappears
     // right after onboarding closes, if the page is still unsupported.
-    if (unsupportedTitle && support.title) {
-      unsupportedTitle.textContent = support.title;
+    const i18nKey = UNSUPPORTED_I18N_KEYS[support.type];
+    if (unsupportedTitle) {
+      unsupportedTitle.textContent = i18nKey ? t(`${i18nKey}.title`) : support.title || "";
     }
-    if (unsupportedDesc && support.message) {
-      unsupportedDesc.textContent = support.message;
+    if (unsupportedDesc) {
+      unsupportedDesc.textContent = i18nKey ? t(`${i18nKey}.message`) : support.message || "";
     }
     unsupportedPanel.classList.toggle("active", !onboarding.classList.contains("active"));
   } else {
@@ -333,7 +350,7 @@ function showProgress(): void {
   progressSection.classList.add("active");
   resultBar.classList.remove("active");
   errorBar.classList.remove("active");
-  progressLabel.textContent = "Preparing capture...";
+  progressLabel.textContent = t("progress.preparing");
   progressFill.style.transform = "scaleX(0)";
 }
 
@@ -341,14 +358,14 @@ function updateProgress(progress: CaptureProgress): void {
   const { current, total, phase } = progress;
   switch (phase) {
     case "preparing":
-      progressLabel.textContent = "Preparing page...";
+      progressLabel.textContent = t("progress.preparing_page");
       break;
     case "capturing":
-      progressLabel.textContent = `Capturing ${current}/${total}...`;
+      progressLabel.textContent = t("progress.capturing", { current, total });
       progressFill.style.transform = `scaleX(${(current / total) * 0.8})`;
       break;
     case "stitching":
-      progressLabel.textContent = "Stitching frames...";
+      progressLabel.textContent = t("progress.stitching");
       progressFill.style.transform = "scaleX(0.9)";
       break;
     case "done":
@@ -366,7 +383,7 @@ function showResult(result: any): void {
   const w = Math.round(result.width);
   const h = Math.round(result.height);
   const method = result.method === "cdp" ? "CDP" : "Scroll-Stitch";
-  resultText.textContent = `${w}×${h}px captured via ${method}`;
+  resultText.textContent = t("result.dimensions", { w, h, method });
 
   const previewContainer = document.getElementById("popupPreviewContainer");
   const previewImg = document.getElementById("popupPreviewImg") as HTMLImageElement;
@@ -482,7 +499,7 @@ function goToOnboardingSlide(n: number): void {
   onboardingNext.classList.toggle("full", isLast);
   onboardingSkip.style.visibility = isLast ? "hidden" : "visible";
   const label = onboardingNext.querySelector(".ob-next-label");
-  if (label) label.textContent = isLast ? "Get Started" : "Next";
+  if (label) label.textContent = isLast ? t("onboarding.get_started") : t("onboarding.next");
 }
 
 onboardingNext.addEventListener("click", () => {

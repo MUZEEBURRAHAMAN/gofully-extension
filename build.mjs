@@ -105,11 +105,13 @@ if (existsSync(resolve(__dirname, "node_modules/tesseract.js-core/tesseract-core
     resolve(dist, "assets/tesseract-core.wasm.js")
   );
 }
-if (existsSync(resolve(__dirname, "assets/eng.traineddata.gz"))) {
-  cpSync(
-    resolve(__dirname, "assets/eng.traineddata.gz"),
-    resolve(dist, "assets/eng.traineddata.gz")
-  );
+for (const lang of ["eng", "spa", "fra", "deu", "por", "chi_sim"]) {
+  if (existsSync(resolve(__dirname, `assets/${lang}.traineddata.gz`))) {
+    cpSync(
+      resolve(__dirname, `assets/${lang}.traineddata.gz`),
+      resolve(dist, `assets/${lang}.traineddata.gz`)
+    );
+  }
 }
 
 // Step 5: Copy HTML files (popup, editor, settings, offscreen)
