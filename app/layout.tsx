@@ -45,7 +45,11 @@ export const metadata: Metadata = {
     "screenshot to pdf",
     "scrolling screen capture",
     "screen grabber",
-    "webpage capture tool"
+    "webpage capture tool",
+    "go fully",
+    "gofully extension",
+    "gofully chrome extension",
+    "gofully screenshot"
   ],
   authors: [{ name: "GoFully", url: "https://gofully-extension.vercel.app" }],
   creator: "GoFully",
@@ -117,7 +121,7 @@ const jsonLd = {
       "@type": "SoftwareApplication",
       "@id": "https://gofully-extension.vercel.app/#software",
       "name": "GoFully: Full Page Screenshot & OCR",
-      "alternateName": "GoFully Screenshot Tool",
+      "alternateName": ["GoFully Screenshot Tool", "Go Fully", "GoFully Extension"],
       "applicationCategory": "UtilitiesApplication",
       "operatingSystem": "Google Chrome, Chromium, Brave, Microsoft Edge",
       "offers": {
@@ -147,17 +151,24 @@ const jsonLd = {
       "@id": "https://gofully-extension.vercel.app/#website",
       "url": "https://gofully-extension.vercel.app/",
       "name": "GoFully",
-      "alternateName": ["GoFully Extension", "GoFully Screenshot Tool", "GoFully Full Page Screenshot"],
+      "alternateName": ["GoFully Extension", "GoFully Screenshot Tool", "GoFully Full Page Screenshot", "Go Fully"],
       "description":
         "The complete web capture, full page screenshot, local OCR, and visual annotation studio for Chrome.",
       "publisher": {
         "@type": "Organization",
+        "@id": "https://gofully-extension.vercel.app/#organization",
         "name": "GoFully",
+        "alternateName": "Go Fully",
         "url": "https://gofully-extension.vercel.app/",
         "logo": {
           "@type": "ImageObject",
           "url": "https://gofully-extension.vercel.app/logo.png"
-        }
+        },
+        "sameAs": [
+          "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc",
+          "https://github.com/MUZEEBURRAHAMAN/gofully-extension",
+          "https://alternativeto.net/software/gofully/about/"
+        ]
       }
     },
   ],
