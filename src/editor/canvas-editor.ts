@@ -1,6 +1,6 @@
 import {
   Canvas, FabricImage, Rect, Ellipse, Line, IText, Path, Group,
-  Circle, FabricText, PencilBrush, FabricObject,
+  Circle, FabricText, PencilBrush, FabricObject, ActiveSelection,
 } from "fabric";
 import Cropper from "cropperjs";
 import { canvasRGBA } from "stackblur-canvas";
@@ -1358,6 +1358,8 @@ function setupExportButtons(): void {
   document.getElementById("undo-btn")!.addEventListener("click",   undo);
   document.getElementById("redo-btn")!.addEventListener("click",   redo);
   document.getElementById("delete-btn")!.addEventListener("click", deleteSelected);
+  document.getElementById("duplicate-btn")?.addEventListener("click", duplicateSelected);
+  document.getElementById("lock-btn")?.addEventListener("click", toggleLockSelected);
   document.getElementById("zoom-in-btn")?.addEventListener("click",  () => adjustZoom(0.1));
   document.getElementById("zoom-out-btn")?.addEventListener("click", () => adjustZoom(-0.1));
   document.getElementById("hdr-zoom-in-btn")?.addEventListener("click",  () => adjustZoom(0.1));
@@ -1501,6 +1503,7 @@ function setupRotateControls(): void {
   function showHide() {
     const obj = canvas.getActiveObject();
     if (group) group.style.display = obj ? "flex" : "none";
+    updateLockButtonUI();
   }
 
   canvas.on("selection:created", showHide);
@@ -1591,6 +1594,56 @@ function deleteSelected(): void {
   saveState();
 }
 
+async function duplicateSelected(): Promise<void> {
+  const active = canvas.getActiveObjects().filter((o) => o !== backgroundImage);
+  if (!active.length) return;
+
+  const clones = await Promise.all(active.map((o) => o.clone()));
+  clones.forEach((clone, i) => {
+    clone.set({ left: (active[i].left ?? 0) + 16, top: (active[i].top ?? 0) + 16 });
+    canvas.add(clone);
+  });
+
+  canvas.discardActiveObject();
+  if (clones.length === 1) {
+    canvas.setActiveObject(clones[0]);
+  } else {
+    const selection = new ActiveSelection(clones, { canvas });
+    canvas.setActiveObject(selection);
+  }
+  canvas.renderAll();
+  saveState();
+}
+
+function toggleLockSelected(): void {
+  const active = canvas.getActiveObject();
+  if (!active || active === backgroundImage) return;
+
+  const nowLocked = !active.lockMovementX;
+  active.set({
+    lockMovementX: nowLocked,
+    lockMovementY: nowLocked,
+    lockScalingX: nowLocked,
+    lockScalingY: nowLocked,
+    lockRotation: nowLocked,
+    hasControls: !nowLocked,
+  });
+  canvas.renderAll();
+  saveState();
+  updateLockButtonUI();
+}
+
+function updateLockButtonUI(): void {
+  const btn = document.getElementById("lock-btn");
+  if (!btn) return;
+  const active = canvas.getActiveObject();
+  const locked = !!active?.lockMovementX;
+  btn.classList.toggle("active", locked);
+  btn.title = locked ? "Unlock" : "Lock in place";
+  const tip = btn.querySelector(".tip");
+  if (tip) tip.textContent = locked ? "Unlock" : "Lock in place";
+}
+
 // ─── Keyboard shortcuts ───────────────────────────────────────────────────────
 
 function setupKeyboardShortcuts(): void {
@@ -1619,6 +1672,7 @@ function setupKeyboardShortcuts(): void {
     if ((e.key === "Delete" || e.key === "Backspace") && activeObj) { e.preventDefault(); deleteSelected(); return; }
     if ((e.metaKey || e.ctrlKey) && e.key === "=") { e.preventDefault(); adjustZoom(0.1);  return; }
     if ((e.metaKey || e.ctrlKey) && e.key === "-") { e.preventDefault(); adjustZoom(-0.1); return; }
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "d" && activeObj) { e.preventDefault(); duplicateSelected(); return; }
 
     if (!e.metaKey && !e.ctrlKey && !e.shiftKey) {
       const map: Record<string, ToolType> = {
