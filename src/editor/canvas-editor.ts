@@ -90,6 +90,19 @@ async function init(): Promise<void> {
   saveState();
 }
 
+// Shared by the export-menu-button click and the Done button, so "Done"
+// opens the same export options instead of silently closing the window
+// (see the done-btn handler below).
+function openExportMenu(): void {
+  const exportMenuBtn = document.getElementById("export-menu-btn");
+  const exportDropMenu = document.getElementById("export-drop-menu");
+  if (!exportDropMenu || !exportMenuBtn) return;
+  const r = exportMenuBtn.getBoundingClientRect();
+  exportDropMenu.style.right = `${window.innerWidth - r.right}px`;
+  exportDropMenu.style.top = `${r.bottom + 6}px`;
+  exportDropMenu.classList.add("show");
+}
+
 function setupDropdownMenus(): void {
   // Arrow dropdown toggle
   const arrowExpand = document.getElementById("arrow-expand");
@@ -119,12 +132,8 @@ function setupDropdownMenus(): void {
     arrowMenu?.classList.remove("show");
     blurMenu?.classList.remove("show");
     const isOpen = exportDropMenu?.classList.contains("show");
-    if (!isOpen && exportDropMenu && exportMenuBtn) {
-      const r = exportMenuBtn.getBoundingClientRect();
-      exportDropMenu.style.right = `${window.innerWidth - r.right}px`;
-      exportDropMenu.style.top = `${r.bottom + 6}px`;
-    }
-    exportDropMenu?.classList.toggle("show");
+    if (!isOpen) openExportMenu();
+    else exportDropMenu?.classList.remove("show");
   });
   // Close export menu after any item click (but not settings panel)
   exportDropMenu?.addEventListener("click", (e) => {
@@ -1322,7 +1331,25 @@ function setupExportButtons(): void {
     const hdrZoomVal = document.getElementById("hdr-zoom-val");
     if (hdrZoomVal) hdrZoomVal.textContent = zStr;
   });
-  document.getElementById("done-btn")?.addEventListener("click", () => window.close());
+  // "Done" used to call window.close() directly — if the user had Beautify
+  // or Crop open and hadn't separately used the Export menu first, the
+  // window just vanished with their edited screenshot never saved anywhere.
+  // Done now closes whatever panel/tool is active and opens the export
+  // menu instead, so finishing an edit always leads to a save/copy step.
+  document.getElementById("done-btn")?.addEventListener("click", (e) => {
+    // Without this, the click bubbles to the document-level "close all
+    // dropdowns on outside click" listener and immediately hides the
+    // export menu this same click just opened.
+    e.stopPropagation();
+    if (beautifyActive) {
+      document.getElementById("beautifyPanel")?.classList.remove("open");
+      document.getElementById("tool-beautify")?.classList.remove("active");
+      beautifyActive = false;
+    }
+    if (cropperInstance) closeCropModal(false);
+    setTool("select");
+    openExportMenu();
+  });
 
   // Crop modal buttons
   document.getElementById("cropApplyBtn")?.addEventListener("click",  applyCropModal);
