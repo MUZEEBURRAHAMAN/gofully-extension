@@ -1690,6 +1690,107 @@ function setupBeautifier(): void {
   document.getElementById("bf-reset-btn")?.addEventListener("click", resetBeautify);
 }
 
+interface BeautifyPreset {
+  name: string;
+  bg: string;
+  padding: number;
+  radius: number;
+  shadow: number;
+  shadowOpacity: number;
+  noise: number;
+  frame: string;
+}
+
+function readCurrentBeautifySettings(): Omit<BeautifyPreset, "name"> {
+  const bgSwatch = document.querySelector<HTMLElement>(".bf-bg-swatch.active");
+  return {
+    bg: bgSwatch?.dataset.bg || "none",
+    padding: parseInt((document.getElementById("bf-padding") as HTMLInputElement).value) || 0,
+    radius: parseInt((document.getElementById("bf-radius") as HTMLInputElement).value) || 0,
+    shadow: parseInt((document.getElementById("bf-shadow") as HTMLInputElement).value) || 0,
+    shadowOpacity: parseInt((document.getElementById("bf-shadow-opacity") as HTMLInputElement).value) || 0,
+    noise: parseInt((document.getElementById("bf-noise") as HTMLInputElement).value) || 0,
+    frame: document.querySelector<HTMLElement>(".bf-frame-btn.active")?.dataset.frame || "none",
+  };
+}
+
+function applyBeautifyPreset(p: BeautifyPreset): void {
+  const panel = document.getElementById("beautifyPanel");
+  if (!panel) return;
+
+  const swatch = panel.querySelector<HTMLElement>(`.bf-bg-swatch[data-bg="${CSS.escape(p.bg)}"]`);
+  if (swatch) {
+    panel.querySelectorAll(".bf-bg-swatch").forEach((s) => s.classList.remove("active"));
+    swatch.classList.add("active");
+  }
+  const frameBtn = panel.querySelector<HTMLElement>(`.bf-frame-btn[data-frame="${CSS.escape(p.frame)}"]`);
+  if (frameBtn) {
+    panel.querySelectorAll(".bf-frame-btn").forEach((b) => b.classList.remove("active"));
+    frameBtn.classList.add("active");
+  }
+  const setSlider = (id: string, valId: string, value: number, suffix: string) => {
+    const sl = document.getElementById(id) as HTMLInputElement | null;
+    const vl = document.getElementById(valId);
+    if (sl) sl.value = String(value);
+    if (vl) vl.textContent = value + suffix;
+  };
+  setSlider("bf-padding", "bf-padding-val", p.padding, "px");
+  setSlider("bf-radius", "bf-radius-val", p.radius, "px");
+  setSlider("bf-shadow", "bf-shadow-val", p.shadow, "px");
+  setSlider("bf-shadow-opacity", "bf-shadow-opacity-val", p.shadowOpacity, "%");
+  setSlider("bf-noise", "bf-noise-val", p.noise, "%");
+
+  applyBeautify(false);
+}
+
+function setupBeautifyPresets(): void {
+  const select = document.getElementById("bf-preset-select") as HTMLSelectElement | null;
+  const nameInput = document.getElementById("bf-preset-name") as HTMLInputElement | null;
+  const saveBtn = document.getElementById("bf-preset-save-btn");
+  if (!select || !nameInput || !saveBtn) return;
+
+  function populate(presets: BeautifyPreset[]): void {
+    select!.innerHTML = '<option value="">Custom</option>';
+    for (const p of presets) {
+      const opt = document.createElement("option");
+      opt.value = p.name;
+      opt.textContent = p.name;
+      select!.appendChild(opt);
+    }
+  }
+
+  chrome.storage.sync.get("beautifyPresets").then((res) => {
+    populate((res.beautifyPresets as BeautifyPreset[]) || []);
+  });
+
+  select.addEventListener("change", async () => {
+    if (!select.value) return;
+    const res = await chrome.storage.sync.get("beautifyPresets");
+    const presets = (res.beautifyPresets as BeautifyPreset[]) || [];
+    const match = presets.find((p) => p.name === select.value);
+    if (match) applyBeautifyPreset(match);
+  });
+
+  saveBtn.addEventListener("click", async () => {
+    const name = nameInput.value.trim();
+    if (!name) { showToast("Enter a preset name first"); return; }
+    if (!backgroundImage) { showToast("Open Beautify with an image loaded first"); return; }
+
+    const res = await chrome.storage.sync.get("beautifyPresets");
+    const presets = (res.beautifyPresets as BeautifyPreset[]) || [];
+    const newPreset: BeautifyPreset = { name, ...readCurrentBeautifySettings() };
+    const existingIndex = presets.findIndex((p) => p.name === name);
+    if (existingIndex >= 0) presets[existingIndex] = newPreset;
+    else presets.push(newPreset);
+
+    await chrome.storage.sync.set({ beautifyPresets: presets });
+    populate(presets);
+    select.value = name;
+    nameInput.value = "";
+    showToast(`Saved preset "${name}"`);
+  });
+}
+
 async function applyBeautify(showToastMsg = true): Promise<void> {
   if (!backgroundImage) { showToast("No image to beautify"); return; }
 
@@ -1757,6 +1858,30 @@ async function applyBeautify(showToastMsg = true): Promise<void> {
     grad.addColorStop(1, colors[1] || colors[0]);
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, outW, outH);
+  } else if (bgValue === "pattern:dots") {
+    ctx.fillStyle = "#1a1a2e";
+    ctx.fillRect(0, 0, outW, outH);
+    ctx.fillStyle = "rgba(255,255,255,.35)";
+    const spacing = 22;
+    for (let py = spacing / 2; py < outH; py += spacing) {
+      for (let px = spacing / 2; px < outW; px += spacing) {
+        ctx.beginPath();
+        ctx.arc(px, py, 2.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  } else if (bgValue === "pattern:diagonal") {
+    ctx.fillStyle = "#0c3483";
+    ctx.fillRect(0, 0, outW, outH);
+    ctx.strokeStyle = "rgba(255,255,255,.18)";
+    ctx.lineWidth = 10;
+    const step = 28;
+    for (let sx = -outH; sx < outW; sx += step) {
+      ctx.beginPath();
+      ctx.moveTo(sx, outH);
+      ctx.lineTo(sx + outH, 0);
+      ctx.stroke();
+    }
   } else {
     ctx.fillStyle = bgValue;
     ctx.fillRect(0, 0, outW, outH);
@@ -1812,6 +1937,10 @@ async function applyBeautify(showToastMsg = true): Promise<void> {
     drawMacFrame(ctx, imgX, imgY - frameBarH, srcW, frameBarH, radius);
   } else if (frameType === "browser") {
     drawBrowserFrame(ctx, imgX, imgY - frameBarH, srcW, frameBarH, radius);
+  } else if (frameType === "windows") {
+    drawWindowsFrame(ctx, imgX, imgY - frameBarH, srcW, frameBarH, radius);
+  } else if (frameType === "phone") {
+    drawPhoneFrame(ctx, imgX, imgY - frameBarH, srcW, frameBarH, radius);
   }
 
   // Load result into editor
@@ -1935,6 +2064,83 @@ function drawBrowserFrame(ctx: CanvasRenderingContext2D, x: number, y: number, w
   ctx.restore();
 }
 
+function drawWindowsFrame(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, radius: number): void {
+  ctx.save();
+  const r = Math.min(radius, 10);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h);
+  ctx.lineTo(x, y + h);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+  ctx.fillStyle = "#F3F3F3";
+  ctx.fill();
+
+  // Minimize / maximize / close, right-aligned, Windows 11 style
+  const iconSize = Math.max(9, Math.round(h * 0.3));
+  const btnW = Math.round(h * 1.4);
+  const iconY = y + h / 2;
+  ctx.strokeStyle = "#333";
+  ctx.lineWidth = Math.max(1, iconSize * 0.09);
+  ctx.lineCap = "round";
+
+  const closeX = x + w - btnW / 2 - Math.round(h * 0.2);
+  ctx.beginPath();
+  ctx.moveTo(closeX - iconSize / 2, iconY - iconSize / 2);
+  ctx.lineTo(closeX + iconSize / 2, iconY + iconSize / 2);
+  ctx.moveTo(closeX + iconSize / 2, iconY - iconSize / 2);
+  ctx.lineTo(closeX - iconSize / 2, iconY + iconSize / 2);
+  ctx.stroke();
+
+  const maxX = closeX - btnW;
+  ctx.strokeRect(maxX - iconSize / 2, iconY - iconSize / 2, iconSize, iconSize);
+
+  const minX = maxX - btnW;
+  ctx.beginPath();
+  ctx.moveTo(minX - iconSize / 2, iconY + iconSize / 2);
+  ctx.lineTo(minX + iconSize / 2, iconY + iconSize / 2);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawPhoneFrame(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, radius: number): void {
+  ctx.save();
+  const r = Math.min(radius, 22);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h);
+  ctx.lineTo(x, y + h);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+  ctx.fillStyle = "#0B0B0F";
+  ctx.fill();
+
+  // Centered pill notch, like a Dynamic Island
+  const pillW = Math.round(w * 0.28);
+  const pillH = Math.round(h * 0.4);
+  const pillX = x + (w - pillW) / 2;
+  const pillY = y + (h - pillH) / 2;
+  const pillR = pillH / 2;
+  ctx.fillStyle = "#000";
+  ctx.beginPath();
+  ctx.moveTo(pillX + pillR, pillY);
+  ctx.lineTo(pillX + pillW - pillR, pillY);
+  ctx.quadraticCurveTo(pillX + pillW, pillY, pillX + pillW, pillY + pillR);
+  ctx.quadraticCurveTo(pillX + pillW, pillY + pillH, pillX + pillW - pillR, pillY + pillH);
+  ctx.lineTo(pillX + pillR, pillY + pillH);
+  ctx.quadraticCurveTo(pillX, pillY + pillH, pillX, pillY + pillR);
+  ctx.quadraticCurveTo(pillX, pillY, pillX + pillR, pillY);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
 async function resetBeautify(): Promise<void> {
   const panel = document.getElementById("beautifyPanel");
   if (originalScreenshotUrl) {
@@ -1966,3 +2172,4 @@ async function resetBeautify(): Promise<void> {
 
 init();
 setupBeautifier();
+setupBeautifyPresets();

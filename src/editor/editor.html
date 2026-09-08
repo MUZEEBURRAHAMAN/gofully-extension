@@ -1332,6 +1332,19 @@
 <div class="beautify-panel" id="beautifyPanel">
 
   <div class="bf-section">
+    <div class="bf-section-title">Presets</div>
+    <div class="bf-row" style="justify-content: flex-start; margin-bottom: 8px;">
+      <select id="bf-preset-select" style="flex:1; height:28px; font-size:11.5px; border:1px solid var(--border); background:rgba(29,31,32,.05); color:var(--text);">
+        <option value="">Custom</option>
+      </select>
+    </div>
+    <div class="bf-row" style="justify-content: flex-start; gap: 6px;">
+      <input type="text" id="bf-preset-name" placeholder="Preset name" maxlength="30" style="flex:1; height:28px; padding:0 8px; font-size:11.5px; border:1px solid var(--border); background:rgba(29,31,32,.05); color:var(--text);">
+      <button id="bf-preset-save-btn" class="bf-frame-btn" style="white-space:nowrap; padding:0 12px; height:28px;">Save</button>
+    </div>
+  </div>
+
+  <div class="bf-section">
     <div class="bf-section-title">Background</div>
     <div class="bf-bg-grid" id="bf-bg-grid">
       <div class="bf-bg-swatch" data-bg="none" style="background:rgba(29,31,32,.05);position:relative" title="None">
@@ -1348,6 +1361,8 @@
       <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#1a1a2e,#16213e)" style="background:linear-gradient(135deg,#1a1a2e,#16213e)" title="Dark"></div>
       <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#ff9a9e,#fad0c4)" style="background:linear-gradient(135deg,#ff9a9e,#fad0c4)" title="Coral"></div>
       <div class="bf-bg-swatch" data-bg="#FFFFFF" style="background:#FFFFFF;border:1px solid rgba(29,31,32,.12)" title="White"></div>
+      <div class="bf-bg-swatch" data-bg="pattern:dots" style="background:#1a1a2e radial-gradient(rgba(255,255,255,.35) 1.5px, transparent 1.5px);background-size:10px 10px" title="Dot Grid"></div>
+      <div class="bf-bg-swatch" data-bg="pattern:diagonal" style="background:#0c3483 repeating-linear-gradient(45deg, rgba(255,255,255,.18) 0 6px, transparent 6px 14px)" title="Diagonal Stripes"></div>
     </div>
   </div>
 
@@ -1366,6 +1381,8 @@
       <button class="bf-frame-btn active" data-frame="none">None</button>
       <button class="bf-frame-btn" data-frame="macos">macOS</button>
       <button class="bf-frame-btn" data-frame="browser">Browser</button>
+      <button class="bf-frame-btn" data-frame="windows">Windows</button>
+      <button class="bf-frame-btn" data-frame="phone">Phone</button>
     </div>
   </div>
 
