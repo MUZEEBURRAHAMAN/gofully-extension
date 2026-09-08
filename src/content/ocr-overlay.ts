@@ -500,6 +500,16 @@ async function processOCR(region: CaptureRegion): Promise<void> {
         <div class="ocr-meta" id="ocr-meta-text"></div>
         <div class="ocr-actions">
           <button class="ocr-btn secondary" id="ocr-done-btn">Done</button>
+          <button class="ocr-btn secondary" id="ocr-md-btn" title="Export as Markdown">
+            <!-- Hugeicons: download-04 -->
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            .md
+          </button>
+          <button class="ocr-btn secondary" id="ocr-copy-json-btn" title="Copy as JSON (one line per array item)">
+            { }
+          </button>
           <button class="ocr-btn primary" id="ocr-copy-btn">
             <!-- Hugeicons: copy-01 -->
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -524,6 +534,24 @@ async function processOCR(region: CaptureRegion): Promise<void> {
         await navigator.clipboard.writeText(textarea.value);
         showToast("Copied to clipboard!");
       }
+    });
+    resultModal.querySelector("#ocr-copy-json-btn")?.addEventListener("click", async () => {
+      if (!textarea) return;
+      const lines = textarea.value.split("\n").filter((l) => l.trim().length > 0);
+      await navigator.clipboard.writeText(JSON.stringify(lines, null, 2));
+      showToast("Copied as JSON!");
+    });
+    resultModal.querySelector("#ocr-md-btn")?.addEventListener("click", () => {
+      if (!textarea) return;
+      const md = `# Extracted text\n\nSource: [${document.title}](${location.href})\n\n\`\`\`\n${textarea.value}\n\`\`\`\n`;
+      const blob = new Blob([md], { type: "text/markdown" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "gofully-ocr-text.md";
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showToast("Exported as Markdown!");
     });
   } catch (err: any) {
     resultModal.innerHTML = `
