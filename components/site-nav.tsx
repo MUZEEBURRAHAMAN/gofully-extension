@@ -4,8 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const CWS_URL =
-  "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
+const ALTERNATIVETO_URL =
+  "https://alternativeto.net/software/gofully/about/?utm_source=badge&utm_medium=referral";
 
 export type NavLink = { label: string; href: string };
 
@@ -59,13 +59,19 @@ export function SiteNav() {
 
         <div className="flex items-center gap-2">
           <a
-            href={CWS_URL}
+            href={ALTERNATIVETO_URL}
             target="_blank"
             rel="noreferrer"
-            className="hidden sm:inline-flex relative items-center justify-center gap-1.5 border gf-heading-font font-semibold cursor-pointer"
-            style={{ height: 38, padding: "0 18px", background: "var(--gf-color-accent)", color: "#fff", fontSize: "12.5px", letterSpacing: "0.02em", borderColor: "rgba(29,31,32,.12)" }}
+            className="hidden sm:inline-flex items-center"
+            style={{ height: 38 }}
           >
-            Add to Chrome
+            <img
+              src="https://alternativeto.net/static/badges/badge-compact-color.svg"
+              alt="GoFully | AlternativeTo"
+              width={117}
+              height={38}
+              style={{ height: 38, width: 117 }}
+            />
           </a>
           <button
             type="button"
@@ -112,13 +118,19 @@ export function SiteNav() {
               );
             })}
             <a
-              href={CWS_URL}
+              href={ALTERNATIVETO_URL}
               target="_blank"
               rel="noreferrer"
-              className="relative inline-flex items-center justify-center gap-1.5 border gf-heading-font font-semibold cursor-pointer"
-              style={{ height: 42, marginTop: 16, background: "var(--gf-color-accent)", color: "#fff", fontSize: 13, letterSpacing: "0.02em", borderColor: "rgba(29,31,32,.12)" }}
+              className="inline-flex items-center"
+              style={{ height: 42, marginTop: 16 }}
             >
-              Add to Chrome
+              <img
+                src="https://alternativeto.net/static/badges/badge-compact-color.svg"
+                alt="GoFully | AlternativeTo"
+                width={130}
+                height={42}
+                style={{ height: 42, width: 130 }}
+              />
             </a>
           </div>
         </div>
