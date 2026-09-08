@@ -121,6 +121,13 @@ export default function RoadmapPage() {
               </ul>
 
               <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
+                First-run experience
+              </div>
+              <ul className="mt-2.5 flex flex-col gap-2">
+                <OutlineBullet>A welcome page shown right after install, styled to match GoFully&apos;s own theme — quick orientation instead of dropping straight into an empty popup.</OutlineBullet>
+              </ul>
+
+              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
                 Editor tools
               </div>
               <ul className="mt-2.5 flex flex-col gap-2">
@@ -147,6 +154,7 @@ export default function RoadmapPage() {
                 <OutlineBullet>Export capture + OCR&apos;d text as Markdown.</OutlineBullet>
                 <OutlineBullet>Optional URL and timestamp stamp on capture.</OutlineBullet>
                 <OutlineBullet>&quot;Copy as&quot; quick actions after OCR — plain text or structured JSON.</OutlineBullet>
+                <OutlineBullet><strong style={{ color: "#1d1f20" }}>Fixed:</strong> clicking Done could close the editor without saving. Done now closes any open panel (Beautify, crop) and opens the export menu instead, so finishing an edit always leads to a save or copy step.</OutlineBullet>
               </ul>
             </div>
           </TimelineRow>
