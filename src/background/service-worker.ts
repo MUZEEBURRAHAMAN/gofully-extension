@@ -20,7 +20,6 @@ chrome.runtime.onInstalled.addListener(async (details) => {
     chrome.runtime.setUninstallURL("https://gofully-extension.vercel.app/uninstall-feedback");
   }
   if (details.reason === "install") {
-    chrome.storage.local.set({ gf_onboarded: false });
     chrome.tabs.create({ url: chrome.runtime.getURL("welcome.html") });
   }
 

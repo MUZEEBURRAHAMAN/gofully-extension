@@ -11,11 +11,6 @@ watchTheme();
 initI18n();
 watchLanguage(() => applyPageSupportState(currentSupportState));
 
-const onboarding = document.getElementById("onboarding")!;
-const onboardingNext = document.getElementById("onboardingNext")!;
-const onboardingSkip = document.getElementById("onboardingSkip")!;
-const onboardingSlides = Array.from(onboarding.querySelectorAll<HTMLElement>(".ob-slide"));
-const onboardingDots = Array.from(onboarding.querySelectorAll<HTMLElement>(".ob-dots span"));
 const modesSection = document.getElementById("modesSection")!;
 const progressSection = document.getElementById("progressSection")!;
 const progressLabel = document.getElementById("progressLabel")!;
@@ -270,11 +265,6 @@ function applyPageSupportState(support: PageSupportResult): void {
       button.title = disabledTitle;
     });
 
-    // Populate the unsupported notice panel, but don't show it stacked
-    // underneath onboarding — the two together push each other around and
-    // duplicate "here's what you can't do yet" messaging on a first run.
-    // dismissOnboarding() re-applies the stored state so this reappears
-    // right after onboarding closes, if the page is still unsupported.
     const i18nKey = UNSUPPORTED_I18N_KEYS[support.type];
     if (unsupportedTitle) {
       unsupportedTitle.textContent = i18nKey ? t(`${i18nKey}.title`) : support.title || "";
@@ -282,7 +272,7 @@ function applyPageSupportState(support: PageSupportResult): void {
     if (unsupportedDesc) {
       unsupportedDesc.textContent = i18nKey ? t(`${i18nKey}.message`) : support.message || "";
     }
-    unsupportedPanel.classList.toggle("active", !onboarding.classList.contains("active"));
+    unsupportedPanel.classList.add("active");
   } else {
     // Enable all mode buttons
     modeButtons.forEach((btn) => {
@@ -477,49 +467,6 @@ statusViewBtn.addEventListener("click", async () => {
   }
 });
 
-function dismissOnboarding(): void {
-  chrome.storage.local.set({ gf_onboarded: true });
-  onboarding.classList.remove("active");
-  modesSection.style.display = "grid";
-  // The unsupported-page notice was suppressed while onboarding covered it —
-  // show it now if the active tab still isn't capturable.
-  applyPageSupportState(currentSupportState);
-}
-
-let onboardingSlide = 1;
-
-function goToOnboardingSlide(n: number): void {
-  onboardingSlide = n;
-  onboardingSlides.forEach((slide, i) => {
-    slide.hidden = i !== n - 1;
-  });
-  onboardingDots.forEach((dot, i) => dot.classList.toggle("active", i === n - 1));
-
-  const isLast = n === onboardingSlides.length;
-  onboardingNext.classList.toggle("full", isLast);
-  onboardingSkip.style.visibility = isLast ? "hidden" : "visible";
-  const label = onboardingNext.querySelector(".ob-next-label");
-  if (label) label.textContent = isLast ? t("onboarding.get_started") : t("onboarding.next");
-}
-
-onboardingNext.addEventListener("click", () => {
-  if (onboardingSlide < onboardingSlides.length) {
-    goToOnboardingSlide(onboardingSlide + 1);
-  } else {
-    dismissOnboarding();
-  }
-});
-onboardingSkip.addEventListener("click", dismissOnboarding);
-
-async function maybeShowOnboarding(): Promise<void> {
-  const data = await chrome.storage.local.get("gf_onboarded");
-  if (!data.gf_onboarded) {
-    goToOnboardingSlide(1);
-    onboarding.classList.add("active");
-    modesSection.style.display = "none";
-  }
-}
-
 function formatShortcutForDisplay(raw: string, isMac: boolean): string {
   let s = raw;
   s = s.replace(/⌃/g, isMac ? "Ctrl+" : "Ctrl+");
@@ -574,8 +521,7 @@ function updateShortcutLabels(): void {
   }
 }
 
-// Run active tab support check and onboarding on popup open
+// Run active tab support check on popup open
 checkActiveTabSupport();
 loadLastCaptureStatus();
 updateShortcutLabels();
-maybeShowOnboarding();
