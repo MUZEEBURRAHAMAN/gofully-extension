@@ -115,6 +115,7 @@ async function init(): Promise<void> {
 
   setupTools();
   setupDropdownMenus();
+  setupTooltipPositioning();
   setupColorPicker();
   setupStrokeControl();
   setupExportButtons();
@@ -152,36 +153,92 @@ function openExportMenu(): void {
   exportDropMenu.classList.add("show");
 }
 
+// The toolbar's horizontal-scroll wrapper (.tbar-scroll) sets overflow-y:
+// hidden, which silently clips any position:absolute dropdown that renders
+// below the toolbar row — .show still toggles and getBoundingClientRect()
+// still reports real coordinates, but every click on it falls through to
+// the canvas underneath. Fixed positioning computed from the anchor's own
+// rect (same fix already used for the export menu) sidesteps the clip.
+function positionToolDropdown(anchorEl: HTMLElement, menu: HTMLElement): void {
+  const r = anchorEl.getBoundingClientRect();
+  menu.style.left = `${r.left}px`;
+  menu.style.top = `${r.bottom + 6}px`;
+}
+
+// Every icon-only control's .tip span is inert (display:none, see CSS) and
+// only supplies text; this drives one shared, body-level tooltip instead.
+// Two clipping problems make a per-element tooltip unworkable here: the
+// toolbar's horizontal-scroll wrapper (.tbar-scroll, overflow-y: hidden)
+// clips position:absolute tips below the toolbar row, and switching those
+// to position:fixed still breaks for any anchor whose hover/active state
+// applies a transform (color-swatch and bf-bg-swatch both scale() on
+// hover) — a transformed ancestor becomes the containing block for a fixed
+// descendant, so left/top resolve against that ancestor instead of the
+// viewport. A tooltip parented directly to <body> has no such ancestor.
+function setupTooltipPositioning(): void {
+  const shared = document.createElement("div");
+  shared.id = "sharedTooltip";
+  document.body.appendChild(shared);
+
+  document.querySelectorAll<HTMLElement>(".tip").forEach((tip) => {
+    const anchor = tip.parentElement;
+    if (!anchor) return;
+    anchor.addEventListener("mouseenter", () => {
+      const r = anchor.getBoundingClientRect();
+      shared.textContent = tip.textContent;
+      shared.style.left = `${r.left + r.width / 2}px`;
+      shared.style.top = `${r.bottom + 6}px`;
+      shared.classList.add("show");
+    });
+    anchor.addEventListener("mouseleave", () => {
+      shared.classList.remove("show");
+    });
+  });
+}
+
 function setupDropdownMenus(): void {
   // Arrow dropdown toggle
   const arrowExpand = document.getElementById("arrow-expand");
+  const arrowWrapper = arrowExpand?.closest(".tool-dropdown-wrapper") as HTMLElement | null;
   const arrowMenu = document.getElementById("arrow-menu");
   arrowExpand?.addEventListener("click", (e) => {
     e.stopPropagation();
     blurMenu?.classList.remove("show");
+    shapeMenu?.classList.remove("show");
     exportDropMenu?.classList.remove("show");
+    if (arrowMenu && !arrowMenu.classList.contains("show") && arrowWrapper) {
+      positionToolDropdown(arrowWrapper, arrowMenu);
+    }
     arrowMenu?.classList.toggle("show");
   });
 
   // Blur dropdown toggle
   const blurExpand = document.getElementById("blur-expand");
+  const blurWrapper = blurExpand?.closest(".tool-dropdown-wrapper") as HTMLElement | null;
   const blurMenu = document.getElementById("blur-menu");
   blurExpand?.addEventListener("click", (e) => {
     e.stopPropagation();
     arrowMenu?.classList.remove("show");
     shapeMenu?.classList.remove("show");
     exportDropMenu?.classList.remove("show");
+    if (blurMenu && !blurMenu.classList.contains("show") && blurWrapper) {
+      positionToolDropdown(blurWrapper, blurMenu);
+    }
     blurMenu?.classList.toggle("show");
   });
 
   // Shape dropdown toggle (Rectangle / Ellipse consolidated into one button)
   const shapeExpand = document.getElementById("shape-expand");
+  const shapeWrapper = shapeExpand?.closest(".tool-dropdown-wrapper") as HTMLElement | null;
   const shapeMenu = document.getElementById("shape-menu");
   shapeExpand?.addEventListener("click", (e) => {
     e.stopPropagation();
     arrowMenu?.classList.remove("show");
     blurMenu?.classList.remove("show");
     exportDropMenu?.classList.remove("show");
+    if (shapeMenu && !shapeMenu.classList.contains("show") && shapeWrapper) {
+      positionToolDropdown(shapeWrapper, shapeMenu);
+    }
     shapeMenu?.classList.toggle("show");
   });
 
@@ -1168,32 +1225,59 @@ function addStepNumber(x: number, y: number): void {
 
 // ─── Color picker ─────────────────────────────────────────────────────────────
 
+function applyCurrentColor(): void {
+  if (canvas.freeDrawingBrush) canvas.freeDrawingBrush.color = currentColor;
+
+  const active = canvas.getActiveObject();
+  if (active) {
+    if (active.type === "i-text" || active.type === "text") {
+      active.set("fill", currentColor);
+    } else if (active.type === "group") {
+      (active as Group).getObjects().forEach((o) => {
+        if (o.type === "circle" || o.type === "rect" || o.type === "path") o.set("fill", currentColor);
+        if (o.type === "line") o.set("stroke", currentColor);
+      });
+    } else {
+      if ((active as any).fill && (active as any).fill !== "transparent") active.set("fill", currentColor);
+      active.set("stroke", currentColor);
+    }
+    canvas.renderAll();
+    saveState();
+  }
+}
+
 function setupColorPicker(): void {
-  document.querySelectorAll(".color-swatch").forEach((swatch) => {
+  document.querySelectorAll(".color-swatch:not(.color-swatch-custom)").forEach((swatch) => {
     swatch.addEventListener("click", () => {
       document.querySelectorAll(".color-swatch").forEach((s) => s.classList.remove("active"));
       swatch.classList.add("active");
       currentColor = (swatch as HTMLElement).dataset.color!;
-
-      if (canvas.freeDrawingBrush) canvas.freeDrawingBrush.color = currentColor;
-
-      const active = canvas.getActiveObject();
-      if (active) {
-        if (active.type === "i-text" || active.type === "text") {
-          active.set("fill", currentColor);
-        } else if (active.type === "group") {
-          (active as Group).getObjects().forEach((o) => {
-            if (o.type === "circle" || o.type === "rect" || o.type === "path") o.set("fill", currentColor);
-            if (o.type === "line") o.set("stroke", currentColor);
-          });
-        } else {
-          if ((active as any).fill && (active as any).fill !== "transparent") active.set("fill", currentColor);
-          active.set("stroke", currentColor);
-        }
-        canvas.renderAll();
-        saveState();
-      }
+      applyCurrentColor();
     });
+  });
+
+  const customSwatch = document.getElementById("customColorSwatch");
+  const customInput = document.getElementById("customColorInput") as HTMLInputElement | null;
+  if (!customSwatch || !customInput) return;
+
+  chrome.storage.sync.get("editorCustomColor").then((stored) => {
+    const saved = (stored as any).editorCustomColor;
+    if (saved) {
+      customInput.value = saved;
+      customSwatch.style.background = saved;
+    }
+  }).catch(() => {});
+
+  customInput.addEventListener("input", () => {
+    currentColor = customInput.value;
+    customSwatch.style.background = currentColor;
+    document.querySelectorAll(".color-swatch").forEach((s) => s.classList.remove("active"));
+    customSwatch.classList.add("active");
+    applyCurrentColor();
+  });
+
+  customInput.addEventListener("change", () => {
+    chrome.storage.sync.set({ editorCustomColor: customInput.value }).catch(() => {});
   });
 }
 
@@ -1688,7 +1772,6 @@ function updateLockButtonUI(): void {
   const active = canvas.getActiveObject();
   const locked = !!active?.lockMovementX;
   btn.classList.toggle("active", locked);
-  btn.title = locked ? "Unlock" : "Lock in place";
   const tip = btn.querySelector(".tip");
   if (tip) tip.textContent = locked ? "Unlock" : "Lock in place";
 }

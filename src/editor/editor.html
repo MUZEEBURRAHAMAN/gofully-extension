@@ -265,9 +265,11 @@
       border-color: var(--blue);
     }
     .tool-dropdown-menu {
-      position: absolute;
-      top: calc(100% + 6px);
-      left: 0;
+      /* Fixed (not absolute) so the toolbar's horizontal-scroll container
+         (.tbar-scroll, overflow-y: hidden) can't clip it — it would still
+         report a real bounding rect and look "open" via .show, but every
+         click on it would silently fall through to the canvas underneath. */
+      position: fixed;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 0;
@@ -307,19 +309,20 @@
       font-weight: 600;
     }
 
-    /* Tooltip — shared by every icon-only control in the toolbar, so hover
-       tooltips look and behave the same everywhere instead of some buttons
-       using this and others falling back to the browser's native title
-       tooltip. */
-    .tool-btn .tip,
-    .hdr-zoom-btn .tip,
-    .hdr-zoom-val .tip,
-    .tool-expand-btn .tip,
-    .export-resize-lock .tip {
-      position: absolute;
-      top: calc(100% + 6px);
-      left: 50%;
-      transform: translateX(-50%);
+    /* Tooltip — every icon-only control's .tip span is inert (never itself
+       rendered — see setupTooltipPositioning); it only supplies the text
+       for one shared #sharedTooltip element appended to <body>. A per-
+       element position:fixed tip doesn't work here: .tbar-scroll clips
+       position:absolute tips below the toolbar row, and switching to fixed
+       still breaks for any anchor whose :hover/.active state applies a
+       transform (color-swatch, bf-bg-swatch both scale() on hover) — a
+       transformed ancestor becomes the containing block for a fixed
+       descendant, so its left/top resolve against that ancestor instead of
+       the viewport. A single tooltip parented directly to <body> has no
+       such ancestor and is immune to both problems. */
+    .tip { display: none; }
+    #sharedTooltip {
+      position: fixed;
       background: #1d1f20;
       border: 1px solid rgba(255,255,255,0.1);
       color: #f2f2f3;
@@ -331,14 +334,11 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity .12s;
-      z-index: 100;
+      z-index: 1000;
       box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      transform: translateX(-50%);
     }
-    .tool-btn:hover .tip,
-    .hdr-zoom-btn:hover .tip,
-    .hdr-zoom-val:hover .tip,
-    .tool-expand-btn:hover .tip,
-    .export-resize-lock:hover .tip { opacity: 1; }
+    #sharedTooltip.show { opacity: 1; }
 
     /* Color swatches */
     .color-group {
@@ -350,6 +350,7 @@
     }
 
     .color-swatch {
+      position: relative;
       width: 18px; height: 18px;
       border-radius: 50%;
       border: 2px solid transparent;
@@ -359,6 +360,22 @@
     }
     .color-swatch:hover { transform: scale(1.2); }
     .color-swatch.active { border-color: var(--text); transform: scale(1.15); }
+
+    .color-swatch-custom {
+      position: relative;
+      background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red);
+      overflow: hidden;
+    }
+    .color-swatch-custom input[type="color"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+      border: none;
+      padding: 0;
+    }
 
     /* Stroke width */
     .stroke-group {
@@ -438,6 +455,7 @@
       gap: 6px;
     }
     .bf-bg-swatch {
+      position: relative;
       width: 100%;
       aspect-ratio: 1;
       border-radius: 0;
@@ -1222,7 +1240,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z"/>
       </svg>
-      <span class="tip">Beautify (B)</span>
+      <span class="tip">Beautify</span>
     </button>
 
   </div>
@@ -1231,14 +1249,34 @@
 
   <!-- Color swatches -->
   <div class="color-group">
-    <div class="color-swatch active" data-color="#EF4444" style="background:#EF4444" title="Red"></div>
-    <div class="color-swatch" data-color="#1667F2" style="background:#1667F2" title="Blue"></div>
-    <div class="color-swatch" data-color="#10B981" style="background:#10B981" title="Green"></div>
-    <div class="color-swatch" data-color="#F59E0B" style="background:#F59E0B" title="Amber"></div>
-    <div class="color-swatch" data-color="#8B5CF6" style="background:#8B5CF6" title="Purple"></div>
-    <div class="color-swatch" data-color="#EC4899" style="background:#EC4899" title="Pink"></div>
-    <div class="color-swatch" data-color="#FFFFFF" style="background:#FFFFFF" title="White"></div>
-    <div class="color-swatch" data-color="#1d1f20" style="background:#1d1f20; border-color:rgba(var(--ink),.6)" title="Black"></div>
+    <div class="color-swatch active" data-color="#EF4444" style="background:#EF4444">
+      <span class="tip">Red</span>
+    </div>
+    <div class="color-swatch" data-color="#1667F2" style="background:#1667F2">
+      <span class="tip">Blue</span>
+    </div>
+    <div class="color-swatch" data-color="#10B981" style="background:#10B981">
+      <span class="tip">Green</span>
+    </div>
+    <div class="color-swatch" data-color="#F59E0B" style="background:#F59E0B">
+      <span class="tip">Amber</span>
+    </div>
+    <div class="color-swatch" data-color="#8B5CF6" style="background:#8B5CF6">
+      <span class="tip">Purple</span>
+    </div>
+    <div class="color-swatch" data-color="#EC4899" style="background:#EC4899">
+      <span class="tip">Pink</span>
+    </div>
+    <div class="color-swatch" data-color="#FFFFFF" style="background:#FFFFFF">
+      <span class="tip">White</span>
+    </div>
+    <div class="color-swatch" data-color="#1d1f20" style="background:#1d1f20; border-color:rgba(var(--ink),.6)">
+      <span class="tip">Black</span>
+    </div>
+    <div class="color-swatch color-swatch-custom" id="customColorSwatch">
+      <input type="color" id="customColorInput" value="#EF4444">
+      <span class="tip">Custom color</span>
+    </div>
   </div>
 
   <div class="tbar-sep"></div>
@@ -1253,13 +1291,13 @@
 
   <!-- Text formatting (shown when text tool active) -->
   <div class="tbar-group" id="text-format-group" style="display:none">
-    <button class="tool-btn" id="text-bold-btn" title="Bold">
+    <button class="tool-btn" id="text-bold-btn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/>
       </svg>
       <span class="tip">Bold</span>
     </button>
-    <button class="tool-btn" id="text-italic-btn" title="Italic">
+    <button class="tool-btn" id="text-italic-btn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/>
       </svg>
@@ -1279,21 +1317,21 @@
 
   <!-- Rotate -->
   <div class="tbar-group" id="rotate-group" style="display:none">
-    <button class="tool-btn" id="rotate-left-btn" title="Rotate 90° counter-clockwise">
+    <button class="tool-btn" id="rotate-left-btn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
         <path d="M3 3v5h5"/>
       </svg>
       <span class="tip">Rotate Left 90°</span>
     </button>
-    <button class="tool-btn" id="rotate-right-btn" title="Rotate 90° clockwise">
+    <button class="tool-btn" id="rotate-right-btn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
         <path d="M21 3v5h-5"/>
       </svg>
       <span class="tip">Rotate Right 90°</span>
     </button>
-    <button class="tool-btn" id="duplicate-btn" title="Duplicate (⌘D)">
+    <button class="tool-btn" id="duplicate-btn">
       <!-- Hugeicons: copy-01 -->
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <rect x="9" y="9" width="12" height="12" rx="1.5"/>
@@ -1301,7 +1339,7 @@
       </svg>
       <span class="tip">Duplicate (⌘D)</span>
     </button>
-    <button class="tool-btn" id="lock-btn" title="Lock in place">
+    <button class="tool-btn" id="lock-btn">
       <!-- Hugeicons: unlock-02 / lock -->
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <rect x="5" y="11" width="14" height="10" rx="1.5"/>
@@ -1484,22 +1522,49 @@
   <div class="bf-section">
     <div class="bf-section-title">Background</div>
     <div class="bf-bg-grid" id="bf-bg-grid">
-      <div class="bf-bg-swatch" data-bg="none" style="background:rgba(var(--ink),.05);position:relative" title="None">
+      <div class="bf-bg-swatch" data-bg="none" style="background:rgba(var(--ink),.05)">
         <svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="rgba(var(--ink),.25)" stroke-width="2"><line x1="4" y1="4" x2="20" y2="20"/></svg>
+        <span class="tip">None</span>
       </div>
-      <div class="bf-bg-swatch active" data-bg="linear-gradient(135deg,#667eea,#764ba2)" style="background:linear-gradient(135deg,#667eea,#764ba2)" title="Indigo Purple"></div>
-      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#f093fb,#f5576c)" style="background:linear-gradient(135deg,#f093fb,#f5576c)" title="Pink Red"></div>
-      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#4facfe,#00f2fe)" style="background:linear-gradient(135deg,#4facfe,#00f2fe)" title="Blue Cyan"></div>
-      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#43e97b,#38f9d7)" style="background:linear-gradient(135deg,#43e97b,#38f9d7)" title="Green Teal"></div>
-      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#fa709a,#fee140)" style="background:linear-gradient(135deg,#fa709a,#fee140)" title="Pink Yellow"></div>
-      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#a18cd1,#fbc2eb)" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)" title="Lavender"></div>
-      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#ffecd2,#fcb69f)" style="background:linear-gradient(135deg,#ffecd2,#fcb69f)" title="Peach"></div>
-      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#0c3483,#a2b6df)" style="background:linear-gradient(135deg,#0c3483,#a2b6df)" title="Navy"></div>
-      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#1a1a2e,#16213e)" style="background:linear-gradient(135deg,#1a1a2e,#16213e)" title="Dark"></div>
-      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#ff9a9e,#fad0c4)" style="background:linear-gradient(135deg,#ff9a9e,#fad0c4)" title="Coral"></div>
-      <div class="bf-bg-swatch" data-bg="#FFFFFF" style="background:#FFFFFF;border:1px solid rgba(var(--ink),.12)" title="White"></div>
-      <div class="bf-bg-swatch" data-bg="pattern:dots" style="background:#1a1a2e radial-gradient(rgba(255,255,255,.35) 1.5px, transparent 1.5px);background-size:10px 10px" title="Dot Grid"></div>
-      <div class="bf-bg-swatch" data-bg="pattern:diagonal" style="background:#0c3483 repeating-linear-gradient(45deg, rgba(255,255,255,.18) 0 6px, transparent 6px 14px)" title="Diagonal Stripes"></div>
+      <div class="bf-bg-swatch active" data-bg="linear-gradient(135deg,#667eea,#764ba2)" style="background:linear-gradient(135deg,#667eea,#764ba2)">
+      <span class="tip">Indigo Purple</span>
+    </div>
+      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#f093fb,#f5576c)" style="background:linear-gradient(135deg,#f093fb,#f5576c)">
+      <span class="tip">Pink Red</span>
+    </div>
+      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#4facfe,#00f2fe)" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">
+      <span class="tip">Blue Cyan</span>
+    </div>
+      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#43e97b,#38f9d7)" style="background:linear-gradient(135deg,#43e97b,#38f9d7)">
+      <span class="tip">Green Teal</span>
+    </div>
+      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#fa709a,#fee140)" style="background:linear-gradient(135deg,#fa709a,#fee140)">
+      <span class="tip">Pink Yellow</span>
+    </div>
+      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#a18cd1,#fbc2eb)" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)">
+      <span class="tip">Lavender</span>
+    </div>
+      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#ffecd2,#fcb69f)" style="background:linear-gradient(135deg,#ffecd2,#fcb69f)">
+      <span class="tip">Peach</span>
+    </div>
+      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#0c3483,#a2b6df)" style="background:linear-gradient(135deg,#0c3483,#a2b6df)">
+      <span class="tip">Navy</span>
+    </div>
+      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#1a1a2e,#16213e)" style="background:linear-gradient(135deg,#1a1a2e,#16213e)">
+      <span class="tip">Dark</span>
+    </div>
+      <div class="bf-bg-swatch" data-bg="linear-gradient(135deg,#ff9a9e,#fad0c4)" style="background:linear-gradient(135deg,#ff9a9e,#fad0c4)">
+      <span class="tip">Coral</span>
+    </div>
+      <div class="bf-bg-swatch" data-bg="#FFFFFF" style="background:#FFFFFF;border:1px solid rgba(var(--ink),.12)">
+      <span class="tip">White</span>
+    </div>
+      <div class="bf-bg-swatch" data-bg="pattern:dots" style="background:#1a1a2e radial-gradient(rgba(255,255,255,.35) 1.5px, transparent 1.5px);background-size:10px 10px">
+      <span class="tip">Dot Grid</span>
+    </div>
+      <div class="bf-bg-swatch" data-bg="pattern:diagonal" style="background:#0c3483 repeating-linear-gradient(45deg, rgba(255,255,255,.18) 0 6px, transparent 6px 14px)">
+      <span class="tip">Diagonal Stripes</span>
+    </div>
     </div>
   </div>
 
