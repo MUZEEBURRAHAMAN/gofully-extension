@@ -3,7 +3,7 @@ import Link from "next/link";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
 import { BlueprintFrame } from "@/components/blueprint-frame";
-import { BreadcrumbJsonLd } from "@/components/breadcrumb-jsonld";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 
 const CWS_URL =
   "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
@@ -22,14 +22,31 @@ export const metadata: Metadata = {
   },
 };
 
-const webPageJsonLd = {
+const articleJsonLd = {
   "@context": "https://schema.org",
-  "@type": "WebPage",
-  "@id": "https://gofully-extension.vercel.app/guides/screenshot-tool-for-developers-and-qa#webpage",
+  "@type": "TechArticle",
+  "@id": "https://gofully-extension.vercel.app/guides/screenshot-tool-for-developers-and-qa#article",
   url: "https://gofully-extension.vercel.app/guides/screenshot-tool-for-developers-and-qa",
-  name: "Best Screenshot Tool for Developers & QA Teams",
+  headline: "The Screenshot Workflow Built for Developers & QA",
+  description:
+    "Why GoFully fits developer and QA bug-report workflows: full-page capture for long dashboards, one-click redaction for secrets, OCR for error text, and PDF export straight into your ticket.",
   isPartOf: { "@id": "https://gofully-extension.vercel.app/#website" },
+  datePublished: "2026-09-08",
   dateModified: "2026-09-08",
+  author: {
+    "@type": "Organization",
+    name: "GoFully",
+    url: "https://gofully-extension.vercel.app/",
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "GoFully",
+    url: "https://gofully-extension.vercel.app/",
+    logo: {
+      "@type": "ImageObject",
+      url: "https://gofully-extension.vercel.app/logo.png",
+    },
+  },
 };
 
 function StepRow({ n, title, body }: { n: number; title: string; body: string }) {
@@ -56,18 +73,24 @@ function ReasonCard({ title, body }: { title: string; body: string }) {
 export default function DevelopersQAGuidePage() {
   return (
     <div className="gf-industry min-h-screen">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }} />
-      <BreadcrumbJsonLd name="Screenshot Tool for Developers & QA" path="/guides/screenshot-tool-for-developers-and-qa" />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
       <SiteNav />
 
+      {/* Breadcrumbs */}
+      <div style={{ padding: "36px 24px 0" }}>
+        <div className="mx-auto" style={{ maxWidth: 840 }}>
+          <Breadcrumbs
+            items={[
+              { label: "Guides", href: "/guides" },
+              { label: "Screenshot Tool for Developers & QA" },
+            ]}
+          />
+        </div>
+      </div>
+
       {/* Header */}
-      <div className="text-center" style={{ padding: "80px 24px 44px" }}>
+      <div className="text-center" style={{ padding: "40px 24px 44px" }}>
         <div className="mx-auto" style={{ maxWidth: 780 }}>
-          <div className="flex justify-center gap-2 mb-4">
-            <Link href="/guides" className="inline-block border gf-heading-font font-semibold uppercase hover:underline" style={{ borderColor: "rgba(22,103,242,.25)", background: "rgba(22,103,242,.06)", color: "var(--gf-color-accent)", fontSize: "10.5px", letterSpacing: "0.06em", padding: "6px 14px" }}>
-              ← All Guides
-            </Link>
-          </div>
           <h1 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(28px, 6vw, 46px)", lineHeight: 1.15, letterSpacing: "-0.01em", marginTop: 12 }}>
             The Screenshot Workflow Built for Developers & QA
           </h1>

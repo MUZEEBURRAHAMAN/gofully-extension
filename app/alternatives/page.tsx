@@ -3,13 +3,13 @@ import Link from "next/link";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
 import { BlueprintFrame } from "@/components/blueprint-frame";
-import { BreadcrumbJsonLd } from "@/components/breadcrumb-jsonld";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 
 const CWS_URL =
   "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
 
 export const metadata: Metadata = {
-  title: "Best Chrome Screenshot Extension Alternatives (2026) — GoFully",
+  title: "Best Chrome Screenshot Extension Alternatives (2026)",
   description:
     "Compare the top Chrome screenshot extensions: GoFully vs GoFullPage, Awesome Screenshot, FireShot, and Nimbus. 100% free, private on-device OCR, no cloud paywall.",
   alternates: { canonical: "https://gofully-extension.vercel.app/alternatives" },
@@ -90,13 +90,22 @@ function Check({ text }: { text: string }) {
 
 const webPageJsonLd = {
   "@context": "https://schema.org",
-  "@type": "WebPage",
-  "@id": "https://gofully-extension.vercel.app/alternatives#webpage",
+  "@type": "CollectionPage",
+  "@id": "https://gofully-extension.vercel.app/alternatives#collection",
   url: "https://gofully-extension.vercel.app/alternatives",
   name: "Best Chrome Screenshot Extension Alternatives (2026)",
   description: "Compare GoFully vs GoFullPage, Awesome Screenshot, FireShot, and Nimbus.",
   isPartOf: { "@id": "https://gofully-extension.vercel.app/#website" },
-  dateModified: "2026-09-07",
+  dateModified: "2026-09-08",
+  mainEntity: {
+    "@type": "ItemList",
+    itemListElement: ALTERNATIVES.map((alt, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: `https://gofully-extension.vercel.app/alternatives/${alt.slug}`,
+      name: `GoFully vs ${alt.name}`,
+    })),
+  },
 };
 
 export default function AlternativesIndexPage() {
@@ -106,8 +115,14 @@ export default function AlternativesIndexPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }}
       />
-      <BreadcrumbJsonLd name="Alternatives" path="/alternatives" />
       <SiteNav />
+
+      {/* Breadcrumbs */}
+      <div style={{ padding: "40px 24px 10px" }}>
+        <div className="mx-auto" style={{ maxWidth: 1080 }}>
+          <Breadcrumbs items={[{ label: "Alternatives" }]} />
+        </div>
+      </div>
 
       {/* Hero */}
       <div className="text-center" style={{ padding: "88px 24px 56px" }}>

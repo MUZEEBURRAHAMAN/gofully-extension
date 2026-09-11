@@ -3,7 +3,7 @@ import Link from "next/link";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
 import { BlueprintFrame } from "@/components/blueprint-frame";
-import { BreadcrumbJsonLd } from "@/components/breadcrumb-jsonld";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 
 const CWS_URL =
   "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
@@ -19,6 +19,33 @@ export const metadata: Metadata = {
       "A feature-by-feature look at GoFully and GoFullPage for full page screenshots, OCR, annotation, and export.",
     url: "https://gofully-extension.vercel.app/alternatives/gofullpage",
     siteName: "GoFully",
+  },
+};
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "@id": "https://gofully-extension.vercel.app/alternatives/gofullpage#article",
+  url: "https://gofully-extension.vercel.app/alternatives/gofullpage",
+  headline: "GoFully vs GoFullPage — Free Full Page Screenshot Comparison",
+  description:
+    "A feature-by-feature comparison of GoFully and GoFullPage for full page screenshots, OCR, annotation, and export.",
+  isPartOf: { "@id": "https://gofully-extension.vercel.app/#website" },
+  datePublished: "2026-09-07",
+  dateModified: "2026-09-08",
+  author: {
+    "@type": "Organization",
+    name: "GoFully",
+    url: "https://gofully-extension.vercel.app/",
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "GoFully",
+    url: "https://gofully-extension.vercel.app/",
+    logo: {
+      "@type": "ImageObject",
+      url: "https://gofully-extension.vercel.app/logo.png",
+    },
   },
 };
 
@@ -43,34 +70,30 @@ function Check({ yes }: { yes: boolean }) {
   );
 }
 
-const webPageJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "@id": "https://gofully-extension.vercel.app/alternatives/gofullpage#webpage",
-  url: "https://gofully-extension.vercel.app/alternatives/gofullpage",
-  name: "GoFully vs GoFullPage",
-  isPartOf: { "@id": "https://gofully-extension.vercel.app/#website" },
-  dateModified: "2026-09-07",
-};
-
 export default function GoFullPageAlternativePage() {
   return (
     <div className="gf-industry min-h-screen">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
       />
-      <BreadcrumbJsonLd name="GoFully vs GoFullPage" path="/alternatives/gofullpage" />
       <SiteNav />
 
+      {/* Breadcrumbs */}
+      <div style={{ padding: "36px 24px 0" }}>
+        <div className="mx-auto" style={{ maxWidth: 880 }}>
+          <Breadcrumbs
+            items={[
+              { label: "Alternatives", href: "/alternatives" },
+              { label: "GoFully vs GoFullPage" },
+            ]}
+          />
+        </div>
+      </div>
+
       {/* Hero */}
-      <div className="text-center" style={{ padding: "88px 24px 56px" }}>
+      <div className="text-center" style={{ padding: "40px 24px 56px" }}>
         <div className="mx-auto" style={{ maxWidth: 720 }}>
-          <div className="flex justify-center gap-2 mb-4">
-            <Link href="/alternatives" className="inline-block border gf-heading-font font-semibold uppercase hover:underline" style={{ borderColor: "rgba(22,103,242,.25)", background: "rgba(22,103,242,.06)", color: "var(--gf-color-accent)", fontSize: "10.5px", letterSpacing: "0.06em", padding: "6px 14px" }}>
-              ← All Alternatives
-            </Link>
-          </div>
           <h1 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(28px, 7vw, 44px)", lineHeight: 1.1, letterSpacing: "-0.01em", marginTop: 16 }}>
             GoFully vs GoFullPage
           </h1>
@@ -100,9 +123,9 @@ export default function GoFullPageAlternativePage() {
       {/* Comparison table */}
       <div className="border-t" style={{ padding: "64px 24px 24px", borderColor: "rgba(29,31,32,.08)", background: "rgba(29,31,32,.02)" }}>
         <div className="mx-auto text-center" style={{ maxWidth: 640, marginBottom: 44 }}>
-          <div className="gf-heading-font font-semibold" style={{ fontSize: "clamp(24px, 6vw, 32px)", letterSpacing: "-0.01em" }}>
-            Feature by feature
-          </div>
+          <h2 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(24px, 6vw, 32px)", letterSpacing: "-0.01em" }}>
+            Feature by feature comparison
+          </h2>
         </div>
         <div className="mx-auto overflow-x-auto" style={{ maxWidth: 880 }}>
           <table className="w-full bg-white border" style={{ borderColor: "rgba(29,31,32,.12)", borderCollapse: "collapse", fontSize: "13.5px" }}>
@@ -135,9 +158,9 @@ export default function GoFullPageAlternativePage() {
 
       {/* CTA */}
       <div className="text-center" style={{ background: "#1d1f20", padding: "64px 24px" }}>
-        <div className="gf-heading-font font-semibold" style={{ fontSize: 28, color: "#fff", letterSpacing: "-0.01em" }}>
+        <h2 className="gf-heading-font font-semibold" style={{ fontSize: 28, color: "#fff", letterSpacing: "-0.01em" }}>
           Try GoFully free
-        </div>
+        </h2>
         <p className="mx-auto" style={{ fontSize: "14.5px", color: "rgba(255,255,255,.55)", maxWidth: 460, marginTop: 12, lineHeight: 1.6 }}>
           No account, no premium tier, no catch. Every capture mode, OCR, annotation, and export format is included.
         </p>

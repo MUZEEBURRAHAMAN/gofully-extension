@@ -3,12 +3,14 @@
 import Link from "next/link";
 
 const ALL_LINKS = [
-  { label: "Privacy", href: "/privacy" },
-  { label: "Terms", href: "/terms" },
+  { label: "Guides", href: "/guides" },
+  { label: "Alternatives", href: "/alternatives" },
   { label: "Security", href: "/security" },
   { label: "FAQ", href: "/faq" },
-  { label: "Alternatives", href: "/alternatives" },
-  { label: "Guides", href: "/guides" },
+  { label: "Support", href: "/support" },
+  { label: "Roadmap", href: "/roadmap" },
+  { label: "Privacy", href: "/privacy" },
+  { label: "Terms", href: "/terms" },
 ];
 
 export function SiteFooterIndustry({

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
 import { BlueprintFrame } from "@/components/blueprint-frame";
-import { BreadcrumbJsonLd } from "@/components/breadcrumb-jsonld";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 
 const CWS_URL =
   "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
@@ -63,17 +63,23 @@ export default function RedactScreenshotGuidePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
       />
-      <BreadcrumbJsonLd name="How to Blur Screenshots Guide" path="/guides/how-to-blur-sensitive-info-in-screenshots" />
       <SiteNav />
 
+      {/* Breadcrumbs */}
+      <div style={{ padding: "36px 24px 0" }}>
+        <div className="mx-auto" style={{ maxWidth: 840 }}>
+          <Breadcrumbs
+            items={[
+              { label: "Guides", href: "/guides" },
+              { label: "How to Blur & Redact Screenshots" },
+            ]}
+          />
+        </div>
+      </div>
+
       {/* Header */}
-      <div className="text-center" style={{ padding: "80px 24px 44px" }}>
+      <div className="text-center" style={{ padding: "40px 24px 44px" }}>
         <div className="mx-auto" style={{ maxWidth: 780 }}>
-          <div className="flex justify-center gap-2 mb-4">
-            <Link href="/guides" className="inline-block border gf-heading-font font-semibold uppercase hover:underline" style={{ borderColor: "rgba(22,103,242,.25)", background: "rgba(22,103,242,.06)", color: "var(--gf-color-accent)", fontSize: "10.5px", letterSpacing: "0.06em", padding: "6px 14px" }}>
-              ← All Guides
-            </Link>
-          </div>
           <h1 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(28px, 6vw, 46px)", lineHeight: 1.15, letterSpacing: "-0.01em", marginTop: 12 }}>
             How to Blur or Redact Sensitive Information in Screenshots
           </h1>

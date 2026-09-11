@@ -15,10 +15,11 @@ export type NavLink = { label: string; href: string };
 const NAV_LINKS: NavLink[] = [
   { label: "Product", href: "/#how-it-works" },
   { label: "Features", href: "/#features" },
+  { label: "Guides", href: "/guides" },
+  { label: "Alternatives", href: "/alternatives" },
   { label: "Security", href: "/security" },
-  { label: "Support", href: "/support" },
   { label: "FAQ", href: "/faq" },
-  { label: "Roadmap", href: "/roadmap" },
+  { label: "Support", href: "/support" },
 ];
 
 export function SiteNav() {
@@ -31,7 +32,7 @@ export function SiteNav() {
         <Link href="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
           <img
             src="/logo-nav.png"
-            alt="GoFully"
+            alt="GoFully — Full Page Screenshot Chrome Extension"
             width={40}
             height={40}
             className="h-10 w-10 object-contain"

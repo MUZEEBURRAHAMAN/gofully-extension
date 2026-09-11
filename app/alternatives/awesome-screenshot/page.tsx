@@ -3,7 +3,7 @@ import Link from "next/link";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
 import { BlueprintFrame } from "@/components/blueprint-frame";
-import { BreadcrumbJsonLd } from "@/components/breadcrumb-jsonld";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 
 const CWS_URL =
   "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
@@ -11,29 +11,54 @@ const CWS_URL =
 export const metadata: Metadata = {
   title: "GoFully vs Awesome Screenshot — Best Free Alternative (2026)",
   description:
-    "Looking for an Awesome Screenshot alternative without forced account signups, cloud uploads, or paywalls? Compare GoFully vs Awesome Screenshot: privacy, OCR, and local editing.",
+    "Looking for an Awesome Screenshot alternative? GoFully offers 100% free full-page captures, on-device OCR, redaction, and PDF exports without account registration or cloud paywalls.",
   alternates: { canonical: "https://gofully-extension.vercel.app/alternatives/awesome-screenshot" },
   openGraph: {
     title: "GoFully vs Awesome Screenshot — Best Free Alternative (2026)",
     description:
-      "Compare GoFully and Awesome Screenshot feature-by-feature. Free on-device OCR, zero cloud tracking, and no account required.",
+      "A feature-by-feature look at GoFully vs Awesome Screenshot. Free on-device OCR, zero cloud lock-in.",
     url: "https://gofully-extension.vercel.app/alternatives/awesome-screenshot",
     siteName: "GoFully",
   },
 };
 
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "@id": "https://gofully-extension.vercel.app/alternatives/awesome-screenshot#article",
+  url: "https://gofully-extension.vercel.app/alternatives/awesome-screenshot",
+  headline: "GoFully vs Awesome Screenshot — Best Free Alternative",
+  description:
+    "A feature-by-feature comparison of GoFully vs Awesome Screenshot. Free on-device OCR, zero cloud lock-in.",
+  isPartOf: { "@id": "https://gofully-extension.vercel.app/#website" },
+  datePublished: "2026-09-07",
+  dateModified: "2026-09-08",
+  author: {
+    "@type": "Organization",
+    name: "GoFully",
+    url: "https://gofully-extension.vercel.app/",
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "GoFully",
+    url: "https://gofully-extension.vercel.app/",
+    logo: {
+      "@type": "ImageObject",
+      url: "https://gofully-extension.vercel.app/logo.png",
+    },
+  },
+};
+
 const ROWS = [
-  { feature: "Full page scrolling capture", gofully: "Yes", awesome: "Yes", gofullyYes: true, awesomeYes: true },
-  { feature: "Visible area capture", gofully: "Yes", awesome: "Yes", gofullyYes: true, awesomeYes: true },
-  { feature: "Selected region capture", gofully: "Yes", awesome: "Yes", gofullyYes: true, awesomeYes: true },
-  { feature: "Local WebAssembly OCR", gofully: "Yes, 100% on-device", awesome: "Not offered", gofullyYes: true, awesomeYes: false },
-  { feature: "Annotation & markup tools", gofully: "Unlimited & Free", awesome: "Basic tools on Free tier", gofullyYes: true, awesomeYes: false },
-  { feature: "Redaction (blur / mosaic)", gofully: "Free & Instant", awesome: "Included, capped at 100 screenshots on Free", gofullyYes: true, awesomeYes: false },
-  { feature: "Screenshot beautifier & mockups", gofully: "Free", awesome: "Not offered", gofullyYes: true, awesomeYes: false },
-  { feature: "Paginated PDF export", gofully: "Free", awesome: "Requires Paid Plan", gofullyYes: true, awesomeYes: false },
-  { feature: "Account required", gofully: "Never", awesome: "Required for paid tiers", gofullyYes: true, awesomeYes: false },
-  { feature: "Data storage / Privacy", gofully: "100% Local / In-browser", awesome: "Cloud-first, with a local-save option", gofullyYes: true, awesomeYes: false },
-  { feature: "Price", gofully: "Free forever", awesome: "$6.00 / month ($72/yr)", gofullyYes: true, awesomeYes: false },
+  { feature: "Full page scrolling capture", gofully: "Yes, fast & free", awesome: "Yes", gofullyYes: true, awesomeYes: true },
+  { feature: "Local OCR text extraction", gofully: "Yes, 100% on-device", awesome: "Requires paid Cloud", gofullyYes: true, awesomeYes: false },
+  { feature: "Privacy blur & redaction", gofully: "Included free", awesome: "Limited on free tier", gofullyYes: true, awesomeYes: false },
+  { feature: "Mockup & beautifier backgrounds", gofully: "Included free", awesome: "Not offered", gofullyYes: true, awesomeYes: false },
+  { feature: "Multi-page PDF export", gofully: "Included free", awesome: "Requires subscription", gofullyYes: true, awesomeYes: false },
+  { feature: "Mandatory account sign-in", gofully: "No account required", awesome: "Yes, required", gofullyYes: true, awesomeYes: false },
+  { feature: "Cloud storage uploads", gofully: "Never — 100% offline", awesome: "Forced cloud sync", gofullyYes: true, awesomeYes: false },
+  { feature: "Capture limits per month", gofully: "Unlimited", awesome: "Limited on free plan", gofullyYes: true, awesomeYes: false },
+  { feature: "Pricing", gofully: "100% Free forever", awesome: "Freemium ($6/mo)", gofullyYes: true, awesomeYes: false },
 ];
 
 function Check({ yes }: { yes: boolean }) {
@@ -44,34 +69,30 @@ function Check({ yes }: { yes: boolean }) {
   );
 }
 
-const webPageJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "@id": "https://gofully-extension.vercel.app/alternatives/awesome-screenshot#webpage",
-  url: "https://gofully-extension.vercel.app/alternatives/awesome-screenshot",
-  name: "GoFully vs Awesome Screenshot",
-  isPartOf: { "@id": "https://gofully-extension.vercel.app/#website" },
-  dateModified: "2026-09-07",
-};
-
 export default function AwesomeScreenshotAlternativePage() {
   return (
     <div className="gf-industry min-h-screen">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
       />
-      <BreadcrumbJsonLd name="GoFully vs Awesome Screenshot" path="/alternatives/awesome-screenshot" />
       <SiteNav />
 
+      {/* Breadcrumbs */}
+      <div style={{ padding: "36px 24px 0" }}>
+        <div className="mx-auto" style={{ maxWidth: 960 }}>
+          <Breadcrumbs
+            items={[
+              { label: "Alternatives", href: "/alternatives" },
+              { label: "GoFully vs Awesome Screenshot" },
+            ]}
+          />
+        </div>
+      </div>
+
       {/* Hero */}
-      <div className="text-center" style={{ padding: "88px 24px 56px" }}>
+      <div className="text-center" style={{ padding: "40px 24px 56px" }}>
         <div className="mx-auto" style={{ maxWidth: 760 }}>
-          <div className="flex justify-center gap-2 mb-4">
-            <Link href="/alternatives" className="inline-block border gf-heading-font font-semibold uppercase hover:underline" style={{ borderColor: "rgba(22,103,242,.25)", background: "rgba(22,103,242,.06)", color: "var(--gf-color-accent)", fontSize: "10.5px", letterSpacing: "0.06em", padding: "6px 14px" }}>
-              ← All Alternatives
-            </Link>
-          </div>
           <h1 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(28px, 7vw, 44px)", lineHeight: 1.1, letterSpacing: "-0.01em", marginTop: 16 }}>
             GoFully vs Awesome Screenshot
           </h1>

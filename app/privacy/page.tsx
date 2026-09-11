@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
 import { BlueprintFrame } from "@/components/blueprint-frame";
-import { BreadcrumbJsonLd } from "@/components/breadcrumb-jsonld";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — GoFully Screenshot Extension",
+  title: "Privacy Policy",
   description:
     "GoFully does not collect, track, or transmit any user data. All screenshot capture, annotation, and OCR runs 100% locally on your machine.",
   alternates: { canonical: "https://gofully-extension.vercel.app/privacy" },
@@ -56,11 +56,17 @@ function Bullet({ children }: { children: React.ReactNode }) {
 export default function PrivacyPage() {
   return (
     <div className="gf-industry min-h-screen">
-      <BreadcrumbJsonLd name="Privacy Policy" path="/privacy" />
       <SiteNav />
 
+      {/* Breadcrumbs */}
+      <div style={{ padding: "36px 24px 0" }}>
+        <div className="mx-auto" style={{ maxWidth: 760 }}>
+          <Breadcrumbs items={[{ label: "Privacy Policy" }]} />
+        </div>
+      </div>
+
       {/* Header */}
-      <div className="text-center" style={{ padding: "72px 24px 48px" }}>
+      <div className="text-center" style={{ padding: "36px 24px 48px" }}>
         <div className="mx-auto" style={{ maxWidth: 760 }}>
           <span
             className="inline-block border gf-heading-font font-semibold uppercase"

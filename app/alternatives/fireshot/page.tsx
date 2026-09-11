@@ -3,7 +3,7 @@ import Link from "next/link";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
 import { BlueprintFrame } from "@/components/blueprint-frame";
-import { BreadcrumbJsonLd } from "@/components/breadcrumb-jsonld";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 
 const CWS_URL =
   "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
@@ -11,29 +11,53 @@ const CWS_URL =
 export const metadata: Metadata = {
   title: "GoFully vs FireShot — Best Free FireShot Pro Alternative (2026)",
   description:
-    "Looking for a modern FireShot alternative? Compare GoFully vs FireShot: CleanShot-grade editor, on-device OCR, and paginated PDF export without paying $39.95 for FireShot Pro.",
+    "Looking for a free FireShot Pro alternative? Compare GoFully vs FireShot: paginated PDF exports, local OCR, and CleanShot-grade annotations without paying $39.95.",
   alternates: { canonical: "https://gofully-extension.vercel.app/alternatives/fireshot" },
   openGraph: {
     title: "GoFully vs FireShot — Best Free FireShot Pro Alternative (2026)",
     description:
-      "A feature-by-feature comparison of GoFully and FireShot. Get modern annotations, on-device OCR, and paginated PDF export 100% free.",
+      "Compare GoFully and FireShot: full page capture, PDF export, and local OCR without a paid license.",
     url: "https://gofully-extension.vercel.app/alternatives/fireshot",
     siteName: "GoFully",
   },
 };
 
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "@id": "https://gofully-extension.vercel.app/alternatives/fireshot#article",
+  url: "https://gofully-extension.vercel.app/alternatives/fireshot",
+  headline: "GoFully vs FireShot — Best Free FireShot Pro Alternative",
+  description:
+    "Compare GoFully and FireShot: full page capture, PDF export, and local OCR without a paid license.",
+  isPartOf: { "@id": "https://gofully-extension.vercel.app/#website" },
+  datePublished: "2026-09-07",
+  dateModified: "2026-09-08",
+  author: {
+    "@type": "Organization",
+    name: "GoFully",
+    url: "https://gofully-extension.vercel.app/",
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "GoFully",
+    url: "https://gofully-extension.vercel.app/",
+    logo: {
+      "@type": "ImageObject",
+      url: "https://gofully-extension.vercel.app/logo.png",
+    },
+  },
+};
+
 const ROWS = [
-  { feature: "Full page scrolling capture", gofully: "Yes", fireshot: "Yes", gofullyYes: true, fireshotYes: true },
-  { feature: "Visible area capture", gofully: "Yes", fireshot: "Yes", gofullyYes: true, fireshotYes: true },
-  { feature: "Selected region capture", gofully: "Yes", fireshot: "Yes", gofullyYes: true, fireshotYes: true },
-  { feature: "Local WebAssembly OCR", gofully: "Yes, on-device", fireshot: "Not offered", gofullyYes: true, fireshotYes: false },
-  { feature: "Modern visual annotation studio", gofully: "Yes (CleanShot-grade)", fireshot: "Requires FireShot Pro ($39.95)", gofullyYes: true, fireshotYes: false },
-  { feature: "Redaction (blur & mosaic)", gofully: "Free & Built-in", fireshot: "Requires FireShot Pro", gofullyYes: true, fireshotYes: false },
-  { feature: "Screenshot beautifier & mockups", gofully: "Free", fireshot: "Not offered", gofullyYes: true, fireshotYes: false },
-  { feature: "Paginated multi-page PDF", gofully: "Free", fireshot: "Requires FireShot Pro", gofullyYes: true, fireshotYes: false },
-  { feature: "Modern UI & User Experience", gofully: "Contemporary, sleek, dark mode", fireshot: "Legacy 2012-era interface", gofullyYes: true, fireshotYes: false },
-  { feature: "Account / License Key required", gofully: "None", fireshot: "License key needed for Pro", gofullyYes: true, fireshotYes: false },
-  { feature: "Price", gofully: "100% Free forever", fireshot: "Free basic / $39.95 Pro", gofullyYes: true, fireshotYes: false },
+  { feature: "Full page scrolling capture", gofully: "Yes, fast & free", fireshot: "Yes", gofullyYes: true, fireshotYes: true },
+  { feature: "Multi-page PDF export", gofully: "Included free", fireshot: "Requires FireShot Pro ($39.95)", gofullyYes: true, fireshotYes: false },
+  { feature: "Local OCR text extraction", gofully: "Yes, on-device", fireshot: "Requires FireShot Pro", gofullyYes: true, fireshotYes: false },
+  { feature: "Annotation & markup tools", gofully: "Full editor free", fireshot: "Requires FireShot Pro", gofullyYes: true, fireshotYes: false },
+  { feature: "Blur & sensitive info redaction", gofully: "Included free", fireshot: "Requires FireShot Pro", gofullyYes: true, fireshotYes: false },
+  { feature: "Mockup & beautifier backgrounds", gofully: "Included free", fireshot: "Not offered", gofullyYes: true, fireshotYes: false },
+  { feature: "Modern web UI & Dark mode", gofully: "Modern CleanShot-grade", fireshot: "Legacy early-2010s UI", gofullyYes: true, fireshotYes: false },
+  { feature: "One-time cost / License fee", gofully: "100% Free forever", fireshot: "$39.95 one-time license", gofullyYes: true, fireshotYes: false },
 ];
 
 function Check({ yes }: { yes: boolean }) {
@@ -44,34 +68,30 @@ function Check({ yes }: { yes: boolean }) {
   );
 }
 
-const webPageJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "@id": "https://gofully-extension.vercel.app/alternatives/fireshot#webpage",
-  url: "https://gofully-extension.vercel.app/alternatives/fireshot",
-  name: "GoFully vs FireShot",
-  isPartOf: { "@id": "https://gofully-extension.vercel.app/#website" },
-  dateModified: "2026-09-07",
-};
-
 export default function FireShotAlternativePage() {
   return (
     <div className="gf-industry min-h-screen">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
       />
-      <BreadcrumbJsonLd name="GoFully vs FireShot" path="/alternatives/fireshot" />
       <SiteNav />
 
+      {/* Breadcrumbs */}
+      <div style={{ padding: "36px 24px 0" }}>
+        <div className="mx-auto" style={{ maxWidth: 960 }}>
+          <Breadcrumbs
+            items={[
+              { label: "Alternatives", href: "/alternatives" },
+              { label: "GoFully vs FireShot" },
+            ]}
+          />
+        </div>
+      </div>
+
       {/* Hero */}
-      <div className="text-center" style={{ padding: "88px 24px 56px" }}>
+      <div className="text-center" style={{ padding: "40px 24px 56px" }}>
         <div className="mx-auto" style={{ maxWidth: 760 }}>
-          <div className="flex justify-center gap-2 mb-4">
-            <Link href="/alternatives" className="inline-block border gf-heading-font font-semibold uppercase hover:underline" style={{ borderColor: "rgba(22,103,242,.25)", background: "rgba(22,103,242,.06)", color: "var(--gf-color-accent)", fontSize: "10.5px", letterSpacing: "0.06em", padding: "6px 14px" }}>
-              ← All Alternatives
-            </Link>
-          </div>
           <h1 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(28px, 7vw, 44px)", lineHeight: 1.1, letterSpacing: "-0.01em", marginTop: 16 }}>
             GoFully vs FireShot
           </h1>

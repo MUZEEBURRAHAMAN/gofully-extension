@@ -3,13 +3,13 @@ import Link from "next/link";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
 import { BlueprintFrame } from "@/components/blueprint-frame";
-import { BreadcrumbJsonLd } from "@/components/breadcrumb-jsonld";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 
 const CWS_URL =
   "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
 
 export const metadata: Metadata = {
-  title: "Browser Capture & Screenshot Guides — GoFully",
+  title: "Browser Capture & Screenshot Guides",
   description:
     "Master web captures with step-by-step guides on full-page scrolling screenshots in Chrome, on-device OCR text extraction, and privacy redaction.",
   alternates: { canonical: "https://gofully-extension.vercel.app/guides" },
@@ -22,7 +22,17 @@ export const metadata: Metadata = {
   },
 };
 
-const GUIDES = [
+interface GuideItem {
+  slug: string;
+  title: string;
+  subtitle: string;
+  tag: string;
+  readTime: string;
+  date: string;
+  comingSoon?: boolean;
+}
+
+const GUIDES: GuideItem[] = [
   {
     slug: "screenshot-tool-for-developers-and-qa",
     title: "The Screenshot Workflow Built for Developers & QA",
@@ -68,6 +78,36 @@ const GUIDES = [
     readTime: "4 min read",
     date: "Updated September 2026",
   },
+  {
+    slug: "how-to-extract-text-in-multiple-languages-ocr",
+    title: "How to Extract Text in Multiple Languages with On-Device OCR",
+    subtitle:
+      "Capture and extract Spanish, French, German, Japanese, and Chinese text from images and locked web apps — 100% locally.",
+    tag: "OCR & i18n",
+    readTime: "4 min read",
+    date: "Planned v1.1.2",
+    comingSoon: true,
+  },
+  {
+    slug: "custom-keyboard-shortcuts-for-screen-capture",
+    title: "How to Set Custom Keyboard Shortcuts for Fast Screen Capture",
+    subtitle:
+      "Trigger full page scrolling capture, visible area snapshots, or selected region OCR with custom keybindings.",
+    tag: "Workflow & Speed",
+    readTime: "4 min read",
+    date: "Planned v1.1.2",
+    comingSoon: true,
+  },
+  {
+    slug: "how-to-use-highlighter-tool-in-screenshots",
+    title: "How to Use the Highlighter Tool in Screenshots Without Obscuring Text",
+    subtitle:
+      "Emphasize key UI metrics and paragraphs with CleanShot-grade multiply blending and level horizontal snapping.",
+    tag: "Visual Annotation",
+    readTime: "4 min read",
+    date: "Planned v1.1.2",
+    comingSoon: true,
+  },
 ];
 
 const webPageJsonLd = {
@@ -78,7 +118,16 @@ const webPageJsonLd = {
   name: "Browser Capture & Screenshot Guides",
   description: "Tutorials on full page screenshots, local OCR, and privacy redaction.",
   isPartOf: { "@id": "https://gofully-extension.vercel.app/#website" },
-  dateModified: "2026-09-07",
+  dateModified: "2026-09-11",
+  mainEntity: {
+    "@type": "ItemList",
+    itemListElement: GUIDES.map((g, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: `https://gofully-extension.vercel.app/guides/${g.slug}`,
+      name: g.title,
+    })),
+  },
 };
 
 export default function GuidesIndexPage() {
@@ -88,8 +137,14 @@ export default function GuidesIndexPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }}
       />
-      <BreadcrumbJsonLd name="Guides" path="/guides" />
       <SiteNav />
+
+      {/* Breadcrumbs */}
+      <div style={{ padding: "40px 24px 10px" }}>
+        <div className="mx-auto" style={{ maxWidth: 1140 }}>
+          <Breadcrumbs items={[{ label: "Guides" }]} />
+        </div>
+      </div>
 
       {/* Hero */}
       <div className="text-center" style={{ padding: "88px 24px 56px" }}>
@@ -113,10 +168,17 @@ export default function GuidesIndexPage() {
             <BlueprintFrame key={g.slug} className="bg-white p-6 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between gap-2 mb-3">
-                  <span className="text-[11px] font-semibold text-[var(--gf-color-accent)] bg-blue-50 border border-blue-200 px-2 py-0.5">
-                    {g.tag}
-                  </span>
-                  <span className="text-[11px] text-neutral-400">{g.readTime}</span>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[11px] font-semibold text-[var(--gf-color-accent)] bg-blue-50 border border-blue-200 px-2 py-0.5">
+                      {g.tag}
+                    </span>
+                    {g.comingSoon && (
+                      <span className="text-[10px] font-semibold tracking-wide uppercase text-amber-700 bg-amber-50 border border-amber-300 px-1.5 py-0.5">
+                        Coming Soon
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-[11px] text-neutral-400 shrink-0">{g.readTime}</span>
                 </div>
                 <h2 className="gf-heading-font font-semibold text-[18px] leading-snug mb-3">
                   <Link href={`/guides/${g.slug}`} className="hover:text-[var(--gf-color-accent)] transition-colors">
@@ -134,7 +196,7 @@ export default function GuidesIndexPage() {
                   className="inline-flex items-center gap-1.5 gf-heading-font font-semibold text-[13px] hover:underline"
                   style={{ color: "var(--gf-color-accent)" }}
                 >
-                  Read full tutorial →
+                  {g.comingSoon ? "Preview upcoming guide →" : "Read full tutorial →"}
                 </Link>
               </div>
             </BlueprintFrame>

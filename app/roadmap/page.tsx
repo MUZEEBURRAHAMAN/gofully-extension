@@ -1,8 +1,26 @@
-"use client";
-
+import type { Metadata } from "next";
 import { BlueprintFrame } from "@/components/blueprint-frame";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
+import { Breadcrumbs } from "@/components/breadcrumbs";
+
+export const metadata: Metadata = {
+  title: "Product Roadmap & Changelog — GoFully",
+  description:
+    "Explore the development roadmap and release history of GoFully: upcoming features, full-page scrolling engine enhancements, on-device OCR, and export additions.",
+  alternates: { canonical: "https://gofully-extension.vercel.app/roadmap" },
+  openGraph: {
+    title: "Product Roadmap & Changelog — GoFully",
+    description: "Follow what's shipping next and the full development journey of GoFully.",
+    url: "https://gofully-extension.vercel.app/roadmap",
+    siteName: "GoFully",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Product Roadmap & Changelog — GoFully",
+    description: "What's shipping next and recent releases for the GoFully extension.",
+  },
+};
 
 const CWS_URL =
   "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
@@ -75,17 +93,22 @@ export default function RoadmapPage() {
           doesn't read as flush-left with a large dead gap on wide screens. */}
       <div style={{ maxWidth: 960, margin: "0 auto" }}>
 
+      {/* Breadcrumbs */}
+      <div className="px-6 md:px-20" style={{ paddingTop: 40, paddingBottom: 8 }}>
+        <Breadcrumbs items={[{ label: "Roadmap" }]} />
+      </div>
+
       {/* Header */}
-      <div className="px-6 md:px-20" style={{ paddingTop: 72, paddingBottom: 56 }}>
+      <div className="px-6 md:px-20" style={{ paddingTop: 24, paddingBottom: 56 }}>
         <span
           className="inline-block border gf-heading-font font-semibold uppercase"
           style={{ borderColor: "rgba(22,103,242,.25)", background: "rgba(22,103,242,.06)", color: "var(--gf-color-accent)", fontSize: "10.5px", letterSpacing: "0.06em", padding: "5px 12px" }}
         >
           Roadmap
         </span>
-        <div className="gf-heading-font font-semibold" style={{ fontSize: "clamp(28px, 7.5vw, 44px)", letterSpacing: "-0.01em", marginTop: 20 }}>
-          The complete journey
-        </div>
+        <h1 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(28px, 7.5vw, 44px)", letterSpacing: "-0.01em", marginTop: 20 }}>
+          The Complete Journey &amp; Roadmap
+        </h1>
         <p style={{ fontSize: 15, color: "rgba(29,31,32,.55)", marginTop: 16, lineHeight: 1.6, maxWidth: 640 }}>
           What&apos;s shipping next, and the full journey that got GoFully here.
         </p>

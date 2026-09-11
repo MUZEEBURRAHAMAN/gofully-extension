@@ -1,11 +1,28 @@
-"use client";
-
+import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 
-const CWS_URL =
-  "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
+export const metadata: Metadata = {
+  title: "Security & Permissions Architecture — 100% On-Device",
+  description:
+    "Learn how GoFully protects your privacy: 100% on-device WebAssembly OCR, zero cloud uploads, minimal Chrome permissions, and no user tracking.",
+  alternates: { canonical: "https://gofully-extension.vercel.app/security" },
+  openGraph: {
+    title: "Security & Permissions Architecture — GoFully",
+    description:
+      "GoFully runs 100% on-device. Zero telemetry, no cloud uploads, and transparent browser permissions.",
+    url: "https://gofully-extension.vercel.app/security",
+    siteName: "GoFully",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Security & Permissions Architecture — GoFully",
+    description:
+      "On-device screenshot capture, local OCR, and strict zero-telemetry architecture.",
+  },
+};
 
 const STEPS = [
   {
@@ -77,17 +94,24 @@ export default function SecurityPage() {
     <div className="gf-industry min-h-screen">
       <SiteNav />
 
+      {/* Breadcrumb Navigation */}
+      <div style={{ padding: "40px 24px 10px" }}>
+        <div className="mx-auto" style={{ maxWidth: 1000 }}>
+          <Breadcrumbs items={[{ label: "Security & Privacy" }]} />
+        </div>
+      </div>
+
       {/* Hero */}
-      <div className="text-center" style={{ padding: "88px 24px 72px" }}>
+      <div className="text-center" style={{ padding: "30px 24px 72px" }}>
         <div className="mx-auto" style={{ maxWidth: 700 }}>
           <span className="inline-block border gf-heading-font font-semibold uppercase" style={{ borderColor: "rgba(22,103,242,.25)", background: "rgba(22,103,242,.06)", color: "var(--gf-color-accent)", fontSize: "10.5px", letterSpacing: "0.06em", padding: "6px 14px" }}>
             Security &amp; Privacy
           </span>
-          <div className="gf-heading-font font-semibold" style={{ fontSize: "clamp(30px, 8vw, 48px)", lineHeight: 1.08, letterSpacing: "-0.01em", marginTop: 22 }}>
+          <h1 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(30px, 8vw, 48px)", lineHeight: 1.08, letterSpacing: "-0.01em", marginTop: 22 }}>
             Nothing you capture ever leaves your device
-          </div>
+          </h1>
           <p className="mx-auto" style={{ fontSize: "15.5px", lineHeight: 1.6, color: "rgba(29,31,32,.55)", maxWidth: 580, marginTop: 18 }}>
-            GoFully runs entirely inside your browser. Capture, text extraction, and editing all happen on-device — there&apos;s no server in the loop, no account to create, and nothing sent anywhere without your say-so.
+            GoFully runs entirely inside your browser. Capture, text extraction, and editing all happen on-device — there&apos;s no server in the loop, no account to create, and nothing sent anywhere without your permission.
           </p>
         </div>
       </div>
@@ -96,9 +120,9 @@ export default function SecurityPage() {
       <div className="border-t" style={{ padding: "64px 24px", borderColor: "rgba(29,31,32,.08)", background: "rgba(29,31,32,.02)" }}>
         <div className="mx-auto text-center" style={{ maxWidth: 640, marginBottom: 48 }}>
           <SectionKicker>On-Device by Design</SectionKicker>
-          <div className="gf-heading-font font-semibold" style={{ fontSize: "clamp(24px, 6vw, 32px)", letterSpacing: "-0.01em", marginTop: 16 }}>
+          <h2 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(24px, 6vw, 32px)", letterSpacing: "-0.01em", marginTop: 16 }}>
             Every step of the workflow runs locally
-          </div>
+          </h2>
         </div>
         <div className="mx-auto grid grid-cols-1 md:grid-cols-3 gap-7" style={{ maxWidth: 1320 }}>
           {STEPS.map((s) => (
@@ -106,7 +130,7 @@ export default function SecurityPage() {
               <div className="flex items-center justify-center border mb-4" style={{ width: 40, height: 40, background: "rgba(22,103,242,.08)", borderColor: "rgba(22,103,242,.2)" }}>
                 {s.icon}
               </div>
-              <div className="gf-heading-font font-semibold" style={{ fontSize: 16, letterSpacing: "0.01em" }}>{s.n}</div>
+              <h3 className="gf-heading-font font-semibold" style={{ fontSize: 16, letterSpacing: "0.01em" }}>{s.n}</h3>
               <p className="mt-2" style={{ fontSize: 13, lineHeight: 1.6, color: "rgba(29,31,32,.55)" }}>{s.body}</p>
             </div>
           ))}
@@ -117,9 +141,9 @@ export default function SecurityPage() {
       <div className="border-t" style={{ padding: "80px 24px", borderColor: "rgba(29,31,32,.08)" }}>
         <div className="mx-auto text-center" style={{ maxWidth: 640, marginBottom: 52 }}>
           <SectionKicker>Permissions</SectionKicker>
-          <div className="gf-heading-font font-semibold" style={{ fontSize: "clamp(24px, 6vw, 32px)", letterSpacing: "-0.01em", marginTop: 16 }}>
+          <h2 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(24px, 6vw, 32px)", letterSpacing: "-0.01em", marginTop: 16 }}>
             Every permission has a job, and only that job
-          </div>
+          </h2>
           <p style={{ fontSize: 14, color: "rgba(29,31,32,.5)", marginTop: 12 }}>
             Chrome requires extensions to declare access up front. Here&apos;s exactly what GoFully asks for and why.
           </p>
@@ -134,7 +158,7 @@ export default function SecurityPage() {
                 {p.icon}
               </div>
               <div>
-                <div className="gf-heading-font font-semibold" style={{ fontSize: 15 }}>{p.name}</div>
+                <h3 className="gf-heading-font font-semibold" style={{ fontSize: 15 }}>{p.name}</h3>
                 <p className="mt-1" style={{ fontSize: "12.5px", lineHeight: 1.55, color: "rgba(29,31,32,.55)" }}>{p.body}</p>
               </div>
             </div>
@@ -145,9 +169,9 @@ export default function SecurityPage() {
       {/* What we don't do */}
       <div style={{ padding: "0 24px 90px" }}>
         <div className="mx-auto border" style={{ maxWidth: 1000, borderColor: "rgba(29,31,32,.12)", background: "rgba(29,31,32,.02)", padding: "40px 32px" }}>
-          <div className="gf-heading-font font-semibold" style={{ fontSize: 22, letterSpacing: "-0.005em", marginBottom: 22 }}>
+          <h2 className="gf-heading-font font-semibold" style={{ fontSize: 22, letterSpacing: "-0.005em", marginBottom: 22 }}>
             What GoFully doesn&apos;t do
-          </div>
+          </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2" style={{ gap: "14px 40px" }}>
             {DONT_DO.map((d) => (
               <div key={d} className="flex items-center gap-2.5" style={{ fontSize: "13.5px", color: "rgba(29,31,32,.65)" }}>
@@ -161,12 +185,12 @@ export default function SecurityPage() {
 
       {/* Vulnerability report band */}
       <div className="text-center" style={{ background: "#1d1f20", padding: "64px 24px" }}>
-        <div className="gf-heading-font font-semibold" style={{ fontSize: 28, color: "#fff", letterSpacing: "-0.01em" }}>
-          Found a vulnerability?
-        </div>
+        <h2 className="gf-heading-font font-semibold" style={{ fontSize: 28, color: "#fff", letterSpacing: "-0.01em" }}>
+          Found a security vulnerability?
+        </h2>
         <p className="mx-auto" style={{ fontSize: "14.5px", color: "rgba(255,255,255,.55)", maxWidth: 460, marginTop: 12, lineHeight: 1.6 }}>
-          Report it directly and we&apos;ll respond quickly. See the{" "}
-          <Link href="/support" className="underline text-white">contact page</Link> for other ways to reach us.
+          Report it directly to our maintainers. See the{" "}
+          <Link href="/support" className="underline text-white">support page</Link> for other contact channels.
         </p>
         <div className="inline-flex items-center justify-center border" style={{ height: 44, padding: "0 22px", borderColor: "rgba(255,255,255,.25)", color: "#fff", fontFamily: "ui-monospace, Menlo, monospace", fontSize: 13, marginTop: 22 }}>
           rahamanmuzeeb1108@gmail.com

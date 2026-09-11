@@ -2,109 +2,127 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://gofully-extension.vercel.app/</loc>
-    <lastmod>2026-09-07</lastmod>
+    <lastmod>2026-09-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://gofully-extension.vercel.app/guides</loc>
-    <lastmod>2026-09-07</lastmod>
+    <lastmod>2026-09-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://gofully-extension.vercel.app/guides/screenshot-tool-for-developers-and-qa</loc>
-    <lastmod>2026-09-08</lastmod>
+    <lastmod>2026-09-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://gofully-extension.vercel.app/guides/best-full-page-screenshot-extensions</loc>
-    <lastmod>2026-09-08</lastmod>
+    <lastmod>2026-09-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://gofully-extension.vercel.app/guides/how-to-take-full-page-screenshot-chrome</loc>
-    <lastmod>2026-09-07</lastmod>
+    <lastmod>2026-09-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://gofully-extension.vercel.app/guides/how-to-blur-sensitive-info-in-screenshots</loc>
-    <lastmod>2026-09-07</lastmod>
+    <lastmod>2026-09-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://gofully-extension.vercel.app/guides/how-to-extract-unselectable-text</loc>
-    <lastmod>2026-09-07</lastmod>
+    <lastmod>2026-09-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://gofully-extension.vercel.app/guides/how-to-extract-text-in-multiple-languages-ocr</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://gofully-extension.vercel.app/guides/custom-keyboard-shortcuts-for-screen-capture</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://gofully-extension.vercel.app/guides/how-to-use-highlighter-tool-in-screenshots</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
     <loc>https://gofully-extension.vercel.app/alternatives</loc>
-    <lastmod>2026-09-07</lastmod>
+    <lastmod>2026-09-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://gofully-extension.vercel.app/alternatives/gofullpage</loc>
-    <lastmod>2026-09-07</lastmod>
+    <lastmod>2026-09-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://gofully-extension.vercel.app/alternatives/awesome-screenshot</loc>
-    <lastmod>2026-09-07</lastmod>
+    <lastmod>2026-09-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://gofully-extension.vercel.app/alternatives/fireshot</loc>
-    <lastmod>2026-09-07</lastmod>
+    <lastmod>2026-09-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://gofully-extension.vercel.app/alternatives/nimbus</loc>
-    <lastmod>2026-09-07</lastmod>
+    <lastmod>2026-09-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://gofully-extension.vercel.app/security</loc>
-    <lastmod>2026-09-07</lastmod>
+    <lastmod>2026-09-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://gofully-extension.vercel.app/privacy</loc>
-    <lastmod>2026-09-07</lastmod>
+    <lastmod>2026-09-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://gofully-extension.vercel.app/support</loc>
-    <lastmod>2026-09-07</lastmod>
+    <lastmod>2026-09-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://gofully-extension.vercel.app/faq</loc>
-    <lastmod>2026-09-07</lastmod>
+    <lastmod>2026-09-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://gofully-extension.vercel.app/roadmap</loc>
-    <lastmod>2026-09-07</lastmod>
+    <lastmod>2026-09-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://gofully-extension.vercel.app/terms</loc>
-    <lastmod>2026-09-07</lastmod>
+    <lastmod>2026-09-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>

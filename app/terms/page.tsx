@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
 import { BlueprintFrame } from "@/components/blueprint-frame";
-import { BreadcrumbJsonLd } from "@/components/breadcrumb-jsonld";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — GoFully",
+  title: "Terms of Service",
   description: "Terms of service and usage conditions for the GoFully Chrome Extension.",
   alternates: { canonical: "https://gofully-extension.vercel.app/terms" },
   openGraph: {
@@ -52,11 +52,17 @@ function LegalP({ children }: { children: React.ReactNode }) {
 export default function TermsPage() {
   return (
     <div className="gf-industry min-h-screen">
-      <BreadcrumbJsonLd name="Terms of Service" path="/terms" />
       <SiteNav />
 
+      {/* Breadcrumbs */}
+      <div style={{ padding: "36px 24px 0" }}>
+        <div className="mx-auto" style={{ maxWidth: 760 }}>
+          <Breadcrumbs items={[{ label: "Terms of Service" }]} />
+        </div>
+      </div>
+
       {/* Header */}
-      <div className="text-center" style={{ padding: "72px 24px 48px" }}>
+      <div className="text-center" style={{ padding: "36px 24px 48px" }}>
         <div className="mx-auto" style={{ maxWidth: 760 }}>
           <span
             className="inline-block border gf-heading-font font-semibold uppercase"

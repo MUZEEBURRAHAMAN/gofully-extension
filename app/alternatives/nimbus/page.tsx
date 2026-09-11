@@ -3,7 +3,7 @@ import Link from "next/link";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
 import { BlueprintFrame } from "@/components/blueprint-frame";
-import { BreadcrumbJsonLd } from "@/components/breadcrumb-jsonld";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 
 const CWS_URL =
   "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
@@ -11,29 +11,53 @@ const CWS_URL =
 export const metadata: Metadata = {
   title: "GoFully vs Nimbus Capture — Fast, Lightweight Alternative (2026)",
   description:
-    "Looking for a Nimbus Screenshot alternative without workspace bloat, forced cloud accounts, or subscriptions? Compare GoFully vs Nimbus Capture for fast, private screenshots.",
+    "Looking for a fast, lightweight alternative to Nimbus Capture? Compare GoFully vs Nimbus: zero workspace bloat, on-device OCR, and free PDF exports with no subscriptions.",
   alternates: { canonical: "https://gofully-extension.vercel.app/alternatives/nimbus" },
   openGraph: {
     title: "GoFully vs Nimbus Capture — Fast, Lightweight Alternative (2026)",
     description:
-      "A direct comparison of GoFully and Nimbus Capture. Instant client-side capture, on-device OCR, and zero cloud bloat.",
+      "Compare GoFully and Nimbus Capture: lightweight performance, on-device OCR, and free annotation without cloud lock-in.",
     url: "https://gofully-extension.vercel.app/alternatives/nimbus",
     siteName: "GoFully",
   },
 };
 
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "@id": "https://gofully-extension.vercel.app/alternatives/nimbus#article",
+  url: "https://gofully-extension.vercel.app/alternatives/nimbus",
+  headline: "GoFully vs Nimbus Capture — Fast, Lightweight Alternative",
+  description:
+    "Compare GoFully and Nimbus Capture: lightweight performance, on-device OCR, and free annotation without cloud lock-in.",
+  isPartOf: { "@id": "https://gofully-extension.vercel.app/#website" },
+  datePublished: "2026-09-07",
+  dateModified: "2026-09-08",
+  author: {
+    "@type": "Organization",
+    name: "GoFully",
+    url: "https://gofully-extension.vercel.app/",
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "GoFully",
+    url: "https://gofully-extension.vercel.app/",
+    logo: {
+      "@type": "ImageObject",
+      url: "https://gofully-extension.vercel.app/logo.png",
+    },
+  },
+};
+
 const ROWS = [
-  { feature: "Full page scrolling capture", gofully: "Yes (Clean stitch)", nimbus: "Yes", gofullyYes: true, nimbusYes: true },
-  { feature: "Visible area capture", gofully: "Yes", nimbus: "Yes", gofullyYes: true, nimbusYes: true },
-  { feature: "Selected region capture", gofully: "Yes", nimbus: "Yes", gofullyYes: true, nimbusYes: true },
-  { feature: "Local WebAssembly OCR", gofully: "Yes, 100% on-device", nimbus: "Not offered", gofullyYes: true, nimbusYes: false },
-  { feature: "Annotation & markup tools", gofully: "Free & Unrestricted", nimbus: "Basic free / Premium advanced", gofullyYes: true, nimbusYes: false },
-  { feature: "Redaction (blur & mosaic)", gofully: "Free", nimbus: "Limited on Free tier", gofullyYes: true, nimbusYes: false },
-  { feature: "Screenshot beautifier & mockups", gofully: "Free", nimbus: "Not offered", gofullyYes: true, nimbusYes: false },
-  { feature: "Paginated PDF export", gofully: "Free", nimbus: "Requires paid tier", gofullyYes: true, nimbusYes: false },
-  { feature: "Extension footprint / Performance", gofully: "Ultra-lightweight, 0 background memory", nimbus: "Heavy suite (bundled with notes & workspace)", gofullyYes: true, nimbusYes: false },
-  { feature: "Cloud sync & account", gofully: "No account, 100% offline", nimbus: "Account pushed on first use", gofullyYes: true, nimbusYes: false },
-  { feature: "Price", gofully: "100% Free", nimbus: "Freemium, paid plans from ~$5/mo", gofullyYes: true, nimbusYes: false },
+  { feature: "Full page scrolling capture", gofully: "Yes, fast & free", nimbus: "Yes", gofullyYes: true, nimbusYes: true },
+  { feature: "Local OCR text extraction", gofully: "Yes, on-device", nimbus: "Requires Premium Plan", gofullyYes: true, nimbusYes: false },
+  { feature: "Redaction & privacy blur", gofully: "Included free", nimbus: "Requires Pro tier", gofullyYes: true, nimbusYes: false },
+  { feature: "Paginated PDF export", gofully: "Free & Instant", nimbus: "Paid subscription", gofullyYes: true, nimbusYes: false },
+  { feature: "Screenshot beautifier & mockups", gofully: "Included free", nimbus: "Not offered", gofullyYes: true, nimbusYes: false },
+  { feature: "Lightweight performance", gofully: "Minimal memory footprint", nimbus: "Heavy suite / slow capture", gofullyYes: true, nimbusYes: false },
+  { feature: "Mandatory cloud workspace", gofully: "No — 100% on-device", nimbus: "Pushes FuseBase cloud", gofullyYes: true, nimbusYes: false },
+  { feature: "Pricing", gofully: "100% Free forever", nimbus: "Freemium ($7/mo)", gofullyYes: true, nimbusYes: false },
 ];
 
 function Check({ yes }: { yes: boolean }) {
@@ -44,34 +68,30 @@ function Check({ yes }: { yes: boolean }) {
   );
 }
 
-const webPageJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "@id": "https://gofully-extension.vercel.app/alternatives/nimbus#webpage",
-  url: "https://gofully-extension.vercel.app/alternatives/nimbus",
-  name: "GoFully vs Nimbus Capture",
-  isPartOf: { "@id": "https://gofully-extension.vercel.app/#website" },
-  dateModified: "2026-09-07",
-};
-
 export default function NimbusAlternativePage() {
   return (
     <div className="gf-industry min-h-screen">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
       />
-      <BreadcrumbJsonLd name="GoFully vs Nimbus Capture" path="/alternatives/nimbus" />
       <SiteNav />
 
+      {/* Breadcrumbs */}
+      <div style={{ padding: "36px 24px 0" }}>
+        <div className="mx-auto" style={{ maxWidth: 960 }}>
+          <Breadcrumbs
+            items={[
+              { label: "Alternatives", href: "/alternatives" },
+              { label: "GoFully vs Nimbus Capture" },
+            ]}
+          />
+        </div>
+      </div>
+
       {/* Hero */}
-      <div className="text-center" style={{ padding: "88px 24px 56px" }}>
+      <div className="text-center" style={{ padding: "40px 24px 56px" }}>
         <div className="mx-auto" style={{ maxWidth: 760 }}>
-          <div className="flex justify-center gap-2 mb-4">
-            <Link href="/alternatives" className="inline-block border gf-heading-font font-semibold uppercase hover:underline" style={{ borderColor: "rgba(22,103,242,.25)", background: "rgba(22,103,242,.06)", color: "var(--gf-color-accent)", fontSize: "10.5px", letterSpacing: "0.06em", padding: "6px 14px" }}>
-              ← All Alternatives
-            </Link>
-          </div>
           <h1 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(28px, 7vw, 44px)", lineHeight: 1.1, letterSpacing: "-0.01em", marginTop: 16 }}>
             GoFully vs Nimbus Capture
           </h1>
