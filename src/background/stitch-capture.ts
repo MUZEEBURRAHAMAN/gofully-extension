@@ -255,10 +255,19 @@ async function initScrollCapture(tabId: number): Promise<{
         document.body.scrollTop ||
         0;
 
-      // Temporarily disable smooth scroll so programmatic scrollTo is instantaneous
+      // Temporarily disable smooth scroll so programmatic scrollTo is
+      // instantaneous, and hide scrollbars everywhere — each frame is a
+      // captureVisibleTab() snapshot taken right after a programmatic
+      // scroll, and Chrome's overlay scrollbar thumb is still fading out at
+      // that exact instant on most systems, so without this it gets baked
+      // into the stitched image once per frame near the scroll edge.
       const styleEl = document.createElement("style");
       styleEl.id = "__gf_no_smooth_scroll";
-      styleEl.textContent = "* { scroll-behavior: auto !important; }";
+      styleEl.textContent = `
+        * { scroll-behavior: auto !important; }
+        * { scrollbar-width: none !important; }
+        *::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+      `;
       (document.head || document.documentElement).appendChild(styleEl);
 
       const html = document.documentElement;
