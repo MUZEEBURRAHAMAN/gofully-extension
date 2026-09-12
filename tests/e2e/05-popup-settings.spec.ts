@@ -154,25 +154,35 @@ test.describe("05 - Popup & Options Settings Suite", () => {
     await page.close();
   });
 
-  test("TC-POPUP-006: In-page Cmd/Ctrl+Shift+F triggers capture directly without extra in-page popup", async ({
+  test("TC-POPUP-006: In-page Cmd/Ctrl+Shift+F opens a dedicated review tab, no in-page card", async ({
     context,
   }) => {
     const page = await context.newPage();
     await page.goto("http://localhost:8085/test-page-long.html");
     await page.waitForLoadState("domcontentloaded");
 
-    // Press shortcut directly on the webpage
-    await page.keyboard.press("Control+Shift+F");
+    // Press shortcut directly on the webpage, and await the review tab it
+    // opens — filtered by URL since a fresh extension load may also still
+    // be opening its own welcome.html tab around the same time.
+    const [reviewPage] = await Promise.all([
+      context.waitForEvent("page", {
+        predicate: (p) => p.url().includes("review.html"),
+        timeout: 15000,
+      }),
+      page.keyboard.press("Control+Shift+F"),
+    ]);
+    await reviewPage.waitForLoadState("domcontentloaded");
+    expect(reviewPage.url()).toContain("review.html");
 
-    // Verify progress screen transitions cleanly to result bar
+    // Full-page/scrolling-area captures no longer show the old in-page card
     const resultBar = page.locator("#snapforge-result-bar");
-    await expect(resultBar).toBeAttached({ timeout: 15000 });
-    await expect(resultBar).toBeVisible();
+    await expect(resultBar).not.toBeAttached();
 
-    // Verify progress screen was cleaned up
+    // Verify progress screen was cleaned up on the source page
     const progressOverlay = page.locator("#gofully-progress-overlay");
     await expect(progressOverlay).not.toBeAttached();
 
+    await reviewPage.close();
     await page.close();
   });
 });

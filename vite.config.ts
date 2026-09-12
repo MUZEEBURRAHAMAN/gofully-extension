@@ -24,6 +24,7 @@ export default defineConfig({
         "canvas-editor": resolve(__dirname, "src/editor/canvas-editor.ts"),
         offscreen: resolve(__dirname, "src/offscreen/canvas-stitcher.ts"),
         welcome: resolve(__dirname, "src/welcome/welcome.ts"),
+        review: resolve(__dirname, "src/review/review.ts"),
       },
       output: {
         entryFileNames: "[name].js",

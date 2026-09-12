@@ -20,11 +20,9 @@ if (!(window as any).__snapforge_region_listener_registered) {
               payload: { mode: "selected-area", region, tabId: activeTabId },
             },
             (response) => {
-              // The service worker's showResultBarOnTab() already shows the
-              // result bar for selected-area once the capture finishes; a
-              // duplicate direct-invoke used to also live here, firing the
-              // result bar (and its shutter sound) a second time on every
-              // single capture.
+              // The service worker's handleCaptureCompletionUI() already
+              // triggers the quick-copy toast for selected-area once the
+              // capture finishes — nothing else needed here on success.
               if (response?.type === "CAPTURE_ERROR") {
                 showInlineError(response.payload?.message || "Capture failed");
               }

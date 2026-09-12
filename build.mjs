@@ -165,4 +165,12 @@ const welcomeFixed = welcomeHtml.replace(
 );
 writeFileSync(resolve(dist, "welcome.html"), welcomeFixed);
 
+// Review HTML — replace .ts script reference with .js
+const reviewHtml = readFileSync(resolve(__dirname, "src/review/review.html"), "utf8");
+const reviewFixed = reviewHtml.replace(
+  /<script\s+type="module"\s+src="review\.ts"><\/script>/,
+  '<script type="module" src="review.js"></script>'
+);
+writeFileSync(resolve(dist, "review.html"), reviewFixed);
+
 console.log("\nBuild complete! Load dist/ as unpacked extension in Chrome.");

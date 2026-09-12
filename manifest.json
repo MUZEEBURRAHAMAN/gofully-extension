@@ -86,6 +86,7 @@
       "resources": [
         "offscreen.html",
         "editor.html",
+        "review.html",
         "help.html",
         "assets/*",
         "scrolling-area-ui.js",

@@ -3,7 +3,8 @@
     "argv": [
       "/Users/muzeeburrahaman/.nvm/versions/node/v24.2.0/bin/node",
       "/Users/muzeeburrahaman/Documents/full page screenshot/node_modules/.bin/playwright",
-      "test"
+      "test",
+      "tests/e2e"
     ],
     "configFile": "/Users/muzeeburrahaman/Documents/full page screenshot/playwright.config.ts",
     "rootDir": "/Users/muzeeburrahaman/Documents/full page screenshot/tests",
@@ -98,12 +99,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 2705,
+                      "duration": 1454,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:09:26.616Z",
+                      "startTime": "2026-09-12T10:43:39.175Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -132,12 +133,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 7054,
+                      "duration": 6977,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:09:29.346Z",
+                      "startTime": "2026-09-12T10:43:40.655Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -166,12 +167,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 6989,
+                      "duration": 7022,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:09:36.418Z",
+                      "startTime": "2026-09-12T10:43:47.647Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -200,12 +201,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1422,
+                      "duration": 1352,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:09:43.416Z",
+                      "startTime": "2026-09-12T10:43:54.679Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -234,12 +235,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1027,
+                      "duration": 963,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:09:44.844Z",
+                      "startTime": "2026-09-12T10:43:56.037Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -285,12 +286,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 4116,
+                      "duration": 4109,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:09:45.887Z",
+                      "startTime": "2026-09-12T10:43:57.014Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -319,12 +320,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 4123,
+                      "duration": 4102,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:09:50.010Z",
+                      "startTime": "2026-09-12T10:44:01.129Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -353,12 +354,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 5651,
+                      "duration": 5609,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:09:54.139Z",
+                      "startTime": "2026-09-12T10:44:05.237Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -387,12 +388,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 7049,
+                      "duration": 7053,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:09:59.797Z",
+                      "startTime": "2026-09-12T10:44:10.853Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -421,12 +422,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 901,
+                      "duration": 849,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:06.852Z",
+                      "startTime": "2026-09-12T10:44:17.912Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -472,12 +473,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1061,
+                      "duration": 995,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:07.776Z",
+                      "startTime": "2026-09-12T10:44:18.774Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -506,12 +507,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1269,
+                      "duration": 1174,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:08.844Z",
+                      "startTime": "2026-09-12T10:44:19.775Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -540,12 +541,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1065,
+                      "duration": 992,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:10.119Z",
+                      "startTime": "2026-09-12T10:44:20.955Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -574,12 +575,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1047,
+                      "duration": 973,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:11.189Z",
+                      "startTime": "2026-09-12T10:44:21.952Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -608,12 +609,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 989,
+                      "duration": 932,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:12.242Z",
+                      "startTime": "2026-09-12T10:44:22.931Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -642,12 +643,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1060,
+                      "duration": 992,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:13.237Z",
+                      "startTime": "2026-09-12T10:44:23.868Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -676,12 +677,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1060,
+                      "duration": 957,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:14.303Z",
+                      "startTime": "2026-09-12T10:44:24.867Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -727,12 +728,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 931,
+                      "duration": 843,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:15.375Z",
+                      "startTime": "2026-09-12T10:44:25.836Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -761,12 +762,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 913,
+                      "duration": 840,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:16.313Z",
+                      "startTime": "2026-09-12T10:44:26.686Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -795,12 +796,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 940,
+                      "duration": 845,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:17.232Z",
+                      "startTime": "2026-09-12T10:44:27.531Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -846,12 +847,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 907,
+                      "duration": 873,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:18.188Z",
+                      "startTime": "2026-09-12T10:44:28.386Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -880,12 +881,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 882,
+                      "duration": 824,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:19.105Z",
+                      "startTime": "2026-09-12T10:44:29.265Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -914,12 +915,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 874,
+                      "duration": 813,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:19.993Z",
+                      "startTime": "2026-09-12T10:44:30.095Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -948,12 +949,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 932,
+                      "duration": 855,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:20.873Z",
+                      "startTime": "2026-09-12T10:44:30.914Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -982,12 +983,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1216,
+                      "duration": 1171,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:21.811Z",
+                      "startTime": "2026-09-12T10:44:31.775Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1001,7 +1002,7 @@
               "column": 3
             },
             {
-              "title": "TC-POPUP-006: In-page Cmd/Ctrl+Shift+F triggers capture directly without extra in-page popup",
+              "title": "TC-POPUP-006: In-page Cmd/Ctrl+Shift+F opens a dedicated review tab, no in-page card",
               "ok": true,
               "tags": [],
               "tests": [
@@ -1016,12 +1017,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 6631,
+                      "duration": 6533,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:23.035Z",
+                      "startTime": "2026-09-12T10:44:32.952Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1029,7 +1030,7 @@
                   "status": "expected"
                 }
               ],
-              "id": "9ee67d665f8fc7514321-871cb77b35a9119304fb",
+              "id": "9ee67d665f8fc7514321-50952ac8fd607a333329",
               "file": "e2e/05-popup-settings.spec.ts",
               "line": 157,
               "column": 3
@@ -1067,12 +1068,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1700,
+                      "duration": 1687,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:29.677Z",
+                      "startTime": "2026-09-12T10:44:39.496Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1101,12 +1102,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 831,
+                      "duration": 755,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:31.383Z",
+                      "startTime": "2026-09-12T10:44:41.189Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1152,12 +1153,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1193,
+                      "duration": 991,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:32.230Z",
+                      "startTime": "2026-09-12T10:44:41.959Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1186,12 +1187,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1705,
+                      "duration": 1642,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:33.430Z",
+                      "startTime": "2026-09-12T10:44:42.956Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1220,12 +1221,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1949,
+                      "duration": 1839,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:35.142Z",
+                      "startTime": "2026-09-12T10:44:44.604Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1254,12 +1255,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 2205,
+                      "duration": 2140,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:37.099Z",
+                      "startTime": "2026-09-12T10:44:46.450Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1288,12 +1289,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 3169,
+                      "duration": 3082,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:39.310Z",
+                      "startTime": "2026-09-12T10:44:48.596Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1322,12 +1323,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 2754,
+                      "duration": 2724,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:42.486Z",
+                      "startTime": "2026-09-12T10:44:51.684Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1356,12 +1357,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1427,
+                      "duration": 1356,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:45.246Z",
+                      "startTime": "2026-09-12T10:44:54.413Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1390,12 +1391,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1097,
+                      "duration": 1034,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:46.679Z",
+                      "startTime": "2026-09-12T10:44:55.775Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1424,12 +1425,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1872,
+                      "duration": 1802,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:47.782Z",
+                      "startTime": "2026-09-12T10:44:56.815Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1458,12 +1459,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 3201,
+                      "duration": 3110,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-09-11T18:10:49.661Z",
+                      "startTime": "2026-09-12T10:44:58.623Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1479,370 +1480,13 @@
           ]
         }
       ]
-    },
-    {
-      "title": "security/extension-hardening.spec.ts",
-      "file": "security/extension-hardening.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Security Suite - Extension Hardening & Boundary Defense",
-          "file": "security/extension-hardening.spec.ts",
-          "line": 3,
-          "column": 6,
-          "specs": [
-            {
-              "title": "SEC-HARD-001: sanitizeRegion rejects invalid, NaN, negative, and infinite coordinate payloads",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1480,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-11T18:10:52.876Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "6ba72c5076f369d69e54-b4be222ed4f6837efe43",
-              "file": "security/extension-hardening.spec.ts",
-              "line": 4,
-              "column": 3
-            },
-            {
-              "title": "SEC-HARD-002: Service Worker prevents cross-tab capture impersonation",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 966,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-11T18:10:54.362Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "6ba72c5076f369d69e54-64283e2a3bee480c879d",
-              "file": "security/extension-hardening.spec.ts",
-              "line": 51,
-              "column": 3
-            },
-            {
-              "title": "SEC-HARD-003: Manifest V3 CSP prevents unsafe-eval and arbitrary remote script execution",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 993,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-11T18:10:55.336Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "6ba72c5076f369d69e54-c255099693c9ad047a0e",
-              "file": "security/extension-hardening.spec.ts",
-              "line": 81,
-              "column": 3
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "security/hipaa-phi-protection.spec.ts",
-      "file": "security/hipaa-phi-protection.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Security Suite - HIPAA Protected Health Information (PHI) Controls",
-          "file": "security/hipaa-phi-protection.spec.ts",
-          "line": 3,
-          "column": 6,
-          "specs": [
-            {
-              "title": "SEC-HIPAA-001: Data at Rest - Zero unencrypted ePHI persisted to permanent storage",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 891,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-11T18:10:56.340Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "b2cce7b9655318f183f8-97c5ef0f8bdfcb2c6f0a",
-              "file": "security/hipaa-phi-protection.spec.ts",
-              "line": 4,
-              "column": 3
-            },
-            {
-              "title": "SEC-HIPAA-002: Redaction Tool Permanence - Redacted pixels are destroyed, not hidden via layer opacity",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 932,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-11T18:10:57.237Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "b2cce7b9655318f183f8-d6bc6dce7b1b2f20e425",
-              "file": "security/hipaa-phi-protection.spec.ts",
-              "line": 30,
-              "column": 3
-            },
-            {
-              "title": "SEC-HIPAA-003: Memory Isolation - Editor does not leak multi-MB base64 images into browser URL history",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1430,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-11T18:10:58.175Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "b2cce7b9655318f183f8-590a326b9ccbc3288b47",
-              "file": "security/hipaa-phi-protection.spec.ts",
-              "line": 53,
-              "column": 3
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "security/soc2-confidentiality.spec.ts",
-      "file": "security/soc2-confidentiality.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Security Suite - SOC 2 Type II Confidentiality & Privacy",
-          "file": "security/soc2-confidentiality.spec.ts",
-          "line": 3,
-          "column": 6,
-          "specs": [
-            {
-              "title": "SEC-SOC2-001: Zero remote network exfiltration during capture lifecycle",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1411,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-11T18:10:59.617Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "325cf0317ce2a1e589f5-8e3c56eba6b0bc50f331",
-              "file": "security/soc2-confidentiality.spec.ts",
-              "line": 4,
-              "column": 3
-            },
-            {
-              "title": "SEC-SOC2-002: Local-only OCR engine execution with zero external CDN calls",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 924,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-11T18:11:01.034Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "325cf0317ce2a1e589f5-3e86e917ee9e0f3b1edb",
-              "file": "security/soc2-confidentiality.spec.ts",
-              "line": 52,
-              "column": 3
-            },
-            {
-              "title": "SEC-SOC2-003: No third-party tracking or analytics libraries embedded in extension HTML",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1343,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-09-11T18:11:01.965Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "325cf0317ce2a1e589f5-ac5fc9466624a3305ad6",
-              "file": "security/soc2-confidentiality.spec.ts",
-              "line": 110,
-              "column": 3
-            }
-          ]
-        }
-      ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-09-11T18:09:26.100Z",
-    "duration": 97310.443,
-    "expected": 47,
+    "startTime": "2026-09-12T10:43:38.450Z",
+    "duration": 83369.085,
+    "expected": 38,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

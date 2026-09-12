@@ -329,19 +329,33 @@ async function startCapture(mode: CaptureMode): Promise<void> {
     { type: "START_CAPTURE", payload: { mode, tabId: tab.id } },
     (response) => {
       if (response?.type === "CAPTURE_COMPLETE") {
-        captureMetadata = response.payload;
-        currentUrl = response.payload.url || "";
-        chrome.runtime.sendMessage({ type: "GET_CAPTURE_BLOB_URL" }, (resp) => {
-          if (resp?.url) {
-            currentBlobUrl = resp.url;
-          }
-          showResult(response.payload);
-        });
+        // Visible Area is the one remaining "grab it and go" mode reachable
+        // from the popup — no card, no new tab, just an instant clipboard
+        // copy confirmed in the same progress slot, then close.
+        completeQuickCapture(response.payload);
       } else if (response?.type === "CAPTURE_ERROR") {
         showError(response.payload?.message || "Capture failed");
       }
     }
   );
+}
+
+async function completeQuickCapture(payload: { dataUrl: string }): Promise<void> {
+  let copied = true;
+  try {
+    const res = await fetch(payload.dataUrl);
+    const blob = await res.blob();
+    const pngBlob = blob.type === "image/png" ? blob : await convertToPng(blob);
+    const uhdBlob = await upscaleToUHD(pngBlob);
+    await navigator.clipboard.write([new ClipboardItem({ "image/png": uhdBlob })]);
+  } catch {
+    copied = false;
+  }
+
+  progressLabel.textContent = copied ? t("toast.copied") : "Screenshot captured";
+  progressFill.style.transform = "scaleX(1)";
+
+  setTimeout(() => window.close(), 900);
 }
 
 function runCountdown(seconds: number, tabId: number): Promise<void> {

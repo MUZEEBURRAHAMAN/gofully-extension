@@ -233,6 +233,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     };
 
     const targetTabId = tabId ?? sender.tab?.id;
+    const fromContentScript = !!sender.tab;
 
     // Ensure content scripts (including result-bar) are injected first
     if (targetTabId) {
@@ -259,9 +260,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           dataUrl: lastCaptureDataUrl,
         };
 
-        // Show the on-page result bar on the target tab
         if (targetTabId) {
-          await showResultBarOnTab(targetTabId, payload);
+          await handleCaptureCompletionUI(mode, targetTabId, fromContentScript, lastCaptureDataUrl);
         }
 
         sendResponse({ type: "CAPTURE_COMPLETE", payload });
@@ -387,14 +387,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         lastCaptureResult = { ...result, blob: null as any };
         cacheCaptureInSession(lastCaptureDataUrl);
         recordCaptureCompleted().catch(() => {});
-        // Tell scrolling-area-ui to clean up before showing result bar
+        // Tell scrolling-area-ui to clean up before opening the review tab
         chrome.tabs.sendMessage(tabId, { type: "SCROLLING_CAPTURE_DONE" }).catch(() => {});
-        await showResultBarOnTab(tabId, {
-          width: result.width,
-          height: result.height,
-          mode: result.mode,
-          method: result.method,
-        });
+        await openReviewTab(tabId);
       })
       .catch((err) => {
         chrome.tabs.sendMessage(tabId, { type: "SCROLLING_CAPTURE_DONE" }).catch(() => {});
@@ -452,12 +447,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       lastCaptureResult = { ...result, blob: null as any };
       cacheCaptureInSession(lastCaptureDataUrl);
       recordCaptureCompleted().catch(() => {});
-      await showResultBarOnTab(tabId, {
-        width: result.width,
-        height: result.height,
-        mode: result.mode,
-        method: result.method,
-      });
+      await openReviewTab(tabId);
       sendResponse({ success: true });
     }).catch(err => sendResponse({ success: false, error: err.message }));
     return true;
@@ -515,18 +505,7 @@ chrome.commands.onCommand.addListener(async (command) => {
       cacheCaptureInSession(lastCaptureDataUrl);
       recordCaptureCompleted().catch(() => {});
 
-      const payload = {
-        width: result.width,
-        height: result.height,
-        mode: result.mode,
-        method: result.method,
-        url: result.url,
-        title: result.title,
-        timestamp: result.timestamp,
-        dataUrl: lastCaptureDataUrl,
-      };
-
-      await showResultBarOnTab(tab.id, payload);
+      await openReviewTab(tab.id);
     } catch (e) {
       console.error("Keyboard shortcut capture-full-page failed:", e);
     }
@@ -541,18 +520,10 @@ chrome.commands.onCommand.addListener(async (command) => {
       cacheCaptureInSession(lastCaptureDataUrl);
       recordCaptureCompleted().catch(() => {});
 
-      const payload = {
-        width: result.width,
-        height: result.height,
-        mode: result.mode,
-        method: result.method,
-        url: result.url,
-        title: result.title,
-        timestamp: result.timestamp,
-        dataUrl: lastCaptureDataUrl,
-      };
-
-      await showResultBarOnTab(tab.id, payload);
+      chrome.tabs.sendMessage(tab.id, {
+        type: "QUICK_CAPTURE_TOAST",
+        payload: { dataUrl: lastCaptureDataUrl },
+      }).catch(() => {});
     } catch (e) {
       console.error("Keyboard shortcut capture-visible failed:", e);
     }
@@ -700,37 +671,77 @@ function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-async function showResultBarOnTab(tabId: number, payload: any): Promise<void> {
+/**
+ * Full-page and scrolling-area captures open a dedicated review tab — a big
+ * preview with proper export actions, instead of a cramped in-page card.
+ * Visible-area and selected-area stay instant: no tab, no card, just a
+ * clipboard copy and a small toast (see handleCaptureCompletionUI).
+ */
+async function openReviewTab(openerTabId: number): Promise<void> {
   try {
-    // 1. Ensure result-bar.js is loaded (defensive re-inject — result-bar.js
-    // is also declared in manifest.json's auto-injecting content_scripts, so
-    // this covers edge cases like the extension having just been reloaded).
+    // The final CAPTURE_PROGRESS "done" event (sent via the fire-and-forget
+    // chrome.tabs.sendMessage in handleCapture's sendProgress) is what
+    // normally clears the in-page progress badge, but that delivery isn't
+    // guaranteed to land before this runs. showResultBarOnTab() used to mask
+    // this by always clearing the badge itself via a reliable
+    // scripting.executeScript call; do the same here so the badge can't be
+    // left stuck on the source page once a review tab opens.
     await chrome.scripting.executeScript({
-      target: { tabId },
-      files: ["result-bar.js"],
-    }).catch(() => {});
-
-    // 2. Directly invoke the global render function inside the page.
-    // This alone is a complete, reliable delivery path once the script is
-    // loaded — it doesn't depend on message-listener timing the way a
-    // broadcast does. A THIRD "also send SHOW_RESULT_BAR as a fallback" step
-    // used to also live here, but result-bar.ts registers its listener for
-    // that message at module top level, and the re-injection above runs it a
-    // second time on top of manifest's own auto-injection — each run adds
-    // another listener, so the one broadcast was landing on multiple
-    // listeners and firing showResultBar() (shutter sound included) two or
-    // three times per capture instead of once.
-    await chrome.scripting.executeScript({
-      target: { tabId },
-      func: (info: any) => {
-        if (typeof (window as any).__snapforge_show_result_bar === "function") {
-          (window as any).__snapforge_show_result_bar(info);
+      target: { tabId: openerTabId },
+      func: () => {
+        if (typeof (window as any).__gofully_remove_progress === "function") {
+          (window as any).__gofully_remove_progress();
         }
       },
-      args: [payload],
     }).catch(() => {});
+
+    const openerTab = await chrome.tabs.get(openerTabId).catch(() => null);
+    const captureId = `cap_${Date.now()}`;
+    await chrome.tabs.create({
+      url: chrome.runtime.getURL(`review.html?id=${captureId}`),
+      index: typeof openerTab?.index === "number" ? openerTab.index + 1 : undefined,
+      openerTabId,
+    });
   } catch (err) {
-    console.error("showResultBarOnTab failed:", err);
+    console.error("openReviewTab failed:", err);
+  }
+}
+
+/**
+ * Routes a completed capture to the right post-capture UI: a review tab for
+ * the two "I want to look at this" modes, or an instant clipboard copy +
+ * lightweight in-page toast for the two "grab it and go" modes. Quick modes
+ * triggered from the popup are skipped here — the popup does its own copy
+ * and status line, since it already has the result in hand.
+ */
+async function handleCaptureCompletionUI(
+  mode: CaptureMode,
+  targetTabId: number,
+  fromContentScript: boolean,
+  dataUrl: string
+): Promise<void> {
+  if (mode === "full-page" || mode === "scrolling-area") {
+    await openReviewTab(targetTabId);
+    return;
+  }
+  if (fromContentScript) {
+    // showQuickCaptureToast() clears the in-page progress badge itself.
+    chrome.tabs.sendMessage(targetTabId, {
+      type: "QUICK_CAPTURE_TOAST",
+      payload: { dataUrl },
+    }).catch(() => {});
+  } else {
+    // Popup-triggered: the popup shows its own confirmation, but the fire-
+    // and-forget CAPTURE_PROGRESS "done" message to the tab isn't a
+    // guaranteed delivery — clear any in-page badge reliably instead.
+    await chrome.scripting.executeScript({
+      target: { tabId: targetTabId },
+      func: () => {
+        if (typeof (window as any).__gofully_remove_progress === "function") {
+          (window as any).__gofully_remove_progress();
+        }
+      },
+    }).catch(() => {});
   }
 }
 
