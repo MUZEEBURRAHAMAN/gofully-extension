@@ -308,36 +308,38 @@ async function startCapture(mode: CaptureMode): Promise<void> {
     return;
   }
 
-  if (mode === "full-page") {
-    if (countdown > 0) {
-      await runCountdown(countdown, tab.id);
-    }
-    chrome.runtime.sendMessage({
-      type: "START_CAPTURE",
-      payload: { mode: "full-page", tabId: tab.id },
-    });
-    window.close();
-    return;
-  }
-
   if (countdown > 0) {
     await runCountdown(countdown, tab.id);
   }
 
+  // Full Page and Visible Area both stay open through the same progress UI;
+  // they only differ in what happens once CAPTURE_COMPLETE comes back.
   showProgress();
   chrome.runtime.sendMessage(
     { type: "START_CAPTURE", payload: { mode, tabId: tab.id } },
     (response) => {
       if (response?.type === "CAPTURE_COMPLETE") {
-        // Visible Area is the one remaining "grab it and go" mode reachable
-        // from the popup — no card, no new tab, just an instant clipboard
-        // copy confirmed in the same progress slot, then close.
-        completeQuickCapture(response.payload);
+        if (mode === "full-page") {
+          // The service worker already opens the review tab independently
+          // of the popup — just confirm and close.
+          completeReviewTabCapture();
+        } else {
+          // Visible Area is the one "grab it and go" mode reachable from
+          // the popup — no card, no new tab, just an instant clipboard
+          // copy confirmed in the same progress slot, then close.
+          completeQuickCapture(response.payload);
+        }
       } else if (response?.type === "CAPTURE_ERROR") {
         showError(response.payload?.message || "Capture failed");
       }
     }
   );
+}
+
+function completeReviewTabCapture(): void {
+  progressLabel.textContent = "Opened in new tab";
+  progressFill.style.transform = "scaleX(1)";
+  setTimeout(() => window.close(), 700);
 }
 
 async function completeQuickCapture(payload: { dataUrl: string }): Promise<void> {
