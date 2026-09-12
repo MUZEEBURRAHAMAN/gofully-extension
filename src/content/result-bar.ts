@@ -54,6 +54,7 @@ export function showResultBar(info: {
   method: string;
   dataUrl?: string;
 }): void {
+  removeProgressOverlay();
   removeResultBar();
   playShutterSound();
 
@@ -421,23 +422,121 @@ function removeResultBar(): void {
   bar = null;
 }
 
+let progressOverlay: HTMLDivElement | null = null;
+let progressBadgeText: HTMLSpanElement | null = null;
+
+export function showProgressOverlay(current: number, total: number, phase: string): void {
+  if (phase === "done") {
+    removeProgressOverlay();
+    return;
+  }
+
+  if (!progressOverlay) {
+    progressOverlay = document.createElement("div");
+    progressOverlay.id = "gofully-progress-overlay";
+    progressOverlay.style.cssText = `
+      position: fixed !important;
+      top: 16px !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      z-index: 2147483647 !important;
+      pointer-events: auto !important;
+      user-select: none !important;
+    `;
+
+    const badge = document.createElement("div");
+    badge.id = "gofully-progress-badge";
+    badge.style.cssText = `
+      background: rgba(16, 24, 40, 0.92) !important;
+      backdrop-filter: blur(8px) !important;
+      -webkit-backdrop-filter: blur(8px) !important;
+      color: #ffffff !important;
+      padding: 8px 16px !important;
+      border-radius: 9999px !important;
+      font-family: ${FONT_STACK} !important;
+      font-size: 12px !important;
+      font-weight: 500 !important;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    `;
+
+    const dot = document.createElement("span");
+    dot.style.cssText = `
+      width: 8px !important;
+      height: 8px !important;
+      border-radius: 50% !important;
+      background: #16B364 !important;
+      display: inline-block !important;
+    `;
+    badge.appendChild(dot);
+
+    progressBadgeText = document.createElement("span");
+    progressBadgeText.textContent = "Capturing page...";
+    badge.appendChild(progressBadgeText);
+
+    const escHint = document.createElement("span");
+    escHint.style.cssText = "color: #94A3B8 !important; font-size: 11px !important; margin-left: 2px !important;";
+    escHint.textContent = "(Esc to cancel)";
+    badge.appendChild(escHint);
+
+    progressOverlay.appendChild(badge);
+    (document.body || document.documentElement).appendChild(progressOverlay);
+  }
+
+  const pct = total > 0 ? Math.min(100, Math.round((current / total) * 100)) : 0;
+  if (progressBadgeText) {
+    progressBadgeText.textContent = phase === "stitching" ? "Stitching capture..." : `Capturing page... ${pct}%`;
+  }
+}
+
+export function removeProgressOverlay(): void {
+  const existing = document.getElementById("gofully-progress-overlay");
+  if (existing) existing.remove();
+  progressOverlay = null;
+  progressBadgeText = null;
+}
+
 // Make globally accessible on window for direct script invocation
 (window as any).__snapforge_show_result_bar = showResultBar;
+(window as any).__gofully_show_progress = showProgressOverlay;
+(window as any).__gofully_remove_progress = removeProgressOverlay;
 
 if (!(window as any).__snapforge_result_bar_listener_registered) {
   (window as any).__snapforge_result_bar_listener_registered = true;
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+    if (message.type === "CAPTURE_PROGRESS") {
+      const { current, total, phase } = message.payload || {};
+      showProgressOverlay(current, total, phase);
+      sendResponse({ ok: true });
+      return true;
+    }
     if (message.type === "SHOW_RESULT_BAR") {
+      removeProgressOverlay();
       showResultBar(message.payload);
       sendResponse({ shown: true });
       return true;
     }
     return false;
   });
+
+  window.addEventListener(
+    "keydown",
+    (e) => {
+      if (e.key === "Escape" && document.getElementById("gofully-progress-overlay")) {
+        e.preventDefault();
+        removeProgressOverlay();
+        chrome.runtime.sendMessage({ type: "CANCEL_CAPTURE" }).catch(() => {});
+      }
+    },
+    true
+  );
 }
 
 // Ensure any stale in-page progress overlay is immediately purged from DOM
-document.querySelectorAll("#gofully-progress-overlay").forEach((el) => el.remove());
+removeProgressOverlay();
 
 // In-page keyboard shortcut listener:
 // Cmd/Ctrl/Alt + Shift + F (Full Page)

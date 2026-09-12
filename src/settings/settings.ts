@@ -43,10 +43,15 @@ const elements = {
 };
 
 async function loadSettings(): Promise<void> {
-  const stored = await chrome.storage.sync.get("settings");
+  const syncStored = await chrome.storage.sync.get("settings");
+  let storedSettings = syncStored.settings;
+  if (!storedSettings && chrome.storage.local) {
+    const localStored = await chrome.storage.local.get("settings");
+    storedSettings = localStored.settings;
+  }
   const settings: Settings = {
     ...DEFAULT_SETTINGS,
-    ...(stored.settings as Partial<Settings> || {}),
+    ...((storedSettings as Partial<Settings>) || {}),
   };
 
   elements.defaultAction.value = settings.defaultAction;
@@ -94,6 +99,13 @@ async function saveSettings(): Promise<void> {
   };
 
   await chrome.storage.sync.set({ settings });
+  try {
+    if (chrome.storage.local) {
+      await chrome.storage.local.set({ settings });
+    }
+  } catch {
+    // ignore local storage fallback error
+  }
   showSavedToast();
 }
 

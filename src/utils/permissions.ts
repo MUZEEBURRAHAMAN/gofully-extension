@@ -1,8 +1,8 @@
 export async function getCaptureMethod(
-  pageHeight: number
+  pageHeight: number,
+  dpr: number = 1
 ): Promise<"cdp" | "scroll-stitch"> {
-  const MAX_CDP_HEIGHT = 16384;
-  if (pageHeight > MAX_CDP_HEIGHT) return "scroll-stitch";
-  // debugger is a required permission in manifest, always available
-  return "cdp";
+  // GoFully's primary full page engine is scrolling-capture with stitch
+  return "scroll-stitch";
 }
+

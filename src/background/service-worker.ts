@@ -13,6 +13,7 @@ import type { ScrollCapturer } from "../capture-modes/scroll-capturer";
 import { generatePDF } from "../export/pdf-generator";
 import { isSupportedCapturePage } from "../utils/url-validator";
 import { dataUrlToBlob } from "../utils/image";
+import { cancelActiveCapture } from "./stitch-capture";
 
 // Uninstall feedback URL configuration pointing to live Vercel deployment
 chrome.runtime.onInstalled.addListener(async (details) => {
@@ -223,11 +224,12 @@ async function sanitizeRegion(
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "START_CAPTURE") {
-    const { mode, region, speed, tabId } = message.payload as {
+    const { mode, region, speed, tabId, forceMethod } = message.payload as {
       mode: CaptureMode;
       region?: CaptureRegion;
       speed?: "slow" | "medium" | "fast";
       tabId?: number;
+      forceMethod?: "cdp" | "scroll-stitch";
     };
 
     const targetTabId = tabId ?? sender.tab?.id;
@@ -237,7 +239,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       injectContentScripts(targetTabId).catch(() => {});
     }
 
-    handleCapture(mode, region, speed, targetTabId)
+    handleCapture(mode, region, speed, targetTabId, forceMethod)
       .then(async (result) => {
         lastCaptureBlob = await maybeStampCapture(result);
         lastCaptureDataUrl = await blobToDataUrl(lastCaptureBlob);
@@ -256,19 +258,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           dataUrl: lastCaptureDataUrl,
         };
 
-        // Captures kicked off directly from a content script (selected-area,
-        // via the region selector) have no popup left open to render the
-        // result — the popup already closed itself before the drag even
-        // started. Show the on-page result bar ourselves so the user gets
-        // a confirmation instead of the capture silently vanishing.
-        if ((mode === "selected-area" || sender.tab?.id) && targetTabId) {
+        // Show the on-page result bar on the target tab
+        if (targetTabId) {
           await showResultBarOnTab(targetTabId, payload);
         }
 
         sendResponse({ type: "CAPTURE_COMPLETE", payload });
       })
       .catch((error) => {
-        if (mode === "selected-area" && targetTabId) {
+        if (targetTabId) {
           chrome.tabs.sendMessage(targetTabId, {
             type: "CAPTURE_ERROR_INLINE",
             payload: { message: error.message },
@@ -280,6 +278,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         });
       });
 
+    return true;
+  }
+
+  if (message.type === "CANCEL_CAPTURE") {
+    cancelActiveCapture();
+    sendResponse({ cancelled: true });
     return true;
   }
 
@@ -558,7 +562,8 @@ async function handleCapture(
   mode: CaptureMode,
   region?: CaptureRegion,
   speed?: "slow" | "medium" | "fast",
-  explicitTabId?: number
+  explicitTabId?: number,
+  forceMethod?: "cdp" | "scroll-stitch"
 ): Promise<CaptureResult> {
   let targetTabId = explicitTabId;
   let tab: chrome.tabs.Tab | undefined;
@@ -607,7 +612,7 @@ async function handleCapture(
 
   switch (mode) {
     case "full-page":
-      return captureFullPage(targetTabId!, sendProgress);
+      return captureFullPage(targetTabId!, sendProgress, forceMethod);
 
     case "visible-area":
       return captureVisibleArea(targetTabId!, sendProgress);

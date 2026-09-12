@@ -169,8 +169,9 @@
   3. Click and drag diagonally across an arbitrary area.
 * **Expected Result**:
   * A clear rectangular cutout appears revealing the underlying page.
-  * A live HUD badge floats adjacent to the selection showing real-time dimensions (e.g. `640 × 480 px`).
-  * Releasing mouse snaps the region and displays the Result Bar with the cropped graphic.
+  * Releasing mouse presents an adjustable framing box with 8 resize handles and a floating action bar (showing real-time pixel dimensions, **Capture** button, and **Cancel** button).
+  * Pressing `Enter` or clicking **Capture** commits the selection and displays the Result Bar with the cropped graphic.
+  * Pressing `Esc` or clicking **Cancel** dismisses the overlay cleanly.
 
 ### TC-REG-002: Inverted & Boundary Dragging Edge Cases
 * **Edge Case Scenarios**:

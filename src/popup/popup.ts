@@ -303,6 +303,18 @@ async function startCapture(mode: CaptureMode): Promise<void> {
     return;
   }
 
+  if (mode === "full-page") {
+    if (countdown > 0) {
+      await runCountdown(countdown, tab.id);
+    }
+    chrome.runtime.sendMessage({
+      type: "START_CAPTURE",
+      payload: { mode: "full-page", tabId: tab.id },
+    });
+    window.close();
+    return;
+  }
+
   if (countdown > 0) {
     await runCountdown(countdown, tab.id);
   }

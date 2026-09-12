@@ -495,7 +495,7 @@ async function processOCR(region: CaptureRegion): Promise<void> {
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
-      <textarea class="ocr-textarea" id="ocr-text-content" readonly></textarea>
+      <textarea class="ocr-textarea" id="ocr-text-content" placeholder="Extracted text..."></textarea>
       <div class="ocr-footer">
         <div class="ocr-meta" id="ocr-meta-text"></div>
         <div class="ocr-actions">
@@ -526,6 +526,10 @@ async function processOCR(region: CaptureRegion): Promise<void> {
     if (textarea) textarea.value = text;
     const metaEl = resultModal.querySelector("#ocr-meta-text") as HTMLDivElement;
     if (metaEl) metaEl.textContent = `${text.length} characters`;
+
+    textarea?.addEventListener("input", () => {
+      if (metaEl) metaEl.textContent = `${textarea.value.length} characters`;
+    });
 
     resultModal.querySelector("#ocr-close-btn")?.addEventListener("click", () => stopOCRSelection());
     resultModal.querySelector("#ocr-done-btn")?.addEventListener("click", () => stopOCRSelection());

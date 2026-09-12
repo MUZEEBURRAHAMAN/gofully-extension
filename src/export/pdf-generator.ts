@@ -3,7 +3,7 @@ import { generateFilename } from "../utils/image";
 
 export async function generatePDF(
   imageBlob: Blob,
-  _pageSize: "a4" | "letter" = "a4",
+  pageSize: "a4" | "letter" = "a4",
   watermarkUrl?: string
 ): Promise<Blob> {
   const dataUrl = await blobToDataUrl(imageBlob);
@@ -26,26 +26,36 @@ export async function generatePDF(
     imgHeight = img.height;
   }
 
-  const PX_TO_PT = 0.75; // Standard 96 DPI CSS/web rendering: 1px = 0.75pt
-  const pageW = Math.round(imgWidth * PX_TO_PT);
-  const fullH  = Math.round(imgHeight * PX_TO_PT);
+  if (imgWidth === 0 || imgHeight === 0) {
+    throw new Error("Invalid image dimensions for PDF generation");
+  }
 
-  // PDF spec allows up to 14400pt (~200 in) per page
-  const MAX_PAGE_H = 14400;
-  const pageH = Math.min(fullH, MAX_PAGE_H);
-  const totalPages = Math.ceil(fullH / pageH);
+  const PAGE_SIZES: Record<"a4" | "letter", { width: number; height: number }> = {
+    a4: { width: 595.28, height: 841.89 },
+    letter: { width: 612.0, height: 792.0 },
+  };
+
+  const selectedSize = PAGE_SIZES[pageSize] || PAGE_SIZES.a4;
+  const isLandscape = imgWidth > imgHeight && imgHeight <= selectedSize.width;
+  const pageW = isLandscape ? selectedSize.height : selectedSize.width;
+  const pageH = isLandscape ? selectedSize.width : selectedSize.height;
+
+  // Scale the image so its width fills the page width
+  const scale = pageW / imgWidth;
+  const scaledTotalH = imgHeight * scale;
+
+  // Calculate pages required based on standard page height
+  const totalPages = Math.max(1, Math.ceil(scaledTotalH / pageH));
 
   const pdf = new jsPDF({
     unit: "pt",
     format: [pageW, pageH],
-    orientation: pageW > pageH ? "landscape" : "portrait",
+    orientation: isLandscape ? "landscape" : "portrait",
   });
 
   for (let i = 0; i < totalPages; i++) {
     if (i > 0) {
-      const remainH = fullH - i * pageH;
-      const thisH = Math.min(pageH, remainH);
-      pdf.addPage([pageW, thisH], pageW > thisH ? "landscape" : "portrait");
+      pdf.addPage([pageW, pageH], isLandscape ? "landscape" : "portrait");
     }
 
     pdf.addImage(
@@ -54,21 +64,20 @@ export async function generatePDF(
       0,
       -(i * pageH),
       pageW,
-      fullH,
+      scaledTotalH,
       undefined,
-      "NONE"
+      "FAST"
     );
 
     if (watermarkUrl) {
-      const thisPageH = i === totalPages - 1 ? fullH - i * pageH : pageH;
       pdf.setFontSize(8);
       pdf.setTextColor(150, 150, 150);
-      pdf.text(watermarkUrl, 10, thisPageH - 10);
+      pdf.text(watermarkUrl, 14, pageH - 10);
       if (totalPages > 1) {
         pdf.text(
           `Page ${i + 1} of ${totalPages}`,
-          pageW - 80,
-          thisPageH - 10
+          pageW - 75,
+          pageH - 10
         );
       }
     }

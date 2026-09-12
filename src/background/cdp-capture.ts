@@ -29,8 +29,19 @@ export async function captureWithCDP(
       layoutMetrics.contentSize?.height ||
       dimensions.scrollHeight;
 
-    // Force at least 2× scale for crisp retina-quality output
-    const captureScale = Math.max(2, dimensions.devicePixelRatio);
+    // Guard against dimensions exceeding Chrome's GPU texture limit (16384px)
+    if (contentHeight > 16384 || contentWidth > 16384) {
+      throw new Error(
+        `Page dimensions (${contentWidth}x${contentHeight}) exceed CDP 16384 limit, falling back to scroll-stitch`
+      );
+    }
+
+    // Force at least 2× scale for crisp retina-quality output, but clamp so total output pixels <= 16384
+    let captureScale = Math.max(2, dimensions.devicePixelRatio || 1);
+    const maxDim = Math.max(contentWidth, contentHeight);
+    if (maxDim * captureScale > 16384) {
+      captureScale = Math.max(1, Math.floor((16384 / maxDim) * 10) / 10);
+    }
 
     // Override device metrics to full page size
     await chrome.debugger.sendCommand(

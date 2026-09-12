@@ -13,7 +13,6 @@
       src: url('assets/Archivo.woff2') format('woff2');
     }
   </style>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -1116,26 +1115,21 @@
       </div>
     </div>
 
-    <div class="tool-dropdown-wrapper">
-      <button class="tool-btn" data-tool="rectangle" id="tool-shape">
-        <!-- Hugeicons: square-dashed-02 / rectangle -->
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="5" width="18" height="14" rx="0"/>
-        </svg>
-        <span class="tip">Shape (R)</span>
-      </button>
-      <div class="tool-expand-btn" id="shape-expand">▾<span class="tip">Shape options</span></div>
-      <div class="tool-dropdown-menu" id="shape-menu">
-        <button class="tool-dropdown-item active" data-shape-type="rectangle">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="0"/></svg>
-          Rectangle
-        </button>
-        <button class="tool-dropdown-item" data-shape-type="ellipse">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="8"/></svg>
-          Ellipse
-        </button>
-      </div>
-    </div>
+    <button class="tool-btn" data-tool="rectangle" id="tool-rectangle">
+      <!-- Hugeicons: square-dashed-02 / rectangle -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="5" width="18" height="14" rx="0"/>
+      </svg>
+      <span class="tip">Rectangle (R)</span>
+    </button>
+
+    <button class="tool-btn" data-tool="ellipse" id="tool-ellipse">
+      <!-- Hugeicons: circle -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="8"/>
+      </svg>
+      <span class="tip">Ellipse (E)</span>
+    </button>
 
     <button class="tool-btn" data-tool="callout" id="tool-callout">
       <!-- Hugeicons: comment-01 -->

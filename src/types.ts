@@ -39,6 +39,9 @@ export interface CaptureFrame {
   height: number;
   scrollX: number;
   scrollY: number;
+  cropY?: number;
+  cropHeight?: number;
+  dstY?: number;
 }
 
 export interface CaptureRegion {
@@ -125,7 +128,7 @@ export const DEFAULT_SETTINGS: Settings = {
   lazyLoadWait: 2000,
   captureSound: true,
   captureCountdown: 0,
-  skipStickyHeaders: false,
+  skipStickyHeaders: true,
   defaultExportFormat: "png",
   editorShortcuts: {},
   captureStamp: false,

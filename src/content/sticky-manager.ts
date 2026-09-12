@@ -1,7 +1,5 @@
 import type { StickyElement } from "../types";
 
-let hiddenElements: StickyElement[] = [];
-
 function findStickyElements(): HTMLElement[] {
   const all = document.querySelectorAll("*");
   const sticky: HTMLElement[] = [];
@@ -58,44 +56,128 @@ function getUniqueSelector(el: HTMLElement): string {
   return path.join(" > ");
 }
 
-export function hideStickyElements(): StickyElement[] {
+interface FrozenSticky {
+  el: HTMLElement;
+  originalPosition: string;
+  originalTop: string;
+  originalLeft: string;
+  originalWidth: string;
+  originalZIndex: string;
+}
+
+let frozenElements: FrozenSticky[] = [];
+
+export function freezeStickyElements(): void {
   const elements = findStickyElements();
-  hiddenElements = [];
+  frozenElements = [];
 
   for (const el of elements) {
-    hiddenElements.push({
-      selector: getUniqueSelector(el),
+    const rect = el.getBoundingClientRect();
+    const style = window.getComputedStyle(el);
+    frozenElements.push({
+      el,
       originalPosition: el.style.position,
-      originalDisplay: el.style.display,
+      originalTop: el.style.top,
+      originalLeft: el.style.left,
+      originalWidth: el.style.width,
+      originalZIndex: el.style.zIndex,
     });
-    el.style.setProperty("display", "none", "important");
+
+    const docTop = rect.top + window.scrollY;
+    el.style.setProperty("position", "absolute", "important");
+    el.style.setProperty("top", `${docTop}px`, "important");
+    el.style.setProperty("left", `${rect.left + window.scrollX}px`, "important");
+    el.style.setProperty("width", `${rect.width}px`, "important");
+    el.style.setProperty("z-index", style.zIndex || "9999", "important");
+  }
+}
+
+export function restoreFrozenElements(): void {
+  for (const saved of frozenElements) {
+    try {
+      if (saved.originalPosition) saved.el.style.position = saved.originalPosition;
+      else saved.el.style.removeProperty("position");
+
+      if (saved.originalTop) saved.el.style.top = saved.originalTop;
+      else saved.el.style.removeProperty("top");
+
+      if (saved.originalLeft) saved.el.style.left = saved.originalLeft;
+      else saved.el.style.removeProperty("left");
+
+      if (saved.originalWidth) saved.el.style.width = saved.originalWidth;
+      else saved.el.style.removeProperty("width");
+
+      if (saved.originalZIndex) saved.el.style.zIndex = saved.originalZIndex;
+      else saved.el.style.removeProperty("z-index");
+    } catch {}
+  }
+  frozenElements = [];
+}
+
+interface HiddenSticky {
+  el: HTMLElement;
+  originalVisibility: string;
+}
+
+let hiddenStickyElements: HiddenSticky[] = [];
+
+export function hideStickyElements(): StickyElement[] {
+  const elements = findStickyElements();
+  hiddenStickyElements = [];
+
+  for (const el of elements) {
+    if (el.id?.startsWith("gofully-") || el.id?.startsWith("snapforge-")) continue;
+
+    hiddenStickyElements.push({
+      el,
+      originalVisibility: el.style.visibility,
+    });
+    // Use visibility: hidden !important so the element is invisible without causing layout shifts
+    el.style.setProperty("visibility", "hidden", "important");
   }
 
-  return hiddenElements;
+  return hiddenStickyElements.map((h) => ({
+    selector: getUniqueSelector(h.el),
+    originalPosition: h.el.style.position,
+    originalDisplay: h.el.style.display,
+  }));
 }
 
 export function restoreStickyElements(): void {
-  for (const saved of hiddenElements) {
+  for (const saved of hiddenStickyElements) {
     try {
-      const el = document.querySelector(saved.selector) as HTMLElement;
-      if (el) {
-        el.style.removeProperty("display");
-        if (saved.originalDisplay) {
-          el.style.display = saved.originalDisplay;
-        }
-        if (saved.originalPosition) {
-          el.style.position = saved.originalPosition;
-        }
+      if (saved.originalVisibility) {
+        saved.el.style.setProperty("visibility", saved.originalVisibility);
+      } else {
+        saved.el.style.removeProperty("visibility");
+        saved.el.style.visibility = "";
       }
     } catch {
-      // selector may be invalid for dynamic elements
+      // ignore
     }
   }
+  hiddenStickyElements = [];
 
-  hiddenElements = [];
+  // Also sweep any elements that have inline visibility: hidden applied
+  const all = document.querySelectorAll<HTMLElement>("*");
+  for (const el of all) {
+    if (
+      el.style.visibility === "hidden" &&
+      !el.id?.startsWith("gofully-") &&
+      !el.id?.startsWith("snapforge-")
+    ) {
+      el.style.removeProperty("visibility");
+      el.style.visibility = "";
+    }
+  }
 }
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message.type === "FREEZE_STICKY") {
+    freezeStickyElements();
+    sendResponse({ frozen: true });
+    return true;
+  }
   if (message.type === "HIDE_STICKY") {
     const hidden = hideStickyElements();
     sendResponse({ count: hidden.length });
@@ -103,6 +185,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   }
   if (message.type === "RESTORE_STICKY") {
     restoreStickyElements();
+    restoreFrozenElements();
     sendResponse({ restored: true });
     return true;
   }

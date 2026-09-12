@@ -15,7 +15,8 @@ const MAX_CDP_HEIGHT = 16384;
 
 export async function captureFullPage(
   tabId: number,
-  onProgress?: (progress: CaptureProgress) => void
+  onProgress?: (progress: CaptureProgress) => void,
+  forceMethod?: "cdp" | "scroll-stitch"
 ): Promise<CaptureResult> {
   onProgress?.({
     phase: "preparing",
@@ -25,7 +26,9 @@ export async function captureFullPage(
 
   const dimensions = await prepareFullPageLayout(tabId);
   try {
-    const method = await getCaptureMethod(dimensions.scrollHeight);
+    const method =
+      forceMethod ||
+      (await getCaptureMethod(dimensions.scrollHeight, dimensions.devicePixelRatio));
 
     if (method === "cdp") {
       try {
@@ -35,15 +38,9 @@ export async function captureFullPage(
           total: 3,
         });
 
-        // position:sticky/fixed elements (nav bars, sidebars, campaign
-        // banners) can visually repeat down the page in a CDP screenshot
-        // this tall — captureBeyondViewport renders in internal tiles, and
-        // sticky elements get re-pinned relative to each tile. The
-        // scroll-stitch fallback below already hides them for the same
-        // reason; the CDP path just never did. Restored in the inner
-        // finally before any scroll-stitch fallback runs its own
-        // independent hide/restore cycle, so the two never overlap.
-        await chrome.tabs.sendMessage(tabId, { type: "HIDE_STICKY" }).catch(() => {});
+        // Freeze sticky/fixed elements in-place at their document positions
+        // so they render once at the top without repeating across CDP tiles
+        await chrome.tabs.sendMessage(tabId, { type: "FREEZE_STICKY" }).catch(() => {});
         try {
           const res = await captureWithCDP(tabId, dimensions);
           onProgress?.({
@@ -56,11 +53,15 @@ export async function captureFullPage(
           await chrome.tabs.sendMessage(tabId, { type: "RESTORE_STICKY" }).catch(() => {});
         }
       } catch (e) {
-        // CDP failed — fall back to scroll-stitch
-        console.warn("CDP capture failed, falling back to scroll-stitch:", e);
+        // CDP failed — restore full page layout so the page can scroll naturally
+        console.warn("CDP capture failed, restoring layout and falling back to scroll-stitch:", e);
+        await restoreFullPageLayout(tabId);
         return await captureWithScrollStitch(tabId, dimensions, onProgress);
       }
     }
+
+    // For scroll-stitch, restore any forced layout so the page and inner containers scroll naturally
+    await restoreFullPageLayout(tabId);
     return await captureWithScrollStitch(tabId, dimensions, onProgress);
   } finally {
     await restoreFullPageLayout(tabId);

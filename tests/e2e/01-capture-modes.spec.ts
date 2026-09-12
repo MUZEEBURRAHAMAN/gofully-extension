@@ -52,6 +52,7 @@ test.describe("01 - Core Capture Modes", () => {
     await popupPage.goto(`chrome-extension://${extensionId}/popup.html`);
     await popupPage.waitForLoadState("domcontentloaded");
 
+    await page.bringToFront();
     const result = await popupPage.evaluate(async () => {
       const [targetTab] = await chrome.tabs.query({
         url: "http://localhost:8085/test-page-long.html",
@@ -72,6 +73,48 @@ test.describe("01 - Core Capture Modes", () => {
     expect(result.payload.mode).toBe("full-page");
     expect(result.payload.height).toBeGreaterThan(1500);
     expect(result.payload.dataUrl).toContain("data:image/png;base64,");
+
+    await popupPage.close();
+    await page.close();
+  });
+
+  test("TC-MODE-002b: Full Page capture with scroll-stitch fallback captures all sections", async ({
+    context,
+    extensionId,
+  }) => {
+    const page = await context.newPage();
+    await page.goto("http://localhost:8085/test-page-long.html");
+    await page.waitForLoadState("networkidle");
+
+    const popupPage = await context.newPage();
+    await popupPage.goto(`chrome-extension://${extensionId}/popup.html`);
+    await popupPage.waitForLoadState("domcontentloaded");
+
+    await page.bringToFront();
+    const result = await popupPage.evaluate(async () => {
+      const [targetTab] = await chrome.tabs.query({
+        url: "http://localhost:8085/test-page-long.html",
+      });
+      // Force scroll-stitch capture
+      return new Promise<any>((resolve) => {
+        chrome.runtime.sendMessage(
+          {
+            type: "START_CAPTURE",
+            payload: { mode: "full-page", tabId: targetTab?.id, forceMethod: "scroll-stitch" },
+          },
+          resolve
+        );
+      });
+    });
+
+    expect(result).toBeDefined();
+    expect(result.type).toBe("CAPTURE_COMPLETE");
+    expect(result.payload.mode).toBe("full-page");
+    expect(result.payload.height).toBeGreaterThan(1500);
+
+    const fs = await import("fs");
+    const base64Data = result.payload.dataUrl.replace(/^data:image\/png;base64,/, "");
+    fs.writeFileSync("tests/results/verified-fullpage.png", Buffer.from(base64Data, "base64"));
 
     await popupPage.close();
     await page.close();
