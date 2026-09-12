@@ -175,6 +175,10 @@
       overflow: auto;
       display: flex;
       justify-content: center;
+      /* Without this, flex's default align-items:stretch squishes the
+         image to the container's cross-size (one screen's height) instead
+         of showing it at its real height with the container scrolling. */
+      align-items: flex-start;
       padding: 32px;
       background:
         linear-gradient(45deg, rgba(var(--ink),.05) 25%, transparent 25%, transparent 75%, rgba(var(--ink),.05) 75%, rgba(var(--ink),.05)),

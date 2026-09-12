@@ -11,6 +11,8 @@ const dimPill = document.getElementById("dimPill")!;
 const methodLabel = document.getElementById("methodLabel")!;
 const toastEl = document.getElementById("toast")!;
 
+const previewArea = document.getElementById("previewArea") as HTMLDivElement;
+
 let currentDataUrl: string | null = null;
 let zoomPct = 100;
 let naturalWidth = 0;
@@ -26,6 +28,21 @@ function applyZoom(): void {
   if (naturalWidth > 0) {
     previewImg.style.width = `${Math.round((naturalWidth * zoomPct) / 100)}px`;
   }
+}
+
+const PREVIEW_PADDING = 64; // 32px on each side, see .preview-area CSS
+
+// Same convention as a browser's own image viewer (and GoFullPage's result
+// tab, which is just a native image view): fit the full width on open,
+// scaling down only if it's wider than the available space — never
+// upscaling a capture that already fits.
+function fitToWidth(): void {
+  if (naturalWidth <= 0) return;
+  const available = previewArea.clientWidth - PREVIEW_PADDING;
+  zoomPct = available > 0 && naturalWidth > available
+    ? Math.max(10, Math.floor((available / naturalWidth) * 100))
+    : 100;
+  applyZoom();
 }
 
 document.getElementById("zoom-in-btn")!.addEventListener("click", () => {
@@ -64,7 +81,7 @@ async function loadCapture(): Promise<void> {
       naturalWidth = previewImg.naturalWidth;
       previewImg.style.display = "block";
       emptyState.style.display = "none";
-      applyZoom();
+      fitToWidth();
     };
   } catch {
     emptyState.style.display = "block";

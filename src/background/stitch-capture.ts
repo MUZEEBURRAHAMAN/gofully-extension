@@ -105,7 +105,20 @@ export async function captureWithScrollStitch(
       const shouldSkipSticky =
         (settingsRes?.settings as Partial<Settings> | undefined)?.skipStickyHeaders ?? true;
       if (shouldSkipSticky) {
-        await chrome.tabs.sendMessage(tabId, { type: "HIDE_STICKY" }).catch(() => {});
+        // chrome.tabs.sendMessage to the content script isn't a guaranteed
+        // delivery (same gap the progress-badge cleanup hit) — a fixed-
+        // position element (floating action buttons, cursor-follow
+        // decorations, not just nav headers) that silently fails to hide
+        // gets baked into every subsequent frame. executeScript actually
+        // fails loudly instead of no-op'ing.
+        await chrome.scripting.executeScript({
+          target: { tabId },
+          func: () => {
+            if (typeof (window as any).__gofully_hide_sticky === "function") {
+              (window as any).__gofully_hide_sticky();
+            }
+          },
+        }).catch(() => {});
         await sleep(50);
       }
 
@@ -199,8 +212,16 @@ export async function captureWithScrollStitch(
       }
     }
   } finally {
-    // Restore sticky elements to their original state
-    await chrome.tabs.sendMessage(tabId, { type: "RESTORE_STICKY" }).catch(() => {});
+    // Restore sticky elements to their original state (same reliable
+    // executeScript path as the hide call above).
+    await chrome.scripting.executeScript({
+      target: { tabId },
+      func: () => {
+        if (typeof (window as any).__gofully_restore_sticky === "function") {
+          (window as any).__gofully_restore_sticky();
+        }
+      },
+    }).catch(() => {});
 
     // Restore smooth scroll behavior and original scroll position
     await cleanupScrollCapture(tabId, pageInit.initialScrollY, pageInit.targetSelector).catch(() => {});

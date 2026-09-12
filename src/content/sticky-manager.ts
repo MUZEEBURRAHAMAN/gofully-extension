@@ -196,6 +196,17 @@ function stopCaptureKeepAlive(): void {
   captureKeepAlivePort = null;
 }
 
+// chrome.tabs.sendMessage delivery to a content script isn't guaranteed —
+// it silently no-ops if the listener below hasn't registered yet (the same
+// reliability gap the progress-badge cleanup hit). Exposing these directly
+// lets callers use chrome.scripting.executeScript instead, which actually
+// throws on failure rather than failing silently.
+(window as any).__gofully_hide_sticky = hideStickyElements;
+(window as any).__gofully_restore_sticky = (): void => {
+  restoreStickyElements();
+  restoreFrozenElements();
+};
+
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.type === "FREEZE_STICKY") {
     freezeStickyElements();
