@@ -39,8 +39,11 @@ export async function captureWithScrollStitch(
   // 3. Prepare page for scroll capture:
   const pageInit = await initScrollCapture(tabId);
   let scrollHeight = Math.max(dimensions.scrollHeight, pageInit.scrollHeight);
-  const viewportHeight = pageInit.viewportHeight || dimensions.viewportHeight || window.innerHeight;
-  const viewportWidth = pageInit.viewportWidth || dimensions.viewportWidth || window.innerWidth;
+  // Falls back to common defaults, not `window` — this runs in the MV3
+  // service worker, which has no window global (unlike the func: () => {}
+  // callbacks below, which execute in the page and can use it freely).
+  const viewportHeight = pageInit.viewportHeight || dimensions.viewportHeight || 800;
+  const viewportWidth = pageInit.viewportWidth || dimensions.viewportWidth || 1280;
 
   const frames: CaptureFrame[] = [];
   let dpr = dimensions.devicePixelRatio || 1;
@@ -49,6 +52,10 @@ export async function captureWithScrollStitch(
   let coveredY = 0;
   let lastFrameHash = "";
   let lastScrollY = -1;
+
+  // Holds the background service worker alive for the duration of the
+  // capture — see the matching handler in content/sticky-manager.ts.
+  await chrome.tabs.sendMessage(tabId, { type: "CAPTURE_KEEPALIVE_START" }).catch(() => {});
 
   try {
     // Step 0: Capture natural page at top (scrollY = 0)
@@ -197,6 +204,8 @@ export async function captureWithScrollStitch(
 
     // Restore smooth scroll behavior and original scroll position
     await cleanupScrollCapture(tabId, pageInit.initialScrollY, pageInit.targetSelector).catch(() => {});
+
+    await chrome.tabs.sendMessage(tabId, { type: "CAPTURE_KEEPALIVE_STOP" }).catch(() => {});
 
     onProgress?.({ current: 0, total: 0, phase: "done" });
   }

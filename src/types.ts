@@ -5,7 +5,7 @@ export type CaptureMode =
   | "scrolling-area"
   | "capture-text";
 
-export type CaptureMethod = "cdp" | "scroll-stitch";
+export type CaptureMethod = "scroll-stitch" | "visible-tab";
 
 export type ExportFormat = "clipboard" | "png" | "pdf";
 

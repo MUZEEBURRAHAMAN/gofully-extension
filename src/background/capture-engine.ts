@@ -5,18 +5,13 @@ import type {
   CaptureRegion,
   CaptureProgress,
 } from "../types";
-import { getCaptureMethod } from "../utils/permissions";
-import { captureWithCDP } from "./cdp-capture";
 import { captureWithScrollStitch } from "./stitch-capture";
 import { dataUrlToBlob, loadImage } from "../utils/image";
 import { detectDPRFromCapture } from "../utils/dpr-handler";
 
-const MAX_CDP_HEIGHT = 16384;
-
 export async function captureFullPage(
   tabId: number,
-  onProgress?: (progress: CaptureProgress) => void,
-  forceMethod?: "cdp" | "scroll-stitch"
+  onProgress?: (progress: CaptureProgress) => void
 ): Promise<CaptureResult> {
   onProgress?.({
     phase: "preparing",
@@ -26,41 +21,7 @@ export async function captureFullPage(
 
   const dimensions = await prepareFullPageLayout(tabId);
   try {
-    const method =
-      forceMethod ||
-      (await getCaptureMethod(dimensions.scrollHeight, dimensions.devicePixelRatio));
-
-    if (method === "cdp") {
-      try {
-        onProgress?.({
-          phase: "capturing",
-          current: 1,
-          total: 3,
-        });
-
-        // Freeze sticky/fixed elements in-place at their document positions
-        // so they render once at the top without repeating across CDP tiles
-        await chrome.tabs.sendMessage(tabId, { type: "FREEZE_STICKY" }).catch(() => {});
-        try {
-          const res = await captureWithCDP(tabId, dimensions);
-          onProgress?.({
-            phase: "stitching",
-            current: 2,
-            total: 3,
-          });
-          return res;
-        } finally {
-          await chrome.tabs.sendMessage(tabId, { type: "RESTORE_STICKY" }).catch(() => {});
-        }
-      } catch (e) {
-        // CDP failed — restore full page layout so the page can scroll naturally
-        console.warn("CDP capture failed, restoring layout and falling back to scroll-stitch:", e);
-        await restoreFullPageLayout(tabId);
-        return await captureWithScrollStitch(tabId, dimensions, onProgress);
-      }
-    }
-
-    // For scroll-stitch, restore any forced layout so the page and inner containers scroll naturally
+    // Restore any forced layout so the page and inner containers scroll naturally
     await restoreFullPageLayout(tabId);
     return await captureWithScrollStitch(tabId, dimensions, onProgress);
   } finally {
@@ -96,7 +57,7 @@ export async function captureVisibleArea(
     width: img.width,
     height: img.height,
     mode: "visible-area",
-    method: "cdp",
+    method: "visible-tab",
     timestamp: Date.now(),
     url: tab.url || "",
     title: tab.title || "",
@@ -136,7 +97,7 @@ export async function captureSelectedArea(
     width: sw,
     height: sh,
     mode: "selected-area",
-    method: "cdp",
+    method: "visible-tab",
     timestamp: Date.now(),
     url: tab.url || "",
     title: tab.title || "",
@@ -151,9 +112,9 @@ export async function captureSelectedArea(
  *
  * Without this, document.body/documentElement.scrollHeight report only one
  * viewport of height on such pages (the document genuinely is only that
- * tall; the overflow is happening inside a child), so both the CDP capture
- * and the scroll-stitch fallback would only ever produce a viewport-sized
- * screenshot no matter how "full page" capture is invoked. Ordinary pages
+ * tall; the overflow is happening inside a child), so the scroll-stitch
+ * capture would only ever produce a viewport-sized screenshot no matter how
+ * "full page" capture is invoked. Ordinary pages
  * where body/html itself is the scrolling element are untouched by this —
  * the expansion only runs when body/html scrollHeight doesn't already
  * exceed one viewport.

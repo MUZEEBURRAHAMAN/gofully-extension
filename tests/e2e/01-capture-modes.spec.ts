@@ -95,12 +95,12 @@ test.describe("01 - Core Capture Modes", () => {
       const [targetTab] = await chrome.tabs.query({
         url: "http://localhost:8085/test-page-long.html",
       });
-      // Force scroll-stitch capture
+      // Full-page capture is always scroll-stitch
       return new Promise<any>((resolve) => {
         chrome.runtime.sendMessage(
           {
             type: "START_CAPTURE",
-            payload: { mode: "full-page", tabId: targetTab?.id, forceMethod: "scroll-stitch" },
+            payload: { mode: "full-page", tabId: targetTab?.id },
           },
           resolve
         );

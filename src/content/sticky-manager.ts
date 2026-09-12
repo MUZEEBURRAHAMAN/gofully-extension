@@ -172,6 +172,30 @@ export function restoreStickyElements(): void {
   }
 }
 
+// Full-page scroll-stitch captures can run long enough on tall pages that
+// Chrome tears down the MV3 background service worker mid-capture unless
+// something holds an open chrome.runtime.Port for the duration — the same
+// mechanism scrolling-area-ui.ts uses for its own capture loop. This script
+// is already auto-injected into every tab (manifest content_scripts), so it
+// opens/closes that port on the background's behalf.
+let captureKeepAlivePort: chrome.runtime.Port | null = null;
+
+function startCaptureKeepAlive(): void {
+  stopCaptureKeepAlive();
+  try {
+    captureKeepAlivePort = chrome.runtime.connect({ name: "gf-capture-keepalive" });
+  } catch {
+    captureKeepAlivePort = null;
+  }
+}
+
+function stopCaptureKeepAlive(): void {
+  try {
+    captureKeepAlivePort?.disconnect();
+  } catch {}
+  captureKeepAlivePort = null;
+}
+
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.type === "FREEZE_STICKY") {
     freezeStickyElements();
@@ -187,6 +211,16 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     restoreStickyElements();
     restoreFrozenElements();
     sendResponse({ restored: true });
+    return true;
+  }
+  if (message.type === "CAPTURE_KEEPALIVE_START") {
+    startCaptureKeepAlive();
+    sendResponse({ started: true });
+    return true;
+  }
+  if (message.type === "CAPTURE_KEEPALIVE_STOP") {
+    stopCaptureKeepAlive();
+    sendResponse({ stopped: true });
     return true;
   }
   return false;

@@ -384,7 +384,7 @@ function showResult(result: any): void {
 
   const w = Math.round(result.width);
   const h = Math.round(result.height);
-  const method = result.method === "cdp" ? "CDP" : "Scroll-Stitch";
+  const method = result.method === "scroll-stitch" ? "Scroll-Stitch" : "Snapshot";
   resultText.textContent = t("result.dimensions", { w, h, method });
 
   const previewContainer = document.getElementById("popupPreviewContainer");

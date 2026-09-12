@@ -1,6 +1,6 @@
 {
   "name": "gofully",
-  "version": "1.0.0",
+  "version": "1.1.2",
   "description": "GoFully — Full page screenshot and screen capture Chrome extension with OCR, built-in editor, and PDF export",
   "type": "module",
   "scripts": {
@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "build:extension": "node build.mjs",
-    "package:extension": "node build.mjs && cd dist && zip -r ../gofully-extension.zip . -x '*.DS_Store' '*__MACOSX*' 'features/*' 'originkit/*' 'sitemap.xml' 'robots.txt' && cd ..",
+    "package:extension": "node build.mjs && rm -f gofully-extension.zip && cd dist && zip -r ../gofully-extension.zip . -x '*.DS_Store' '*__MACOSX*' 'features/*' 'originkit/*' 'sitemap.xml' 'robots.txt' && cd ..",
     "dev:extension": "vite",
     "test": "playwright test",
     "test:e2e": "playwright test tests/e2e",

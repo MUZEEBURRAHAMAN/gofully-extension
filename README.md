@@ -13,18 +13,14 @@ A modern, high-performance Chrome extension for capturing full pages, viewports,
 
 ## 📍 Status & Roadmap
 
-**Current version: `v1.1.1`** — live on the Chrome Web Store.
+**Current version: `v1.1.2`**
 
-Recently shipped:
-- Logo/icon now visible everywhere it appears (popup, editor, toolbar icon, extensions page)
-- 4K UHD is now the default export and copy quality, in both the editor and the popup's quick-copy
-- Fixed reported bugs across capture, OCR, and export
-
-**Coming in `v1.1.2`** (in active development):
-- **Personalize** — UI language options, light/dark theme, OCR language selection
-- **Editor tools** — highlighter tool, shape tool consolidated into one button with a dropdown, upgraded text tool (color/font/size controls), custom keyboard shortcuts for editor tools
+Shipped in `v1.1.2`:
+- **Personalize** — UI language options (English/Spanish/French), light/dark theme, OCR language selection
+- **Editor tools** — highlighter tool, shape tool consolidated into one button with a dropdown, upgraded text tool (color/font/size controls), custom keyboard shortcuts for editor tools, custom color picker swatch
 - **Beautify** — save your own background/frame/padding as a reusable preset, multi-image collage layouts, a gradient/pattern background library, more device frames
 - **Export & workflow** — export capture + OCR'd text as Markdown, optional URL + timestamp stamp on capture, "copy as" quick actions after OCR
+- Reliability: rewrote the full-page scroll-stitch engine (frame dedup, real scroll-position tracking, cancellable captures) and removed the unused `debugger` permission entirely — full-page capture is now scroll-stitch only, end to end
 
 Full detail and what's further out (multi-tab batch capture, auto-redact detection, screen recording) is on the **[public roadmap](https://gofully-extension.vercel.app/roadmap)**.
 
@@ -34,7 +30,7 @@ Full detail and what's further out (multi-tab batch capture, auto-redact detecti
 
 | Feature / Standard | GoFullPage | Awesome Screenshot | Lightshot | **GoFully** |
 |---|:---:|:---:|:---:|:---:|
-| **Full-Page CDP Capture** | ✅ | ⚠️ *(Scroll only)* | ❌ | **✅ (CDP + Scroll fallback)** |
+| **Full-Page Capture** | ✅ | ⚠️ *(Scroll only)* | ❌ | **✅ (Reliable scroll-stitch)** |
 | **On-Device OCR (Free)** | ❌ | ❌ *(Paid cloud)* | ❌ | **✅ (100% Local WASM)** |
 | **Glass Blur / Redaction**| ❌ *(Paid)* | ⚠️ *(Basic pixel)* | ❌ | **✅ (Glass + Pixel + Redact)** |
 | **Offline Privacy Guarantee** | ✅ | ❌ *(Uploads data)* | ❌ *(Public URL leaks)* | **✅ (Zero Cloud Uploads)** |
@@ -49,7 +45,7 @@ Full detail and what's further out (multi-tab batch capture, auto-redact detecti
 ### 📸 Capture Modes
 | Mode | Shortcut | Description |
 |---|---|---|
-| **Full Page** | `Ctrl+Shift+F` (`⌘+Shift+F` on Mac) | Captures entire scrollable document with CDP & scroll-stitch fallback, smart sticky element handling, and lazy-load pre-triggering |
+| **Full Page** | `Ctrl+Shift+F` (`⌘+Shift+F` on Mac) | Captures entire scrollable document via scroll-and-stitch, with smart sticky element handling and lazy-load pre-triggering |
 | **Visible Area** | `Ctrl+Shift+V` (`⌘+Shift+V` on Mac) | Captures exactly what's visible in your current viewport instantly |
 | **Selected Area** | `Ctrl+Shift+A` (`⌘+Shift+A` on Mac) | Interactive overlay with precise dimensions & snap guides to drag-select any custom region |
 | **Scrolling Area** | — | Select any fixed rectangular viewport area and automatically scroll-and-stitch its contents |
@@ -137,7 +133,6 @@ Full detail and what's further out (multi-tab batch capture, auto-redact detecti
 - **Tesseract.js / OCR** — Local client-side optical character recognition
 - **jsPDF** — Client-side PDF generation
 - **Vite & Rollup** — Fast asset compilation and module bundling
-- **Chrome DevTools Protocol (CDP)** — Pixel-perfect full page captures via `chrome.debugger`
 
 ---
 
@@ -148,8 +143,7 @@ src/
 ├── background/
 │   ├── service-worker.ts      # Extension lifecycle, message dispatch, capture orchestrator
 │   ├── capture-engine.ts      # Full page / visible / region capture pipeline
-│   ├── cdp-capture.ts         # CDP-based full page capture
-│   └── stitch-capture.ts      # Viewport scroll-stitch fallback
+│   └── stitch-capture.ts      # Full page scroll-stitch capture engine
 ├── capture-modes/
 │   └── scrolling-area.ts      # Region scroll capture implementation
 ├── content/

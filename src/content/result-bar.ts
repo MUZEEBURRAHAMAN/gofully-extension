@@ -240,7 +240,7 @@ export function showResultBar(info: {
 
   const w = Math.round(info.width);
   const h = Math.round(info.height);
-  const method = info.method === "cdp" ? "CDP" : "Scroll";
+  const method = info.method === "scroll-stitch" ? "Scroll" : "Snapshot";
   const modeName: Record<string, string> = {
     "full-page": "Full Page",
     "visible-area": "Visible Area",

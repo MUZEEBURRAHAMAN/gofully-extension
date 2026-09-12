@@ -224,12 +224,11 @@ async function sanitizeRegion(
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "START_CAPTURE") {
-    const { mode, region, speed, tabId, forceMethod } = message.payload as {
+    const { mode, region, speed, tabId } = message.payload as {
       mode: CaptureMode;
       region?: CaptureRegion;
       speed?: "slow" | "medium" | "fast";
       tabId?: number;
-      forceMethod?: "cdp" | "scroll-stitch";
     };
 
     const targetTabId = tabId ?? sender.tab?.id;
@@ -239,7 +238,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       injectContentScripts(targetTabId).catch(() => {});
     }
 
-    handleCapture(mode, region, speed, targetTabId, forceMethod)
+    handleCapture(mode, region, speed, targetTabId)
       .then(async (result) => {
         lastCaptureBlob = await maybeStampCapture(result);
         lastCaptureDataUrl = await blobToDataUrl(lastCaptureBlob);
@@ -562,8 +561,7 @@ async function handleCapture(
   mode: CaptureMode,
   region?: CaptureRegion,
   speed?: "slow" | "medium" | "fast",
-  explicitTabId?: number,
-  forceMethod?: "cdp" | "scroll-stitch"
+  explicitTabId?: number
 ): Promise<CaptureResult> {
   let targetTabId = explicitTabId;
   let tab: chrome.tabs.Tab | undefined;
@@ -612,7 +610,7 @@ async function handleCapture(
 
   switch (mode) {
     case "full-page":
-      return captureFullPage(targetTabId!, sendProgress, forceMethod);
+      return captureFullPage(targetTabId!, sendProgress);
 
     case "visible-area":
       return captureVisibleArea(targetTabId!, sendProgress);
