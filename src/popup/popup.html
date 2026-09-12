@@ -147,7 +147,21 @@
     .wm-full { color: var(--blue); font-weight: 700; }
     .wm-y    { color: var(--blue); opacity: 0.45; font-weight: 700; }
 
-    .hdr-right { display: flex; gap: 2px; }
+    .hdr-right { display: flex; align-items: center; gap: 6px; }
+
+    .rate-us-btn {
+      display: flex; align-items: center; gap: 4px;
+      height: 26px; padding: 0 9px;
+      border: 1px solid var(--blue-bd);
+      background: var(--blue-bg);
+      color: var(--blue);
+      font-family: inherit;
+      font-size: 10.5px; font-weight: 700;
+      cursor: pointer;
+      transition: background .12s, color .12s;
+    }
+    .rate-us-btn:hover { background: var(--blue); color: #fff; }
+    .rate-us-btn svg { flex-shrink: 0; }
 
     .icon-btn {
       position: relative;
@@ -488,6 +502,13 @@
       color: var(--blue);
     }
     .prog-icon > .cm { color: var(--blue-bd); }
+    #progressSection.active .prog-icon {
+      animation: gfProgPulse 1.6s ease-in-out infinite;
+    }
+    @keyframes gfProgPulse {
+      0%, 100% { transform: scale(1); }
+      50%      { transform: scale(1.1); }
+    }
 
     .prog-label {
       font-family: 'Barlow Condensed', sans-serif;
@@ -511,6 +532,7 @@
     }
 
     .prog-fill {
+      position: relative;
       height: 100%;
       width: 100%;
       background: var(--blue);
@@ -518,6 +540,19 @@
       transform: scaleX(0);
       transform-origin: left;
       transition: transform .3s ease;
+      overflow: hidden;
+    }
+    .prog-fill::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.6), transparent);
+      background-size: 60% 100%;
+      background-repeat: no-repeat;
+      animation: gfProgShine 1.3s linear infinite;
+    }
+    @keyframes gfProgShine {
+      from { background-position: -60% 0; }
+      to   { background-position: 160% 0; }
     }
 
     /* ─── RESULT ─── */
@@ -703,6 +738,10 @@
     </span>
   </div>
   <div class="hdr-right">
+    <button class="rate-us-btn" id="rateUsBtn" type="button">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      <span data-i18n="header.rate_us">Rate us</span>
+    </button>
     <button class="icon-btn" id="helpBtn">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"/>

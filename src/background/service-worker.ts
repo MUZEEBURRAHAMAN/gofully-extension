@@ -14,6 +14,7 @@ import { generatePDF } from "../export/pdf-generator";
 import { isSupportedCapturePage } from "../utils/url-validator";
 import { dataUrlToBlob } from "../utils/image";
 import { cancelActiveCapture } from "./stitch-capture";
+import { recordCaptureCompleted } from "../utils/rate-nudge";
 
 // Uninstall feedback URL configuration pointing to live Vercel deployment
 chrome.runtime.onInstalled.addListener(async (details) => {
@@ -245,6 +246,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         lastCaptureResult = { ...result, blob: null as any };
         // Persist so editor can load even after SW idle-restart
         cacheCaptureInSession(lastCaptureDataUrl);
+        recordCaptureCompleted().catch(() => {});
 
         const payload = {
           width: result.width,
@@ -384,6 +386,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         lastCaptureDataUrl = await blobToDataUrl(lastCaptureBlob);
         lastCaptureResult = { ...result, blob: null as any };
         cacheCaptureInSession(lastCaptureDataUrl);
+        recordCaptureCompleted().catch(() => {});
         // Tell scrolling-area-ui to clean up before showing result bar
         chrome.tabs.sendMessage(tabId, { type: "SCROLLING_CAPTURE_DONE" }).catch(() => {});
         await showResultBarOnTab(tabId, {
@@ -448,6 +451,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       lastCaptureDataUrl = await blobToDataUrl(lastCaptureBlob);
       lastCaptureResult = { ...result, blob: null as any };
       cacheCaptureInSession(lastCaptureDataUrl);
+      recordCaptureCompleted().catch(() => {});
       await showResultBarOnTab(tabId, {
         width: result.width,
         height: result.height,
@@ -509,6 +513,7 @@ chrome.commands.onCommand.addListener(async (command) => {
       lastCaptureDataUrl = await blobToDataUrl(lastCaptureBlob);
       lastCaptureResult = { ...result, blob: null as any };
       cacheCaptureInSession(lastCaptureDataUrl);
+      recordCaptureCompleted().catch(() => {});
 
       const payload = {
         width: result.width,
@@ -534,6 +539,7 @@ chrome.commands.onCommand.addListener(async (command) => {
       lastCaptureDataUrl = await blobToDataUrl(lastCaptureBlob);
       lastCaptureResult = { ...result, blob: null as any };
       cacheCaptureInSession(lastCaptureDataUrl);
+      recordCaptureCompleted().catch(() => {});
 
       const payload = {
         width: result.width,

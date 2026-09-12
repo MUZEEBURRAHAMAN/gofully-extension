@@ -6,6 +6,7 @@ import Cropper from "cropperjs";
 import { canvasRGBA } from "stackblur-canvas";
 import { generatePDF } from "../export/pdf-generator";
 import { applyTheme, watchTheme } from "../utils/theme";
+import { claimPendingRateNudge, markRatedYes, markDismissed } from "../utils/rate-nudge";
 
 applyTheme();
 watchTheme();
@@ -138,6 +139,53 @@ async function init(): Promise<void> {
   }
 
   saveState();
+  maybeShowRateNudge();
+}
+
+async function maybeShowRateNudge(): Promise<void> {
+  const due = await claimPendingRateNudge();
+  if (!due || document.getElementById("gf-rate-nudge")) return;
+
+  const nudge = document.createElement("div");
+  nudge.id = "gf-rate-nudge";
+  nudge.innerHTML = `
+    <div class="gf-rn-row">
+      <div class="gf-rn-star">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <div style="flex:1">
+        <div class="gf-rn-title">Enjoying GoFully?</div>
+        <div class="gf-rn-sub">A quick rating helps others discover the extension.</div>
+      </div>
+      <button class="gf-rn-close" id="gf-rn-close-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="gf-rn-actions">
+      <button class="gf-rn-btn gf-rn-btn-primary" id="gf-rn-yes-btn">Yes, rate it</button>
+      <button class="gf-rn-btn gf-rn-btn-secondary" id="gf-rn-no-btn">Not now</button>
+    </div>
+  `;
+  document.body.appendChild(nudge);
+  requestAnimationFrame(() => nudge.classList.add("show"));
+
+  const dismiss = () => {
+    nudge.classList.remove("show");
+    setTimeout(() => nudge.remove(), 200);
+  };
+
+  document.getElementById("gf-rn-yes-btn")!.addEventListener("click", () => {
+    markRatedYes().catch(() => {});
+    dismiss();
+  });
+  document.getElementById("gf-rn-no-btn")!.addEventListener("click", () => {
+    markDismissed().catch(() => {});
+    dismiss();
+  });
+  document.getElementById("gf-rn-close-btn")!.addEventListener("click", () => {
+    markDismissed().catch(() => {});
+    dismiss();
+  });
 }
 
 // Shared by the export-menu-button click and the Done button, so "Done"
@@ -1423,6 +1471,16 @@ function setupExportButtons(): void {
     if (h > 0) wInput.value = String(Math.round(h * imgNativeW / imgNativeH));
   });
 
+  function getExportFilename(ext: string): string {
+    const input = document.getElementById("export-filename") as HTMLInputElement | null;
+    const custom = input?.value.trim();
+    if (custom) {
+      const clean = custom.replace(/[^a-zA-Z0-9._ -]/g, "").trim().replace(/\.+$/, "");
+      if (clean) return `${clean}.${ext}`;
+    }
+    return `gofully-${Date.now()}.${ext}`;
+  }
+
   document.getElementById("copy-btn")!.addEventListener("click", async () => {
     try {
       const blob = await exportToBlob();
@@ -1434,7 +1492,7 @@ function setupExportButtons(): void {
   document.getElementById("save-btn")!.addEventListener("click", async () => {
     const blob = await exportToBlob();
     const url  = URL.createObjectURL(blob);
-    const a    = Object.assign(document.createElement("a"), { href: url, download: `gofully-${Date.now()}.png` });
+    const a    = Object.assign(document.createElement("a"), { href: url, download: getExportFilename("png") });
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 5000);
     showToast("PNG saved");
@@ -1445,7 +1503,7 @@ function setupExportButtons(): void {
       const blob = await exportToBlob();
       const pdfBlob = await generatePDF(blob, "a4");
       const url = URL.createObjectURL(pdfBlob);
-      const a = Object.assign(document.createElement("a"), { href: url, download: `gofully-${Date.now()}.pdf` });
+      const a = Object.assign(document.createElement("a"), { href: url, download: getExportFilename("pdf") });
       a.click();
       setTimeout(() => URL.revokeObjectURL(url), 5000);
       showToast("PDF saved");
@@ -1481,7 +1539,7 @@ function setupExportButtons(): void {
     oc.getContext("2d")!.drawImage(bitmap, 0, 0, ow, oh);
     const webpBlob = await oc.convertToBlob({ type: "image/webp", quality: 0.92 });
     const url = URL.createObjectURL(webpBlob);
-    const a = Object.assign(document.createElement("a"), { href: url, download: `gofully-${Date.now()}.webp` });
+    const a = Object.assign(document.createElement("a"), { href: url, download: getExportFilename("webp") });
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 5000);
     showToast("WebP saved");

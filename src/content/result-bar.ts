@@ -1,3 +1,4 @@
+import { claimPendingRateNudge, markRatedYes, markDismissed } from "../utils/rate-nudge";
 
 /** Kept in step with src/ui/overlay-kit.ts — this file styles a shadow root. */
 const FONT_STACK =
@@ -236,6 +237,48 @@ export function showResultBar(info: {
       font-family: ${FONT_STACK};
     }
     .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    /* Rate nudge */
+    .rate-nudge {
+      position: fixed; bottom: 16px; right: 16px;
+      width: 280px;
+      background: #ffffff;
+      border: 1px solid #E3E8EF;
+      border-radius: 0;
+      box-shadow: 0 10px 30px rgba(16,24,40,0.06), 0 20px 24px -4px rgba(16,24,40,0.12);
+      padding: 14px;
+      pointer-events: auto;
+      opacity: 0; transform: translateY(12px);
+      transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      font-family: ${FONT_STACK};
+      -webkit-font-smoothing: antialiased;
+      z-index: 2147483647;
+    }
+    .rate-nudge.show { opacity: 1; transform: translateY(0); }
+    .rate-nudge-row { display: flex; align-items: flex-start; gap: 10px; }
+    .rate-nudge-star {
+      width: 28px; height: 28px; flex-shrink: 0;
+      background: #FEF3C7; color: #B45309;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .rate-nudge-title { font-size: 12.5px; font-weight: 700; color: #1D2939; line-height: 1.3; }
+    .rate-nudge-sub { font-size: 11px; font-weight: 500; color: #667085; margin-top: 3px; line-height: 1.4; }
+    .rate-nudge-close {
+      border: none; background: none; cursor: pointer; color: #98A2B3;
+      width: 22px; height: 22px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .rate-nudge-close:hover { color: #475467; }
+    .rate-nudge-actions { display: flex; gap: 7px; margin-top: 12px; }
+    .rate-nudge-btn {
+      flex: 1; height: 32px; border-radius: 0; cursor: pointer;
+      font-size: 11.5px; font-weight: 600; font-family: ${FONT_STACK};
+      transition: all 0.12s;
+    }
+    .rate-nudge-btn-primary { border: 1.5px solid #1667F2; background: #1667F2; color: #fff; }
+    .rate-nudge-btn-primary:hover { background: #1257D8; border-color: #1257D8; }
+    .rate-nudge-btn-secondary { border: 1.5px solid #E3E8EF; background: #fff; color: #475467; }
+    .rate-nudge-btn-secondary:hover { background: #F7F8FA; border-color: #C8D0D9; }
   `;
 
   const w = Math.round(info.width);
@@ -414,6 +457,54 @@ export function showResultBar(info: {
 
   shadow.getElementById("sf-close")!.addEventListener("click", removeResultBar);
   backdrop.addEventListener("click", removeResultBar);
+
+  claimPendingRateNudge().then((due) => {
+    if (due) setTimeout(() => showRateNudge(shadow), 1200);
+  });
+}
+
+function showRateNudge(shadow: ShadowRoot): void {
+  if (shadow.getElementById("sf-rate-nudge")) return;
+
+  const nudge = document.createElement("div");
+  nudge.id = "sf-rate-nudge";
+  nudge.className = "rate-nudge";
+  nudge.innerHTML = `
+    <div class="rate-nudge-row">
+      <div class="rate-nudge-star">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <div style="flex:1">
+        <div class="rate-nudge-title">Enjoying GoFully?</div>
+        <div class="rate-nudge-sub">A quick rating helps others discover the extension.</div>
+      </div>
+      <button class="rate-nudge-close" id="sf-rate-close">${PH.x}</button>
+    </div>
+    <div class="rate-nudge-actions">
+      <button class="rate-nudge-btn rate-nudge-btn-primary" id="sf-rate-yes">Yes, rate it</button>
+      <button class="rate-nudge-btn rate-nudge-btn-secondary" id="sf-rate-no">Not now</button>
+    </div>
+  `;
+  shadow.appendChild(nudge);
+  requestAnimationFrame(() => nudge.classList.add("show"));
+
+  const dismiss = () => {
+    nudge.classList.remove("show");
+    setTimeout(() => nudge.remove(), 200);
+  };
+
+  shadow.getElementById("sf-rate-yes")!.addEventListener("click", () => {
+    markRatedYes().catch(() => {});
+    dismiss();
+  });
+  shadow.getElementById("sf-rate-no")!.addEventListener("click", () => {
+    markDismissed().catch(() => {});
+    dismiss();
+  });
+  shadow.getElementById("sf-rate-close")!.addEventListener("click", () => {
+    markDismissed().catch(() => {});
+    dismiss();
+  });
 }
 
 function removeResultBar(): void {

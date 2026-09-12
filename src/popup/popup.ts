@@ -5,6 +5,7 @@ import { generateFilename } from "../utils/image";
 import { isSupportedCapturePage, type PageSupportResult } from "../utils/url-validator";
 import { applyTheme, watchTheme } from "../utils/theme";
 import { initI18n, t, watchLanguage } from "../utils/i18n";
+import { markRatedYes } from "../utils/rate-nudge";
 
 applyTheme();
 watchTheme();
@@ -80,6 +81,10 @@ document.getElementById("settingsBtn")?.addEventListener("click", () => {
 
 document.getElementById("helpBtn")?.addEventListener("click", () => {
   chrome.tabs.create({ url: chrome.runtime.getURL("help.html") });
+});
+
+document.getElementById("rateUsBtn")?.addEventListener("click", () => {
+  markRatedYes().catch(() => {});
 });
 
 // Unsupported panel dismiss button ("Got it")
