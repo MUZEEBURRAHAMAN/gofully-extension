@@ -111,15 +111,28 @@ export async function captureWithScrollStitch(
         // decorations, not just nav headers) that silently fails to hide
         // gets baked into every subsequent frame. executeScript actually
         // fails loudly instead of no-op'ing.
+        //
+        // A fixed sleep() after this is a guess, not a guarantee: this
+        // executeScript call resolving only means the hide *ran*, not that
+        // the browser has *painted* the result yet. That guess held on a
+        // clean test profile but not on a real browser under real load
+        // (many other extensions competing for the main thread) — pages
+        // with two stacked sticky elements (e.g. a header at top:0 plus a
+        // secondary sticky sub-nav below it) showed both still visible in
+        // the very next frame. Waiting on two animation frames instead
+        // guarantees at least one full paint has happened before the next
+        // scroll+capture step runs.
         await chrome.scripting.executeScript({
           target: { tabId },
           func: () => {
-            if (typeof (window as any).__gofully_hide_sticky === "function") {
-              (window as any).__gofully_hide_sticky();
-            }
+            return new Promise<void>((resolve) => {
+              if (typeof (window as any).__gofully_hide_sticky === "function") {
+                (window as any).__gofully_hide_sticky();
+              }
+              requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+            });
           },
         }).catch(() => {});
-        await sleep(50);
       }
 
       let step = 0;
