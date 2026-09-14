@@ -672,10 +672,9 @@ function sleep(ms: number): Promise<void> {
 }
 
 /**
- * Full-page and scrolling-area captures open a dedicated review tab — a big
- * preview with proper export actions, instead of a cramped in-page card.
- * Visible-area and selected-area stay instant: no tab, no card, just a
- * clipboard copy and a small toast (see handleCaptureCompletionUI).
+ * Full-page, scrolling-area, and selected-area captures open a dedicated
+ * review tab — a big preview with proper export actions.
+ * Visible-area stays instant via the popup's own result card.
  */
 async function openReviewTab(openerTabId: number): Promise<void> {
   try {
@@ -709,8 +708,8 @@ async function openReviewTab(openerTabId: number): Promise<void> {
 
 /**
  * Routes a completed capture to the right post-capture UI: a review tab for
- * the two "I want to look at this" modes, or an instant clipboard copy +
- * lightweight in-page toast for the two "grab it and go" modes. Quick modes
+ * full-page, scrolling-area, and selected-area captures, or an instant
+ * clipboard copy + lightweight in-page toast for visible-area. Quick modes
  * triggered from the popup are skipped here — the popup does its own copy
  * and status line, since it already has the result in hand.
  */
@@ -720,7 +719,7 @@ async function handleCaptureCompletionUI(
   fromContentScript: boolean,
   dataUrl: string
 ): Promise<void> {
-  if (mode === "full-page" || mode === "scrolling-area") {
+  if (mode === "full-page" || mode === "scrolling-area" || mode === "selected-area") {
     await openReviewTab(targetTabId);
     return;
   }
