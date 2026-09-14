@@ -261,7 +261,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         };
 
         if (targetTabId) {
-          await handleCaptureCompletionUI(mode, targetTabId, fromContentScript, lastCaptureDataUrl);
+          await handleCaptureCompletionUI(mode, targetTabId, fromContentScript, payload);
         }
 
         sendResponse({ type: "CAPTURE_COMPLETE", payload });
@@ -672,9 +672,11 @@ function sleep(ms: number): Promise<void> {
 }
 
 /**
- * Full-page, scrolling-area, and selected-area captures open a dedicated
- * review tab — a big preview with proper export actions.
- * Visible-area stays instant via the popup's own result card.
+ * Full-page and scrolling-area captures open a dedicated review tab — a big
+ * preview with proper export actions. Visible-area stays instant via the
+ * popup's own result card. Selected-area also stays instant, but its popup
+ * closes before the user draws the region, so it shows the same result card
+ * in-page instead (see handleCaptureCompletionUI).
  */
 async function openReviewTab(openerTabId: number): Promise<void> {
   try {
@@ -708,7 +710,8 @@ async function openReviewTab(openerTabId: number): Promise<void> {
 
 /**
  * Routes a completed capture to the right post-capture UI: a review tab for
- * full-page, scrolling-area, and selected-area captures, or an instant
+ * full-page and scrolling-area captures, an in-page result card (mirroring
+ * the popup's own confirmation UI) for selected-area, or an instant
  * clipboard copy + lightweight in-page toast for visible-area. Quick modes
  * triggered from the popup are skipped here — the popup does its own copy
  * and status line, since it already has the result in hand.
@@ -717,17 +720,44 @@ async function handleCaptureCompletionUI(
   mode: CaptureMode,
   targetTabId: number,
   fromContentScript: boolean,
-  dataUrl: string
+  payload: {
+    width: number;
+    height: number;
+    mode: CaptureMode;
+    method: string;
+    url: string;
+    title: string;
+    timestamp: number;
+    dataUrl: string;
+  }
 ): Promise<void> {
-  if (mode === "full-page" || mode === "scrolling-area" || mode === "selected-area") {
+  if (mode === "full-page" || mode === "scrolling-area") {
     await openReviewTab(targetTabId);
+    return;
+  }
+  if (mode === "selected-area") {
+    // The popup already closed itself before the user drew the region
+    // (see startCapture() in popup.ts), so it can't show its own result
+    // card. Show the same card in-page instead.
+    await chrome.scripting.executeScript({
+      target: { tabId: targetTabId },
+      func: () => {
+        if (typeof (window as any).__gofully_remove_progress === "function") {
+          (window as any).__gofully_remove_progress();
+        }
+      },
+    }).catch(() => {});
+    chrome.tabs.sendMessage(targetTabId, {
+      type: "SHOW_RESULT_CARD",
+      payload,
+    }).catch(() => {});
     return;
   }
   if (fromContentScript) {
     // showQuickCaptureToast() clears the in-page progress badge itself.
     chrome.tabs.sendMessage(targetTabId, {
       type: "QUICK_CAPTURE_TOAST",
-      payload: { dataUrl },
+      payload: { dataUrl: payload.dataUrl },
     }).catch(() => {});
   } else {
     // Popup-triggered: the popup shows its own confirmation, but the fire-
@@ -796,6 +826,22 @@ async function handleExport(
         return { success: true };
       }
 
+      case "webp": {
+        const domain = getDomain(result.url);
+        const filename = generateFilename(domain, "webp");
+        const bitmap = await createImageBitmap(blob);
+        const oc = new OffscreenCanvas(bitmap.width, bitmap.height);
+        oc.getContext("2d")!.drawImage(bitmap, 0, 0);
+        const webpBlob = await oc.convertToBlob({ type: "image/webp", quality: 0.92 });
+        const webpDataUrl = await blobToDataUrl(webpBlob);
+        await chrome.downloads.download({
+          url: webpDataUrl,
+          filename,
+          saveAs: false,
+        });
+        return { success: true };
+      }
+
       default:
         return { success: false, error: `Unknown format: ${format}` };
     }
@@ -812,7 +858,7 @@ function getDomain(url: string): string {
   }
 }
 
-function generateFilename(domain: string, ext: "png" | "pdf"): string {
+function generateFilename(domain: string, ext: "png" | "pdf" | "webp"): string {
   const now = new Date();
   const ts = now.toISOString().replace(/[-:T]/g, "").slice(0, 14);
   const clean = domain.replace(/[^a-zA-Z0-9.-]/g, "_").slice(0, 50);

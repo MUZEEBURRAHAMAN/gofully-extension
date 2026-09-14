@@ -34,6 +34,255 @@ async function convertToPng(blob: Blob): Promise<Blob> {
   return new Promise((res) => canvas.toBlob((b) => res(b!), "image/png"));
 }
 
+// Match the editor/popup's default export quality: upscale only when the
+// capture is smaller than 4K UHD, so an already-large capture is untouched.
+const UHD_W = 3840, UHD_H = 2160;
+async function upscaleToUHD(blob: Blob): Promise<Blob> {
+  try {
+    const bitmap = await createImageBitmap(blob);
+    const { width: w, height: h } = bitmap;
+    if (w >= UHD_W || h >= UHD_H) return blob;
+    const scale = Math.max(UHD_W / w, UHD_H / h);
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(w * scale);
+    canvas.height = Math.round(h * scale);
+    const ctx = canvas.getContext("2d")!;
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    return await new Promise((res) => canvas.toBlob((b) => res(b!), "image/png"));
+  } catch {
+    return blob;
+  }
+}
+
+// ─── Result card (Selected Area) ─────────────────────────────────────────────
+// Selected-area's popup closes itself before the user draws the region, so it
+// can't show its own confirmation UI. This mirrors that same #resultBar card
+// (popup.html) in-page via a shadow-DOM overlay, with export buttons
+// delegating to the background service worker (chrome.downloads isn't
+// available from a content script).
+
+interface ResultCardPayload {
+  width: number;
+  height: number;
+  mode: string;
+  method: string;
+  url: string;
+  title: string;
+  timestamp: number;
+  dataUrl: string;
+}
+
+let resultCardHost: HTMLDivElement | null = null;
+
+function dismissResultCard(): void {
+  if (!resultCardHost) return;
+  const host = resultCardHost;
+  resultCardHost = null;
+  const shadow = host.shadowRoot;
+  const card = shadow?.querySelector(".res-card") as HTMLElement | null;
+  if (card) {
+    card.classList.remove("show");
+    setTimeout(() => host.remove(), 180);
+  } else {
+    host.remove();
+  }
+}
+
+function showResultCard(payload: ResultCardPayload): void {
+  dismissResultCard();
+  playShutterSound();
+
+  const w = Math.round(payload.width);
+  const h = Math.round(payload.height);
+  const methodLabel = payload.method === "scroll-stitch" ? "Scroll-Stitch" : "Snapshot";
+  const isLongCapture = payload.mode === "full-page" || payload.mode === "scrolling-area" || h > 800;
+
+  resultCardHost = document.createElement("div");
+  resultCardHost.id = "gofully-result-card-host";
+  resultCardHost.style.cssText =
+    "position:fixed; inset:0; z-index:2147483647; pointer-events:none;";
+  const shadow = resultCardHost.attachShadow({ mode: "closed" });
+
+  const style = document.createElement("style");
+  style.textContent = `
+    .res-card {
+      position: fixed; top: 16px; right: 16px;
+      width: 320px;
+      background: #ffffff;
+      border: 1px solid #E3E8EF;
+      box-shadow: 0 10px 30px rgba(16,24,40,0.08), 0 20px 24px -4px rgba(16,24,40,0.14);
+      pointer-events: auto;
+      opacity: 0; transform: translateY(-8px);
+      transition: opacity 0.18s cubic-bezier(0.16,1,0.3,1), transform 0.18s cubic-bezier(0.16,1,0.3,1);
+      font-family: ${FONT_STACK};
+      -webkit-font-smoothing: antialiased;
+    }
+    .res-card.show { opacity: 1; transform: translateY(0); }
+    .res-status {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 12px 10px 16px;
+      background: rgba(22,103,242,.08);
+      border-bottom: 1px solid rgba(22,103,242,.12);
+    }
+    .res-check { color: #1667F2; flex-shrink: 0; display: flex; }
+    .res-title { font-size: 12px; font-weight: 600; color: #1257D8; flex: 1; }
+    .res-dim { font-size: 10.5px; font-weight: 500; color: rgba(22,103,242,.7); font-variant-numeric: tabular-nums; }
+    .res-close {
+      border: none; background: none; cursor: pointer; color: rgba(22,103,242,.6);
+      width: 20px; height: 20px; flex-shrink: 0; padding: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .res-close:hover { color: #1257D8; }
+    .res-preview {
+      position: relative; width: 100%; height: 150px;
+      background: #F7F8FA;
+      border-bottom: 1px solid #E3E8EF;
+      overflow: hidden;
+      display: flex; align-items: flex-start; justify-content: center;
+    }
+    .res-preview img { width: 100%; height: auto; display: block; object-fit: cover; object-position: top center; }
+    .res-preview-fade {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 48px;
+      background: linear-gradient(to bottom, rgba(241,243,247,0) 0%, rgba(241,243,247,0.92) 80%, rgba(241,243,247,1) 100%);
+      backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
+      display: flex; align-items: flex-end; justify-content: center; padding-bottom: 6px;
+    }
+    .res-preview-pill {
+      font-size: 9.5px; font-weight: 700; color: #667085;
+      background: rgba(242,242,243,.9); border: 1px solid #E3E8EF;
+      padding: 2px 10px; text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .res-actions { display: flex; border-bottom: 1px solid #E3E8EF; }
+    .res-btn {
+      flex: 1; height: 40px; display: flex; align-items: center; justify-content: center; gap: 5px;
+      border: none; border-right: 1px solid #E3E8EF; background: transparent; cursor: pointer;
+      font-size: 11px; font-weight: 500; letter-spacing: 0.02em; text-transform: uppercase;
+      color: #344054; font-family: ${FONT_STACK};
+      transition: background .08s, color .08s;
+    }
+    .res-btn:last-child { border-right: none; }
+    .res-btn:hover { background: #F7F8FA; color: #101828; }
+    .res-btn:active { background: #F1F3F7; }
+    .res-btn.prim { flex: 1.6; background: #1667F2; border-right-color: #1257D8; color: #f2f2f3; font-weight: 600; }
+    .res-btn.prim:hover { background: #1257D8; }
+    .res-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 14px; font-size: 10px; color: #98A2B3;
+    }
+    .res-ftr-left { display: flex; align-items: center; gap: 6px; }
+    .res-ftr-dot { width: 5px; height: 5px; background: #16B364; border-radius: 50%; }
+  `;
+
+  const card = document.createElement("div");
+  card.className = "res-card";
+  card.innerHTML = `
+    <div class="res-status">
+      <div class="res-check">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <span class="res-title">Screenshot captured</span>
+      <span class="res-dim">${w}×${h}px captured via ${methodLabel}</span>
+      <button class="res-close" id="gf-res-close" aria-label="Dismiss">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="res-preview">
+      <img src="${payload.dataUrl}" alt="Capture Preview" />
+      <div class="res-preview-fade" style="display:${isLongCapture ? "flex" : "none"};">
+        <span class="res-preview-pill">Selected Area</span>
+      </div>
+    </div>
+    <div class="res-actions">
+      <button class="res-btn prim" id="gf-res-copy">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="1"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        <span>Copy</span>
+      </button>
+      <button class="res-btn" id="gf-res-png">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>PNG</span>
+      </button>
+      <button class="res-btn" id="gf-res-webp">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>WebP</span>
+      </button>
+      <button class="res-btn" id="gf-res-pdf">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13h6M9 17h3"/></svg>
+        <span>PDF</span>
+      </button>
+      <button class="res-btn" id="gf-res-edit">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+        <span>Edit</span>
+      </button>
+    </div>
+    <div class="res-footer">
+      <div class="res-ftr-left"><div class="res-ftr-dot"></div><span>GoFully v1.1</span></div>
+      <span>100% Offline</span>
+    </div>
+  `;
+
+  shadow.appendChild(style);
+  shadow.appendChild(card);
+  (document.body || document.documentElement).appendChild(resultCardHost);
+  requestAnimationFrame(() => card.classList.add("show"));
+
+  const setBtnBusy = (btn: HTMLElement, busyLabel: string, doneLabel: string, ok: boolean) => {
+    const label = btn.querySelector("span");
+    if (!label) return;
+    const orig = label.textContent ?? "";
+    label.textContent = ok ? doneLabel : "Failed";
+    (btn as HTMLButtonElement).style.opacity = "0.75";
+    setTimeout(() => {
+      label.textContent = orig;
+      (btn as HTMLButtonElement).style.opacity = "";
+    }, 1800);
+  };
+
+  shadow.getElementById("gf-res-close")!.addEventListener("click", dismissResultCard);
+
+  shadow.getElementById("gf-res-copy")!.addEventListener("click", async (e) => {
+    const btn = e.currentTarget as HTMLElement;
+    try {
+      const res = await fetch(payload.dataUrl);
+      const blob = await res.blob();
+      const pngBlob = blob.type === "image/png" ? blob : await convertToPng(blob);
+      const uhdBlob = await upscaleToUHD(pngBlob);
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": uhdBlob })]);
+      setBtnBusy(btn, "", "Copied!", true);
+    } catch {
+      setBtnBusy(btn, "", "Failed", false);
+    }
+  });
+
+  shadow.getElementById("gf-res-png")!.addEventListener("click", async (e) => {
+    const btn = e.currentTarget as HTMLElement;
+    const resp = await chrome.runtime.sendMessage({ type: "EXPORT_CAPTURE", payload: { format: "png" } }).catch(() => null);
+    setBtnBusy(btn, "", resp?.success ? "Saved!" : "Failed", !!resp?.success);
+  });
+
+  shadow.getElementById("gf-res-webp")!.addEventListener("click", async (e) => {
+    const btn = e.currentTarget as HTMLElement;
+    const resp = await chrome.runtime.sendMessage({ type: "EXPORT_CAPTURE", payload: { format: "webp" } }).catch(() => null);
+    setBtnBusy(btn, "", resp?.success ? "Saved!" : "Failed", !!resp?.success);
+  });
+
+  shadow.getElementById("gf-res-pdf")!.addEventListener("click", async (e) => {
+    const btn = e.currentTarget as HTMLElement;
+    const label = btn.querySelector("span");
+    const orig = label?.textContent ?? "PDF";
+    if (label) label.textContent = "Generating...";
+    const resp = await chrome.runtime.sendMessage({ type: "EXPORT_CAPTURE", payload: { format: "pdf" } }).catch(() => null);
+    if (label) label.textContent = orig;
+    setBtnBusy(btn, "", resp?.success ? "Saved!" : "Failed", !!resp?.success);
+  });
+
+  shadow.getElementById("gf-res-edit")!.addEventListener("click", () => {
+    chrome.runtime.sendMessage({ type: "OPEN_EDITOR" }).catch(() => {});
+    dismissResultCard();
+  });
+}
+
 // ─── Quick-capture toast (Visible Area / Selected Area) ──────────────────────
 // These modes are "grab it and go": no card, no new tab — just an instant
 // clipboard copy and a small confirmation pill, reusing the same visual slot
@@ -294,6 +543,11 @@ if (!(window as any).__snapforge_result_bar_listener_registered) {
     }
     if (message.type === "QUICK_CAPTURE_TOAST") {
       showQuickCaptureToast(message.payload?.dataUrl).catch(() => {});
+      sendResponse({ shown: true });
+      return true;
+    }
+    if (message.type === "SHOW_RESULT_CARD") {
+      showResultCard(message.payload);
       sendResponse({ shown: true });
       return true;
     }
