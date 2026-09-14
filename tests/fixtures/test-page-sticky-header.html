@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GoFully Test - Sticky Header Variants</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, sans-serif; background: #f8fafc; color: #0f172a; }
+
+    /* --- Fixed header (position: fixed) --- */
+    .fixed-header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: #1e293b;
+      color: #fff;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #3b82f6;
+    }
+    .fixed-header .logo { font-weight: 700; font-size: 18px; }
+
+    /* This is the critical pattern that breaks visibility:hidden —
+       child nav links explicitly set visibility: visible, which
+       overrides the parent's inherited visibility: hidden. */
+    .fixed-header .nav-links a {
+      color: #93c5fd;
+      text-decoration: none;
+      margin-left: 20px;
+      visibility: visible;
+      font-weight: 500;
+    }
+
+    /* --- Sticky sub-nav (position: sticky) --- */
+    .sticky-subnav {
+      position: sticky;
+      top: 52px;
+      z-index: 999;
+      background: #f1f5f9;
+      padding: 10px 24px;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 13px;
+      color: #64748b;
+    }
+    .sticky-subnav span { visibility: visible; }
+
+    /* --- Content sections --- */
+    .content { margin-top: 52px; }
+    .section {
+      padding: 60px 40px;
+      border-bottom: 1px solid #e2e8f0;
+      min-height: 600px;
+    }
+    .section:nth-child(even) { background: #fff; }
+    .section:nth-child(odd) { background: #f1f5f9; }
+    h2 { font-size: 22px; margin-bottom: 12px; color: #2563eb; }
+    p { font-size: 16px; line-height: 1.6; margin-bottom: 16px; max-width: 800px; }
+
+    /* --- Fixed chatbot widget (position: fixed, bottom-right) --- */
+    .chatbot-widget {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #3b82f6;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      z-index: 9999;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(59,130,246,0.4);
+    }
+    .chatbot-widget span { visibility: visible; }
+
+    /* Marker to identify sections in screenshots */
+    .section-marker {
+      display: inline-block;
+      padding: 4px 12px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-weight: 700;
+      font-size: 14px;
+      border-radius: 4px;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="fixed-header" data-testid="fixed-header">
+    <span class="logo">TestSite</span>
+    <nav class="nav-links">
+      <a href="#">Home</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+    </nav>
+  </header>
+
+  <div class="content">
+    <div class="sticky-subnav" data-testid="sticky-subnav">
+      <span>Section Navigation</span> · <span>Breadcrumb</span> · <span>Filters</span>
+    </div>
+
+    <div class="section" data-testid="section-1">
+      <span class="section-marker">SECTION 1</span>
+      <h2>First Section</h2>
+      <p>This is the first section of the test page. The fixed header above should only appear once in a full-page screenshot (at the very top), not repeated in every frame.</p>
+      <p>The sticky sub-navigation should also appear only once.</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    </div>
+
+    <div class="section" data-testid="section-2">
+      <span class="section-marker">SECTION 2</span>
+      <h2>Second Section</h2>
+      <p>If the header is repeating here, the sticky-hide mechanism is broken.</p>
+      <p>Specifically, this test page sets <code>visibility: visible</code> on child elements of the header (nav links), which overrides <code>visibility: hidden</code> on the parent. The fix is to use <code>opacity: 0</code> instead, which operates at the compositing layer and cannot be overridden by children.</p>
+    </div>
+
+    <div class="section" data-testid="section-3">
+      <span class="section-marker">SECTION 3</span>
+      <h2>Third Section</h2>
+      <p>Content continues here. The chatbot widget in the bottom-right corner should also be hidden during capture (it's position: fixed).</p>
+    </div>
+
+    <div class="section" data-testid="section-4">
+      <span class="section-marker">SECTION 4</span>
+      <h2>Fourth Section</h2>
+      <p>More content to ensure the page is tall enough for multiple scroll-stitch frames.</p>
+    </div>
+
+    <div class="section" data-testid="section-5">
+      <span class="section-marker">SECTION 5</span>
+      <h2>Fifth Section</h2>
+      <p>Final section. By this point, the sticky header should definitely be hidden and not appearing in this frame.</p>
+    </div>
+  </div>
+
+  <div class="chatbot-widget" data-testid="chatbot-widget">
+    <span>💬</span>
+  </div>
+
+</body>
+</html>

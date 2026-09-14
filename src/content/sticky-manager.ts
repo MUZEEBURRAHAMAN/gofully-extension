@@ -116,7 +116,7 @@ export function restoreFrozenElements(): void {
 
 interface HiddenSticky {
   el: HTMLElement;
-  originalVisibility: string;
+  originalOpacity: string;
 }
 
 let hiddenStickyElements: HiddenSticky[] = [];
@@ -130,10 +130,14 @@ export function hideStickyElements(): StickyElement[] {
 
     hiddenStickyElements.push({
       el,
-      originalVisibility: el.style.visibility,
+      originalOpacity: el.style.opacity,
     });
-    // Use visibility: hidden !important so the element is invisible without causing layout shifts
-    el.style.setProperty("visibility", "hidden", "important");
+    // opacity: 0 is strictly better than visibility: hidden here because
+    // opacity applies at the compositing-layer level — child elements
+    // CANNOT override a parent's zero opacity, whereas visibility: hidden
+    // IS overridable by any child with visibility: visible (which many
+    // site headers set on nav links, logo wrappers, etc.).
+    el.style.setProperty("opacity", "0", "important");
   }
 
   return hiddenStickyElements.map((h) => ({
@@ -146,30 +150,16 @@ export function hideStickyElements(): StickyElement[] {
 export function restoreStickyElements(): void {
   for (const saved of hiddenStickyElements) {
     try {
-      if (saved.originalVisibility) {
-        saved.el.style.setProperty("visibility", saved.originalVisibility);
+      if (saved.originalOpacity) {
+        saved.el.style.setProperty("opacity", saved.originalOpacity);
       } else {
-        saved.el.style.removeProperty("visibility");
-        saved.el.style.visibility = "";
+        saved.el.style.removeProperty("opacity");
       }
     } catch {
       // ignore
     }
   }
   hiddenStickyElements = [];
-
-  // Also sweep any elements that have inline visibility: hidden applied
-  const all = document.querySelectorAll<HTMLElement>("*");
-  for (const el of all) {
-    if (
-      el.style.visibility === "hidden" &&
-      !el.id?.startsWith("gofully-") &&
-      !el.id?.startsWith("snapforge-")
-    ) {
-      el.style.removeProperty("visibility");
-      el.style.visibility = "";
-    }
-  }
 }
 
 // Full-page scroll-stitch captures can run long enough on tall pages that

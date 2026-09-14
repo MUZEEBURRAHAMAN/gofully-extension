@@ -1,4 +1,4 @@
-import type { CaptureRegion, CaptureResult, CaptureFrame, CaptureProgress } from "../types";
+import type { CaptureRegion, CaptureResult, CaptureFrame, CaptureProgress, Settings } from "../types";
 import { detectDPRFromCapture } from "../utils/dpr-handler";
 import { loadImage, canvasToBlob } from "../utils/image";
 
@@ -33,6 +33,25 @@ export async function captureScrollingArea(
   let dpr = 1;
   let lastFrameHash = "";
   let step = 0;
+
+  // Step 2.5: Hide sticky/fixed elements so they don't repeat in every frame
+  const settingsRes = await (chrome.storage.sync?.get("settings").catch(() => null)) ||
+    await chrome.storage.local.get("settings").catch(() => null);
+  const shouldSkipSticky =
+    (settingsRes?.settings as Partial<Settings> | undefined)?.skipStickyHeaders ?? true;
+  if (shouldSkipSticky) {
+    await chrome.scripting.executeScript({
+      target: { tabId },
+      func: () => {
+        return new Promise<void>((resolve) => {
+          if (typeof (window as any).__gofully_hide_sticky === "function") {
+            (window as any).__gofully_hide_sticky();
+          }
+          requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+        });
+      },
+    }).catch(() => {});
+  }
 
   try {
     // Step 3: Capture first frame at current scroll position
@@ -120,7 +139,15 @@ export async function captureScrollingArea(
     await restoreScroll(tabId, pageState.scrollY);
 
   } finally {
-    // Step 6: Always restore UI and remove our scroll-target marker
+    // Step 6: Always restore UI, sticky elements, and remove scroll-target marker
+    await chrome.scripting.executeScript({
+      target: { tabId },
+      func: () => {
+        if (typeof (window as any).__gofully_restore_sticky === "function") {
+          (window as any).__gofully_restore_sticky();
+        }
+      },
+    }).catch(() => {});
     await showAllExtensionUI(tabId);
     untagScrollContainer(tabId);
   }
