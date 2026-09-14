@@ -7,6 +7,7 @@ import type {
 } from "../types";
 import { detectDPRFromCapture } from "../utils/dpr-handler";
 import { loadImage, canvasToBlob } from "../utils/image";
+import { hideProgressInTab } from "../utils/progress-overlay";
 
 const CAPTURE_DELAY = 300;
 
@@ -260,16 +261,6 @@ export async function captureWithScrollStitch(
     url: tab?.url || "",
     title: tab?.title || "",
   };
-}
-
-async function hideProgressInTab(tabId: number): Promise<void> {
-  await chrome.scripting.executeScript({
-    target: { tabId },
-    func: () => {
-      const el = document.getElementById("gofully-progress-overlay");
-      if (el) el.style.setProperty("display", "none", "important");
-    },
-  }).catch(() => {});
 }
 
 async function initScrollCapture(tabId: number): Promise<{

@@ -8,6 +8,7 @@ import type {
 import { captureWithScrollStitch } from "./stitch-capture";
 import { dataUrlToBlob, loadImage } from "../utils/image";
 import { detectDPRFromCapture } from "../utils/dpr-handler";
+import { hideProgressInTab } from "../utils/progress-overlay";
 
 export async function captureFullPage(
   tabId: number,
@@ -42,6 +43,7 @@ export async function captureVisibleArea(
   if (tab.windowId) {
     await chrome.tabs.update(tabId, { active: true }).catch(() => {});
   }
+  await hideProgressInTab(tabId);
   const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, { format: "png" });
   const blob = dataUrlToBlob(dataUrl);
   const img = await loadImage(dataUrl);
@@ -72,6 +74,7 @@ export async function captureSelectedArea(
   if (tab.windowId) {
     await chrome.tabs.update(tabId, { active: true }).catch(() => {});
   }
+  await hideProgressInTab(tabId);
   const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, { format: "png" });
   const img = await loadImage(dataUrl);
   const [{ result: vpWidth }] = await chrome.scripting.executeScript({

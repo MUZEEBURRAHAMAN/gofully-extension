@@ -240,7 +240,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       injectContentScripts(targetTabId).catch(() => {});
     }
 
-    handleCapture(mode, region, speed, targetTabId)
+    // Full-page capture triggered from the popup already shows its own
+    // progress bar (popup stays open for this mode) — the in-page badge
+    // would just be redundant, so only show it when there's no popup
+    // around to display progress (e.g. the keyboard-shortcut path).
+    const showInPageProgress = !(mode === "full-page" && !fromContentScript);
+
+    handleCapture(mode, region, speed, targetTabId, showInPageProgress)
       .then(async (result) => {
         lastCaptureBlob = await maybeStampCapture(result);
         lastCaptureDataUrl = await blobToDataUrl(lastCaptureBlob);
@@ -538,7 +544,8 @@ async function handleCapture(
   mode: CaptureMode,
   region?: CaptureRegion,
   speed?: "slow" | "medium" | "fast",
-  explicitTabId?: number
+  explicitTabId?: number,
+  showInPageProgress: boolean = true
 ): Promise<CaptureResult> {
   let targetTabId = explicitTabId;
   let tab: chrome.tabs.Tab | undefined;
@@ -577,7 +584,7 @@ async function handleCapture(
       payload: progress,
     }).catch(() => {});
 
-    if (targetTabId) {
+    if (targetTabId && showInPageProgress) {
       chrome.tabs.sendMessage(targetTabId, {
         type: "CAPTURE_PROGRESS",
         payload: progress,
