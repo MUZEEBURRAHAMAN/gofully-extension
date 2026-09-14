@@ -115,11 +115,17 @@ function downloadBlob(blob: Blob, filename: string): void {
   setTimeout(() => URL.revokeObjectURL(url), 5000);
 }
 
-document.getElementById("copy-btn")!.addEventListener("click", async () => {
+const copyBtn = document.getElementById("copy-btn")!;
+copyBtn.addEventListener("click", async () => {
   if (!currentDataUrl) return;
   try {
     const pngBlob = await toPngBlob(currentDataUrl);
     await navigator.clipboard.write([new ClipboardItem({ "image/png": pngBlob })]);
+    const label = copyBtn.querySelector("span") ?? copyBtn;
+    const orig = label.textContent ?? "Copy";
+    label.textContent = "Copied";
+    copyBtn.style.opacity = "0.75";
+    setTimeout(() => { label.textContent = orig; copyBtn.style.opacity = ""; }, 2000);
     showToast("Copied to clipboard");
   } catch {
     showToast("Copy failed");
