@@ -312,28 +312,36 @@ async function startCapture(mode: CaptureMode): Promise<void> {
     await runCountdown(countdown, tab.id);
   }
 
-  // Full Page and Visible Area both stay open through the same progress UI;
-  // they only differ in what happens once CAPTURE_COMPLETE comes back.
-  showProgress();
-  chrome.runtime.sendMessage(
-    { type: "START_CAPTURE", payload: { mode, tabId: tab.id } },
-    (response) => {
-      if (response?.type === "CAPTURE_COMPLETE") {
-        if (mode === "full-page") {
-          // The service worker already opens the review tab independently
-          // of the popup — just confirm and close.
+  if (mode === "full-page") {
+    showProgress();
+    chrome.runtime.sendMessage(
+      { type: "START_CAPTURE", payload: { mode, tabId: tab.id } },
+      (response) => {
+        if (response?.type === "CAPTURE_COMPLETE") {
           completeReviewTabCapture();
-        } else {
-          // Visible Area is the one "grab it and go" mode reachable from
-          // the popup — no card, no new tab, just an instant clipboard
-          // copy confirmed in the same progress slot, then close.
-          completeQuickCapture(response.payload);
+        } else if (response?.type === "CAPTURE_ERROR") {
+          showError(response.payload?.message || "Capture failed");
         }
-      } else if (response?.type === "CAPTURE_ERROR") {
-        showError(response.payload?.message || "Capture failed");
       }
-    }
-  );
+    );
+  } else {
+    // Visible Area: instant capture, show result card with preview & actions
+    chrome.runtime.sendMessage(
+      { type: "START_CAPTURE", payload: { mode, tabId: tab.id } },
+      (response) => {
+        if (response?.type === "CAPTURE_COMPLETE") {
+          captureMetadata = response.payload;
+          currentUrl = response.payload.url || "";
+          chrome.runtime.sendMessage({ type: "GET_CAPTURE_BLOB_URL" }, (resp) => {
+            if (resp?.url) currentBlobUrl = resp.url;
+            showResult(response.payload);
+          });
+        } else if (response?.type === "CAPTURE_ERROR") {
+          showError(response.payload?.message || "Capture failed");
+        }
+      }
+    );
+  }
 }
 
 function completeReviewTabCapture(): void {
