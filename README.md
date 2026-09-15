@@ -13,9 +13,9 @@ A modern, high-performance Chrome extension for capturing full pages, viewports,
 
 ## 📍 Status & Roadmap
 
-**Current version: `v1.1.2`**
+**Current version: `v1.1.1`** | **Next release: `v1.1.2`**
 
-Shipped in `v1.1.2`:
+Upcoming in `v1.1.2`:
 - **Capture engine** — JPG export with quality slider, video auto-pause during capture, cookie/modal auto-dismiss, seam verification in scroll-stitch (detects and re-captures misaligned frame boundaries)
 - **Editor & workflow** — screenshot history with thumbnail grid, real URL in browser frame (Beautify), unsaved changes protection in editor
 - **Website** — social proof bar, competitor comparison table (13 features × 4 extensions), user reviews section, 3 new SEO guides (PDF export, screenshot beautification, privacy-first tools), rich structured data (JSON-LD), custom 404 page

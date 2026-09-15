@@ -174,13 +174,13 @@ export default function RoadmapPage() {
             </div>
           </TimelineRow>
 
-          {/* v1.1.2 shipped */}
+          {/* v1.1.2 upcoming */}
           <TimelineRow
             tag="v1.1.2"
-            tagStyle={{ borderColor: "rgba(29,31,32,.2)", color: "#1d1f20" }}
-            status="SHIPPED"
-            statusColor="rgba(29,31,32,.5)"
-            dotStyle={{ background: "#1d1f20", borderColor: "#1d1f20" }}
+            tagStyle={{ background: "var(--gf-color-accent)", color: "#fff", borderColor: "var(--gf-color-accent)" }}
+            status="UPCOMING"
+            statusColor="var(--gf-color-accent)"
+            dotStyle={{ background: "var(--gf-color-accent)", borderColor: "var(--gf-color-accent)", boxShadow: "0 0 0 4px rgba(22,103,242,.15)" }}
           >
             <div className="p-6 border" style={{ borderColor: "rgba(29,31,32,.12)", background: "#fff", maxWidth: 600 }}>
               <div className="gf-heading-font font-semibold" style={{ fontSize: 20 }}>
