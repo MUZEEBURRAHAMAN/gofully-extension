@@ -10,6 +10,8 @@ import { loadImage, canvasToBlob } from "../utils/image";
 import { hideProgressInTab } from "../utils/progress-overlay";
 
 const CAPTURE_DELAY = 300;
+const OVERLAP_PX = 20;
+const SEAM_MISMATCH_THRESHOLD = 0.08;
 
 let isCaptureCancelled = false;
 
@@ -53,6 +55,44 @@ export async function captureWithScrollStitch(
   let coveredY = 0;
   let lastFrameHash = "";
   let lastScrollY = -1;
+
+  // Hide cookie banners, consent dialogs, and fixed overlays before capture
+  await chrome.scripting.executeScript({
+    target: { tabId },
+    func: () => {
+      const selectors = [
+        '[class*="cookie"]', '[id*="cookie"]',
+        '[class*="consent"]', '[id*="consent"]',
+        '[class*="gdpr"]', '[id*="gdpr"]',
+        '[class*="cc-banner"]', '[class*="cc_banner"]',
+        '.cky-consent-container', '#onetrust-banner-sdk',
+        '#CybotCookiebotDialog', '.js-consent-banner',
+        '[aria-label*="cookie" i]', '[aria-label*="consent" i]',
+      ];
+      const hidden: HTMLElement[] = [];
+      const sel = selectors.join(",");
+      document.querySelectorAll<HTMLElement>(sel).forEach((el) => {
+        const style = getComputedStyle(el);
+        if (style.position === "fixed" || style.position === "sticky") {
+          el.dataset.gofullyOrigDisplay = el.style.display;
+          el.style.display = "none";
+          hidden.push(el);
+        }
+      });
+      (window as any).__gofully_hidden_overlays = hidden;
+    },
+  }).catch(() => {});
+
+  // Pause all playing videos so they don't produce smeared frames
+  await chrome.scripting.executeScript({
+    target: { tabId },
+    func: () => {
+      const videos = document.querySelectorAll("video");
+      const playing: HTMLVideoElement[] = [];
+      videos.forEach((v) => { if (!v.paused) { v.pause(); playing.push(v); } });
+      (window as any).__gofully_paused_videos = playing;
+    },
+  }).catch(() => {});
 
   // Holds the background service worker alive for the duration of the
   // capture — see the matching handler in content/sticky-manager.ts.
@@ -148,7 +188,6 @@ export async function captureWithScrollStitch(
         let isLastStep = false;
 
         if (remaining >= viewportHeight) {
-          // Contiguous non-overlapping full viewport step
           targetY = coveredY;
         } else {
           // Final partial remainder step: scroll to bottom so the tail is visible
@@ -237,6 +276,31 @@ export async function captureWithScrollStitch(
       },
     }).catch(() => {});
 
+    // Restore hidden cookie banners and overlays
+    await chrome.scripting.executeScript({
+      target: { tabId },
+      func: () => {
+        const hidden = (window as any).__gofully_hidden_overlays as HTMLElement[] | undefined;
+        if (hidden) {
+          hidden.forEach((el) => {
+            el.style.display = el.dataset.gofullyOrigDisplay ?? "";
+            delete el.dataset.gofullyOrigDisplay;
+          });
+        }
+        delete (window as any).__gofully_hidden_overlays;
+      },
+    }).catch(() => {});
+
+    // Resume videos that were paused for capture
+    await chrome.scripting.executeScript({
+      target: { tabId },
+      func: () => {
+        const paused = (window as any).__gofully_paused_videos as HTMLVideoElement[] | undefined;
+        if (paused) { paused.forEach((v) => { try { v.play(); } catch {} }); }
+        delete (window as any).__gofully_paused_videos;
+      },
+    }).catch(() => {});
+
     // Restore smooth scroll behavior and original scroll position
     await cleanupScrollCapture(tabId, pageInit.initialScrollY, pageInit.targetSelector).catch(() => {});
 
@@ -246,6 +310,36 @@ export async function captureWithScrollStitch(
   }
 
   onProgress?.({ current: 0, total: 0, phase: "stitching" });
+
+  // Seam verification: compare adjacent frame boundaries and re-capture bad seams
+  if (frames.length >= 2) {
+    const badSeams = await verifySeams(frames, dpr);
+    if (badSeams.length > 0 && !isCaptureCancelled) {
+      try {
+        // Re-enter capture mode to fix bad seams
+        await initScrollCapture(tabId);
+        await chrome.tabs.sendMessage(tabId, { type: "CAPTURE_KEEPALIVE_START" }).catch(() => {});
+
+        for (const seamIdx of badSeams) {
+          if (isCaptureCancelled) break;
+          const badFrame = frames[seamIdx + 1];
+          const targetY = badFrame.dstY ?? badFrame.scrollY;
+
+          await performScroll(tabId, targetY, pageInit.targetSelector);
+          await sleep(CAPTURE_DELAY + 100);
+          await hideProgressInTab(tabId);
+
+          const newDataUrl = await captureWithRetry(windowId);
+          badFrame.dataUrl = newDataUrl;
+        }
+
+        await chrome.tabs.sendMessage(tabId, { type: "CAPTURE_KEEPALIVE_STOP" }).catch(() => {});
+        await cleanupScrollCapture(tabId, pageInit.initialScrollY, pageInit.targetSelector).catch(() => {});
+      } catch {
+        // Re-capture failed — use original frames
+      }
+    }
+  }
 
   const totalWidth = viewportWidth;
   const actualHeight = calculateStitchedHeight(frames, viewportHeight);
@@ -540,6 +634,68 @@ async function stitchFrames(
   }
 
   return canvasToBlob(canvas);
+}
+
+async function verifySeams(
+  frames: CaptureFrame[],
+  dpr: number
+): Promise<number[]> {
+  const badSeams: number[] = [];
+  if (frames.length < 2) return badSeams;
+
+  for (let i = 0; i < frames.length - 1; i++) {
+    const upper = frames[i];
+    const lower = frames[i + 1];
+
+    const upperEnd = (upper.dstY ?? upper.scrollY) + (upper.cropHeight ?? upper.height);
+    const lowerStart = lower.dstY ?? lower.scrollY;
+    if (Math.abs(upperEnd - lowerStart) > 2) continue;
+
+    const stripH = Math.min(OVERLAP_PX, Math.floor((upper.cropHeight ?? upper.height) / 4));
+    if (stripH < 4) continue;
+
+    try {
+      const imgA = await loadImage(upper.dataUrl);
+      const imgB = await loadImage(lower.dataUrl);
+      const frameDprA = imgA.width / upper.width;
+      const frameDprB = imgB.width / lower.width;
+
+      const sampleW = Math.min(imgA.width, imgB.width, 200);
+      const stripHpxA = Math.round(stripH * frameDprA);
+      const stripHpxB = Math.round(stripH * frameDprB);
+
+      const canvasA = new OffscreenCanvas(sampleW, stripHpxA);
+      const ctxA = canvasA.getContext("2d")!;
+      const cropYA = Math.round(((upper.cropHeight ?? upper.height) - stripH) * frameDprA) + Math.round((upper.cropY ?? 0) * frameDprA);
+      ctxA.drawImage(imgA, 0, cropYA, sampleW, stripHpxA, 0, 0, sampleW, stripHpxA);
+
+      const canvasB = new OffscreenCanvas(sampleW, stripHpxB);
+      const ctxB = canvasB.getContext("2d")!;
+      const cropYB = Math.round((lower.cropY ?? 0) * frameDprB);
+      ctxB.drawImage(imgB, 0, cropYB, sampleW, stripHpxB, 0, 0, sampleW, stripHpxB);
+
+      const normalH = Math.min(stripHpxA, stripHpxB);
+      const dataA = ctxA.getImageData(0, stripHpxA - normalH, sampleW, normalH).data;
+      const dataB = ctxB.getImageData(0, 0, sampleW, normalH).data;
+
+      let diffSum = 0;
+      const totalPixels = sampleW * normalH;
+      for (let p = 0; p < dataA.length; p += 4) {
+        const dr = Math.abs(dataA[p] - dataB[p]);
+        const dg = Math.abs(dataA[p + 1] - dataB[p + 1]);
+        const db = Math.abs(dataA[p + 2] - dataB[p + 2]);
+        diffSum += (dr + dg + db) / (3 * 255);
+      }
+      const mismatchRatio = diffSum / totalPixels;
+
+      if (mismatchRatio > SEAM_MISMATCH_THRESHOLD) {
+        badSeams.push(i);
+      }
+    } catch {
+      // Can't verify this seam — skip
+    }
+  }
+  return badSeams;
 }
 
 async function hashFrame(dataUrl: string): Promise<string> {

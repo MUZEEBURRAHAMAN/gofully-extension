@@ -119,7 +119,7 @@ export default function NotFoundPage() {
               color: "var(--gf-color-text)",
             }}
           >
-            Captured nothing here.
+            This page couldn&apos;t be captured.
           </h1>
 
           <p
@@ -132,7 +132,7 @@ export default function NotFoundPage() {
               marginTop: 16,
             }}
           >
-            The page you are looking for does not exist, was moved, or the link may be broken. Everything else in GoFully is right where you left it.
+            Even 40 scroll passes won&apos;t find it. The page you&apos;re looking for doesn&apos;t exist, was moved, or the link may be broken.
           </p>
 
           {/* Actions */}

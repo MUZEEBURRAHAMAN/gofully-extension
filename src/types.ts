@@ -7,7 +7,7 @@ export type CaptureMode =
 
 export type CaptureMethod = "scroll-stitch" | "visible-tab";
 
-export type ExportFormat = "clipboard" | "png" | "pdf";
+export type ExportFormat = "clipboard" | "png" | "jpg" | "webp" | "pdf";
 
 export interface PageDimensions {
   scrollWidth: number;
@@ -110,7 +110,8 @@ export interface Settings {
   captureSound: boolean;
   captureCountdown: 0 | 1 | 2 | 3;
   skipStickyHeaders: boolean;
-  defaultExportFormat: "png" | "webp";
+  defaultExportFormat: "png" | "webp" | "jpg";
+  jpgQuality: number;
   editorShortcuts: Record<string, string>;
   captureStamp: boolean;
   theme: "light" | "dark" | "system";
@@ -130,6 +131,7 @@ export const DEFAULT_SETTINGS: Settings = {
   captureCountdown: 0,
   skipStickyHeaders: true,
   defaultExportFormat: "png",
+  jpgQuality: 0.92,
   editorShortcuts: {},
   captureStamp: false,
   theme: "system",

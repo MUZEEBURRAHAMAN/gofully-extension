@@ -140,6 +140,31 @@ document.getElementById("save-png-btn")!.addEventListener("click", async () => {
   exportDropMenu.classList.remove("show");
 });
 
+// ─── JPG quality slider ───────────────────────────────────────────────────────
+const jpgSlider = document.getElementById("jpg-quality-slider") as HTMLInputElement;
+const jpgLabel = document.getElementById("jpg-quality-label")!;
+jpgSlider?.addEventListener("input", () => {
+  jpgLabel.textContent = `${jpgSlider.value}%`;
+});
+jpgSlider?.addEventListener("click", (e) => e.stopPropagation());
+
+document.getElementById("save-jpg-btn")!.addEventListener("click", async () => {
+  if (!currentDataUrl) return;
+  try {
+    const pngBlob = await toPngBlob(currentDataUrl);
+    const bitmap = await createImageBitmap(pngBlob);
+    const oc = new OffscreenCanvas(bitmap.width, bitmap.height);
+    oc.getContext("2d")!.drawImage(bitmap, 0, 0);
+    const quality = (jpgSlider ? parseInt(jpgSlider.value) : 92) / 100;
+    const jpgBlob = await oc.convertToBlob({ type: "image/jpeg", quality });
+    downloadBlob(jpgBlob, getExportFilename("jpg"));
+    showToast(`Saved as JPG (${Math.round(quality * 100)}%)`);
+  } catch {
+    showToast("JPG save failed");
+  }
+  exportDropMenu.classList.remove("show");
+});
+
 document.getElementById("save-webp-btn")!.addEventListener("click", async () => {
   if (!currentDataUrl) return;
   try {

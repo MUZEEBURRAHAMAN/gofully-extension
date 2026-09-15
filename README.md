@@ -16,11 +16,16 @@ A modern, high-performance Chrome extension for capturing full pages, viewports,
 **Current version: `v1.1.2`**
 
 Shipped in `v1.1.2`:
-- **Personalize** — UI language options (English/Spanish/French), light/dark theme, OCR language selection
-- **Editor tools** — highlighter tool, shape tool consolidated into one button with a dropdown, upgraded text tool (color/font/size controls), custom keyboard shortcuts for editor tools, custom color picker swatch
-- **Beautify** — save your own background/frame/padding as a reusable preset, multi-image collage layouts, a gradient/pattern background library, more device frames
-- **Export & workflow** — export capture + OCR'd text as Markdown, optional URL + timestamp stamp on capture, "copy as" quick actions after OCR
-- Reliability: rewrote the full-page scroll-stitch engine (frame dedup, real scroll-position tracking, cancellable captures) and removed the unused `debugger` permission entirely — full-page capture is now scroll-stitch only, end to end
+- **Capture engine** — JPG export with quality slider, video auto-pause during capture, cookie/modal auto-dismiss, seam verification in scroll-stitch (detects and re-captures misaligned frame boundaries)
+- **Editor & workflow** — screenshot history with thumbnail grid, real URL in browser frame (Beautify), unsaved changes protection in editor
+- **Website** — social proof bar, competitor comparison table (13 features × 4 extensions), user reviews section, 3 new SEO guides (PDF export, screenshot beautification, privacy-first tools), rich structured data (JSON-LD), custom 404 page
+
+Previously shipped in `v1.1.1`:
+- Complete UI redesign on one consistent design system, new logo, accessibility pass
+- Beautify and crop correctly included in exports, 4K UHD as default export quality
+- Scroll-stitch engine rewrite (frame dedup, real scroll-position tracking, cancellable captures)
+
+**Next up (`v1.2.0`):** personalization (language, theme, OCR language), highlighter tool, shape tool dropdown, beautify presets, collage layouts, gradient library, more device frames, Markdown export.
 
 Full detail and what's further out (multi-tab batch capture, auto-redact detection, screen recording) is on the **[public roadmap](https://gofully-extension.vercel.app/roadmap)**.
 
@@ -172,6 +177,7 @@ src/
 │   └── canvas-stitcher.ts     # Offscreen canvas multi-frame stitcher
 └── utils/
     ├── dpr-handler.ts         # Device pixel ratio calculations
+    ├── history.ts             # Screenshot history storage and thumbnail generation
     ├── image.ts               # Image format and blob transformations
     └── permissions.ts         # Chrome permissions helpers
 ```

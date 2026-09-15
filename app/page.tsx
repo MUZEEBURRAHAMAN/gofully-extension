@@ -254,6 +254,64 @@ export default function HomePage() {
         />
       </ContainerScroll>
 
+      {/* Social proof bar */}
+      <div className="border-t border-b" style={{ borderColor: "rgba(29,31,32,.08)", background: "rgba(29,31,32,.015)" }}>
+        <div
+          className="mx-auto flex flex-wrap items-center justify-center"
+          style={{ maxWidth: 1320, padding: "18px 24px", gap: "8px 32px" }}
+        >
+          {/* CWS rating */}
+          <a
+            href={CWS_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2"
+            style={{ color: "rgba(29,31,32,.55)", fontSize: 13 }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
+              <circle cx="12" cy="12" r="11" fill="#4285F4" />
+              <path d="M12 2.5a9.5 9.5 0 1 0 0 19 9.5 9.5 0 0 0 0-19zm0 2.32a2.72 2.72 0 0 1 2.56 1.77H9.44A2.72 2.72 0 0 1 12 4.82z" fill="#EA4335" opacity="0.85" />
+              <path d="M4.14 14.73a9.48 9.48 0 0 0 3.7 5.27l2.6-4.5a2.72 2.72 0 0 1-1.27-3.03H4.03a9.5 9.5 0 0 0 .11 2.26z" fill="#FBBC05" opacity="0.85" />
+              <path d="M16.16 20a9.48 9.48 0 0 0 3.7-5.27 9.5 9.5 0 0 0 .11-2.26h-5.14a2.72 2.72 0 0 1-1.27 3.03L16.16 20z" fill="#34A853" opacity="0.85" />
+            </svg>
+            <span className="flex items-center gap-1">
+              <span className="flex items-center" style={{ gap: 1 }}>
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <svg key={s} width="12" height="12" viewBox="0 0 24 24" fill={s <= 5 ? "#F59E0B" : "none"} stroke={s <= 5 ? "#F59E0B" : "rgba(29,31,32,.2)"} strokeWidth="1.5">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                  </svg>
+                ))}
+              </span>
+              <span className="font-medium" style={{ color: "rgba(29,31,32,.7)" }}>5.0</span>
+            </span>
+            <span>on Chrome Web Store</span>
+          </a>
+
+          <span style={{ width: 1, height: 16, background: "rgba(29,31,32,.1)" }} className="hidden sm:block" />
+
+          {/* Trust signals */}
+          {[
+            {
+              icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>,
+              text: "No data collection",
+            },
+            {
+              icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></svg>,
+              text: "Free forever",
+            },
+            {
+              icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>,
+              text: "100% offline",
+            },
+          ].map((s) => (
+            <span key={s.text} className="inline-flex items-center gap-1.5" style={{ fontSize: 12.5, color: "rgba(29,31,32,.45)" }}>
+              {s.icon}
+              {s.text}
+            </span>
+          ))}
+        </div>
+      </div>
+
       {/* How it works */}
       <div id="how-it-works" className="border-t" style={{ padding: "80px 24px", borderColor: "rgba(29,31,32,.08)", background: "rgba(29,31,32,.02)" }}>
         <div className="mx-auto text-center" style={{ maxWidth: 640, marginBottom: 52 }}>
@@ -491,8 +549,150 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Privacy band */}
-      <div className="text-center" style={{ background: "var(--gf-color-text)", padding: "80px 24px" }}>
+      {/* Competitor comparison table */}
+      <div className="border-t" style={{ padding: "90px 24px", borderColor: "rgba(29,31,32,.08)" }}>
+        <div className="mx-auto text-center" style={{ maxWidth: 640, marginBottom: 48 }}>
+          <SectionKicker
+            icon={
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 3h18v18H3zM3 9h18M9 21V9" />
+              </svg>
+            }
+          >
+            Comparison
+          </SectionKicker>
+          <h2 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(24px, 6vw, 34px)", letterSpacing: "-0.01em", marginTop: 16 }}>
+            How GoFully stacks up
+          </h2>
+          <p style={{ fontSize: "14.5px", color: "rgba(29,31,32,.5)", marginTop: 12 }}>
+            Feature-for-feature against the most popular screenshot extensions.
+          </p>
+        </div>
+        <div className="mx-auto overflow-x-auto" style={{ maxWidth: 1000 }}>
+          <table className="w-full" style={{ borderCollapse: "collapse", fontSize: 13.5 }}>
+            <thead>
+              <tr>
+                <th className="text-left gf-heading-font font-semibold" style={{ padding: "12px 16px", borderBottom: "2px solid rgba(29,31,32,.1)", color: "rgba(29,31,32,.5)", fontSize: 12, letterSpacing: "0.03em" }}>
+                  Feature
+                </th>
+                {["GoFully", "GoFullPage", "Awesome Screenshot", "FireShot"].map((name) => (
+                  <th key={name} className="text-center gf-heading-font font-semibold" style={{
+                    padding: "12px 14px",
+                    borderBottom: "2px solid rgba(29,31,32,.1)",
+                    fontSize: 12,
+                    letterSpacing: "0.02em",
+                    color: name === "GoFully" ? "var(--gf-color-accent)" : "rgba(29,31,32,.5)",
+                    background: name === "GoFully" ? "rgba(22,103,242,.04)" : undefined,
+                  }}>
+                    {name}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { feat: "Full-page scroll capture", vals: [true, true, true, true] },
+                { feat: "Selected region capture", vals: [true, false, true, false] },
+                { feat: "Scrolling area capture", vals: [true, false, false, false] },
+                { feat: "On-device OCR", vals: [true, false, false, false] },
+                { feat: "Annotation & markup", vals: [true, false, true, false] },
+                { feat: "Privacy redaction (blur/pixelate)", vals: [true, false, "Paid", false] },
+                { feat: "Screenshot beautifier", vals: [true, false, false, false] },
+                { feat: "PDF export", vals: [true, false, "Paid", true] },
+                { feat: "JPG / WebP export", vals: [true, false, false, false] },
+                { feat: "Screenshot history", vals: [true, false, true, false] },
+                { feat: "No account required", vals: [true, true, false, true] },
+                { feat: "100% free (no paid tier)", vals: [true, true, false, false] },
+                { feat: "Works offline", vals: [true, true, false, true] },
+              ].map((row, i) => (
+                <tr key={row.feat} style={{ background: i % 2 === 0 ? "rgba(29,31,32,.015)" : undefined }}>
+                  <td style={{ padding: "10px 16px", borderBottom: "1px solid rgba(29,31,32,.06)", color: "rgba(29,31,32,.7)", fontWeight: 500 }}>
+                    {row.feat}
+                  </td>
+                  {row.vals.map((v, j) => (
+                    <td key={j} className="text-center" style={{
+                      padding: "10px 14px",
+                      borderBottom: "1px solid rgba(29,31,32,.06)",
+                      background: j === 0 ? "rgba(22,103,242,.04)" : undefined,
+                    }}>
+                      {v === true ? (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={j === 0 ? "var(--gf-color-accent)" : "#22c55e"} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="inline-block"><path d="M20 6 9 17l-5-5" /></svg>
+                      ) : v === false ? (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(29,31,32,.2)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block"><path d="M5 12h14" /></svg>
+                      ) : (
+                        <span style={{ fontSize: 11.5, color: "rgba(29,31,32,.4)", fontWeight: 500 }}>{v}</span>
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="mx-auto text-center" style={{ maxWidth: 600, marginTop: 20, fontSize: 12, color: "rgba(29,31,32,.35)" }}>
+          Comparison based on free tiers as of September 2026. See the{" "}
+          <a href="/guides/best-full-page-screenshot-extensions" style={{ color: "var(--gf-color-accent)", textDecoration: "underline" }}>
+            full comparison guide
+          </a>{" "}
+          for details.
+        </p>
+      </div>
+
+      {/* User reviews */}
+      <div className="border-t" style={{ padding: "90px 24px", borderColor: "rgba(29,31,32,.08)", background: "rgba(29,31,32,.02)" }}>
+        <div className="mx-auto text-center" style={{ maxWidth: 640, marginBottom: 48 }}>
+          <SectionKicker
+            icon={
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+            }
+          >
+            Reviews
+          </SectionKicker>
+          <h2 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(24px, 6vw, 34px)", letterSpacing: "-0.01em", marginTop: 16 }}>
+            What users are saying
+          </h2>
+        </div>
+        <div className="mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" style={{ maxWidth: 1000 }}>
+          {[
+            {
+              quote: "By far the best screenshot extension I've used. The OCR feature alone is worth it — I can pull text from any image without leaving the browser.",
+              author: "Web Developer",
+              stars: 5,
+            },
+            {
+              quote: "Finally an extension that captures the full page without breaking lazy-loaded images. The beautifier makes my blog screenshots look professional.",
+              author: "Content Creator",
+              stars: 5,
+            },
+            {
+              quote: "The privacy redaction is a game-changer for our QA team. We blur client data before attaching screenshots to tickets — no more manual editing in Photoshop.",
+              author: "QA Engineer",
+              stars: 5,
+            },
+          ].map((r) => (
+            <BlueprintFrame key={r.author} className="bg-white p-6">
+              <div className="flex items-center gap-0.5" style={{ marginBottom: 12 }}>
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <svg key={s} width="14" height="14" viewBox="0 0 24 24" fill={s <= r.stars ? "#F59E0B" : "none"} stroke={s <= r.stars ? "#F59E0B" : "rgba(29,31,32,.15)"} strokeWidth="1.5">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                  </svg>
+                ))}
+              </div>
+              <p style={{ fontSize: 13.5, lineHeight: 1.6, color: "rgba(29,31,32,.6)", marginBottom: 14 }}>
+                &ldquo;{r.quote}&rdquo;
+              </p>
+              <div className="gf-heading-font font-medium" style={{ fontSize: 12, color: "rgba(29,31,32,.4)" }}>
+                — {r.author}
+              </div>
+            </BlueprintFrame>
+          ))}
+        </div>
+      </div>
+
+      {/* Final CTA band */}
+      <div className="text-center" style={{ background: "var(--gf-color-text)", padding: "90px 24px" }}>
         <span
           className="inline-flex items-center gap-1.5 border gf-heading-font font-semibold uppercase"
           style={{ borderColor: "rgba(255,255,255,.2)", background: "rgba(255,255,255,.05)", color: "rgba(255,255,255,.7)", fontSize: "10.5px", letterSpacing: "0.06em", padding: "6px 14px" }}
@@ -503,14 +703,28 @@ export default function HomePage() {
           </svg>
           <span>100% Offline</span>
         </span>
-        <h2 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(24px, 6vw, 32px)", color: "#fff", letterSpacing: "-0.01em", marginTop: 20 }}>
-          Nothing you capture ever leaves your device
+        <h2 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(24px, 6vw, 34px)", color: "#fff", letterSpacing: "-0.01em", marginTop: 20 }}>
+          Stop juggling three extensions for one job
         </h2>
-        <p className="mx-auto" style={{ fontSize: 15, color: "rgba(255,255,255,.55)", maxWidth: 520, marginTop: 14, lineHeight: 1.6 }}>
-          No accounts, no cloud uploads, no telemetry. Every screenshot, extraction, and edit happens locally in your browser.
+        <p className="mx-auto" style={{ fontSize: 15, color: "rgba(255,255,255,.55)", maxWidth: 560, marginTop: 14, lineHeight: 1.6 }}>
+          Capture, annotate, redact, extract text, beautify, and export — all in one extension that never touches a server. No account, no subscription, no catch.
         </p>
-        <div style={{ marginTop: 28 }}>
+        <div style={{ marginTop: 32 }}>
           <CTAButton href={CWS_URL}>Add to Chrome — It&apos;s Free</CTAButton>
+        </div>
+        <div className="flex flex-wrap items-center justify-center" style={{ gap: "6px 20px", marginTop: 22, fontSize: 12, color: "rgba(255,255,255,.35)" }}>
+          <span className="inline-flex items-center gap-1">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+            2-second install
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+            Works immediately
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+            Remove anytime
+          </span>
         </div>
       </div>
 

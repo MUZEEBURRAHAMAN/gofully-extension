@@ -87,6 +87,92 @@ document.getElementById("rateUsBtn")?.addEventListener("click", () => {
   markRatedYes().catch(() => {});
 });
 
+// History panel
+const historySection = document.getElementById("historySection")!;
+const historyGrid = document.getElementById("historyGrid")!;
+
+document.getElementById("historyBtn")?.addEventListener("click", () => {
+  const isOpen = historySection.classList.contains("active");
+  if (isOpen) {
+    closeHistory();
+  } else {
+    openHistory();
+  }
+});
+
+document.getElementById("historyBackBtn")?.addEventListener("click", closeHistory);
+
+document.getElementById("historyClearBtn")?.addEventListener("click", async () => {
+  await chrome.runtime.sendMessage({ type: "CLEAR_HISTORY" });
+  renderHistoryGrid([]);
+});
+
+function openHistory(): void {
+  modesSection.style.display = "none";
+  statusLine.classList.remove("active");
+  resultBar.classList.remove("active");
+  historySection.classList.add("active");
+  chrome.runtime.sendMessage({ type: "GET_HISTORY" }, (resp) => {
+    renderHistoryGrid(resp?.history || []);
+  });
+}
+
+function closeHistory(): void {
+  historySection.classList.remove("active");
+  modesSection.style.display = "grid";
+  loadLastCaptureStatus();
+}
+
+function renderHistoryGrid(entries: any[]): void {
+  historyGrid.innerHTML = "";
+  if (entries.length === 0) {
+    historyGrid.innerHTML = '<div class="hist-empty">No screenshots yet</div>';
+    return;
+  }
+  for (const entry of entries) {
+    const item = document.createElement("div");
+    item.className = "hist-item";
+    item.title = `${entry.title || getDomain(entry.url)}\n${entry.width}×${entry.height}`;
+
+    const img = document.createElement("img");
+    img.className = "hist-thumb";
+    img.src = entry.thumbnail;
+    img.alt = "";
+    item.appendChild(img);
+
+    const meta = document.createElement("div");
+    meta.className = "hist-meta";
+    const domain = document.createElement("span");
+    domain.className = "hist-domain";
+    domain.textContent = getDomain(entry.url);
+    meta.appendChild(domain);
+    const time = document.createElement("span");
+    time.className = "hist-time";
+    time.textContent = timeAgo(entry.timestamp);
+    meta.appendChild(time);
+    item.appendChild(meta);
+
+    const del = document.createElement("button");
+    del.className = "hist-delete";
+    del.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+    del.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      await chrome.runtime.sendMessage({ type: "DELETE_HISTORY_ENTRY", payload: { id: entry.id } });
+      item.remove();
+      if (historyGrid.children.length === 0) {
+        renderHistoryGrid([]);
+      }
+    });
+    item.appendChild(del);
+
+    item.addEventListener("click", () => {
+      chrome.tabs.create({ url: chrome.runtime.getURL("editor.html") });
+    });
+
+    historyGrid.appendChild(item);
+  }
+}
+
 // Unsupported panel dismiss button ("Got it")
 unsupportedDismissBtn?.addEventListener("click", () => {
   unsupportedPanel.classList.remove("active");

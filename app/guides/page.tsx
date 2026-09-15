@@ -79,6 +79,33 @@ const GUIDES: GuideItem[] = [
     date: "Updated September 2026",
   },
   {
+    slug: "how-to-save-webpage-as-pdf",
+    title: "How to Save a Full Webpage as PDF in Chrome (Without Cutting Off Content)",
+    subtitle:
+      "Learn 3 ways to save an entire scrolling webpage as a clean, paginated PDF — print dialog, DevTools, and the 1-click extension method compared.",
+    tag: "Export Tutorial",
+    readTime: "5 min read",
+    date: "Updated September 2026",
+  },
+  {
+    slug: "how-to-beautify-screenshots",
+    title: "How to Beautify Screenshots for Social Media & Presentations (Free)",
+    subtitle:
+      "Turn raw browser screenshots into polished images with custom backgrounds, browser frames, padding, and shadows — no Photoshop or paid tools needed.",
+    tag: "Design & Workflow",
+    readTime: "4 min read",
+    date: "Updated September 2026",
+  },
+  {
+    slug: "privacy-first-screenshot-tools",
+    title: "Privacy-First Screenshot Tools: Why Offline Capture Matters in 2026",
+    subtitle:
+      "Most screenshot extensions upload your images to external servers. Learn why offline-first tools protect your data — and which ones actually stay local.",
+    tag: "Privacy & Security",
+    readTime: "6 min read",
+    date: "Updated September 2026",
+  },
+  {
     slug: "how-to-extract-text-in-multiple-languages-ocr",
     title: "How to Extract Text in Multiple Languages with On-Device OCR",
     subtitle:

@@ -69,7 +69,7 @@ export const metadata: Metadata = {
     "gofully chrome extension",
     "gofully screenshot",
   ],
-  authors: [{ name: "GoFully", url: "https://gofully-extension.vercel.app" }],
+  authors: [{ name: "Muzeeb Urrahaman", url: "https://github.com/MUZEEBURRAHAMAN" }],
   creator: "GoFully",
   publisher: "GoFully",
   category: "Productivity",
@@ -156,21 +156,34 @@ const jsonLd = {
         "price": "0",
         "priceCurrency": "USD",
       },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5.0",
+        "ratingCount": "5",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
       "description":
         "High-performance Chrome extension for full-page scrolling screenshots, on-device WebAssembly OCR text extraction, CleanShot-grade visual annotations, and PDF/4K exports.",
       "url": "https://gofully-extension.vercel.app/",
       "image": "https://gofully-extension.vercel.app/logo.png",
       "screenshot": "https://gofully-extension.vercel.app/og-image.png",
-      "softwareVersion": "1.1.1",
+      "softwareVersion": "1.1.2",
       "installUrl": "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc",
+      "author": { "@id": "https://gofully-extension.vercel.app/#person" },
+      "publisher": { "@id": "https://gofully-extension.vercel.app/#organization" },
       "featureList": [
         "Full page scrolling screenshot capture",
         "Selected region and visible area capture",
+        "Scrolling inner-element capture",
         "On-device WebAssembly OCR text extraction",
-        "Visual annotation studio with arrows, callouts, and step numbers",
-        "Privacy redaction with blur and pixelation",
+        "14 visual annotation tools — arrows, callouts, step numbers, spotlight, highlighter",
+        "Privacy redaction with blur, pixelate, and blackout",
         "Screenshot mockup beautifier with gradient backgrounds",
-        "Instant export to PNG, WebP, 4K UHD, and paginated PDF"
+        "Instant export to PNG, JPG, WebP, 4K UHD, and paginated PDF",
+        "Cookie banner and modal auto-dismiss during capture",
+        "Video pause during scroll capture",
+        "100% offline — zero data leaves your device"
       ],
     },
     {
@@ -181,22 +194,63 @@ const jsonLd = {
       "alternateName": ["GoFully Extension", "GoFully Screenshot Tool", "GoFully Full Page Screenshot", "Go Fully"],
       "description":
         "The complete web capture, full page screenshot, local OCR, and visual annotation studio for Chrome.",
-      "publisher": {
-        "@type": "Organization",
-        "@id": "https://gofully-extension.vercel.app/#organization",
-        "name": "GoFully",
-        "alternateName": "Go Fully",
-        "url": "https://gofully-extension.vercel.app/",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://gofully-extension.vercel.app/logo.png"
+      "publisher": { "@id": "https://gofully-extension.vercel.app/#organization" },
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://gofully-extension.vercel.app/#organization",
+      "name": "GoFully",
+      "alternateName": "Go Fully",
+      "url": "https://gofully-extension.vercel.app/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://gofully-extension.vercel.app/logo.png"
+      },
+      "founder": { "@id": "https://gofully-extension.vercel.app/#person" },
+      "sameAs": [
+        "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc",
+        "https://github.com/MUZEEBURRAHAMAN/gofully-extension",
+        "https://alternativeto.net/software/gofully/about/"
+      ]
+    },
+    {
+      "@type": "Person",
+      "@id": "https://gofully-extension.vercel.app/#person",
+      "name": "Muzeeb Urrahaman",
+      "url": "https://gofully-extension.vercel.app/",
+      "sameAs": [
+        "https://github.com/MUZEEBURRAHAMAN"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://gofully-extension.vercel.app/#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://gofully-extension.vercel.app/"
         },
-        "sameAs": [
-          "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc",
-          "https://github.com/MUZEEBURRAHAMAN/gofully-extension",
-          "https://alternativeto.net/software/gofully/about/"
-        ]
-      }
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Guides",
+          "item": "https://gofully-extension.vercel.app/guides"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Alternatives",
+          "item": "https://gofully-extension.vercel.app/alternatives"
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "FAQ",
+          "item": "https://gofully-extension.vercel.app/faq"
+        }
+      ]
     },
   ],
 };

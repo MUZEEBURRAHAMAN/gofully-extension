@@ -711,6 +711,131 @@
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+    /* ─── HISTORY PANEL ─── */
+    #historySection {
+      display: none;
+      padding: 8px 14px 14px;
+    }
+    #historySection.active { display: block; }
+
+    .hist-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .hist-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-2);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .hist-clear {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--red);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      padding: 2px 6px;
+      transition: opacity .12s;
+    }
+    .hist-clear:hover { opacity: 0.7; }
+
+    .hist-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      max-height: 320px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    .hist-item {
+      position: relative;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      overflow: hidden;
+      transition: border-color .12s, box-shadow .12s;
+    }
+    .hist-item:hover {
+      border-color: var(--blue-bd);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .hist-thumb {
+      width: 100%;
+      aspect-ratio: 3 / 2;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+    }
+
+    .hist-meta {
+      padding: 4px 5px;
+      border-top: 1px solid var(--border);
+    }
+
+    .hist-domain {
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--text-2);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+    }
+
+    .hist-time {
+      font-size: 8.5px;
+      color: var(--text-4);
+      display: block;
+      margin-top: 1px;
+    }
+
+    .hist-delete {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      width: 18px;
+      height: 18px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.6);
+      border: none;
+      cursor: pointer;
+      color: #fff;
+      padding: 0;
+    }
+    .hist-item:hover .hist-delete { display: flex; }
+
+    .hist-empty {
+      text-align: center;
+      padding: 24px 16px;
+      color: var(--text-4);
+      font-size: 11px;
+    }
+
+    .hist-back {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--text-3);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      padding: 2px 4px;
+      transition: color .12s;
+    }
+    .hist-back:hover { color: var(--text); }
+
     /* ─── REDUCED MOTION ─── */
     /* Keep color/background/opacity feedback (it carries state), drop only
        the spatial motion for users with vestibular sensitivity. */
@@ -741,6 +866,15 @@
     <button class="rate-us-btn" id="rateUsBtn" type="button">
       <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
       <span data-i18n="header.rate_us">Rate us</span>
+    </button>
+    <button class="icon-btn" id="historyBtn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7"/>
+        <rect x="14" y="3" width="7" height="7"/>
+        <rect x="3" y="14" width="7" height="7"/>
+        <rect x="14" y="14" width="7" height="7"/>
+      </svg>
+      <span class="tip">History</span>
     </button>
     <button class="icon-btn" id="helpBtn">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -865,6 +999,19 @@
   <img class="status-thumb" id="statusThumb" src="" alt="">
   <span class="status-text" id="statusText"></span>
   <button class="status-view" id="statusViewBtn" type="button" data-i18n="status.view">View</button>
+</div>
+
+<!-- HISTORY -->
+<div id="historySection">
+  <div class="hist-header">
+    <button class="hist-back" id="historyBackBtn" type="button">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      Back
+    </button>
+    <span class="hist-title">History</span>
+    <button class="hist-clear" id="historyClearBtn" type="button">Clear All</button>
+  </div>
+  <div class="hist-grid" id="historyGrid"></div>
 </div>
 
 <!-- PROGRESS -->

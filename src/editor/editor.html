@@ -1532,6 +1532,17 @@
           </svg>
           Save as WebP
         </button>
+        <button class="export-drop-item" id="save-jpg-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span style="display:flex;align-items:center;gap:8px;flex:1">
+            Save as JPG
+            <input type="range" id="jpg-quality-range" min="10" max="100" value="92" step="1"
+              style="flex:1;height:4px;accent-color:var(--blue);cursor:pointer" title="JPG quality">
+            <span id="jpg-quality-val" style="font-size:10px;color:rgba(var(--ink),.4);min-width:28px;text-align:right">92%</span>
+          </span>
+        </button>
         <button class="export-drop-item" id="pdf-btn">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13h6M9 17h3"/>

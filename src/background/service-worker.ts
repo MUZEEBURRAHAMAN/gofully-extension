@@ -15,6 +15,7 @@ import { isSupportedCapturePage } from "../utils/url-validator";
 import { dataUrlToBlob } from "../utils/image";
 import { cancelActiveCapture } from "./stitch-capture";
 import { recordCaptureCompleted } from "../utils/rate-nudge";
+import { generateThumbnail, addHistoryEntry } from "../utils/history";
 
 // Uninstall feedback URL configuration pointing to live Vercel deployment
 chrome.runtime.onInstalled.addListener(async (details) => {
@@ -189,6 +190,25 @@ function cacheCaptureInSession(dataUrl: string): void {
   chrome.storage.session.set({ lastCaptureDataUrl: dataUrl }).catch(() => {});
 }
 
+async function saveToHistory(result: CaptureResult, dataUrl: string): Promise<void> {
+  try {
+    const thumbnail = await generateThumbnail(dataUrl);
+    await addHistoryEntry({
+      id: `h_${result.timestamp}_${Math.random().toString(36).slice(2, 8)}`,
+      thumbnail,
+      url: result.url,
+      title: result.title,
+      mode: result.mode,
+      method: result.method,
+      width: result.width,
+      height: result.height,
+      timestamp: result.timestamp,
+    });
+  } catch {
+    // Non-critical — don't block capture flow
+  }
+}
+
 /**
  * A content script is only as trustworthy as the page it runs in, so a region
  * arriving over messaging is validated against the tab's real viewport before
@@ -254,6 +274,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         // Persist so editor can load even after SW idle-restart
         cacheCaptureInSession(lastCaptureDataUrl);
         recordCaptureCompleted().catch(() => {});
+        saveToHistory(result, lastCaptureDataUrl).catch(() => {});
 
         const payload = {
           width: result.width,
@@ -393,6 +414,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         lastCaptureResult = { ...result, blob: null as any };
         cacheCaptureInSession(lastCaptureDataUrl);
         recordCaptureCompleted().catch(() => {});
+        saveToHistory(result, lastCaptureDataUrl).catch(() => {});
         // Tell scrolling-area-ui to clean up before opening the review tab
         chrome.tabs.sendMessage(tabId, { type: "SCROLLING_CAPTURE_DONE" }).catch(() => {});
         await openReviewTab(tabId);
@@ -453,9 +475,36 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       lastCaptureResult = { ...result, blob: null as any };
       cacheCaptureInSession(lastCaptureDataUrl);
       recordCaptureCompleted().catch(() => {});
+      saveToHistory(result, lastCaptureDataUrl).catch(() => {});
       await openReviewTab(tabId);
       sendResponse({ success: true });
     }).catch(err => sendResponse({ success: false, error: err.message }));
+    return true;
+  }
+
+  if (message.type === "GET_HISTORY") {
+    (async () => {
+      const { getHistory } = await import("../utils/history");
+      sendResponse({ history: await getHistory() });
+    })();
+    return true;
+  }
+
+  if (message.type === "DELETE_HISTORY_ENTRY") {
+    (async () => {
+      const { deleteHistoryEntry } = await import("../utils/history");
+      await deleteHistoryEntry(message.payload.id);
+      sendResponse({ ok: true });
+    })();
+    return true;
+  }
+
+  if (message.type === "CLEAR_HISTORY") {
+    (async () => {
+      const { clearHistory } = await import("../utils/history");
+      await clearHistory();
+      sendResponse({ ok: true });
+    })();
     return true;
   }
 
@@ -510,6 +559,7 @@ chrome.commands.onCommand.addListener(async (command) => {
       lastCaptureResult = { ...result, blob: null as any };
       cacheCaptureInSession(lastCaptureDataUrl);
       recordCaptureCompleted().catch(() => {});
+      saveToHistory(result, lastCaptureDataUrl).catch(() => {});
 
       await openReviewTab(tab.id);
     } catch (e) {
@@ -525,6 +575,7 @@ chrome.commands.onCommand.addListener(async (command) => {
       lastCaptureResult = { ...result, blob: null as any };
       cacheCaptureInSession(lastCaptureDataUrl);
       recordCaptureCompleted().catch(() => {});
+      saveToHistory(result, lastCaptureDataUrl).catch(() => {});
 
       chrome.tabs.sendMessage(tab.id, {
         type: "QUICK_CAPTURE_TOAST",

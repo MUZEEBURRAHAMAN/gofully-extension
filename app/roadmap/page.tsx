@@ -118,9 +118,9 @@ export default function RoadmapPage() {
       <div className="px-6 md:px-20" style={{ paddingTop: 8, paddingBottom: 90 }}>
         <div>
 
-          {/* v1.1.2 upcoming */}
+          {/* v1.2.0 upcoming */}
           <TimelineRow
-            tag="v1.1.2"
+            tag="v1.2.0"
             tagStyle={{ background: "var(--gf-color-accent)", color: "#fff", borderColor: "var(--gf-color-accent)" }}
             status="UPCOMING"
             statusColor="var(--gf-color-accent)"
@@ -144,19 +144,12 @@ export default function RoadmapPage() {
               </ul>
 
               <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
-                First-run experience
-              </div>
-              <ul className="mt-2.5 flex flex-col gap-2">
-                <OutlineBullet>A welcome page shown right after install, styled to match GoFully&apos;s own theme — quick orientation instead of dropping straight into an empty popup.</OutlineBullet>
-              </ul>
-
-              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
                 Editor tools
               </div>
               <ul className="mt-2.5 flex flex-col gap-2">
                 <OutlineBullet>Highlighter tool, for drawing attention instead of hiding it.</OutlineBullet>
                 <OutlineBullet>Shape tool consolidated into one button with a dropdown.</OutlineBullet>
-                <OutlineBullet>Upgraded text tool — color, font, and size controls, right where you need them.</OutlineBullet>
+                <OutlineBullet>Upgraded text tool — color, font, and size controls.</OutlineBullet>
                 <OutlineBullet>Custom keyboard shortcuts for editor tools.</OutlineBullet>
               </ul>
 
@@ -177,7 +170,56 @@ export default function RoadmapPage() {
                 <OutlineBullet>Export capture + OCR&apos;d text as Markdown.</OutlineBullet>
                 <OutlineBullet>Optional URL and timestamp stamp on capture.</OutlineBullet>
                 <OutlineBullet>&quot;Copy as&quot; quick actions after OCR — plain text or structured JSON.</OutlineBullet>
-                <OutlineBullet><strong style={{ color: "#1d1f20" }}>Fixed:</strong> clicking Done could close the editor without saving. Done now closes any open panel (Beautify, crop) and opens the export menu instead, so finishing an edit always leads to a save or copy step.</OutlineBullet>
+              </ul>
+            </div>
+          </TimelineRow>
+
+          {/* v1.1.2 shipped */}
+          <TimelineRow
+            tag="v1.1.2"
+            tagStyle={{ borderColor: "rgba(29,31,32,.2)", color: "#1d1f20" }}
+            status="SHIPPED"
+            statusColor="rgba(29,31,32,.5)"
+            dotStyle={{ background: "#1d1f20", borderColor: "#1d1f20" }}
+          >
+            <div className="p-6 border" style={{ borderColor: "rgba(29,31,32,.12)", background: "#fff", maxWidth: 600 }}>
+              <div className="gf-heading-font font-semibold" style={{ fontSize: 20 }}>
+                Capture reliability, history, and a better homepage
+              </div>
+              <p className="mt-2" style={{ fontSize: "13.5px", color: "rgba(29,31,32,.6)", lineHeight: 1.6 }}>
+                Competitive improvements across the extension and website — smarter captures, new export formats, and a complete homepage overhaul.
+              </p>
+
+              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
+                Capture engine
+              </div>
+              <ul className="mt-2.5 flex flex-col gap-2">
+                <Bullet>JPG export with adjustable quality slider (0–100%).</Bullet>
+                <Bullet>Video auto-pause during capture — playing videos no longer corrupt stitched frames.</Bullet>
+                <Bullet>Cookie banner and modal auto-dismiss before capture starts.</Bullet>
+                <Bullet>Seam verification in scroll-stitch — detects and re-captures misaligned frame boundaries.</Bullet>
+              </ul>
+
+              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
+                Editor &amp; workflow
+              </div>
+              <ul className="mt-2.5 flex flex-col gap-2">
+                <Bullet>Screenshot history with thumbnail grid — browse and reopen past captures from the popup.</Bullet>
+                <Bullet>Browser frame in Beautify now shows the real captured page URL with lock icon.</Bullet>
+                <Bullet>Unsaved changes protection — warns before closing the editor with unfinished work.</Bullet>
+              </ul>
+
+              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
+                Website
+              </div>
+              <ul className="mt-2.5 flex flex-col gap-2">
+                <Bullet>Rich structured data (JSON-LD) across all pages for better search visibility.</Bullet>
+                <Bullet>Custom 404 page with helpful navigation.</Bullet>
+                <Bullet>Social proof bar on homepage — CWS rating, trust signals.</Bullet>
+                <Bullet>Competitor comparison table — 13 features across 4 extensions.</Bullet>
+                <Bullet>User reviews section with testimonials.</Bullet>
+                <Bullet>Strengthened final CTA with trust checkmarks.</Bullet>
+                <Bullet>Three new SEO guides: full-page PDF export, screenshot beautification, and privacy-first tools.</Bullet>
               </ul>
             </div>
           </TimelineRow>

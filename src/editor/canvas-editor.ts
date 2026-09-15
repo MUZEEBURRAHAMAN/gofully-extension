@@ -40,6 +40,7 @@ let cssZoom = 1;
 let cropperInstance: Cropper | null = null;
 let isBeautified = false;
 let isCropped = false;
+let capturedPageUrl = "";
 
 // ─── Keyboard shortcut map ──────────────────────────────────────────────────
 
@@ -137,6 +138,12 @@ async function init(): Promise<void> {
   } catch {
     showToast("Could not load image from service worker");
   }
+
+  // Fetch captured page metadata (URL) for browser frame rendering
+  try {
+    const metaResp = await chrome.runtime.sendMessage({ type: "GET_LAST_CAPTURE" });
+    if (metaResp?.result?.url) capturedPageUrl = metaResp.result.url;
+  } catch {}
 
   saveState();
   maybeShowRateNudge();
@@ -1495,6 +1502,7 @@ function setupExportButtons(): void {
     const a    = Object.assign(document.createElement("a"), { href: url, download: getExportFilename("png") });
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 5000);
+    editorDirty = false;
     showToast("PNG saved");
   });
 
@@ -1506,6 +1514,7 @@ function setupExportButtons(): void {
       const a = Object.assign(document.createElement("a"), { href: url, download: getExportFilename("pdf") });
       a.click();
       setTimeout(() => URL.revokeObjectURL(url), 5000);
+      editorDirty = false;
       showToast("PDF saved");
     } catch { showToast("PDF failed"); }
   });
@@ -1542,7 +1551,34 @@ function setupExportButtons(): void {
     const a = Object.assign(document.createElement("a"), { href: url, download: getExportFilename("webp") });
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 5000);
+    editorDirty = false;
     showToast("WebP saved");
+  });
+
+  // JPG quality slider
+  const jpgRange = document.getElementById("jpg-quality-range") as HTMLInputElement | null;
+  const jpgVal = document.getElementById("jpg-quality-val");
+  jpgRange?.addEventListener("input", () => {
+    if (jpgVal) jpgVal.textContent = `${jpgRange.value}%`;
+  });
+  jpgRange?.addEventListener("click", (e) => e.stopPropagation());
+
+  document.getElementById("save-jpg-btn")?.addEventListener("click", async () => {
+    const pngBlob = await exportToBlob();
+    const bitmap = await createImageBitmap(pngBlob);
+    const dims = getResizeDims();
+    const ow = dims?.w ?? bitmap.width;
+    const oh = dims?.h ?? bitmap.height;
+    const oc = new OffscreenCanvas(ow, oh);
+    oc.getContext("2d")!.drawImage(bitmap, 0, 0, ow, oh);
+    const quality = (jpgRange ? parseInt(jpgRange.value) : 92) / 100;
+    const jpgBlob = await oc.convertToBlob({ type: "image/jpeg", quality });
+    const url = URL.createObjectURL(jpgBlob);
+    const a = Object.assign(document.createElement("a"), { href: url, download: getExportFilename("jpg") });
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    editorDirty = false;
+    showToast(`JPG saved (${Math.round(quality * 100)}%)`);
   });
 
 
@@ -1732,11 +1768,19 @@ function adjustZoom(delta: number): void {
 
 // ─── Undo / redo / delete ─────────────────────────────────────────────────────
 
+let editorDirty = false;
+
 function saveState(): void {
   undoStack.push(JSON.stringify(canvas.toJSON()));
   redoStack = [];
   if (undoStack.length > 50) undoStack.shift();
+  editorDirty = true;
 }
+
+window.addEventListener("beforeunload", (e) => {
+  if (!editorDirty) return;
+  e.preventDefault();
+});
 
 function findBackgroundImage(): FabricImage | null {
   const objs = canvas.getObjects();
@@ -2486,11 +2530,26 @@ function drawBrowserFrame(ctx: CanvasRenderingContext2D, x: number, y: number, w
     ctx.closePath();
     ctx.fill();
 
-    // Lock icon + placeholder URL text
     ctx.fillStyle = "#999";
-    ctx.font = `${Math.round(barH * 0.6)}px -apple-system, sans-serif`;
+    const fontSize = Math.round(barH * 0.6);
+    ctx.font = `${fontSize}px -apple-system, sans-serif`;
     ctx.textBaseline = "middle";
-    ctx.fillText("🔒 example.com", barX + 8, barY + barH / 2);
+    let displayUrl = "example.com";
+    if (capturedPageUrl) {
+      try {
+        const parsed = new URL(capturedPageUrl);
+        displayUrl = parsed.hostname + (parsed.pathname !== "/" ? parsed.pathname : "");
+      } catch {
+        displayUrl = capturedPageUrl.slice(0, 60);
+      }
+    }
+    const prefix = capturedPageUrl?.startsWith("https") ? "🔒 " : "";
+    let urlText = prefix + displayUrl;
+    const maxUrlW = barW - 16;
+    while (ctx.measureText(urlText).width > maxUrlW && urlText.length > 10) {
+      urlText = urlText.slice(0, -2) + "…";
+    }
+    ctx.fillText(urlText, barX + 8, barY + barH / 2);
   }
 
   ctx.restore();
