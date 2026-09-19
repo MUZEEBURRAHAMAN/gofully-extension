@@ -140,13 +140,9 @@ document.getElementById("save-png-btn")!.addEventListener("click", async () => {
   exportDropMenu.classList.remove("show");
 });
 
-// ─── JPG quality slider ───────────────────────────────────────────────────────
-const jpgSlider = document.getElementById("jpg-quality-slider") as HTMLInputElement;
-const jpgLabel = document.getElementById("jpg-quality-label")!;
-jpgSlider?.addEventListener("input", () => {
-  jpgLabel.textContent = `${jpgSlider.value}%`;
-});
-jpgSlider?.addEventListener("click", (e) => e.stopPropagation());
+// ─── Image Quality dropdown — shared compression quality for JPG and WebP ─────
+const imageQualitySelect = document.getElementById("review-image-quality") as HTMLSelectElement | null;
+const getExportQuality = () => (imageQualitySelect ? parseInt(imageQualitySelect.value) : 92) / 100;
 
 document.getElementById("save-jpg-btn")!.addEventListener("click", async () => {
   if (!currentDataUrl) return;
@@ -155,7 +151,7 @@ document.getElementById("save-jpg-btn")!.addEventListener("click", async () => {
     const bitmap = await createImageBitmap(pngBlob);
     const oc = new OffscreenCanvas(bitmap.width, bitmap.height);
     oc.getContext("2d")!.drawImage(bitmap, 0, 0);
-    const quality = (jpgSlider ? parseInt(jpgSlider.value) : 92) / 100;
+    const quality = getExportQuality();
     const jpgBlob = await oc.convertToBlob({ type: "image/jpeg", quality });
     downloadBlob(jpgBlob, getExportFilename("jpg"));
     showToast(`Saved as JPG (${Math.round(quality * 100)}%)`);
@@ -172,9 +168,10 @@ document.getElementById("save-webp-btn")!.addEventListener("click", async () => 
     const bitmap = await createImageBitmap(pngBlob);
     const oc = new OffscreenCanvas(bitmap.width, bitmap.height);
     oc.getContext("2d")!.drawImage(bitmap, 0, 0);
-    const webpBlob = await oc.convertToBlob({ type: "image/webp", quality: 0.92 });
+    const quality = getExportQuality();
+    const webpBlob = await oc.convertToBlob({ type: "image/webp", quality });
     downloadBlob(webpBlob, getExportFilename("webp"));
-    showToast("Saved as WebP");
+    showToast(`Saved as WebP (${Math.round(quality * 100)}%)`);
   } catch {
     showToast("WebP save failed");
   }

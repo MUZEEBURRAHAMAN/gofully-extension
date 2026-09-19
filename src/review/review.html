@@ -144,6 +144,7 @@
     .export-drop-menu.show { display: block; }
     .export-settings { padding: 8px 14px 10px; display: flex; flex-direction: column; gap: 8px; }
     .export-row-label { font-size: 11px; font-weight: 600; color: var(--text-2); }
+    .export-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     #review-filename {
       width: 100%; height: 26px;
       border: 1px solid rgba(var(--ink),.25);
@@ -154,6 +155,22 @@
     }
     #review-filename:focus { outline: none; border-color: var(--blue); }
     #review-filename::placeholder { color: rgba(var(--ink),.35); }
+    #review-image-quality {
+      height: 30px;
+      padding: 0 8px;
+      border-radius: 0;
+      border: 1px solid var(--border);
+      background: rgba(var(--ink),.05);
+      color: var(--text-2);
+      font-size: 11.5px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      outline: none;
+    }
+    #review-image-quality:hover { background: rgba(var(--ink),.12); }
+    #review-image-quality:focus-visible { outline: 2px solid var(--blue); outline-offset: -1px; }
+    #review-image-quality option { background: var(--surface); color: var(--text); }
     .export-drop-sep { height: 1px; background: var(--border); margin: 6px 0; }
     .export-drop-label {
       font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
@@ -281,18 +298,20 @@
           <div class="export-settings">
             <span class="export-row-label">Filename</span>
             <input type="text" id="review-filename" placeholder="auto-generated" autocomplete="off" spellcheck="false">
+            <div class="export-row">
+              <span class="export-row-label">Image Quality</span>
+              <select id="review-image-quality" title="Compression quality for JPG and WebP exports">
+                <option value="50">Low</option>
+                <option value="75">Medium</option>
+                <option value="92" selected>High</option>
+                <option value="100">Maximum</option>
+              </select>
+            </div>
           </div>
           <div class="export-drop-sep"></div>
           <div class="export-drop-label">Save as</div>
           <button class="export-drop-item" id="save-png-btn">PNG</button>
-          <button class="export-drop-item" id="save-jpg-btn">
-            <span style="display:flex;align-items:center;gap:8px;width:100%">
-              JPG
-              <input type="range" id="jpg-quality-slider" min="10" max="100" value="92" step="1"
-                style="flex:1;height:4px;accent-color:var(--blue);cursor:pointer" title="JPG quality">
-              <span id="jpg-quality-label" style="font-size:10px;color:var(--text-4);min-width:28px;text-align:right">92%</span>
-            </span>
-          </button>
+          <button class="export-drop-item" id="save-jpg-btn">JPG</button>
           <button class="export-drop-item" id="save-webp-btn">WebP</button>
           <button class="export-drop-item" id="save-pdf-btn">PDF</button>
         </div>

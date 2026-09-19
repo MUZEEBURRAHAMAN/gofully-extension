@@ -828,7 +828,7 @@
       color: rgba(var(--ink),.6);
     }
 
-    #exportQuality {
+    #exportQuality, #export-image-quality {
       height: 30px;
       padding: 0 8px;
       border-radius: 0;
@@ -841,12 +841,12 @@
       cursor: pointer;
       outline: none;
     }
-    #exportQuality:hover { background: rgba(var(--ink),.12); }
-    #exportQuality:focus-visible {
+    #exportQuality:hover, #export-image-quality:hover { background: rgba(var(--ink),.12); }
+    #exportQuality:focus-visible, #export-image-quality:focus-visible {
       outline: 2px solid var(--blue);
       outline-offset: -1px;
     }
-    #exportQuality option { background: var(--surface); color: var(--text); }
+    #exportQuality option, #export-image-quality option { background: var(--surface); color: var(--text); }
 
     .tbar-select {
       height: 26px;
@@ -1502,6 +1502,17 @@
             <span class="export-row-label">Filename</span>
             <input type="text" id="export-filename" placeholder="auto-generated" autocomplete="off" spellcheck="false">
           </div>
+
+          <!-- Image Quality (JPG/WebP compression) -->
+          <div class="export-row">
+            <span class="export-row-label">Image Quality</span>
+            <select id="export-image-quality" title="Compression quality for JPG and WebP exports">
+              <option value="50">Low</option>
+              <option value="75">Medium</option>
+              <option value="92" selected>High</option>
+              <option value="100">Maximum</option>
+            </select>
+          </div>
         </div>
         <div class="export-drop-sep" style="margin:0"></div>
 
@@ -1536,12 +1547,7 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
           </svg>
-          <span style="display:flex;align-items:center;gap:8px;flex:1">
-            Save as JPG
-            <input type="range" id="jpg-quality-range" min="10" max="100" value="92" step="1"
-              style="flex:1;height:4px;accent-color:var(--blue);cursor:pointer" title="JPG quality">
-            <span id="jpg-quality-val" style="font-size:10px;color:rgba(var(--ink),.4);min-width:28px;text-align:right">92%</span>
-          </span>
+          Save as JPG
         </button>
         <button class="export-drop-item" id="pdf-btn">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">

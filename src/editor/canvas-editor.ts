@@ -1538,6 +1538,12 @@ function setupExportButtons(): void {
     } catch { showToast("Copy failed"); }
   });
 
+  // Image Quality dropdown — shared compression quality for JPG and WebP.
+  // Replaces the old per-JPG-only slider so quality applies consistently
+  // across every lossy export format from the same setting.
+  const imageQualitySelect = document.getElementById("export-image-quality") as HTMLSelectElement | null;
+  const getExportQuality = () => (imageQualitySelect ? parseInt(imageQualitySelect.value) : 92) / 100;
+
   document.getElementById("save-webp-btn")?.addEventListener("click", async () => {
     const pngBlob = await exportToBlob();
     const bitmap = await createImageBitmap(pngBlob);
@@ -1546,22 +1552,15 @@ function setupExportButtons(): void {
     const oh = dims?.h ?? bitmap.height;
     const oc = new OffscreenCanvas(ow, oh);
     oc.getContext("2d")!.drawImage(bitmap, 0, 0, ow, oh);
-    const webpBlob = await oc.convertToBlob({ type: "image/webp", quality: 0.92 });
+    const quality = getExportQuality();
+    const webpBlob = await oc.convertToBlob({ type: "image/webp", quality });
     const url = URL.createObjectURL(webpBlob);
     const a = Object.assign(document.createElement("a"), { href: url, download: getExportFilename("webp") });
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 5000);
     editorDirty = false;
-    showToast("WebP saved");
+    showToast(`WebP saved (${Math.round(quality * 100)}%)`);
   });
-
-  // JPG quality slider
-  const jpgRange = document.getElementById("jpg-quality-range") as HTMLInputElement | null;
-  const jpgVal = document.getElementById("jpg-quality-val");
-  jpgRange?.addEventListener("input", () => {
-    if (jpgVal) jpgVal.textContent = `${jpgRange.value}%`;
-  });
-  jpgRange?.addEventListener("click", (e) => e.stopPropagation());
 
   document.getElementById("save-jpg-btn")?.addEventListener("click", async () => {
     const pngBlob = await exportToBlob();
@@ -1571,7 +1570,7 @@ function setupExportButtons(): void {
     const oh = dims?.h ?? bitmap.height;
     const oc = new OffscreenCanvas(ow, oh);
     oc.getContext("2d")!.drawImage(bitmap, 0, 0, ow, oh);
-    const quality = (jpgRange ? parseInt(jpgRange.value) : 92) / 100;
+    const quality = getExportQuality();
     const jpgBlob = await oc.convertToBlob({ type: "image/jpeg", quality });
     const url = URL.createObjectURL(jpgBlob);
     const a = Object.assign(document.createElement("a"), { href: url, download: getExportFilename("jpg") });
