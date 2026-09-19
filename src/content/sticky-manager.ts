@@ -121,13 +121,25 @@ interface HiddenSticky {
 
 let hiddenStickyElements: HiddenSticky[] = [];
 
+// Many real headers are NOT position:fixed/sticky at scrollY=0 — they start
+// in normal flow and a page-owned scroll listener only *adds* fixed/sticky
+// positioning once the user scrolls past some threshold (the common
+// "sticky navbar on scroll" pattern in WordPress/Shopify/Squarespace/
+// Bootstrap themes). Full-page capture calls hideStickyElements() again
+// after every scroll step for exactly this reason (see stitch-capture.ts),
+// so this must be idempotent and cumulative across calls within one capture:
+// re-scanning must pick up newly-fixed elements without re-capturing (and
+// thereby clobbering) the true original opacity of ones already hidden.
+let alreadyHidden = new WeakSet<HTMLElement>();
+
 export function hideStickyElements(): StickyElement[] {
   const elements = findStickyElements();
-  hiddenStickyElements = [];
 
   for (const el of elements) {
     if (el.id?.startsWith("gofully-") || el.id?.startsWith("snapforge-")) continue;
+    if (alreadyHidden.has(el)) continue;
 
+    alreadyHidden.add(el);
     hiddenStickyElements.push({
       el,
       originalOpacity: el.style.opacity,
@@ -160,6 +172,9 @@ export function restoreStickyElements(): void {
     }
   }
   hiddenStickyElements = [];
+  // WeakSet has no .clear() — a capture is over, so start a fresh one for
+  // the next capture rather than carrying stale entries forward.
+  alreadyHidden = new WeakSet<HTMLElement>();
 }
 
 // Full-page scroll-stitch captures can run long enough on tall pages that

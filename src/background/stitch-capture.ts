@@ -7,7 +7,7 @@ import type {
 } from "../types";
 import { detectDPRFromCapture } from "../utils/dpr-handler";
 import { loadImage, canvasToBlob } from "../utils/image";
-import { hideProgressInTab } from "../utils/progress-overlay";
+import { hideProgressInTab, suppressProgressInTab, unsuppressProgressInTab } from "../utils/progress-overlay";
 
 const CAPTURE_DELAY = 300;
 const OVERLAP_PX = 20;
@@ -55,6 +55,53 @@ export async function captureWithScrollStitch(
   let coveredY = 0;
   let lastFrameHash = "";
   let lastScrollY = -1;
+
+  const settingsRes = await (chrome.storage.sync?.get("settings").catch(() => null)) ||
+    await chrome.storage.local.get("settings").catch(() => null);
+  const shouldSkipSticky =
+    (settingsRes?.settings as Partial<Settings> | undefined)?.skipStickyHeaders ?? true;
+
+  // Hide sticky elements so they appear only once at the top. This is NOT a
+  // one-time check: many real headers are position:static at scrollY=0 and
+  // only become position:fixed once a page-owned scroll listener sees the
+  // user pass some threshold (the common "sticky navbar on scroll" pattern
+  // in WordPress/Shopify/Squarespace/Bootstrap themes). A single hide pass
+  // run before any scrolling happens can never observe that later fixed
+  // state, so the header sails straight into every subsequent frame.
+  // hideStickyElements() is idempotent and cumulative (content/sticky-
+  // manager.ts), so calling it again after each scroll step — including
+  // during seam re-capture below — is safe and picks up anything that just
+  // turned fixed/sticky at the new scroll position.
+  const hideStickyForCurrentPosition = async (): Promise<void> => {
+    if (!shouldSkipSticky) return;
+    // chrome.tabs.sendMessage to the content script isn't a guaranteed
+    // delivery (same gap the progress-badge cleanup hit) — a fixed-position
+    // element (floating action buttons, cursor-follow decorations, not just
+    // nav headers) that silently fails to hide gets baked into every
+    // subsequent frame. executeScript actually fails loudly instead of
+    // no-op'ing.
+    //
+    // A fixed sleep() after this is a guess, not a guarantee: this
+    // executeScript call resolving only means the hide *ran*, not that the
+    // browser has *painted* the result yet. That guess held on a clean test
+    // profile but not on a real browser under real load (many other
+    // extensions competing for the main thread) — pages with two stacked
+    // sticky elements (e.g. a header at top:0 plus a secondary sticky
+    // sub-nav below it) showed both still visible in the very next frame.
+    // Waiting on two animation frames instead guarantees at least one full
+    // paint has happened before the next scroll+capture step runs.
+    await chrome.scripting.executeScript({
+      target: { tabId },
+      func: () => {
+        return new Promise<void>((resolve) => {
+          if (typeof (window as any).__gofully_hide_sticky === "function") {
+            (window as any).__gofully_hide_sticky();
+          }
+          requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+        });
+      },
+    }).catch(() => {});
+  };
 
   // Hide cookie banners, consent dialogs, and fixed overlays before capture
   await chrome.scripting.executeScript({
@@ -108,10 +155,7 @@ export async function captureWithScrollStitch(
       scrollHeight = initialScroll.docHeight;
     }
 
-    // Hide any in-page progress overlay during snapshot
-    await hideProgressInTab(tabId);
-
-    const firstDataUrl = await captureWithRetry(windowId);
+    const firstDataUrl = await captureFrameSafely(tabId, windowId);
     const img0 = await loadImage(firstDataUrl);
     dpr = detectDPRFromCapture(img0.width, viewportWidth);
     lastFrameHash = await hashFrame(firstDataUrl);
@@ -140,41 +184,7 @@ export async function captureWithScrollStitch(
 
     // If page extends beyond initial viewport, capture remaining contiguous slices
     if (scrollHeight > viewportHeight) {
-      // Hide sticky elements for subsequent frames so they appear only once at the top
-      const settingsRes = await (chrome.storage.sync?.get("settings").catch(() => null)) ||
-        await chrome.storage.local.get("settings").catch(() => null);
-      const shouldSkipSticky =
-        (settingsRes?.settings as Partial<Settings> | undefined)?.skipStickyHeaders ?? true;
-      if (shouldSkipSticky) {
-        // chrome.tabs.sendMessage to the content script isn't a guaranteed
-        // delivery (same gap the progress-badge cleanup hit) — a fixed-
-        // position element (floating action buttons, cursor-follow
-        // decorations, not just nav headers) that silently fails to hide
-        // gets baked into every subsequent frame. executeScript actually
-        // fails loudly instead of no-op'ing.
-        //
-        // A fixed sleep() after this is a guess, not a guarantee: this
-        // executeScript call resolving only means the hide *ran*, not that
-        // the browser has *painted* the result yet. That guess held on a
-        // clean test profile but not on a real browser under real load
-        // (many other extensions competing for the main thread) — pages
-        // with two stacked sticky elements (e.g. a header at top:0 plus a
-        // secondary sticky sub-nav below it) showed both still visible in
-        // the very next frame. Waiting on two animation frames instead
-        // guarantees at least one full paint has happened before the next
-        // scroll+capture step runs.
-        await chrome.scripting.executeScript({
-          target: { tabId },
-          func: () => {
-            return new Promise<void>((resolve) => {
-              if (typeof (window as any).__gofully_hide_sticky === "function") {
-                (window as any).__gofully_hide_sticky();
-              }
-              requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
-            });
-          },
-        }).catch(() => {});
-      }
+      await hideStickyForCurrentPosition();
 
       let step = 0;
       while (coveredY < scrollHeight && step < maxSteps) {
@@ -198,6 +208,11 @@ export async function captureWithScrollStitch(
         await performScroll(tabId, targetY, pageInit.targetSelector);
         await sleep(CAPTURE_DELAY);
 
+        // Re-check for newly fixed/sticky elements at this scroll position
+        // (see hideStickyForCurrentPosition above) before this frame's
+        // shutter opens, not just once at the top of the page.
+        await hideStickyForCurrentPosition();
+
         const scrollInfo = await getActualScrollPosition(tabId, pageInit.targetSelector);
         if (scrollInfo.docHeight && scrollInfo.docHeight > scrollHeight) {
           scrollHeight = scrollInfo.docHeight;
@@ -208,8 +223,7 @@ export async function captureWithScrollStitch(
           break;
         }
 
-        await hideProgressInTab(tabId);
-        const dataUrl = await captureWithRetry(windowId);
+        const dataUrl = await captureFrameSafely(tabId, windowId);
 
         const currentHash = await hashFrame(dataUrl);
         if (currentHash === lastFrameHash && step > 1) {
@@ -320,6 +334,13 @@ export async function captureWithScrollStitch(
         await initScrollCapture(tabId);
         await chrome.tabs.sendMessage(tabId, { type: "CAPTURE_KEEPALIVE_START" }).catch(() => {});
 
+        // The original hide-sticky state was already reverted by the
+        // finally-block restore above (opacity back to normal). Every
+        // re-captured seam frame here is, by definition, not the top-of-page
+        // frame, so a fixed/sticky header must be hidden again before any of
+        // these recaptures or it bakes straight back into the "fixed" seam.
+        await hideStickyForCurrentPosition();
+
         for (const seamIdx of badSeams) {
           if (isCaptureCancelled) break;
           const badFrame = frames[seamIdx + 1];
@@ -327,13 +348,21 @@ export async function captureWithScrollStitch(
 
           await performScroll(tabId, targetY, pageInit.targetSelector);
           await sleep(CAPTURE_DELAY + 100);
-          await hideProgressInTab(tabId);
+          await hideStickyForCurrentPosition();
 
-          const newDataUrl = await captureWithRetry(windowId);
+          const newDataUrl = await captureFrameSafely(tabId, windowId);
           badFrame.dataUrl = newDataUrl;
         }
 
         await chrome.tabs.sendMessage(tabId, { type: "CAPTURE_KEEPALIVE_STOP" }).catch(() => {});
+        await chrome.scripting.executeScript({
+          target: { tabId },
+          func: () => {
+            if (typeof (window as any).__gofully_restore_sticky === "function") {
+              (window as any).__gofully_restore_sticky();
+            }
+          },
+        }).catch(() => {});
         await cleanupScrollCapture(tabId, pageInit.initialScrollY, pageInit.targetSelector).catch(() => {});
       } catch {
         // Re-capture failed — use original frames
@@ -712,6 +741,22 @@ async function hashFrame(dataUrl: string): Promise<string> {
     hash = ((hash << 5) - hash + data[i + 2]) | 0;
   }
   return hash.toString(36);
+}
+
+/**
+ * Wraps a single captureVisibleTab() shutter with badge suppression so the
+ * in-page progress badge can never be baked into the frame — see the
+ * suppressProgressInTab doc comment in utils/progress-overlay.ts for why
+ * hideProgressInTab alone isn't sufficient on a busy real page.
+ */
+async function captureFrameSafely(tabId: number, windowId?: number): Promise<string> {
+  await suppressProgressInTab(tabId);
+  await hideProgressInTab(tabId);
+  try {
+    return await captureWithRetry(windowId);
+  } finally {
+    await unsuppressProgressInTab(tabId);
+  }
 }
 
 async function captureWithRetry(windowId?: number, maxRetries = 3): Promise<string> {

@@ -450,20 +450,73 @@ function showQuickRateNudge(): void {
 }
 
 // ─── In-page capture progress badge (Full Page / Scrolling Area) ────────────
+//
+// result-bar.js is injected TWICE per page: once automatically via the
+// manifest's content_scripts, and again by injectContentScripts() in
+// service-worker.ts right before every capture starts (belt-and-suspenders,
+// in case the manifest injection hadn't landed yet). Each injection re-runs
+// this entire file, creating a brand-new closure with its own local
+// variables — but chrome.runtime.onMessage.addListener below only ever
+// registers ONCE (guarded further down), so the ACTIVE listener that
+// receives real CAPTURE_PROGRESS messages stays bound to whichever closure
+// was injected FIRST, while window.__gofully_* (used by
+// suppressProgressInTab et al. in utils/progress-overlay.ts) always gets
+// reassigned to point at whichever closure was injected MOST RECENTLY.
+//
+// If this badge's state lived in module-level `let` variables, those two
+// closures would silently diverge: a suppress call reaching the most-recent
+// closure would flip a flag the FIRST (listening) closure never reads, so a
+// real, delayed CAPTURE_PROGRESS message would still create and show the
+// badge completely unsuppressed — observed as an intermittent leak that
+// tightened Playwright timing alone couldn't explain. Storing the state on
+// `window` instead makes it one shared source of truth no matter which
+// closure reads or writes it.
+interface ProgressState {
+  overlay: HTMLDivElement | null;
+  badgeText: HTMLSpanElement | null;
+  suppressed: boolean;
+}
 
-let progressOverlay: HTMLDivElement | null = null;
-let progressBadgeText: HTMLSpanElement | null = null;
+function progressState(): ProgressState {
+  const w = window as any;
+  if (!w.__gfProgressState) {
+    w.__gfProgressState = { overlay: null, badgeText: null, suppressed: false } as ProgressState;
+  }
+  return w.__gfProgressState as ProgressState;
+}
+
+// CAPTURE_PROGRESS messages arrive via a fire-and-forget chrome.tabs.sendMessage
+// (see service-worker.ts's sendProgress) and can be delayed on a busy page —
+// including delayed past the moment the background asked to hide the badge
+// right before a captureVisibleTab() shutter. When that happens the message
+// lands moments later and CREATES the badge for the first time right before
+// the shutter, baking it into the screenshot. Suppression (set/cleared via
+// suppressProgressOverlay/unsuppressProgressOverlay, called from the
+// background around every shutter — see utils/progress-overlay.ts) closes
+// that gap by dropping any progress update, not just hiding a rendered one.
+
+export function suppressProgressOverlay(): void {
+  const s = progressState();
+  s.suppressed = true;
+  if (s.overlay) s.overlay.style.setProperty("display", "none", "important");
+}
+
+export function unsuppressProgressOverlay(): void {
+  progressState().suppressed = false;
+}
 
 export function showProgressOverlay(current: number, total: number, phase: string): void {
   if (phase === "done") {
     removeProgressOverlay();
     return;
   }
+  const s = progressState();
+  if (s.suppressed) return;
 
-  if (!progressOverlay) {
-    progressOverlay = document.createElement("div");
-    progressOverlay.id = "gofully-progress-overlay";
-    progressOverlay.style.cssText = `
+  if (!s.overlay) {
+    s.overlay = document.createElement("div");
+    s.overlay.id = "gofully-progress-overlay";
+    s.overlay.style.cssText = `
       position: fixed !important;
       top: 16px !important;
       left: 50% !important;
@@ -502,35 +555,38 @@ export function showProgressOverlay(current: number, total: number, phase: strin
     `;
     badge.appendChild(dot);
 
-    progressBadgeText = document.createElement("span");
-    progressBadgeText.textContent = "Capturing page...";
-    badge.appendChild(progressBadgeText);
+    s.badgeText = document.createElement("span");
+    s.badgeText.textContent = "Capturing page...";
+    badge.appendChild(s.badgeText);
 
     const escHint = document.createElement("span");
     escHint.style.cssText = "color: #94A3B8 !important; font-size: 11px !important; margin-left: 2px !important;";
     escHint.textContent = "(Esc to cancel)";
     badge.appendChild(escHint);
 
-    progressOverlay.appendChild(badge);
-    (document.body || document.documentElement).appendChild(progressOverlay);
+    s.overlay.appendChild(badge);
+    (document.body || document.documentElement).appendChild(s.overlay);
   }
 
   const pct = total > 0 ? Math.min(100, Math.round((current / total) * 100)) : 0;
-  if (progressBadgeText) {
-    progressBadgeText.textContent = phase === "stitching" ? "Stitching capture..." : `Capturing page... ${pct}%`;
+  if (s.badgeText) {
+    s.badgeText.textContent = phase === "stitching" ? "Stitching capture..." : `Capturing page... ${pct}%`;
   }
 }
 
 export function removeProgressOverlay(): void {
   const existing = document.getElementById("gofully-progress-overlay");
   if (existing) existing.remove();
-  progressOverlay = null;
-  progressBadgeText = null;
+  const s = progressState();
+  s.overlay = null;
+  s.badgeText = null;
 }
 
 // Make globally accessible on window for direct script invocation
 (window as any).__gofully_show_progress = showProgressOverlay;
 (window as any).__gofully_remove_progress = removeProgressOverlay;
+(window as any).__gofully_suppress_progress = suppressProgressOverlay;
+(window as any).__gofully_unsuppress_progress = unsuppressProgressOverlay;
 
 if (!(window as any).__snapforge_result_bar_listener_registered) {
   (window as any).__snapforge_result_bar_listener_registered = true;

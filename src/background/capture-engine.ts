@@ -8,25 +8,61 @@ import type {
 import { captureWithScrollStitch } from "./stitch-capture";
 import { dataUrlToBlob, loadImage } from "../utils/image";
 import { detectDPRFromCapture } from "../utils/dpr-handler";
-import { hideProgressInTab } from "../utils/progress-overlay";
+import { hideProgressInTab, suppressProgressInTab, unsuppressProgressInTab } from "../utils/progress-overlay";
 
 export async function captureFullPage(
   tabId: number,
   onProgress?: (progress: CaptureProgress) => void
 ): Promise<CaptureResult> {
-  onProgress?.({
-    phase: "preparing",
-    current: 1,
-    total: 3,
-  });
+  // This "preparing" event is sent before the very first frame is captured,
+  // via a fire-and-forget message (see service-worker.ts's sendProgress).
+  // Suppress badge creation up front so a delayed delivery of *this specific*
+  // message can't land — and create the badge for the first time — right
+  // before captureWithScrollStitch's own first shutter. captureWithScrollStitch
+  // lifts this suppression once it's safely past that first frame, via its
+  // own captureFrameSafely wrapper around every subsequent shutter — but if
+  // anything throws before that first frame is ever captured (e.g. layout
+  // prep below), nothing else would lift it, leaving the tab's badge stuck
+  // suppressed for any later capture. The outer finally here is that backstop.
+  await suppressProgressInTab(tabId).catch(() => {});
 
-  const dimensions = await prepareFullPageLayout(tabId);
   try {
-    // Restore any forced layout so the page and inner containers scroll naturally
-    await restoreFullPageLayout(tabId);
-    return await captureWithScrollStitch(tabId, dimensions, onProgress);
+    onProgress?.({
+      phase: "preparing",
+      current: 1,
+      total: 3,
+    });
+
+    const dimensions = await prepareFullPageLayout(tabId);
+    try {
+      // Restore any forced layout so the page and inner containers scroll naturally
+      await restoreFullPageLayout(tabId);
+      return await captureWithScrollStitch(tabId, dimensions, onProgress);
+    } finally {
+      await restoreFullPageLayout(tabId);
+    }
   } finally {
-    await restoreFullPageLayout(tabId);
+    await unsuppressProgressInTab(tabId).catch(() => {});
+  }
+}
+
+/**
+ * Wraps a single captureVisibleTab() shutter with badge suppression — same
+ * reasoning as captureFrameSafely in stitch-capture.ts. hideProgressInTab
+ * alone only hides a badge that already exists; on a busy page the
+ * CAPTURE_PROGRESS message this same call's own onProgress() fired can be
+ * delayed past that check and create the badge for the first time right
+ * before this exact shutter.
+ */
+async function captureVisibleTabSafely(tabId: number, windowId?: number): Promise<string> {
+  await suppressProgressInTab(tabId);
+  await hideProgressInTab(tabId);
+  try {
+    return typeof windowId === "number"
+      ? await chrome.tabs.captureVisibleTab(windowId, { format: "png" })
+      : await chrome.tabs.captureVisibleTab({ format: "png" });
+  } finally {
+    await unsuppressProgressInTab(tabId);
   }
 }
 
@@ -34,48 +70,63 @@ export async function captureVisibleArea(
   tabId: number,
   onProgress?: (progress: CaptureProgress) => void
 ): Promise<CaptureResult> {
-  onProgress?.({
-    phase: "capturing",
-    current: 1,
-    total: 1,
-  });
-  const tab = await chrome.tabs.get(tabId);
-  if (tab.windowId) {
-    await chrome.tabs.update(tabId, { active: true }).catch(() => {});
+  // Suppress before the "capturing" event below fires, not just around the
+  // shutter — that event's own fire-and-forget delivery is the thing that
+  // can race the shutter. captureVisibleTabSafely's own suppress call is
+  // then a harmless re-suppress; this outer try/finally is the backstop if
+  // anything throws before it's ever reached (e.g. chrome.tabs.get below).
+  await suppressProgressInTab(tabId).catch(() => {});
+  try {
+    onProgress?.({
+      phase: "capturing",
+      current: 1,
+      total: 1,
+    });
+    const tab = await chrome.tabs.get(tabId);
+    if (tab.windowId) {
+      await chrome.tabs.update(tabId, { active: true }).catch(() => {});
+    }
+    const dataUrl = await captureVisibleTabSafely(tabId, tab.windowId);
+    const blob = dataUrlToBlob(dataUrl);
+    const img = await loadImage(dataUrl);
+
+    onProgress?.({
+      phase: "done",
+      current: 1,
+      total: 1,
+    });
+
+    return {
+      blob,
+      width: img.width,
+      height: img.height,
+      mode: "visible-area",
+      method: "visible-tab",
+      timestamp: Date.now(),
+      url: tab.url || "",
+      title: tab.title || "",
+    };
+  } finally {
+    await unsuppressProgressInTab(tabId).catch(() => {});
   }
-  await hideProgressInTab(tabId);
-  const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, { format: "png" });
-  const blob = dataUrlToBlob(dataUrl);
-  const img = await loadImage(dataUrl);
-
-  onProgress?.({
-    phase: "done",
-    current: 1,
-    total: 1,
-  });
-
-  return {
-    blob,
-    width: img.width,
-    height: img.height,
-    mode: "visible-area",
-    method: "visible-tab",
-    timestamp: Date.now(),
-    url: tab.url || "",
-    title: tab.title || "",
-  };
 }
 
 export async function captureSelectedArea(
   tabId: number,
   region: CaptureRegion
 ): Promise<CaptureResult> {
-  const tab = await chrome.tabs.get(tabId);
-  if (tab.windowId) {
-    await chrome.tabs.update(tabId, { active: true }).catch(() => {});
+  await suppressProgressInTab(tabId).catch(() => {});
+  let dataUrl: string;
+  let tab: chrome.tabs.Tab;
+  try {
+    tab = await chrome.tabs.get(tabId);
+    if (tab.windowId) {
+      await chrome.tabs.update(tabId, { active: true }).catch(() => {});
+    }
+    dataUrl = await captureVisibleTabSafely(tabId, tab.windowId);
+  } finally {
+    await unsuppressProgressInTab(tabId).catch(() => {});
   }
-  await hideProgressInTab(tabId);
-  const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, { format: "png" });
   const img = await loadImage(dataUrl);
   const [{ result: vpWidth }] = await chrome.scripting.executeScript({
     target: { tabId },

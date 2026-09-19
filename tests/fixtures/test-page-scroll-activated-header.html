@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GoFully Test - Scroll-Activated Sticky Header</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, sans-serif; background: #f8fafc; color: #0f172a; }
+
+    /* This header is NOT position:fixed by default — it starts in normal
+       flow, exactly like a typical WordPress/Shopify/Squarespace theme
+       header. A scroll listener below adds `.is-stuck`, which is the only
+       thing that switches it to position:fixed. At page load / scrollY=0
+       it reads as position:static to getComputedStyle. */
+    .site-header {
+      position: static;
+      background: #1e293b;
+      color: #fff;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #3b82f6;
+    }
+    .site-header.is-stuck {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+    }
+    .site-header .logo { font-weight: 700; font-size: 18px; }
+    .site-header .nav-links a {
+      color: #93c5fd;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: 500;
+    }
+
+    .content { }
+    .section {
+      padding: 60px 40px;
+      border-bottom: 1px solid #e2e8f0;
+      min-height: 600px;
+    }
+    .section:nth-child(even) { background: #fff; }
+    .section:nth-child(odd) { background: #f1f5f9; }
+    h2 { font-size: 22px; margin-bottom: 12px; color: #2563eb; }
+    p { font-size: 16px; line-height: 1.6; margin-bottom: 16px; max-width: 800px; }
+
+    .section-marker {
+      display: inline-block;
+      padding: 4px 12px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-weight: 700;
+      font-size: 14px;
+      border-radius: 4px;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header" data-testid="scroll-header">
+    <span class="logo">TestSite</span>
+    <nav class="nav-links">
+      <a href="#">Home</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+    </nav>
+  </header>
+
+  <div class="content">
+    <div class="section" data-testid="section-1">
+      <span class="section-marker">SECTION 1</span>
+      <h2>First Section</h2>
+      <p>This header only becomes position:fixed once the user scrolls past 40px — the common "sticky navbar on scroll" pattern used by many real themes (WordPress, Shopify, Squarespace, Bootstrap navbars, etc). At scrollY=0 it is position:static.</p>
+    </div>
+
+    <div class="section" data-testid="section-2">
+      <span class="section-marker">SECTION 2</span>
+      <h2>Second Section</h2>
+      <p>If a sticky-hide mechanism only checks for position:fixed/sticky ONCE, before any scrolling has happened, it will never see this header in its fixed state and will fail to hide it — so it gets baked into every subsequent scroll-stitch frame.</p>
+    </div>
+
+    <div class="section" data-testid="section-3">
+      <span class="section-marker">SECTION 3</span>
+      <h2>Third Section</h2>
+      <p>Content continues here.</p>
+    </div>
+
+    <div class="section" data-testid="section-4">
+      <span class="section-marker">SECTION 4</span>
+      <h2>Fourth Section</h2>
+      <p>More content to ensure the page is tall enough for multiple scroll-stitch frames.</p>
+    </div>
+
+    <div class="section" data-testid="section-5">
+      <span class="section-marker">SECTION 5</span>
+      <h2>Fifth Section</h2>
+      <p>Final section.</p>
+    </div>
+  </div>
+
+  <script>
+    var header = document.querySelector('.site-header');
+    var THRESHOLD = 40;
+    function onScroll() {
+      if (window.scrollY > THRESHOLD) {
+        header.classList.add('is-stuck');
+      } else {
+        header.classList.remove('is-stuck');
+      }
+    }
+    window.addEventListener('scroll', onScroll);
+    onScroll();
+  </script>
+
+</body>
+</html>

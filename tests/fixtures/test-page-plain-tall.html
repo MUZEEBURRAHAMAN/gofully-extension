@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GoFully Test - Plain Tall Page (No Header)</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, sans-serif; background: #ffffff; color: #0f172a; }
+
+    /* Deliberately no fixed/sticky/dark header anywhere on this page — it
+       exists purely so tests can scan the top band of a full-page capture
+       for the extension's OWN progress badge without a page-owned dark
+       element in that region producing a false positive. */
+    .section {
+      padding: 60px 40px;
+      border-bottom: 1px solid #e2e8f0;
+      min-height: 800px;
+      background: #ffffff;
+    }
+    /* Extra top clearance on the very first section only, so no dark text
+       glyph can land inside the badge's own on-screen band (fixed, top:16px,
+       roughly 35px tall) and produce a false positive in a pixel-color scan
+       for the badge. */
+    .section:first-child { padding-top: 160px; }
+    h1 { font-size: 28px; margin-bottom: 16px; }
+    p { font-size: 16px; line-height: 1.6; margin-bottom: 16px; max-width: 800px; }
+  </style>
+</head>
+<body>
+  <div class="section" id="sec-1">
+    <h1>Section 1</h1>
+    <p>Plain content, no header, no fixed/sticky elements, no dark colors near the top of the page.</p>
+  </div>
+  <div class="section" id="sec-2">
+    <h1>Section 2</h1>
+    <p>More content to make the page tall enough for a multi-frame scroll-stitch capture.</p>
+  </div>
+  <div class="section" id="sec-3">
+    <h1>Section 3</h1>
+    <p>Final section.</p>
+  </div>
+</body>
+</html>
