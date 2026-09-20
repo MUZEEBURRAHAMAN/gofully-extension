@@ -32,7 +32,7 @@ Annotate and organize visual feedback directly in the browser:
 • Step Numbers: Auto-incrementing badges (1, 2, 3...) for reproduction steps and tutorials
 • Spotlight Mode: Dim surrounding areas to focus attention on key UI components
 • Freehand Drawing: Pen tool with adjustable stroke width
-• Cropping Studio: Preset aspect ratios (Freeform, 16:9, 4:3, 1:1, 3:2, 2:1) with grid guides and keyboard nudging
+• Cropping Studio: Preset aspect ratios (Free, 1:1, 4:3, 3:2, 16:9, 9:16, 21:9, A4, Twitter, OG Image) with grid guides and keyboard nudging
 • Zoom up to 1000%: Fine-tune annotations pixel-by-pixel on large or full-page captures
 • Undo / Redo History: Multi-step history stack for seamless editing
 • Curated Palette: 8 preset color swatches with stroke width adjustment
@@ -75,10 +75,34 @@ Protect private information before sharing screenshots:
 ⌨️ KEYBOARD SHORTCUTS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+Global
 • Alt+S — Open GoFully popup
-• Alt+Shift+F — Capture full page
-• Alt+Shift+V — Capture visible area
+• Ctrl+Shift+F (Cmd+Shift+F on Mac) — Capture full page
+• Ctrl+Shift+V (Cmd+Shift+V on Mac) — Capture visible area
+• Ctrl+Shift+A (Cmd+Shift+A on Mac) — Capture selected area
 • Shortcuts can be customized at chrome://extensions/shortcuts
+
+Editor
+V Select · A Arrow · R Rectangle · E Ellipse · C Callout · L Line
+P Pen · T Text · S Spotlight · B Blur · N Step · X Crop · H Highlight
+• Enter — Apply crop
+• Esc — Cancel / Deselect
+• Cmd/Ctrl+Z — Undo · Cmd/Ctrl+Shift+Z or Cmd/Ctrl+Y — Redo
+• Cmd/Ctrl+D — Duplicate selected object
+• Cmd/Ctrl+= / Cmd/Ctrl+- — Zoom in / out
+• Delete or Backspace — Remove selected object
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🏆 WHY GOFULLY?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Compared to GoFullPage, FireShot, Awesome Screenshot, and Nimbus Screenshot:
+✅ Free on-device OCR text extraction — none of the above offer this at all
+✅ Free scrolling-area capture for chat boxes, code panels, and data tables
+✅ Free annotation editor with real blur, pixelate, and blackout redaction
+✅ PNG, JPG, WebP, and PDF export — no watermarks, no paid plan required
+✅ 100% offline — zero cloud uploads, zero network requests, ever
+✅ Built on Manifest V3 — Chrome's current extension platform, not a legacy retrofit
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ❓ FREQUENTLY ASKED QUESTIONS

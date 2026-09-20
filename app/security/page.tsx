@@ -55,19 +55,34 @@ const PERMISSIONS = [
     icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gf-color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="22" y1="12" x2="18" y2="12" /><line x1="6" y1="12" x2="2" y2="12" /><line x1="12" y1="6" x2="12" y2="2" /><line x1="12" y1="22" x2="12" y2="18" /></svg>,
   },
   {
+    name: "tabs",
+    body: "Coordinates a capture against the specific tab you started it on, and reads that tab's title/URL for export metadata.",
+    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gf-color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" /><line x1="3" y1="9" x2="21" y2="9" /></svg>,
+  },
+  {
+    name: "scripting",
+    body: "Injects the page-measurement, sticky-header, and lazy-load helper scripts needed to stitch a full-page capture — only on the tab you're capturing.",
+    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gf-color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>,
+  },
+  {
+    name: "offscreen",
+    body: "Runs canvas stitching and the local WebAssembly OCR engine in a background document — still entirely on your machine.",
+    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gf-color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="M2 9h20" /></svg>,
+  },
+  {
     name: "downloads",
-    body: "Needed so a PNG or PDF export can save straight to your downloads folder when you choose to save one.",
+    body: "Needed so a PNG, JPG, WebP, or PDF export can save straight to your downloads folder when you choose to save one.",
     icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gf-color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>,
   },
   {
-    name: "clipboardWrite",
-    body: "Powers the one-click \"copy to clipboard\" action for both screenshots and extracted text.",
-    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gf-color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="8" y="2" width="8" height="4" /><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /></svg>,
+    name: "storage",
+    body: "Keeps your editor preferences, capture history, and in-progress result on your machine only — never synced to a server.",
+    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gf-color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="14" width="20" height="6" /><rect x="2" y="4" width="20" height="6" /><path d="M6 7h.01M6 17h.01" /></svg>,
   },
   {
-    name: "storage",
-    body: "Keeps your editor preferences and in-progress result on your machine only — never synced to a server.",
-    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gf-color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="14" width="20" height="6" /><rect x="2" y="4" width="20" height="6" /><path d="M6 7h.01M6 17h.01" /></svg>,
+    name: "host_permissions (all sites)",
+    body: "Full-page and scrolling-area capture need to run on whatever site you're actively viewing when you invoke them — this is user-initiated per page, never a background scan.",
+    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gf-color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></svg>,
   },
 ];
 
@@ -163,6 +178,32 @@ export default function SecurityPage() {
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Technical safeguards */}
+      <div className="border-t" style={{ padding: "0 24px 90px", borderColor: "rgba(29,31,32,.08)" }}>
+        <div className="mx-auto border" style={{ maxWidth: 1000, borderColor: "rgba(29,31,32,.12)", padding: "40px 32px" }}>
+          <h2 className="gf-heading-font font-semibold" style={{ fontSize: 22, letterSpacing: "-0.005em", marginBottom: 8 }}>
+            Technical safeguards
+          </h2>
+          <p style={{ fontSize: "13.5px", color: "rgba(29,31,32,.55)", marginBottom: 22, maxWidth: 640, lineHeight: 1.6 }}>
+            For the technically curious — specific defenses in how GoFully is built, not just what it promises.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2" style={{ gap: "18px 40px" }}>
+            <div style={{ fontSize: "13.5px", color: "rgba(29,31,32,.7)", lineHeight: 1.6 }}>
+              <strong className="gf-heading-font font-semibold" style={{ color: "var(--gf-color-text)" }}>Sender-verified tab targeting.</strong> Capture-critical messages resolve the target tab from the browser&apos;s own message sender, not from a value a page could hand the extension — a compromised content script can&apos;t redirect a capture to another tab.
+            </div>
+            <div style={{ fontSize: "13.5px", color: "rgba(29,31,32,.7)", lineHeight: 1.6 }}>
+              <strong className="gf-heading-font font-semibold" style={{ color: "var(--gf-color-text)" }}>Strict image-source validation.</strong> Anything loaded into the editor canvas must be a <code style={{ fontFamily: "ui-monospace, Menlo, monospace", fontSize: "12.5px" }}>data:image/</code> URI — no remote or script-scheme sources are ever accepted.
+            </div>
+            <div style={{ fontSize: "13.5px", color: "rgba(29,31,32,.7)", lineHeight: 1.6 }}>
+              <strong className="gf-heading-font font-semibold" style={{ color: "var(--gf-color-text)" }}>Locked-down content security policy.</strong> <code style={{ fontFamily: "ui-monospace, Menlo, monospace", fontSize: "12.5px" }}>script-src &apos;self&apos;</code> on every extension page — no remotely hosted or inline script can execute.
+            </div>
+            <div style={{ fontSize: "13.5px", color: "rgba(29,31,32,.7)", lineHeight: 1.6 }}>
+              <strong className="gf-heading-font font-semibold" style={{ color: "var(--gf-color-text)" }}>Manifest V3 native.</strong> Built on a non-persistent service worker from day one — not a Manifest V2 extension retrofitted to pass review.
+            </div>
+          </div>
         </div>
       </div>
 
