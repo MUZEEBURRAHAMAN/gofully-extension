@@ -61,18 +61,20 @@ const MATRIX = [
   { feature: "Full page scrolling capture", gofully: "Yes", gofullpage: "Yes", awesome: "Yes", fireshot: "Yes", nimbus: "Yes" },
   { feature: "Visible area capture", gofully: "Yes", gofullpage: "No", awesome: "Yes", fireshot: "Yes", nimbus: "Yes" },
   { feature: "Selected region capture", gofully: "Yes", gofullpage: "No", awesome: "Yes", fireshot: "Yes", nimbus: "Yes" },
-  { feature: "Local WebAssembly OCR", gofully: "Yes, on-device", gofullpage: "No", awesome: "No (Cloud/Paid)", fireshot: "No", nimbus: "No" },
+  { feature: "Local WebAssembly OCR", gofully: "Yes, 6 langs", gofullpage: "No", awesome: "No (Cloud/Paid)", fireshot: "No", nimbus: "No" },
   { feature: "Annotation & markup tools", gofully: "Free", gofullpage: "Paid ($12/yr)", awesome: "Limited Free", fireshot: "Paid ($39.95)", nimbus: "Limited Free" },
+  { feature: "CleanShot-style highlighter", gofully: "Free", gofullpage: "No", awesome: "No", fireshot: "No", nimbus: "No" },
   { feature: "Privacy blur & redaction", gofully: "Free", gofullpage: "No", awesome: "Limited", fireshot: "Paid Pro", nimbus: "Paid Pro" },
   { feature: "Beautify & mockup frames", gofully: "Free", gofullpage: "No", awesome: "No", fireshot: "No", nimbus: "No" },
-  { feature: "Paginated PDF export", gofully: "Free", gofullpage: "Yes", awesome: "Paid", fireshot: "Paid Pro", nimbus: "Paid" },
+  { feature: "Video auto-pause on capture", gofully: "Yes", gofullpage: "No", awesome: "No", fireshot: "No", nimbus: "No" },
+  { feature: "PNG, JPG, WebP & PDF export", gofully: "Free", gofullpage: "PNG/JPG/PDF", awesome: "Paid", fireshot: "Paid Pro", nimbus: "Paid" },
   { feature: "Account required", gofully: "No", gofullpage: "No (Yes for Pro)", awesome: "Yes", fireshot: "No", nimbus: "Yes" },
   { feature: "Cloud uploads / Tracking", gofully: "Zero (100% Local)", gofullpage: "Minimal", awesome: "Heavy Cloud", fireshot: "Local", nimbus: "Cloud Sync" },
   { feature: "Price", gofully: "100% Free", gofullpage: "Freemium", awesome: "Freemium ($6/mo)", fireshot: "Freemium ($39.95)", nimbus: "Freemium ($7/mo)" },
 ];
 
 function Check({ text }: { text: string }) {
-  const isPositive = text === "Yes" || text === "Free" || text === "100% Free" || text === "Zero (100% Local)" || text === "Yes, on-device";
+  const isPositive = text === "Yes" || text === "Free" || text === "100% Free" || text === "Zero (100% Local)" || text === "Yes, on-device" || text === "Yes, 6 langs";
   const isNegative = text === "No" || text.includes("Paid") || text === "Heavy Cloud" || text === "Cloud Sync";
 
   return (
@@ -96,7 +98,7 @@ const webPageJsonLd = {
   name: "Best Chrome Screenshot Extension Alternatives (2026)",
   description: "Compare GoFully vs GoFullPage, Awesome Screenshot, FireShot, and Nimbus.",
   isPartOf: { "@id": "https://gofully-extension.vercel.app/#website" },
-  dateModified: "2026-09-08",
+  dateModified: "2026-09-20",
   mainEntity: {
     "@type": "ItemList",
     itemListElement: ALTERNATIVES.map((alt, index) => ({

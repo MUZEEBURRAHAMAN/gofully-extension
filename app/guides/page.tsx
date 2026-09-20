@@ -109,11 +109,10 @@ const GUIDES: GuideItem[] = [
     slug: "how-to-extract-text-in-multiple-languages-ocr",
     title: "How to Extract Text in Multiple Languages with On-Device OCR",
     subtitle:
-      "Capture and extract Spanish, French, German, Japanese, and Chinese text from images and locked web apps — 100% locally.",
+      "Capture and extract Spanish, French, German, Portuguese, and Chinese text from images and locked web apps — 100% locally.",
     tag: "OCR & i18n",
     readTime: "4 min read",
-    date: "Planned v1.1.2",
-    comingSoon: true,
+    date: "Available in v1.1.2",
   },
   {
     slug: "custom-keyboard-shortcuts-for-screen-capture",
@@ -122,8 +121,7 @@ const GUIDES: GuideItem[] = [
       "Trigger full page scrolling capture, visible area snapshots, or selected region OCR with custom keybindings.",
     tag: "Workflow & Speed",
     readTime: "4 min read",
-    date: "Planned v1.1.2",
-    comingSoon: true,
+    date: "Available in v1.1.2",
   },
   {
     slug: "how-to-use-highlighter-tool-in-screenshots",
@@ -132,8 +130,7 @@ const GUIDES: GuideItem[] = [
       "Emphasize key UI metrics and paragraphs with CleanShot-grade multiply blending and level horizontal snapping.",
     tag: "Visual Annotation",
     readTime: "4 min read",
-    date: "Planned v1.1.2",
-    comingSoon: true,
+    date: "Available in v1.1.2",
   },
 ];
 

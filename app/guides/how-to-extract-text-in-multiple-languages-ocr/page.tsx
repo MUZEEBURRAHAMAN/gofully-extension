@@ -9,14 +9,14 @@ const CWS_URL =
   "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
 
 export const metadata: Metadata = {
-  title: "How to Extract Text in Multiple Languages with On-Device OCR (Coming Soon)",
+  title: "How to Extract Text in Multiple Languages with On-Device OCR",
   description:
-    "Preview GoFully's upcoming multi-language OCR feature. Extract Spanish, French, German, Japanese, Chinese, and Arabic text from images and locked web apps — 100% locally in Chrome.",
+    "Learn how GoFully's on-device multi-language OCR lets you extract Spanish, French, German, Portuguese, and Chinese text from images and locked web apps — 100% locally in Chrome.",
   alternates: { canonical: "https://gofully-extension.vercel.app/guides/how-to-extract-text-in-multiple-languages-ocr" },
   openGraph: {
     title: "How to Extract Text in Multiple Languages with On-Device OCR — GoFully",
     description:
-      "A technical walkthrough and preview of GoFully v1.1.2 multi-language on-device OCR engine. Extract international scripts with zero cloud uploads.",
+      "A technical walkthrough of GoFully v1.1.2 multi-language on-device OCR engine. Extract international scripts with zero cloud uploads.",
     url: "https://gofully-extension.vercel.app/guides/how-to-extract-text-in-multiple-languages-ocr",
     siteName: "GoFully",
   },
@@ -29,10 +29,10 @@ const articleJsonLd = {
   url: "https://gofully-extension.vercel.app/guides/how-to-extract-text-in-multiple-languages-ocr",
   headline: "How to Extract Text in Multiple Languages with On-Device OCR",
   description:
-    "A guide and technical preview of GoFully's upcoming multi-language WebAssembly OCR engine for in-browser text extraction across Latin, CJK, and Cyrillic character sets.",
+    "A guide to GoFully's multi-language WebAssembly OCR engine for in-browser text extraction across international character sets.",
   isPartOf: { "@id": "https://gofully-extension.vercel.app/#website" },
   datePublished: "2026-09-11",
-  dateModified: "2026-09-11",
+  dateModified: "2026-09-20",
   author: {
     "@type": "Organization",
     name: "GoFully",
@@ -73,9 +73,9 @@ export default function MultiLanguageOcrGuidePage() {
       {/* Header */}
       <div className="text-center" style={{ padding: "36px 24px 44px" }}>
         <div className="mx-auto" style={{ maxWidth: 780 }}>
-          <div className="inline-flex items-center gap-2 border border-amber-300 bg-amber-50/80 px-3 py-1 text-[11px] font-semibold text-amber-700 tracking-wide uppercase">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-            Coming Soon · Planned for v1.1.2
+          <div className="inline-flex items-center gap-2 border border-emerald-300 bg-emerald-50/80 px-3 py-1 text-[11px] font-semibold text-emerald-700 tracking-wide uppercase">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            Available Now · Live in v1.1.2
           </div>
           <h1
             className="gf-heading-font font-semibold"
@@ -87,12 +87,12 @@ export default function MultiLanguageOcrGuidePage() {
             className="mx-auto"
             style={{ fontSize: "16px", lineHeight: 1.65, color: "rgba(29,31,32,.6)", maxWidth: 640, marginTop: 18 }}
           >
-            Extracting international scripts — Japanese, German, Spanish, French, or simplified Chinese — from locked web apps without sending proprietary documents to a remote cloud OCR API.
+            Extracting international scripts — German, Spanish, French, Portuguese, or Simplified Chinese — from locked web apps without sending proprietary documents to a remote cloud OCR API.
           </p>
           <div className="flex items-center justify-center gap-4 text-[12px] text-neutral-400 mt-6">
             <span>By GoFully Engineering</span>
             <span>·</span>
-            <span>Published September 2026</span>
+            <span>Updated September 2026</span>
             <span>·</span>
             <span>4 min read</span>
           </div>
@@ -105,13 +105,13 @@ export default function MultiLanguageOcrGuidePage() {
           <BlueprintFrame className="bg-white p-8 md:p-12 space-y-10">
 
             {/* Feature Status Callout */}
-            <div className="border border-dashed border-amber-300 bg-amber-50/50 p-5 rounded-none">
-              <h2 className="gf-heading-font font-semibold text-[16px] text-amber-900 mb-2">
-                Preview Specification · Roadmap Feature
+            <div className="border border-emerald-200 bg-emerald-50/50 p-5 rounded-none">
+              <h2 className="gf-heading-font font-semibold text-[16px] text-emerald-900 mb-2">
+                Feature Live in GoFully v1.1.2
               </h2>
-              <p className="text-[14px] leading-relaxed text-amber-800/90">
-                GoFully currently ships with English and Latin-character OCR powered by local WebAssembly. The multi-language training packs (covering 20+ world languages with dynamic asset loading) are currently under QA validation and scheduled for release in <strong>v1.1.2</strong>. Track real-time progress on our{" "}
-                <Link href="/roadmap" className="underline font-semibold hover:text-amber-950">
+              <p className="text-[14px] leading-relaxed text-emerald-800/90">
+                Multi-language OCR is officially live in <strong>GoFully v1.1.2</strong>! Powered by local WebAssembly, you can now extract text in English, Spanish, French, German, Portuguese, and Simplified Chinese without sending a single byte to an external server. Track our full journey on the{" "}
+                <Link href="/roadmap" className="underline font-semibold hover:text-emerald-950">
                   interactive roadmap
                 </Link>.
               </p>
@@ -141,7 +141,7 @@ export default function MultiLanguageOcrGuidePage() {
                 How GoFully Multi-Language OCR Works On-Device
               </h2>
               <p className="text-[15px] leading-relaxed text-neutral-600">
-                GoFully avoids remote API dependencies entirely. In v1.1.2, language dictionaries will be fetched on-demand once and cached directly in your browser&apos;s IndexedDB sandbox.
+                GoFully avoids remote API dependencies entirely. In GoFully v1.1.2, language dictionaries are fetched on-demand once and cached directly in your browser&apos;s IndexedDB sandbox.
               </p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 text-[13.5px]">
@@ -198,26 +198,26 @@ export default function MultiLanguageOcrGuidePage() {
               </div>
             </section>
 
-            {/* Related Guides & Early Access */}
+            {/* Related Guides */}
             <section className="pt-6 border-t border-neutral-200">
               <h2 className="gf-heading-font font-semibold text-[20px] text-neutral-900 mb-3">
-                Want Early Access to Multi-Language OCR?
+                Related Capture &amp; OCR Guides
               </h2>
               <p className="text-[14.5px] text-neutral-600 mb-6">
-                Help test our multi-language models before public release or request a specific language pack for your team.
+                Explore more workflows for unselectable text and high-precision visual documentation:
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link
                   href="/roadmap"
                   className="inline-flex items-center justify-center font-semibold text-sm px-5 py-2.5 bg-neutral-900 text-white hover:bg-neutral-800 transition-colors"
                 >
-                  Vote on Roadmap →
+                  View Feature Roadmap →
                 </Link>
                 <Link
                   href="/guides/how-to-extract-unselectable-text"
                   className="inline-flex items-center justify-center font-semibold text-sm px-5 py-2.5 border border-neutral-300 text-neutral-700 hover:bg-neutral-50 transition-colors"
                 >
-                  Try Current English OCR Guide →
+                  Text Extraction Best Practices →
                 </Link>
               </div>
             </section>
@@ -232,7 +232,7 @@ export default function MultiLanguageOcrGuidePage() {
           Ready to capture and extract without cloud leaks?
         </h2>
         <p className="mx-auto" style={{ fontSize: "14.5px", color: "rgba(255,255,255,.55)", maxWidth: 500, marginTop: 12, lineHeight: 1.6 }}>
-          100% free, 100% on-device, and zero accounts. Install GoFully today and get automatic updates when v1.1.2 lands.
+          100% free, 100% on-device, and zero accounts. Install GoFully today to capture, redact, and extract text with v1.1.2.
         </p>
         <a
           href={CWS_URL}

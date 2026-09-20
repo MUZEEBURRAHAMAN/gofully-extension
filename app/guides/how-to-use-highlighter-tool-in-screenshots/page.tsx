@@ -9,14 +9,14 @@ const CWS_URL =
   "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
 
 export const metadata: Metadata = {
-  title: "How to Use the Highlighter Tool in Screenshots Without Obscuring Text (Coming Soon)",
+  title: "How to Use the Highlighter Tool in Screenshots Without Obscuring Text",
   description:
-    "Preview GoFully's upcoming smart highlighter tool. Learn how semi-transparent blending and straight-line snapping let you emphasize key UI elements cleanly.",
+    "Learn how GoFully's smart highlighter tool with semi-transparent blending and straight-line snapping lets you emphasize key UI elements cleanly without obscuring text.",
   alternates: { canonical: "https://gofully-extension.vercel.app/guides/how-to-use-highlighter-tool-in-screenshots" },
   openGraph: {
     title: "How to Use the Highlighter Tool in Screenshots Without Obscuring Text — GoFully",
     description:
-      "A technical walkthrough and preview of GoFully v1.1.2 highlighter tool. CleanShot-grade text emphasis with multiply-blend canvas rendering.",
+      "A technical walkthrough of GoFully v1.1.2 highlighter tool. CleanShot-grade text emphasis with multiply-blend canvas rendering.",
     url: "https://gofully-extension.vercel.app/guides/how-to-use-highlighter-tool-in-screenshots",
     siteName: "GoFully",
   },
@@ -29,10 +29,10 @@ const articleJsonLd = {
   url: "https://gofully-extension.vercel.app/guides/how-to-use-highlighter-tool-in-screenshots",
   headline: "How to Use the Highlighter Tool in Screenshots Without Obscuring Text",
   description:
-    "A guide and technical preview of GoFully's upcoming annotation highlighter: semi-transparent multiply-blending, straight-line snapping, and crisp contrast for documentation.",
+    "A guide to GoFully's annotation highlighter: semi-transparent multiply-blending, straight-line snapping, and crisp contrast for documentation.",
   isPartOf: { "@id": "https://gofully-extension.vercel.app/#website" },
   datePublished: "2026-09-11",
-  dateModified: "2026-09-11",
+  dateModified: "2026-09-20",
   author: {
     "@type": "Organization",
     name: "GoFully",
@@ -73,9 +73,9 @@ export default function HighlighterToolGuidePage() {
       {/* Header */}
       <div className="text-center" style={{ padding: "36px 24px 44px" }}>
         <div className="mx-auto" style={{ maxWidth: 780 }}>
-          <div className="inline-flex items-center gap-2 border border-amber-300 bg-amber-50/80 px-3 py-1 text-[11px] font-semibold text-amber-700 tracking-wide uppercase">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-            Coming Soon · Planned for v1.1.2
+          <div className="inline-flex items-center gap-2 border border-emerald-300 bg-emerald-50/80 px-3 py-1 text-[11px] font-semibold text-emerald-700 tracking-wide uppercase">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            Available Now · Live in v1.1.2
           </div>
           <h1
             className="gf-heading-font font-semibold"
@@ -92,7 +92,7 @@ export default function HighlighterToolGuidePage() {
           <div className="flex items-center justify-center gap-4 text-[12px] text-neutral-400 mt-6">
             <span>By GoFully Engineering</span>
             <span>·</span>
-            <span>Published September 2026</span>
+            <span>Updated September 2026</span>
             <span>·</span>
             <span>4 min read</span>
           </div>
@@ -105,13 +105,13 @@ export default function HighlighterToolGuidePage() {
           <BlueprintFrame className="bg-white p-8 md:p-12 space-y-10">
 
             {/* Feature Status Callout */}
-            <div className="border border-dashed border-amber-300 bg-amber-50/50 p-5 rounded-none">
-              <h2 className="gf-heading-font font-semibold text-[16px] text-amber-900 mb-2">
-                Preview Specification · Roadmap Feature
+            <div className="border border-emerald-200 bg-emerald-50/50 p-5 rounded-none">
+              <h2 className="gf-heading-font font-semibold text-[16px] text-emerald-900 mb-2">
+                Feature Live in GoFully v1.1.2
               </h2>
-              <p className="text-[14px] leading-relaxed text-amber-800/90">
-                GoFully currently features solid annotation shapes (rectangles, circles, arrows, callout text, blur, and redaction). The new <strong>Multiply-Blend Highlighter</strong> with smart horizontal snap is undergoing final usability polishing for <strong>v1.1.2</strong>. Follow our progress on the{" "}
-                <Link href="/roadmap" className="underline font-semibold hover:text-amber-950">
+              <p className="text-[14px] leading-relaxed text-emerald-800/90">
+                The new <strong>Multiply-Blend Highlighter</strong> with smart horizontal snap is officially available in <strong>GoFully v1.1.2</strong>. You can now highlight code snippets, paragraphs, and key metrics with zero text occlusion right inside your browser. See our full journey on the{" "}
+                <Link href="/roadmap" className="underline font-semibold hover:text-emerald-950">
                   public roadmap
                 </Link>.
               </p>

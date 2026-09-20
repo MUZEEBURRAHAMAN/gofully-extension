@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   },
   applicationName: "GoFully",
   description:
-    "GoFully is a powerful full page screenshot tool, scrolling screen capture, and visual editor Chrome extension. Capture entire webpages, edit & annotate, blur sensitive data, extract text with local OCR, and export in 4K or PDF — 100% free & offline.",
+    "Capture full scrolling webpages, edit & annotate, blur sensitive data, and extract text with local OCR. 100% free, private & offline Chrome extension.",
   keywords: [
     "full page screenshot",
     "screenshot",
@@ -176,13 +176,15 @@ const jsonLd = {
         "Full page scrolling screenshot capture",
         "Selected region and visible area capture",
         "Scrolling inner-element capture",
-        "On-device WebAssembly OCR text extraction",
-        "14 visual annotation tools — arrows, callouts, step numbers, spotlight, highlighter",
+        "On-device WebAssembly OCR in 6 languages (English, Spanish, French, German, Portuguese, Chinese)",
+        "CleanShot-grade highlighter tool with multiply-blending",
+        "14 visual annotation tools — arrows, callouts, step badges, spotlight, 6 shapes",
         "Privacy redaction with blur, pixelate, and blackout",
-        "Screenshot mockup beautifier with gradient backgrounds",
+        "Screenshot mockup beautifier with gradient backgrounds and real URL frames",
         "Instant export to PNG, JPG, WebP, 4K UHD, and paginated PDF",
         "Cookie banner and modal auto-dismiss during capture",
-        "Video pause during scroll capture",
+        "Video auto-pause during scroll capture",
+        "Local screenshot history gallery stored on-device",
         "100% offline — zero data leaves your device"
       ],
     },

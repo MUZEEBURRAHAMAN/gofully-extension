@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { BlueprintFrame } from "@/components/blueprint-frame";
 import { ContainerScroll } from "@/components/ui/container-scroll-animation";
 import { SiteNav } from "@/components/site-nav";
@@ -48,8 +49,8 @@ const FEATURES = [
         <circle cx="12" cy="12" r="3" />
       </svg>
     ),
-    title: "Full-page scrolling capture",
-    body: "Seamlessly capture full-height websites, dashboards, and infinite feeds. GoFully scrolls the page, waits for lazy-loaded content, and stitches a pixel-perfect canvas with zero overlap.",
+    title: "Full-page scrolling capture with auto-pause",
+    body: "Seamlessly capture full-height websites, dashboards, and infinite feeds. GoFully automatically pauses background video playback to avoid frame corruption, dismisses cookie consent banners, handles dynamic sticky headers, and stitches a pixel-perfect canvas with zero overlap.",
     image: "/features/feature-capture.webp",
     alt: "Full-page scrolling capture showing clean capture of a long webpage",
     reverse: false,
@@ -62,10 +63,10 @@ const FEATURES = [
         <path d="M8 9h8M12 9v7" />
       </svg>
     ),
-    title: "On-device text extraction",
-    body: "Extract readable text, code snippets, and structured tables from any region in milliseconds. Most screenshot tools that offer OCR send your image to a server first — GoFully runs a local WebAssembly model directly on your CPU, so a screenshot of a contract, a password field, or an internal dashboard never leaves your machine to get its text read.",
+    title: "On-device text extraction (6 languages)",
+    body: "Extract readable text, code snippets, and structured tables from any region in milliseconds across English, Spanish, French, German, Portuguese, and Simplified Chinese — with one-click 'Copy as JSON' or plain text. Most screenshot OCR tools send your image to a remote server; GoFully runs a lightweight WebAssembly model directly on your CPU so confidential data never leaves your machine.",
     image: "/features/feature-ocr.webp",
-    alt: "On-device OCR text extraction with instant copy",
+    alt: "On-device OCR text extraction with instant copy in multiple languages",
     reverse: true,
   },
   {
@@ -76,10 +77,10 @@ const FEATURES = [
         <path d="m15 5 4 4" />
       </svg>
     ),
-    title: "Annotate & redact",
-    body: "Mark up screenshots with arrows, callouts, and shapes. Instantly blur or pixelate sensitive API keys, passwords, and PII before you share — the kind of redaction most competitors either don't offer at all, or lock behind a paid plan.",
+    title: "Annotate, highlight & redact",
+    body: "Mark up screenshots with curved arrows, callouts, auto-numbering steps, and a 6-shape tool (rectangles, ellipses, triangles, polygons). Use the CleanShot-style multiply-blend highlighter to emphasize text without hiding it, and zoom up to 1000% for pixel-precise blur and redaction of passwords or PII.",
     image: "/features/feature-annotate.webp",
-    alt: "Annotated screenshot showing markup, callouts, and redaction tools in GoFully editor",
+    alt: "Annotated screenshot showing markup, callouts, highlighter, and redaction tools in GoFully editor",
     reverse: false,
   },
   {
@@ -94,7 +95,7 @@ const FEATURES = [
       </svg>
     ),
     title: "Screenshot beautifier & mockups",
-    body: "Transform raw screenshots into polished, presentation-ready assets. Customize vibrant backgrounds, add window frames, tweak padding and rounded corners, and apply soft drop shadows — the same kind of output tools like CleanShot charge a subscription for, included free.",
+    body: "Transform raw screenshots into polished, presentation-ready assets. Customize vibrant backgrounds from a gradient library, add realistic window frames with real page URLs, tweak padding and shadows, assemble multi-image collages, and save your preferred styles as reusable presets.",
     image: "/features/feature-beautify.webp",
     alt: "GoFully screenshot beautifier with customizable backgrounds, padding, shadows, and frame mockups",
     reverse: true,
@@ -108,8 +109,8 @@ const FEATURES = [
         <line x1="12" y1="3" x2="12" y2="15" />
       </svg>
     ),
-    title: "Flexible export",
-    body: "Generate a paginated PDF, download a crisp PNG or WebP, or copy straight to your clipboard — all from the result bar, right after you capture.",
+    title: "Flexible export (PNG, JPG, WebP, PDF)",
+    body: "Generate an auto-paginated A4 PDF, download a high-res PNG, WebP, or JPG with unified quality control, or copy straight to your clipboard — all accessible in one click right from the result bar after capture.",
     image: "/features/feature-export.webp",
     alt: "GoFully result bar with copy, PNG, WebP, and PDF export options",
     reverse: false,
@@ -227,26 +228,42 @@ export default function HomePage() {
       <ContainerScroll
         titleComponent={
           <div className="mx-auto" style={{ maxWidth: 720 }}>
-            <Kicker
-              icon={
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                  <path d="m9 12 2 2 4-4" />
-                </svg>
-              }
-            >
-              Chrome Extension · 100% On-Device
-            </Kicker>
+            <div className="flex flex-wrap items-center justify-center gap-2" style={{ marginBottom: 4 }}>
+              <Kicker
+                icon={
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    <path d="m9 12 2 2 4-4" />
+                  </svg>
+                }
+              >
+                Chrome Extension · 100% On-Device
+              </Kicker>
+              <span
+                className="inline-flex items-center gap-1.5 border gf-heading-font font-semibold uppercase"
+                style={{
+                  borderColor: "rgba(34,197,94,.3)",
+                  background: "rgba(34,197,94,.08)",
+                  color: "#16a34a",
+                  fontSize: "10.5px",
+                  letterSpacing: "0.06em",
+                  padding: "6px 14px",
+                }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span>v1.1.2 Live · 6-Lang OCR &amp; Highlighter</span>
+              </span>
+            </div>
             <h1
               className="gf-heading-font font-semibold"
-              style={{ fontSize: "clamp(34px, 7vw, 56px)", lineHeight: 1.08, letterSpacing: "-0.02em", marginTop: 24, color: "var(--gf-color-text)" }}
+              style={{ fontSize: "clamp(34px, 7vw, 54px)", lineHeight: 1.08, letterSpacing: "-0.02em", marginTop: 20, color: "var(--gf-color-text)" }}
             >
-              One Extension.
+              Full Page Screenshot Tool.
               <br />
-              Every Screenshot Job.
+              <span style={{ color: "var(--gf-color-accent)" }}>One Extension. Every Job.</span>
             </h1>
-            <p className="mx-auto" style={{ fontSize: 17, lineHeight: 1.6, color: "rgba(29,31,32,.6)", maxWidth: 600, marginTop: 20 }}>
-              Capture full scrolling pages or any region, extract text with local WebAssembly OCR, annotate and redact sensitive info, then beautify and export in 4K or PDF — all in one browser extension, 100% free and offline.
+            <p className="mx-auto" style={{ fontSize: 17, lineHeight: 1.6, color: "rgba(29,31,32,.6)", maxWidth: 620, marginTop: 20 }}>
+              Capture full scrolling pages or custom regions, extract text with local 6-language WebAssembly OCR, annotate and redact sensitive info, then beautify and export in 4K or PDF — all in one browser extension, 100% free and offline.
             </p>
             <div className="flex justify-center gap-3.5" style={{ marginTop: 32 }}>
               <CTAButton href={CWS_URL}>Add to Chrome — It&apos;s Free</CTAButton>
@@ -616,16 +633,17 @@ export default function HomePage() {
                 { feat: "Full-page scroll capture", vals: [true, true, true, true] },
                 { feat: "Selected region capture", vals: [true, false, true, false] },
                 { feat: "Scrolling area capture", vals: [true, false, false, false] },
-                { feat: "On-device OCR", vals: [true, false, false, false] },
-                { feat: "Annotation & markup", vals: [true, false, true, false] },
+                { feat: "Multi-language local OCR (6 langs)", vals: ["6 langs", false, false, false] },
+                { feat: "CleanShot-grade highlighter", vals: [true, false, false, false] },
+                { feat: "6 shape markup tools", vals: [true, false, true, false] },
                 { feat: "Privacy redaction (blur/pixelate)", vals: [true, false, "Paid", false] },
-                { feat: "Screenshot beautifier", vals: [true, false, false, false] },
-                { feat: "PDF export", vals: [true, false, "Paid", true] },
-                { feat: "JPG / WebP export", vals: [true, false, false, false] },
-                { feat: "Screenshot history", vals: [true, false, true, false] },
+                { feat: "Screenshot beautifier & mockups", vals: [true, false, false, false] },
+                { feat: "Video auto-pause on scroll", vals: [true, false, false, false] },
+                { feat: "PNG, JPG, WebP & PDF export", vals: [true, false, "Partial", false] },
+                { feat: "Screenshot history gallery", vals: [true, false, true, false] },
                 { feat: "No account required", vals: [true, true, false, true] },
-                { feat: "100% free (no paid tier)", vals: [true, true, false, false] },
-                { feat: "Works offline", vals: [true, true, false, true] },
+                { feat: "100% free (no paywalled tools)", vals: [true, true, false, false] },
+                { feat: "Works 100% offline", vals: [true, true, false, true] },
               ].map((row, i) => (
                 <tr key={row.feat} style={{ background: i % 2 === 0 ? "rgba(29,31,32,.015)" : undefined }}>
                   <td style={{ padding: "10px 16px", borderBottom: "1px solid rgba(29,31,32,.06)", color: "rgba(29,31,32,.7)", fontWeight: 500 }}>
@@ -642,7 +660,7 @@ export default function HomePage() {
                       ) : v === false ? (
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(29,31,32,.2)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block"><path d="M5 12h14" /></svg>
                       ) : (
-                        <span style={{ fontSize: 11.5, color: "rgba(29,31,32,.4)", fontWeight: 500 }}>{v}</span>
+                        <span style={{ fontSize: 11.5, color: j === 0 ? "var(--gf-color-accent)" : "rgba(29,31,32,.5)", fontWeight: 600 }}>{v}</span>
                       )}
                     </td>
                   ))}
@@ -651,12 +669,15 @@ export default function HomePage() {
             </tbody>
           </table>
         </div>
-        <p className="mx-auto text-center" style={{ maxWidth: 600, marginTop: 20, fontSize: 12, color: "rgba(29,31,32,.35)" }}>
-          Comparison based on free tiers as of September 2026. See the{" "}
-          <a href="/guides/best-full-page-screenshot-extensions" style={{ color: "var(--gf-color-accent)", textDecoration: "underline" }}>
+        <p className="mx-auto text-center" style={{ maxWidth: 640, marginTop: 20, fontSize: 12.5, color: "rgba(29,31,32,.45)" }}>
+          Comparison based on free tiers as of September 2026. Explore individual teardowns in our{" "}
+          <Link href="/alternatives" style={{ color: "var(--gf-color-accent)", textDecoration: "underline" }}>
+            Alternatives Comparison Hub
+          </Link>{" "}
+          or read the{" "}
+          <Link href="/guides/best-full-page-screenshot-extensions" style={{ color: "var(--gf-color-accent)", textDecoration: "underline" }}>
             full comparison guide
-          </a>{" "}
-          for details.
+          </Link>.
         </p>
       </div>
 
