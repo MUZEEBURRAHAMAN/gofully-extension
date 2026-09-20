@@ -107,6 +107,21 @@ const FEATURES = [
     alt: "GoFully result bar with copy, PNG, WebP, and PDF export options",
     reverse: false,
   },
+  {
+    tag: "Capture History",
+    icon: (
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+        <path d="M3 3v5h5" />
+        <path d="M12 7v5l4 2" />
+      </svg>
+    ),
+    title: "Every capture, saved automatically",
+    body: "GoFully keeps a rolling history of your recent screenshots right in the popup — thumbnail, site, and timestamp — so you can reopen, re-edit, or re-export a past capture in one click. Like everything else in GoFully, that history lives only in your browser's own local storage: nothing is uploaded, and Clear All wipes it instantly.",
+    image: "/features/feature-history.webp",
+    alt: "GoFully popup history screen showing recent screenshot thumbnails with site and timestamp",
+    reverse: true,
+  },
 ];
 
 function Kicker({ children, icon }: { children: React.ReactNode; icon?: React.ReactNode }) {

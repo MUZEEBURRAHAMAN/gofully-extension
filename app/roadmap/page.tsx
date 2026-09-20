@@ -187,32 +187,39 @@ export default function RoadmapPage() {
                 Capture reliability, history, and a better homepage
               </div>
               <p className="mt-2" style={{ fontSize: "13.5px", color: "rgba(29,31,32,.6)", lineHeight: 1.6 }}>
-                Competitive improvements across the extension and website — smarter captures, new export formats, and a complete homepage overhaul.
+                Competitive improvements across the extension and website — more reliable captures, a redesigned export flow, and a complete homepage overhaul.
               </p>
 
               <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
                 Capture engine
               </div>
               <ul className="mt-2.5 flex flex-col gap-2">
-                <Bullet>JPG export with adjustable quality slider (0–100%).</Bullet>
+                <Bullet>One Image Quality setting (Low/Medium/High/Maximum) now controls both JPG and WebP exports, replacing the old JPG-only quality slider.</Bullet>
                 <Bullet>Video auto-pause during capture — playing videos no longer corrupt stitched frames.</Bullet>
                 <Bullet>Cookie banner and modal auto-dismiss before capture starts.</Bullet>
                 <Bullet>Seam verification in scroll-stitch — detects and re-captures misaligned frame boundaries.</Bullet>
+                <Bullet>Full-page capture now re-checks for sticky/fixed headers after every scroll step, fixing header duplication on sites where a header only becomes fixed after scrolling (a common WordPress/Shopify/Bootstrap pattern).</Bullet>
+                <Bullet>Fixed a race where the in-page &quot;Capturing page…&quot; badge could occasionally get baked into the screenshot itself, across full-page, visible-area, and selected-area capture.</Bullet>
               </ul>
 
               <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
                 Editor &amp; workflow
               </div>
               <ul className="mt-2.5 flex flex-col gap-2">
-                <Bullet>Screenshot history with thumbnail grid — browse and reopen past captures from the popup.</Bullet>
+                <Bullet>Screenshot history with thumbnail grid — browse and reopen past captures from the popup, stored locally on-device.</Bullet>
                 <Bullet>Browser frame in Beautify now shows the real captured page URL with lock icon.</Bullet>
                 <Bullet>Unsaved changes protection — warns before closing the editor with unfinished work.</Bullet>
+                <Bullet>Editor toolbar now adapts to laptop/tablet widths — color swatches collapse into a popover instead of overflowing.</Bullet>
+                <Bullet>Annotation color is now session-only and no longer carries over between unrelated captures.</Bullet>
+                <Bullet>JPG added alongside PNG/WebP/PDF as a one-click quick-export option on the Visible Area and Selected Area result cards, not just the full editor.</Bullet>
+                <Bullet>Popup and settings version number now reads live from the extension manifest instead of a hardcoded string that had drifted out of date.</Bullet>
               </ul>
 
               <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
                 Website
               </div>
               <ul className="mt-2.5 flex flex-col gap-2">
+                <Bullet>New &quot;Capture History&quot; feature section on the homepage — highlighting local, on-device screenshot history with nothing ever uploaded.</Bullet>
                 <Bullet>Rich structured data (JSON-LD) across all pages for better search visibility.</Bullet>
                 <Bullet>Custom 404 page with helpful navigation.</Bullet>
                 <Bullet>Social proof bar on homepage — CWS rating, trust signals.</Bullet>
