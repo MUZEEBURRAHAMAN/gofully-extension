@@ -94,9 +94,9 @@ test.describe("07 - Comprehensive Editor QA Test Suite (Senior QA 12+ YOE Standa
     await expect(badge).toBeAttached();
     await expect(badge).toBeHidden();
 
-    // Select Rectangle tool
-    await page.locator("#tool-rectangle").click();
-    await expect(page.locator("#tool-rectangle")).toHaveClass(/active/);
+    // Select Rectangle tool (default shape on the consolidated Shape button)
+    await page.locator("#tool-shape").click();
+    await expect(page.locator("#tool-shape")).toHaveClass(/active/);
 
     const upperCanvas = page.locator(".upper-canvas");
     await expect(upperCanvas).toBeVisible();
@@ -155,14 +155,25 @@ test.describe("07 - Comprehensive Editor QA Test Suite (Senior QA 12+ YOE Standa
     const box = (await upperCanvas.boundingBox())!;
 
     const shapeTools = [
-      { id: "#tool-ellipse", name: "ellipse" },
       { id: "#tool-line", name: "line" },
       { id: "#tool-arrow", name: "arrow" },
       { id: "#tool-callout", name: "callout" },
       { id: "#tool-spotlight", name: "spotlight" },
     ];
 
-    let offset = 20;
+    // Ellipse now lives behind the consolidated Shape dropdown rather than
+    // its own toolbar button — select it via the dropdown, then check the
+    // main #tool-shape button (not a per-shape id) for the active state.
+    await page.locator("#shape-expand").click();
+    await expect(page.locator("#shape-menu")).toHaveClass(/show/);
+    await page.locator('[data-shape-type="ellipse"]').click();
+    await expect(page.locator("#tool-shape")).toHaveClass(/active/);
+    await page.mouse.move(box.x + 20, box.y + 20);
+    await page.mouse.down();
+    await page.mouse.move(box.x + 100, box.y + 80, { steps: 3 });
+    await page.mouse.up();
+
+    let offset = 70;
     for (const tool of shapeTools) {
       await page.locator(tool.id).click();
       await expect(page.locator(tool.id)).toHaveClass(/active/);
@@ -348,13 +359,15 @@ test.describe("07 - Comprehensive Editor QA Test Suite (Senior QA 12+ YOE Standa
     // Focus canvas area
     await page.locator(".upper-canvas").click();
 
-    // Press 'r' -> Rectangle
+    // Press 'r' -> Rectangle (consolidated Shape button)
     await page.keyboard.press("r");
-    await expect(page.locator("#tool-rectangle")).toHaveClass(/active/);
+    await expect(page.locator("#tool-shape")).toHaveClass(/active/);
+    await expect(page.locator("#toolName")).toHaveText(/rectangle/i);
 
-    // Press 'e' -> Ellipse
+    // Press 'e' -> Ellipse (consolidated Shape button)
     await page.keyboard.press("e");
-    await expect(page.locator("#tool-ellipse")).toHaveClass(/active/);
+    await expect(page.locator("#tool-shape")).toHaveClass(/active/);
+    await expect(page.locator("#toolName")).toHaveText(/ellipse/i);
 
     // Press 'a' -> Arrow
     await page.keyboard.press("a");
@@ -430,7 +443,7 @@ test.describe("07 - Comprehensive Editor QA Test Suite (Senior QA 12+ YOE Standa
     await expect(page.locator("#hdr-zoom-val")).toHaveText("100%");
 
     // 2. Test Shape coordinate tracking: origin must be left/top and bounding box must match mouse drag
-    await page.locator("#tool-rectangle").click();
+    await page.locator("#tool-shape").click();
     const upperCanvas = page.locator(".upper-canvas");
     const canvasBox = (await upperCanvas.boundingBox())!;
 

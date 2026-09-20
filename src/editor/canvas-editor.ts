@@ -1,6 +1,7 @@
 import {
   Canvas, FabricImage, Rect, Ellipse, Line, IText, Path, Group,
   Circle, FabricText, PencilBrush, FabricObject, ActiveSelection,
+  Polygon, Triangle,
 } from "fabric";
 import Cropper from "cropperjs";
 import { canvasRGBA } from "stackblur-canvas";
@@ -13,15 +14,36 @@ watchTheme();
 
 type ToolType =
   | "select" | "arrow" | "rectangle" | "ellipse" | "callout" | "line"
-  | "freedraw" | "text" | "spotlight" | "blur" | "step" | "crop" | "highlight";
+  | "freedraw" | "text" | "spotlight" | "blur" | "step" | "crop" | "highlight"
+  | "triangle" | "circle" | "square" | "polygon";
 
 type ArrowType = "straight" | "curved";
 type BlurType = "glass" | "pixel" | "redact";
+type ShapeType = "rectangle" | "square" | "circle" | "ellipse" | "triangle" | "polygon";
+
+const shapeSvgs: Record<ShapeType, string> = {
+  rectangle: '<rect x="3" y="5" width="18" height="14" rx="0"/>',
+  square: '<rect x="4" y="4" width="16" height="16" rx="0"/>',
+  circle: '<circle cx="12" cy="12" r="8"/>',
+  ellipse: '<ellipse cx="12" cy="12" rx="9" ry="6"/>',
+  triangle: '<polygon points="12,3 21,21 3,21"/>',
+  polygon: '<polygon points="12,3 20.66,8 20.66,18 12,23 3.34,18 3.34,8"/>',
+};
+
+const shapeLabels: Record<ShapeType, string> = {
+  rectangle: "Rectangle (R)",
+  square: "Square",
+  circle: "Circle",
+  ellipse: "Ellipse (E)",
+  triangle: "Triangle",
+  polygon: "Polygon (Hexagon)",
+};
 
 // ─── State ───────────────────────────────────────────────────────────────────
 
 let canvas: Canvas;
 let currentTool: ToolType = "select";
+let currentShapeType: ShapeType = "rectangle";
 let currentArrowType: ArrowType = "straight";
 let currentBlurType: BlurType = "glass";
 let currentColor = "#EF4444";
@@ -48,6 +70,7 @@ const DEFAULT_SHORTCUTS: Record<ToolType, string> = {
   select: "v", arrow: "a", rectangle: "r", ellipse: "e",
   callout: "c", line: "l", freedraw: "p", text: "t",
   spotlight: "s", blur: "b", step: "n", crop: "x", highlight: "h",
+  triangle: "", circle: "", square: "", polygon: "",
 };
 
 let activeShortcuts: Record<ToolType, string> = { ...DEFAULT_SHORTCUTS };
@@ -351,18 +374,23 @@ function setupDropdownMenus(): void {
     document.getElementById("export-drop-menu")?.classList.remove("show");
   });
 
-  // Shape type selection (Rectangle / Ellipse)
+  // Shape type selection (Rectangle, Square, Circle, Ellipse, Triangle, Polygon)
   document.querySelectorAll("[data-shape-type]").forEach((item) => {
     item.addEventListener("click", (e) => {
       e.stopPropagation();
       document.querySelectorAll("[data-shape-type]").forEach((i) => i.classList.remove("active"));
       item.classList.add("active");
-      const shapeType = (item as HTMLElement).dataset.shapeType as ToolType;
+      const shapeType = (item as HTMLElement).dataset.shapeType as ShapeType;
+      currentShapeType = shapeType;
       const mainBtn = document.getElementById("tool-shape");
       if (mainBtn) mainBtn.dataset.tool = shapeType;
+      const iconEl = document.getElementById("shape-active-icon");
+      if (iconEl && shapeSvgs[shapeType]) iconEl.innerHTML = shapeSvgs[shapeType];
+      const tipEl = document.getElementById("shape-active-tip");
+      if (tipEl && shapeLabels[shapeType]) tipEl.textContent = `Shape: ${shapeLabels[shapeType]}`;
       shapeMenu?.classList.remove("show");
       setTool(shapeType);
-      showToast(shapeType === "ellipse" ? "Ellipse selected" : "Rectangle selected");
+      showToast(`${shapeLabels[shapeType]} selected`);
     });
   });
 
@@ -517,15 +545,37 @@ function setTool(tool: ToolType): void {
 
   currentTool = tool;
 
+  const isShapeTool = ["rectangle", "square", "circle", "ellipse", "triangle", "polygon"].includes(tool);
   document.querySelectorAll(".tool-btn[data-tool]").forEach((btn) => {
-    btn.classList.toggle("active", (btn as HTMLElement).dataset.tool === tool);
+    if (btn.id === "tool-shape") {
+      btn.classList.toggle("active", isShapeTool);
+    } else {
+      btn.classList.toggle("active", (btn as HTMLElement).dataset.tool === tool);
+    }
   });
+
+  if (isShapeTool) {
+    currentShapeType = tool as ShapeType;
+    const mainBtn = document.getElementById("tool-shape");
+    if (mainBtn) mainBtn.dataset.tool = tool;
+    const iconEl = document.getElementById("shape-active-icon");
+    if (iconEl && shapeSvgs[currentShapeType]) iconEl.innerHTML = shapeSvgs[currentShapeType];
+    const tipEl = document.getElementById("shape-active-tip");
+    if (tipEl && shapeLabels[currentShapeType]) tipEl.textContent = `Shape: ${shapeLabels[currentShapeType]}`;
+    document.querySelectorAll("[data-shape-type]").forEach((i) => {
+      i.classList.toggle("active", (i as HTMLElement).dataset.shapeType === tool);
+    });
+  }
 
   const names: Record<ToolType, string> = {
     select: "Select & Transform",
     arrow: "CleanShot Arrow",
-    rectangle: "CleanShot Rounded Rectangle",
+    rectangle: "Rectangle",
+    square: "Square",
+    circle: "Circle",
     ellipse: "Ellipse",
+    triangle: "Triangle",
+    polygon: "Polygon (Hexagon)",
     callout: "Callout Speech Bubble",
     line: "Straight Line",
     freedraw: "Pen / Marker",
@@ -799,6 +849,53 @@ function createShape(tool: ToolType, x: number, y: number): any {
         selectable: false, evented: false,
       });
 
+    case "square":
+      return new Rect({
+        left: x, top: y, width: 0, height: 0,
+        fill: "transparent",
+        stroke: currentColor,
+        strokeWidth: sw,
+        strokeUniform: true,
+        originX: "left", originY: "top",
+        selectable: false, evented: false,
+      });
+
+    case "circle":
+      return new Circle({
+        left: x, top: y, radius: 0,
+        fill: "transparent",
+        stroke: currentColor,
+        strokeWidth: sw,
+        strokeUniform: true,
+        originX: "left", originY: "top",
+        selectable: false, evented: false,
+      });
+
+    case "triangle":
+      return new Triangle({
+        left: x, top: y, width: 0, height: 0,
+        fill: "transparent",
+        stroke: currentColor,
+        strokeWidth: sw,
+        strokeUniform: true,
+        originX: "left", originY: "top",
+        selectable: false, evented: false,
+      });
+
+    case "polygon": {
+      // Regular hexagon — starts degenerate, updateShape repositions vertices
+      const pts = Array.from({ length: 6 }, () => ({ x: 0, y: 0 }));
+      return new Polygon(pts, {
+        left: x, top: y,
+        fill: "transparent",
+        stroke: currentColor,
+        strokeWidth: sw,
+        strokeUniform: true,
+        originX: "left", originY: "top",
+        selectable: false, evented: false,
+      });
+    }
+
     default:
       return null;
   }
@@ -817,9 +914,39 @@ function updateShape(
     case "rectangle": case "blur": case "crop": case "callout": case "spotlight": case "highlight":
       shape.set({ originX: "left", originY: "top", left, top, width, height });
       break;
+    case "square": {
+      const side = Math.max(width, height);
+      shape.set({ originX: "left", originY: "top", left, top, width: side, height: side });
+      break;
+    }
     case "ellipse":
       shape.set({ originX: "left", originY: "top", left, top, rx: width / 2, ry: height / 2 });
       break;
+    case "circle": {
+      const r = Math.max(width, height) / 2;
+      shape.set({ originX: "left", originY: "top", left, top, radius: r });
+      break;
+    }
+    case "triangle":
+      shape.set({ originX: "left", originY: "top", left, top, width, height });
+      break;
+    case "polygon": {
+      // Regular hexagon fitting the bounding box
+      const cx = width / 2;
+      const cy = height / 2;
+      const rx = width / 2;
+      const ry = height / 2;
+      const pts = Array.from({ length: 6 }, (_, i) => {
+        const angle = (Math.PI / 3) * i - Math.PI / 2;
+        return { x: cx + rx * Math.cos(angle), y: cy + ry * Math.sin(angle) };
+      });
+      shape.points = pts;
+      shape.set({ originX: "left", originY: "top", left, top });
+      if (typeof shape.setDimensions === "function") {
+        shape.setDimensions();
+      }
+      break;
+    }
     case "line": case "arrow":
       shape.set({ x1, y1, x2, y2 });
       break;
@@ -862,8 +989,10 @@ function finaliseArrow(line: Line): void {
         fill: "transparent",
         stroke: currentColor,
         strokeWidth: sw,
+        strokeUniform: true,
         strokeLineCap: "round",
         strokeLineJoin: "round",
+        objectCaching: false,
       }
     );
 
@@ -876,13 +1005,16 @@ function finaliseArrow(line: Line): void {
         fill: currentColor,
         stroke: currentColor,
         strokeWidth: 1,
+        strokeUniform: true,
         strokeLineJoin: "round",
+        objectCaching: false,
       }
     );
 
     const group = new Group([curvePath, head], {
       selectable: false,
       evented: false,
+      objectCaching: false,
     });
 
     applyCleanShotStyle(group);
@@ -904,13 +1036,24 @@ function finaliseArrow(line: Line): void {
       fill: currentColor,
       stroke: currentColor,
       strokeWidth: 1,
+      strokeUniform: true,
       strokeLineJoin: "round",
+      objectCaching: false,
     }
   );
 
-  const group = new Group([line, head], {
+  const straightLine = new Line([x1, y1, x2, y2], {
+    stroke: currentColor,
+    strokeWidth: sw,
+    strokeUniform: true,
+    strokeLineCap: "round",
+    objectCaching: false,
+  });
+
+  const group = new Group([straightLine, head], {
     selectable: false,
     evented: false,
+    objectCaching: false,
   });
 
   applyCleanShotStyle(group);
@@ -1125,7 +1268,10 @@ function openCropModal(): void {
   const posEl    = document.getElementById("cropPosDisplay")!;
 
   const multiplier = Math.max(1, 1 / fitScale);
+  const savedCropZ = cssZoom;
+  if (savedCropZ !== 1) applyContainerZoom(1);
   const dataUrl = canvas.toDataURL({ format: "png", quality: 1, multiplier });
+  if (savedCropZ !== 1) applyContainerZoom(savedCropZ);
 
   document.querySelectorAll(".tool-btn[data-tool]").forEach((b) => b.classList.remove("active"));
   document.querySelector(".tool-btn[data-tool='crop']")?.classList.add("active");
@@ -1413,62 +1559,76 @@ async function exportToBlob(): Promise<Blob> {
 
   const isImageModified = isBeautified || isCropped;
 
-  // Clean export (or no annotations) of an UNMODIFIED screenshot: bypass Fabric entirely — zero quality loss
-  if (!isImageModified && !hasAnnotations) {
-    const resp = await chrome.runtime.sendMessage({ type: "GET_CAPTURE_BLOB_URL" });
-    const dataUrl: string | null = resp?.url ?? null;
-    if (dataUrl) {
-      let blob = await dataUrlToBlob(dataUrl);
-      if (dims) {
-        const bitmap = await createImageBitmap(blob);
-        const oc = new OffscreenCanvas(dims.w, dims.h);
-        const ctx = oc.getContext("2d")!;
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = "high";
-        ctx.drawImage(bitmap, 0, 0, dims.w, dims.h);
-        blob = await oc.convertToBlob({ type: "image/png" });
+  // Clean export (toggle unchecked) or no annotations on an UNMODIFIED screenshot:
+  // bypass Fabric entirely — pristine original capture quality, zero memory/zoom issues
+  if (!isImageModified && (clean || !hasAnnotations)) {
+    try {
+      const resp = await chrome.runtime.sendMessage({ type: "GET_CAPTURE_BLOB_URL" });
+      const dataUrl: string | null = resp?.url ?? null;
+      if (dataUrl) {
+        let blob = await dataUrlToBlob(dataUrl);
+        if (dims) {
+          const bitmap = await createImageBitmap(blob);
+          const oc = new OffscreenCanvas(dims.w, dims.h);
+          const ctx = oc.getContext("2d")!;
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = "high";
+          ctx.drawImage(bitmap, 0, 0, dims.w, dims.h);
+          blob = await oc.convertToBlob({ type: "image/png" });
+        }
+        return blob;
       }
-      return blob;
+    } catch (e) {
+      console.warn("Direct capture blob bypass failed, falling back to Fabric:", e);
     }
-    // Fallback to Fabric if SW returns nothing
   }
 
-  // Annotated or modified (Beautified / Cropped) export: render via Fabric at the resolved export multiplier —
-  // native resolution, or upscaled further when Quality is set to 1080p HD
-  // or 4K UHD and native resolution doesn't already meet that target.
+  // Fabric export: temporarily reset zoom to 1.0 so toDataURL multiplies from base canvas dims (dispW x dispH),
+  // rather than multiplying the already zoomed-in display dimensions (which crashed at 500%+ zoom).
+  const savedZoom = cssZoom;
   const multiplier = getExportMultiplier();
 
-  if (clean && hasAnnotations) {
-    annotations.forEach((o) => o.set("visible", false));
-    canvas.renderAll();
+  try {
+    if (savedZoom !== 1) {
+      applyContainerZoom(1);
+    }
+
+    if (clean && hasAnnotations) {
+      annotations.forEach((o) => o.set("visible", false));
+      canvas.renderAll();
+    }
+
+    const dataUrl = canvas.toDataURL({
+      format: "png",
+      quality: 1,
+      multiplier,
+      imageSmoothingEnabled: true,
+      imageSmoothingQuality: "high",
+    } as any);
+
+    let blob = await dataUrlToBlob(dataUrl);
+
+    if (dims) {
+      const bitmap = await createImageBitmap(blob);
+      const oc = new OffscreenCanvas(dims.w, dims.h);
+      const ctx = oc.getContext("2d")!;
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(bitmap, 0, 0, dims.w, dims.h);
+      blob = await oc.convertToBlob({ type: "image/png" });
+    }
+
+    return blob;
+  } finally {
+    if (clean && hasAnnotations) {
+      annotations.forEach((o) => o.set("visible", true));
+    }
+    if (savedZoom !== 1) {
+      applyContainerZoom(savedZoom);
+    } else {
+      canvas.renderAll();
+    }
   }
-
-  const dataUrl = canvas.toDataURL({
-    format: "png",
-    quality: 1,
-    multiplier,
-    imageSmoothingEnabled: true,
-    imageSmoothingQuality: "high",
-  } as any);
-
-  if (clean && hasAnnotations) {
-    annotations.forEach((o) => o.set("visible", true));
-    canvas.renderAll();
-  }
-
-  let blob = await dataUrlToBlob(dataUrl);
-
-  if (dims) {
-    const bitmap = await createImageBitmap(blob);
-    const oc = new OffscreenCanvas(dims.w, dims.h);
-    const ctx = oc.getContext("2d")!;
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = "high";
-    ctx.drawImage(bitmap, 0, 0, dims.w, dims.h);
-    blob = await oc.convertToBlob({ type: "image/png" });
-  }
-
-  return blob;
 }
 
 function setupExportButtons(): void {
@@ -1788,7 +1948,7 @@ function setupRotateControls(): void {
 
 function adjustZoom(delta: number): void {
   if (!backgroundImage) return;
-  cssZoom = Math.min(5.0, Math.max(0.1, Math.round((cssZoom + delta) * 100) / 100));
+  cssZoom = Math.min(10.0, Math.max(0.1, Math.round((cssZoom + delta) * 100) / 100));
   applyContainerZoom(cssZoom);
   const zStr = `${Math.round(cssZoom * 100)}%`;
   zoomEl.textContent = zStr;
@@ -1992,7 +2152,10 @@ function setupBeautifier(): void {
       toolNameEl.textContent = "Screenshot Beautifier";
       if (!originalScreenshotUrl && backgroundImage) {
         const multiplier = imgNativeW > 0 ? imgNativeW / dispW : Math.max(1, 1 / fitScale);
+        const savedZ = cssZoom;
+        if (savedZ !== 1) applyContainerZoom(1);
         originalScreenshotUrl = canvas.toDataURL({ format: "png", quality: 1, multiplier } as any);
+        if (savedZ !== 1) applyContainerZoom(savedZ);
       }
     }
   });
@@ -2295,7 +2458,10 @@ async function applyBeautify(showToastMsg = true): Promise<void> {
   // Save original if not saved yet
   if (!originalScreenshotUrl) {
     const multiplier = imgNativeW > 0 ? imgNativeW / dispW : Math.max(1, 1 / fitScale);
+    const savedZ = cssZoom;
+    if (savedZ !== 1) applyContainerZoom(1);
     originalScreenshotUrl = canvas.toDataURL({ format: "png", quality: 1, multiplier } as any);
+    if (savedZ !== 1) applyContainerZoom(savedZ);
   }
 
   // Read settings

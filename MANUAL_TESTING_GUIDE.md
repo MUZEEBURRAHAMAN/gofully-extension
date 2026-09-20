@@ -293,19 +293,30 @@
 ### TC-ED-003: Tool 2 — Straight & Curved Arrows (`A`)
 * **Steps**:
   1. Press `A` or click the Arrow tool.
-  2. Click and drag across the canvas.
+  2. Open the Arrow dropdown (`▾`) and test both **Straight Arrow** and **Curved Arrow**.
+  3. Zoom in to 500% and 1000% using `Cmd + =` or `+` button.
+  4. Click and drag across the canvas to draw an arrow at high zoom.
 * **Expected Result**:
-  * Arrow points crisply towards mouse release coordinate.
-  * Arrowhead scales proportionally with stroke width.
-  * Clicking the center control point allows bending into a smooth CleanShot-style curved arrow.
+  * Arrow points crisply towards mouse release coordinate without visual distortion.
+  * Arrowhead scales proportionally with stroke width and maintains sharp vector fidelity.
+  * In Curved Arrow mode, a smooth bezier curve is generated with an aligned arrowhead.
+  * Neither the stroke width nor the arrowhead becomes distorted, clipped, or oversized when zooming from 100% to 1000%.
 
-### TC-ED-004: Tool 3 — Rectangle & Ellipse (`R` / `E`)
+### TC-ED-004: Tool 3 — Consolidated Shape Dropdown (6 Shapes)
 * **Steps**:
-  1. Select Rectangle tool (`R`) -> Drag on canvas.
-  2. Select Ellipse tool (`E`) -> Drag on canvas.
+  1. Inspect the top toolbar: Verify Rectangle and Ellipse are consolidated into a single **Shape** button with a dropdown expander (`▾`).
+  2. Click the Shape dropdown expander (`#shape-expand`) and test each shape:
+     * **Rectangle (`R`)**: Draws scalable rounded/sharp rectangle.
+     * **Square**: Constrained 1:1 equal width and height bounding box.
+     * **Circle**: Constrained 1:1 perfect radius circle.
+     * **Ellipse (`E`)**: Standard horizontal/vertical oval.
+     * **Triangle**: 3-vertex polygon with top apex and flat base.
+     * **Polygon (Hexagon)**: 6-sided regular polygonal geometry.
+  3. Test keyboard shortcuts: Press `R` (activates Rectangle) and `E` (activates Ellipse).
 * **Expected Result**:
-  * Shapes draw in real-time tracking the cursor pixel-perfectly.
-  * Holding `Shift` constrains Rectangle to a square and Ellipse to a circle.
+  * Selecting any shape from the dropdown updates the main toolbar icon and tooltip.
+  * Dragging on canvas draws the selected shape smoothly in real-time.
+  * All shapes receive CleanShot-grade circular selection handles upon creation.
 
 ### TC-ED-005: Tool 4 — Callout Bubble (`C`)
 * **Steps**:
@@ -517,6 +528,41 @@
   3. Press `Cmd + V` / `Ctrl + V`.
 * **Expected Result**:
   * Full composite image pastes with full transparency and annotation fidelity.
+
+### TC-EXP-006: High Zoom Export (500% to 1000%) with Annotations
+* **Steps**:
+  1. Take a screenshot (Visible Area or Full Page) and open in the Editor.
+  2. Add annotations: draw a Rectangle, a Straight Arrow, a Curved Arrow, and a Step badge.
+  3. Zoom in to **500%** using the header or status bar `+` button.
+  4. Continue zooming in up to **1000%** (max zoom limit).
+  5. Open Export dropdown -> Ensure "Include Annotations" is checked.
+  6. Click **Save as PNG** (or **Save as JPG**).
+* **Expected Result**:
+  * Export completes immediately without crashing, freezing, or producing a corrupted/empty image.
+  * The exported file is at native capture resolution (not 5x/10x multiplied canvas size).
+  * Annotations, arrows, and step badges are crisp, properly positioned, and correctly scaled.
+  * Canvas view remains at the user's active zoom level (500% / 1000%) after export finishes.
+
+### TC-EXP-007: High Zoom Clean Export with "Include Annotations" Toggled OFF
+* **Steps**:
+  1. With annotations present on canvas at **500%** or **1000%** zoom.
+  2. Open Export dropdown -> Uncheck **Include Annotations**.
+  3. Click **Save as PNG**.
+* **Expected Result**:
+  * Direct zero-loss export of the clean screenshot without any annotations.
+  * Downloaded image matches original unedited capture pixel-for-pixel.
+  * On canvas, annotations remain intact and visible to the user.
+
+### TC-EXP-008: Full Page Scrolling Capture at Extreme Zoom & UI Overflow
+* **Steps**:
+  1. Take a **Full Page Screenshot** of a tall document (e.g. 8,000px+ height).
+  2. Open in Editor.
+  3. Zoom up to **1000%**.
+  4. Scroll vertically and horizontally in the canvas workspace (`.canvas-wrap`).
+* **Expected Result**:
+  * Top toolbar and bottom status bar remain fixed in place and do not get clipped or pushed off screen.
+  * Viewport scrolling operates smoothly without layout collapse.
+  * Drawing shapes or arrows works with accurate scene coordinates anywhere on the canvas.
 
 ---
 

@@ -36,8 +36,9 @@ test.describe("03 - Canvas Visual Editor Suite", () => {
     const tools = [
       "#tool-select",
       "#tool-arrow",
-      "#tool-rectangle",
-      "#tool-ellipse",
+      "#tool-shape",
+      "#shape-expand",
+      "#shape-menu",
       "#tool-callout",
       "#tool-line",
       "#tool-freedraw",
@@ -65,15 +66,23 @@ test.describe("03 - Canvas Visual Editor Suite", () => {
     await page.goto(`chrome-extension://${extensionId}/editor.html`);
     await page.waitForLoadState("domcontentloaded");
 
-    // Click Rectangle tool
-    await page.locator("#tool-rectangle").click();
-    await expect(page.locator("#tool-rectangle")).toHaveClass(/active/);
+    // Click Shape tool (default Rectangle)
+    await page.locator("#tool-shape").click();
+    await expect(page.locator("#tool-shape")).toHaveClass(/active/);
     await expect(page.locator("#toolName")).toHaveText(/rectangle/i);
 
-    // Click Ellipse tool
-    await page.locator("#tool-ellipse").click();
-    await expect(page.locator("#tool-ellipse")).toHaveClass(/active/);
+    // Open Shape dropdown and select Ellipse
+    await page.locator("#shape-expand").click();
+    await expect(page.locator("#shape-menu")).toHaveClass(/show/);
+    await page.locator('[data-shape-type="ellipse"]').click();
+    await expect(page.locator("#tool-shape")).toHaveClass(/active/);
     await expect(page.locator("#toolName")).toHaveText(/ellipse/i);
+
+    // Open Shape dropdown and select Triangle
+    await page.locator("#shape-expand").click();
+    await page.locator('[data-shape-type="triangle"]').click();
+    await expect(page.locator("#tool-shape")).toHaveClass(/active/);
+    await expect(page.locator("#toolName")).toHaveText(/triangle/i);
 
     // Click Callout tool
     await page.locator("#tool-callout").click();
