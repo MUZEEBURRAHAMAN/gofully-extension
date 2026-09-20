@@ -102,7 +102,7 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
   },
   openGraph: {
-    title: "GoFully — Full Page Screenshot, Visual Editor & Local OCR Studio",
+    title: "GoFully — Full Page Screenshot Tool & Visual Editor",
     description:
       "Capture entire webpages, annotate visually with arrows and callouts, blur sensitive data, extract text with local OCR, and export in 4K or PDF — 100% private and in-browser.",
     url: "https://gofully-extension.vercel.app",
@@ -120,7 +120,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "GoFully — Full Page Screenshot, Visual Editor & Local OCR Studio",
+    title: "GoFully — Full Page Screenshot Tool & Visual Editor",
     description: "Capture, annotate, redact, OCR, and export full scrolling webpages in seconds. Free, offline & 100% on-device.",
     images: ["https://gofully-extension.vercel.app/og-image.png"],
   },

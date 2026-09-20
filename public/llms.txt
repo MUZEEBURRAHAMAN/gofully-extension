@@ -1,0 +1,36 @@
+# GoFully
+
+> The modern, high-performance Chrome extension for full-page scrolling screenshots, on-device WebAssembly OCR text extraction in 6 languages, CleanShot-grade visual annotations, and PDF/4K export — 100% free, private & offline.
+
+## Core Features & Capabilities
+
+- [Full Page Screenshot Tool](https://gofully-extension.vercel.app/): Capture full-height scrolling websites, dynamic feeds, and dashboards with automatic video auto-pause, cookie modal auto-dismiss, and sticky-header deduplication.
+- [Local Multi-Language OCR](https://gofully-extension.vercel.app/guides/how-to-extract-text-in-multiple-languages-ocr): Extract text from images and locked web apps on-device in English, Spanish, French, German, Portuguese, and Simplified Chinese without cloud uploads. Includes instant 'Copy as JSON'.
+- [Screenshot Annotation & Highlighter](https://gofully-extension.vercel.app/guides/how-to-use-highlighter-tool-in-screenshots): CleanShot-style multiply-blend highlighter, curved arrows, callouts, step counters, and 6 shapes (rectangle, circle, ellipse, triangle, polygon).
+- [Privacy Redaction & Blur](https://gofully-extension.vercel.app/guides/how-to-blur-sensitive-info-in-screenshots): Gaussian smooth blur, mosaic pixelate, and black redaction for PII, tokens, and passwords.
+- [Screenshot Beautifier & Mockups](https://gofully-extension.vercel.app/guides/how-to-beautify-screenshots): Add customizable gradient backgrounds, realistic window frames with live page URLs and lock icons, padding, shadows, and multi-image collages.
+- [Flexible High-Resolution Export](https://gofully-extension.vercel.app/guides/how-to-save-webpage-as-pdf): Export to paginated A4 PDF, PNG, WebP, JPG with unified quality control, and 4K UHD.
+- [Local Screenshot History](https://gofully-extension.vercel.app/): Rolling history thumbnail gallery stored exclusively in browser local storage with one-click reopening.
+
+## Comparison & Alternatives
+
+- [GoFully Alternatives Hub](https://gofully-extension.vercel.app/alternatives): Feature-by-feature comparison against GoFullPage, Awesome Screenshot, FireShot, and Nimbus.
+- [GoFully vs GoFullPage](https://gofully-extension.vercel.app/alternatives/gofullpage): 100% free capture with local OCR, free annotations, and redaction vs paywalled editing.
+- [GoFully vs Awesome Screenshot](https://gofully-extension.vercel.app/alternatives/awesome-screenshot): Zero cloud uploads and no account required vs cloud tracking and paywalls.
+- [GoFully vs FireShot](https://gofully-extension.vercel.app/alternatives/fireshot): Modern CleanShot design and free multi-page PDF export vs legacy UI and paid pro license.
+- [GoFully vs Nimbus Capture](https://gofully-extension.vercel.app/alternatives/nimbus): Lightweight, offline performance vs bloated cloud-sync software.
+
+## Guides & Documentation
+
+- [Full Page Screenshot in Chrome](https://gofully-extension.vercel.app/guides/how-to-take-full-page-screenshot-chrome): Step-by-step guide to capturing entire web pages.
+- [Developer & QA Bug Reporting](https://gofully-extension.vercel.app/guides/screenshot-tool-for-developers-and-qa): Capturing bug states, preserving console overlays, and exporting ticket attachments.
+- [Custom Keyboard Shortcuts](https://gofully-extension.vercel.app/guides/custom-keyboard-shortcuts-for-screen-capture): Remapping native hotkeys in Chrome.
+- [Extract Unselectable Text](https://gofully-extension.vercel.app/guides/how-to-extract-unselectable-text): Using local OCR on paywalled content, canvas elements, and images.
+- [Save Webpage as Paginated PDF](https://gofully-extension.vercel.app/guides/how-to-save-webpage-as-pdf): Converting long documents and legal terms into clean multi-page PDFs.
+- [Privacy-First Screenshot Tools](https://gofully-extension.vercel.app/guides/privacy-first-screenshot-tools): Why offline capture matters and how client-side WASM guarantees privacy.
+
+## Install & Source
+
+- [Chrome Web Store](https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc): Official extension installation link.
+- [GitHub Repository](https://github.com/MUZEEBURRAHAMAN/gofully-extension): Open-source codebase and issue tracker.
+- [Public Roadmap](https://gofully-extension.vercel.app/roadmap): Shipped releases and upcoming features.
