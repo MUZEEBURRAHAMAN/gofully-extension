@@ -154,9 +154,9 @@ function showResultCard(payload: ResultCardPayload): void {
       background: rgba(242,242,243,.9); border: 1px solid #E3E8EF;
       padding: 2px 10px; text-transform: uppercase; letter-spacing: 0.06em;
     }
-    .res-actions { display: flex; border-bottom: 1px solid #E3E8EF; }
+    .res-actions { display: flex; flex-wrap: wrap; border-bottom: 1px solid #E3E8EF; }
     .res-btn {
-      flex: 1; height: 40px; display: flex; align-items: center; justify-content: center; gap: 5px;
+      flex: 1 1 20%; min-width: 0; height: 40px; display: flex; align-items: center; justify-content: center; gap: 5px;
       border: none; border-right: 1px solid #E3E8EF; background: transparent; cursor: pointer;
       font-size: 11px; font-weight: 500; letter-spacing: 0.02em; text-transform: uppercase;
       color: #344054; font-family: ${FONT_STACK};
@@ -165,7 +165,10 @@ function showResultCard(payload: ResultCardPayload): void {
     .res-btn:last-child { border-right: none; }
     .res-btn:hover { background: #F7F8FA; color: #101828; }
     .res-btn:active { background: #F1F3F7; }
-    .res-btn.prim { flex: 1.6; background: #1667F2; border-right-color: #1257D8; color: #f2f2f3; font-weight: 600; }
+    /* Copy gets its own full-width row — both the emphasis a primary action
+       deserves and the simplest fix for 5 format/edit buttons no longer
+       fitting next to it on one line now that JPG joined PNG/WebP/PDF/Edit. */
+    .res-btn.prim { flex-basis: 100%; background: #1667F2; border-right: none; border-bottom: 1px solid #1257D8; color: #f2f2f3; font-weight: 600; }
     .res-btn.prim:hover { background: #1257D8; }
     .res-footer {
       display: flex; align-items: center; justify-content: space-between;
@@ -221,7 +224,7 @@ function showResultCard(payload: ResultCardPayload): void {
       </button>
     </div>
     <div class="res-footer">
-      <div class="res-ftr-left"><div class="res-ftr-dot"></div><span>GoFully v1.1</span></div>
+      <div class="res-ftr-left"><div class="res-ftr-dot"></div><span>GoFully v${chrome.runtime.getManifest().version}</span></div>
       <span>100% Offline</span>
     </div>
   `;

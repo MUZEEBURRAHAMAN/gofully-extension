@@ -586,11 +586,13 @@
 
     .res-actions {
       display: flex;
+      flex-wrap: wrap;
       border-bottom: 1px solid var(--border);
     }
 
     .res-btn {
-      flex: 1;
+      flex: 1 1 20%;
+      min-width: 0;
       height: 40px;
       display: flex;
       align-items: center;
@@ -613,10 +615,14 @@
     .res-btn:active { background: var(--sunken); }
     .res-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
 
+    /* Copy gets its own full-width row — both the emphasis a primary action
+       deserves and the simplest fix for 5 format/edit buttons no longer
+       fitting next to it on one line now that JPG joined PNG/WebP/PDF/Edit. */
     .res-btn.prim {
-      flex: 1.6;
+      flex-basis: 100%;
       background: var(--blue);
-      border-right-color: var(--blue-h);
+      border-right: none;
+      border-bottom: 1px solid var(--blue-h);
       color: #f2f2f3;
       font-weight: 600;
     }
