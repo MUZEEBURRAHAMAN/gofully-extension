@@ -220,6 +220,19 @@
     .tbar-scroll::-webkit-scrollbar-thumb { background: rgba(var(--ink),.18); }
     .tbar-scroll::-webkit-scrollbar-track { background: transparent; }
 
+    /* Groups history/zoom/export/done as one flex item so the compact-
+       toolbar media query (below) can push the whole cluster to the end of
+       row 1 in one move. This needs display:flex unconditionally, not just
+       inside that media query — a bare <div> defaults to display:block, so
+       its own children (each a block-level .tbar-group/.hdr-zoom-group/
+       .export-group) would stack vertically into one tall column instead of
+       sitting in a row, however wide the window is. */
+    .tbar-right-actions {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
     /* Tool button */
     .tool-btn {
       width: 34px; height: 34px;
@@ -340,6 +353,20 @@
     #sharedTooltip.show { opacity: 1; }
 
     /* Color swatches */
+    /* Transparent wrapper at normal widths — .color-trigger stays hidden and
+       .color-group renders inline exactly as it did before this existed.
+       Only the compact-toolbar media query below changes that. */
+    .color-picker-wrap {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .color-trigger {
+      display: none;
+      border: none;
+      background: transparent;
+    }
+
     .color-group {
       display: flex;
       align-items: center;
@@ -1110,6 +1137,96 @@
       .toast { transition: opacity .18s; }
       .toast.show { transform: translateX(-50%); }
     }
+
+    /* ─── COMPACT TOOLBAR (laptop / tablet widths) ───────────────────────
+       Below ~1400px the single-row toolbar (13+ tool buttons, 9 color
+       swatches, stroke width, history, zoom, export, done) no longer fits
+       without either scrolling most of it out of view or shrinking icons
+       below a usable tap/click size. Two changes make it work instead of
+       just relying on .tbar-scroll's horizontal scroll:
+       1. The toolbar wraps to two rows: row 1 keeps the brand mark and the
+          always-needed history/zoom/export/done cluster (.tbar-right-actions),
+          row 2 gets the drawing/annotation tools, color picker, and stroke
+          width — .tbar-scroll is forced onto its own full-width row via
+          flex-basis:100% + a high `order`, rather than being squeezed.
+       2. Every control shrinks a bit, and the 9 always-visible color swatches
+          collapse into a single trigger button that opens the same swatches
+          as a popover (positioned in JS via positionToolDropdown) — see
+          setupColorPicker() in canvas-editor.ts. */
+    @media (max-width: 1400px) {
+      .toolbar {
+        flex-wrap: wrap;
+        height: auto;
+        min-height: 46px;
+        row-gap: 4px;
+        padding: 6px 10px;
+      }
+      .tbar-scroll {
+        order: 10;
+        flex-basis: 100%;
+        min-width: 100%;
+        /* Visually separates row 2 (tools) from row 1 (brand + history/
+           zoom/export/done) now that they're stacked instead of side by
+           side — without it the two rows read as one cramped block. */
+        border-top: 1px solid var(--bar-bd);
+        margin-top: 4px;
+        padding-top: 6px;
+      }
+      .tbar-right-actions {
+        margin-left: auto;
+      }
+
+      /* Slightly smaller controls buy back room without going icon-soup */
+      .tool-btn { width: 30px; height: 30px; }
+      .tool-btn svg { width: 15px; height: 15px; }
+      .tbar-group { gap: 2px; padding: 0 3px; }
+      .tbar-sep { margin: 0 4px; }
+      .brand-name { display: none; } /* logo alone is enough once space is tight */
+
+      /* Color swatches collapse into one trigger + popover */
+      .color-trigger {
+        display: flex;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        border: 2px solid var(--border);
+        cursor: pointer;
+        padding: 0;
+        flex-shrink: 0;
+      }
+      .color-trigger:hover { border-color: var(--text); }
+      .color-group {
+        display: none;
+      }
+      .color-group.show {
+        display: flex;
+        position: fixed;
+        flex-wrap: wrap;
+        max-width: 220px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 0;
+        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+        padding: 8px;
+        z-index: 9999;
+      }
+    }
+
+    /* Tablet-width fallback: row 2 (.tbar-scroll) still won't fit every tool
+       compactly even after the shrink above, so it scrolls horizontally
+       rather than wrapping into a third row (matches the existing
+       horizontal-scroll pattern this toolbar already used at full width). */
+    @media (max-width: 900px) {
+      .toolbar { padding: 6px 8px; }
+      .tbar-scroll {
+        overflow-x: auto;
+        overflow-y: hidden;
+        flex-wrap: nowrap;
+        scrollbar-width: thin;
+      }
+      .tbar-scroll::-webkit-scrollbar { height: 4px; }
+      .tbar-scroll::-webkit-scrollbar-thumb { background: rgba(var(--ink),.18); }
+    }
   </style>
 </head>
 <body>
@@ -1289,8 +1406,16 @@
 
   <div class="tbar-sep"></div>
 
-  <!-- Color swatches -->
-  <div class="color-group">
+  <!-- Color swatches — collapses into a single trigger + popover on a
+       compact/laptop-width toolbar (see the responsive rules below) so the
+       9 always-visible circles don't compete with the drawing tools for
+       space. On a normal-width toolbar #color-trigger stays hidden and
+       .color-group renders inline exactly as before. -->
+  <div class="color-picker-wrap">
+    <button class="color-trigger" id="color-trigger" style="background:#EF4444" aria-label="Color">
+      <span class="tip">Color</span>
+    </button>
+  <div class="color-group" id="color-group">
     <div class="color-swatch active" data-color="#EF4444" style="background:#EF4444">
       <span class="tip">Red</span>
     </div>
@@ -1319,7 +1444,8 @@
       <input type="color" id="customColorInput" value="#EF4444">
       <span class="tip">Custom color</span>
     </div>
-  </div>
+  </div><!-- /.color-group -->
+  </div><!-- /.color-picker-wrap -->
 
   <div class="tbar-sep"></div>
 
@@ -1392,6 +1518,13 @@
   </div>
 
   </div><!-- /.tbar-scroll -->
+
+  <!-- History, zoom, and export/done are kept together so that on a
+       compact/laptop-width toolbar (see the responsive rules below) this
+       whole cluster can be pushed to the end of row 1, while the drawing
+       tools above (.tbar-scroll) drop to their own row 2 instead of being
+       squeezed or scrolled. -->
+  <div class="tbar-right-actions">
 
   <!-- History -->
   <div class="tbar-group">
@@ -1565,6 +1698,8 @@
       </svg>
     </button>
   </div>
+
+  </div><!-- /.tbar-right-actions -->
 
 </div>
 

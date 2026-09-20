@@ -3,7 +3,7 @@
   "name": "GoFully - Full Page Screenshot, OCR & Editor",
   "short_name": "GoFully",
   "version": "1.1.2",
-  "description": "Full page screenshot capture & visual editor. Annotate, blur sensitive info, extract text with local OCR, and export to PDF or 4K.",
+  "description": "Full page screenshot & visual editor. Annotate, blur sensitive info, extract text with local OCR, export to PNG, JPG, WebP, or PDF.",
   "icons": {
     "16": "assets/icon-16.png",
     "32": "assets/icon-32.png",

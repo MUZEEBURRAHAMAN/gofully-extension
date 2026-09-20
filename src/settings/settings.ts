@@ -8,6 +8,9 @@ watchTheme();
 initI18n();
 watchLanguage(() => {});
 
+const settingsVersion = document.getElementById("settingsVersion");
+if (settingsVersion) settingsVersion.textContent = `GoFully v${chrome.runtime.getManifest().version}`;
+
 let currentTheme: Settings["theme"] = DEFAULT_SETTINGS.theme;
 
 const DEFAULT_EDITOR_SHORTCUTS: Record<string, string> = {

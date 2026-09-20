@@ -207,6 +207,10 @@ function showResultCard(payload: ResultCardPayload): void {
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         <span>WebP</span>
       </button>
+      <button class="res-btn" id="gf-res-jpg">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>JPG</span>
+      </button>
       <button class="res-btn" id="gf-res-pdf">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13h6M9 17h3"/></svg>
         <span>PDF</span>
@@ -264,6 +268,12 @@ function showResultCard(payload: ResultCardPayload): void {
   shadow.getElementById("gf-res-webp")!.addEventListener("click", async (e) => {
     const btn = e.currentTarget as HTMLElement;
     const resp = await chrome.runtime.sendMessage({ type: "EXPORT_CAPTURE", payload: { format: "webp" } }).catch(() => null);
+    setBtnBusy(btn, "", resp?.success ? "Saved!" : "Failed", !!resp?.success);
+  });
+
+  shadow.getElementById("gf-res-jpg")!.addEventListener("click", async (e) => {
+    const btn = e.currentTarget as HTMLElement;
+    const resp = await chrome.runtime.sendMessage({ type: "EXPORT_CAPTURE", payload: { format: "jpg" } }).catch(() => null);
     setBtnBusy(btn, "", resp?.success ? "Saved!" : "Failed", !!resp?.success);
   });
 

@@ -110,6 +110,14 @@ test.describe("03 - Canvas Visual Editor Suite", () => {
     await page.goto(`chrome-extension://${extensionId}/editor.html`);
     await page.waitForLoadState("domcontentloaded");
 
+    // Below ~1400px the 9 swatches collapse behind a single color-trigger
+    // button (see color-trigger/color-group in editor.html) — open it first
+    // if that's the state we're in, so this test works at any window width.
+    const colorTrigger = page.locator("#color-trigger");
+    if (await colorTrigger.isVisible()) {
+      await colorTrigger.click();
+    }
+
     // Select Green swatch (#10B981)
     const greenSwatch = page.locator('.color-swatch[data-color="#10B981"]');
     await greenSwatch.click();
@@ -120,6 +128,37 @@ test.describe("03 - Canvas Visual Editor Suite", () => {
     await strokeSlider.fill("8");
     await strokeSlider.dispatchEvent("input");
     expect(await strokeSlider.inputValue()).toBe("8");
+
+    await page.close();
+  });
+
+  test("TC-EDIT-011: Custom color from a previous capture does not leak into a new editor session", async ({
+    context,
+    extensionId,
+    serviceWorker,
+  }) => {
+    // Simulate a PRIOR, unrelated capture where the user picked a custom
+    // color — this is what chrome.storage.sync retained before the fix.
+    await serviceWorker.evaluate(async () => {
+      await chrome.storage.sync.set({ editorCustomColor: "#123456" });
+    });
+
+    // Open a brand-new editor session, as if for a different website's capture.
+    const page = await context.newPage();
+    await page.goto(`chrome-extension://${extensionId}/editor.html`);
+    await page.waitForLoadState("domcontentloaded");
+
+    // The custom-color swatch must show its neutral rainbow-wheel affordance
+    // (no inline background override), not the stale color from before.
+    const customSwatch = page.locator("#customColorSwatch");
+    const inlineBackground = await customSwatch.evaluate((el) => (el as HTMLElement).style.background);
+    expect(inlineBackground).toBe("");
+
+    // The default red preset must still be the active/selected color — the
+    // stale custom color must not have silently become the current color.
+    const redSwatch = page.locator('.color-swatch[data-color="#EF4444"]');
+    await expect(redSwatch).toHaveClass(/active/);
+    await expect(customSwatch).not.toHaveClass(/active/);
 
     await page.close();
   });

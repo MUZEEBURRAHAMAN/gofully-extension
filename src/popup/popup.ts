@@ -12,6 +12,12 @@ watchTheme();
 initI18n();
 watchLanguage(() => applyPageSupportState(currentSupportState));
 
+// Read straight from the manifest so this can't drift out of sync with the
+// actual shipped version again (it previously sat hardcoded as "v1.1" while
+// the manifest had already moved to 1.1.2).
+const ftrVersion = document.getElementById("ftrVersion");
+if (ftrVersion) ftrVersion.textContent = `GoFully v${chrome.runtime.getManifest().version}`;
+
 const modesSection = document.getElementById("modesSection")!;
 const progressSection = document.getElementById("progressSection")!;
 const progressLabel = document.getElementById("progressLabel")!;
@@ -266,6 +272,25 @@ document.getElementById("saveWebpBtn")?.addEventListener("click", async () => {
     const filename = generateFilename(domain, "webp");
     await chrome.downloads.download({ url: downloadUrl, filename, saveAs: false });
     showToast(t("toast.saved_webp"));
+  } catch {
+    showToast(t("toast.save_failed"));
+  }
+});
+
+document.getElementById("saveJpgBtn")?.addEventListener("click", async () => {
+  if (!currentBlobUrl) return;
+  try {
+    const res = await fetch(currentBlobUrl);
+    const blob = await res.blob();
+    const bitmap = await createImageBitmap(blob);
+    const oc = new OffscreenCanvas(bitmap.width, bitmap.height);
+    oc.getContext("2d")!.drawImage(bitmap, 0, 0);
+    const jpgBlob = await oc.convertToBlob({ type: "image/jpeg", quality: 0.92 });
+    const downloadUrl = URL.createObjectURL(jpgBlob);
+    const domain = getDomain(currentUrl);
+    const filename = generateFilename(domain, "jpg");
+    await chrome.downloads.download({ url: downloadUrl, filename, saveAs: false });
+    showToast(t("toast.saved_jpg"));
   } catch {
     showToast(t("toast.save_failed"));
   }

@@ -39,7 +39,7 @@ export function canvasToBlob(
 
 export function generateFilename(
   domain: string,
-  ext: "png" | "pdf" | "webp"
+  ext: "png" | "pdf" | "webp" | "jpg"
 ): string {
   const now = new Date();
   const ts = now

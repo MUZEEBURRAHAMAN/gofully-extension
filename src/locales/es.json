@@ -41,6 +41,7 @@
 
   "action.copy": "Copiar",
   "action.png": "PNG",
+  "action.jpg": "JPG",
   "action.webp": "WebP",
   "action.pdf": "PDF",
   "action.edit": "Editar",
@@ -51,6 +52,7 @@
   "toast.copied": "¡Copiado!",
   "toast.copy_failed": "Error al copiar — prueba a guardar como PNG",
   "toast.saved_png": "¡Guardado como PNG!",
+  "toast.saved_jpg": "¡Guardado como JPG!",
   "toast.save_failed": "Error al guardar",
   "toast.saved_webp": "¡Guardado como WebP!",
   "toast.saved_pdf": "¡Guardado como PDF!",

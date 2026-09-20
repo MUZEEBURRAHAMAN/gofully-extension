@@ -900,6 +900,22 @@ async function handleExport(
         return { success: true };
       }
 
+      case "jpg": {
+        const domain = getDomain(result.url);
+        const filename = generateFilename(domain, "jpg");
+        const bitmap = await createImageBitmap(blob);
+        const oc = new OffscreenCanvas(bitmap.width, bitmap.height);
+        oc.getContext("2d")!.drawImage(bitmap, 0, 0);
+        const jpgBlob = await oc.convertToBlob({ type: "image/jpeg", quality: 0.92 });
+        const jpgDataUrl = await blobToDataUrl(jpgBlob);
+        await chrome.downloads.download({
+          url: jpgDataUrl,
+          filename,
+          saveAs: false,
+        });
+        return { success: true };
+      }
+
       default:
         return { success: false, error: `Unknown format: ${format}` };
     }
@@ -916,7 +932,7 @@ function getDomain(url: string): string {
   }
 }
 
-function generateFilename(domain: string, ext: "png" | "pdf" | "webp"): string {
+function generateFilename(domain: string, ext: "png" | "pdf" | "webp" | "jpg"): string {
   const now = new Date();
   const ts = now.toISOString().replace(/[-:T]/g, "").slice(0, 14);
   const clean = domain.replace(/[^a-zA-Z0-9.-]/g, "_").slice(0, 50);

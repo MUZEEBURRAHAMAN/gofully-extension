@@ -256,11 +256,18 @@ function setupDropdownMenus(): void {
   const arrowExpand = document.getElementById("arrow-expand");
   const arrowWrapper = arrowExpand?.closest(".tool-dropdown-wrapper") as HTMLElement | null;
   const arrowMenu = document.getElementById("arrow-menu");
+  // Color popover toggle (compact toolbar only — see the color-trigger /
+  // color-group rules in editor.html). On a normal-width toolbar
+  // #color-trigger is display:none so this button is never reachable and
+  // .color-group already renders inline, unaffected by the "show" class.
+  const colorTrigger = document.getElementById("color-trigger");
+  const colorGroup = document.getElementById("color-group");
   arrowExpand?.addEventListener("click", (e) => {
     e.stopPropagation();
     blurMenu?.classList.remove("show");
     shapeMenu?.classList.remove("show");
     exportDropMenu?.classList.remove("show");
+    colorGroup?.classList.remove("show");
     if (arrowMenu && !arrowMenu.classList.contains("show") && arrowWrapper) {
       positionToolDropdown(arrowWrapper, arrowMenu);
     }
@@ -276,6 +283,7 @@ function setupDropdownMenus(): void {
     arrowMenu?.classList.remove("show");
     shapeMenu?.classList.remove("show");
     exportDropMenu?.classList.remove("show");
+    colorGroup?.classList.remove("show");
     if (blurMenu && !blurMenu.classList.contains("show") && blurWrapper) {
       positionToolDropdown(blurWrapper, blurMenu);
     }
@@ -291,6 +299,7 @@ function setupDropdownMenus(): void {
     arrowMenu?.classList.remove("show");
     blurMenu?.classList.remove("show");
     exportDropMenu?.classList.remove("show");
+    colorGroup?.classList.remove("show");
     if (shapeMenu && !shapeMenu.classList.contains("show") && shapeWrapper) {
       positionToolDropdown(shapeWrapper, shapeMenu);
     }
@@ -305,6 +314,7 @@ function setupDropdownMenus(): void {
     arrowMenu?.classList.remove("show");
     blurMenu?.classList.remove("show");
     shapeMenu?.classList.remove("show");
+    colorGroup?.classList.remove("show");
     const isOpen = exportDropMenu?.classList.contains("show");
     if (!isOpen) openExportMenu();
     else exportDropMenu?.classList.remove("show");
@@ -317,11 +327,27 @@ function setupDropdownMenus(): void {
     }
   });
 
+  colorTrigger?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    arrowMenu?.classList.remove("show");
+    blurMenu?.classList.remove("show");
+    shapeMenu?.classList.remove("show");
+    exportDropMenu?.classList.remove("show");
+    if (colorGroup && !colorGroup.classList.contains("show")) {
+      positionToolDropdown(colorTrigger, colorGroup);
+    }
+    colorGroup?.classList.toggle("show");
+  });
+  // No separate "close after picking a swatch" handler needed: swatch
+  // clicks (in setupColorPicker) don't stopPropagation, so they already
+  // bubble into the "close menus on click outside" handler below.
+
   // Close menus on click outside
   document.addEventListener("click", () => {
     arrowMenu?.classList.remove("show");
     blurMenu?.classList.remove("show");
     shapeMenu?.classList.remove("show");
+    colorGroup?.classList.remove("show");
     document.getElementById("export-drop-menu")?.classList.remove("show");
   });
 
@@ -1302,12 +1328,21 @@ function applyCurrentColor(): void {
 }
 
 function setupColorPicker(): void {
+  // Compact-toolbar trigger (see color-trigger/color-group in editor.html)
+  // always mirrors currentColor, whichever swatch — preset or custom — set it.
+  const colorTrigger = document.getElementById("color-trigger");
+  const syncColorTrigger = () => {
+    if (colorTrigger) colorTrigger.style.background = currentColor;
+  };
+  syncColorTrigger();
+
   document.querySelectorAll(".color-swatch:not(.color-swatch-custom)").forEach((swatch) => {
     swatch.addEventListener("click", () => {
       document.querySelectorAll(".color-swatch").forEach((s) => s.classList.remove("active"));
       swatch.classList.add("active");
       currentColor = (swatch as HTMLElement).dataset.color!;
       applyCurrentColor();
+      syncColorTrigger();
     });
   });
 
@@ -1315,24 +1350,20 @@ function setupColorPicker(): void {
   const customInput = document.getElementById("customColorInput") as HTMLInputElement | null;
   if (!customSwatch || !customInput) return;
 
-  chrome.storage.sync.get("editorCustomColor").then((stored) => {
-    const saved = (stored as any).editorCustomColor;
-    if (saved) {
-      customInput.value = saved;
-      customSwatch.style.background = saved;
-    }
-  }).catch(() => {});
-
+  // Deliberately session-only: a color picked here applies only to this
+  // editor tab. It used to be persisted to chrome.storage.sync and silently
+  // restored (both the swatch's rainbow-wheel background and the hex value)
+  // on every future editor open, so a custom color picked while annotating
+  // one capture would reappear — already "selected" looking — on a totally
+  // unrelated capture opened later. Annotation color is a per-edit choice,
+  // not a durable preference, so nothing here should outlive this tab.
   customInput.addEventListener("input", () => {
     currentColor = customInput.value;
     customSwatch.style.background = currentColor;
     document.querySelectorAll(".color-swatch").forEach((s) => s.classList.remove("active"));
     customSwatch.classList.add("active");
     applyCurrentColor();
-  });
-
-  customInput.addEventListener("change", () => {
-    chrome.storage.sync.set({ editorCustomColor: customInput.value }).catch(() => {});
+    syncColorTrigger();
   });
 }
 

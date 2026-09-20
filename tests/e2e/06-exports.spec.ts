@@ -46,6 +46,49 @@ test.describe("06 - Export Engines Suite (PNG, PDF, Clipboard)", () => {
     await page.close();
   });
 
+  test("TC-EXP-003: JPG export via EXPORT_CAPTURE succeeds (result-bar/popup quick-export path)", async ({
+    context,
+    extensionId,
+  }) => {
+    const page = await context.newPage();
+    await page.goto("http://localhost:8085/test-page-long.html");
+    await page.waitForLoadState("networkidle");
+
+    const popupPage = await context.newPage();
+    await popupPage.goto(`chrome-extension://${extensionId}/popup.html`);
+    await popupPage.waitForLoadState("domcontentloaded");
+
+    await popupPage.evaluate(async () => {
+      const [targetTab] = await chrome.tabs.query({
+        url: "http://localhost:8085/test-page-long.html",
+      });
+      return new Promise<any>((resolve) => {
+        chrome.runtime.sendMessage(
+          {
+            type: "START_CAPTURE",
+            payload: { mode: "visible-area", tabId: targetTab?.id },
+          },
+          resolve
+        );
+      });
+    });
+
+    const exportResult = await popupPage.evaluate(async () => {
+      return new Promise<any>((resolve) => {
+        chrome.runtime.sendMessage(
+          { type: "EXPORT_CAPTURE", payload: { format: "jpg" } },
+          resolve
+        );
+      });
+    });
+
+    expect(exportResult).toBeDefined();
+    expect(exportResult.success).toBe(true);
+
+    await popupPage.close();
+    await page.close();
+  });
+
   test("TC-EXP-002: Filename generation cleans URL domains and appends date timestamps", async ({
     serviceWorker,
   }) => {
