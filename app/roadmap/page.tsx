@@ -200,6 +200,7 @@ export default function RoadmapPage() {
                 <Bullet>Seam verification in scroll-stitch — detects and re-captures misaligned frame boundaries.</Bullet>
                 <Bullet>Full-page capture now re-checks for sticky/fixed headers after every scroll step, fixing header duplication on sites where a header only becomes fixed after scrolling (a common WordPress/Shopify/Bootstrap pattern).</Bullet>
                 <Bullet>Fixed a race where the in-page &quot;Capturing page…&quot; badge could occasionally get baked into the screenshot itself, across full-page, visible-area, and selected-area capture.</Bullet>
+                <Bullet>Fixed the editor export crashing at 500%+ zoom — canvas.toDataURL() was multiplying from the already-zoomed display size instead of the base image.</Bullet>
               </ul>
 
               <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
@@ -213,6 +214,9 @@ export default function RoadmapPage() {
                 <Bullet>Annotation color is now session-only and no longer carries over between unrelated captures.</Bullet>
                 <Bullet>JPG added alongside PNG/WebP/PDF as a one-click quick-export option on the Visible Area and Selected Area result cards, not just the full editor.</Bullet>
                 <Bullet>Popup and settings version number now reads live from the extension manifest instead of a hardcoded string that had drifted out of date.</Bullet>
+                <Bullet>Rectangle and Ellipse tools consolidated into a single Shape button with a dropdown — now six shapes (Rectangle, Square, Circle, Ellipse, Triangle, Polygon), not two.</Bullet>
+                <Bullet>Editor zoom raised from 500% to 1000% for pixel-precise annotation on large captures.</Bullet>
+                <Bullet>Fixed the &quot;Include Annotations&quot; export toggle's invisible hit-area covering the whole export panel and intercepting clicks on Save/PDF/WebP.</Bullet>
               </ul>
 
               <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>

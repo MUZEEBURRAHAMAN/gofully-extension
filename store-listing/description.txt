@@ -27,12 +27,13 @@ Select any area containing text—including photos, scanned PDFs, diagrams, and 
 
 Annotate and organize visual feedback directly in the browser:
 • Arrows & Lines: Straight arrows, curved arrows, and line tools
-• Shapes: Rectangles and ellipses
+• Shapes: Rectangle, Square, Circle, Ellipse, Triangle, and Polygon — one Shape tool, six options
 • Callouts & Notes: Speech bubbles with customizable text
 • Step Numbers: Auto-incrementing badges (1, 2, 3...) for reproduction steps and tutorials
 • Spotlight Mode: Dim surrounding areas to focus attention on key UI components
 • Freehand Drawing: Pen tool with adjustable stroke width
 • Cropping Studio: Preset aspect ratios (Freeform, 16:9, 4:3, 1:1, 3:2, 2:1) with grid guides and keyboard nudging
+• Zoom up to 1000%: Fine-tune annotations pixel-by-pixel on large or full-page captures
 • Undo / Redo History: Multi-step history stack for seamless editing
 • Curated Palette: 8 preset color swatches with stroke width adjustment
 
