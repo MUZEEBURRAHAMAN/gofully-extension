@@ -23,9 +23,14 @@ https://gofully-extension.vercel.app/
 
 ## Support & Privacy URL
 - **Website**: https://gofully-extension.vercel.app/
-- **Help Center**: https://gofully-extension.vercel.app/help.html
-- **Privacy Policy**: https://gofully-extension.vercel.app/privacy.html
+- **Support**: https://gofully-extension.vercel.app/support
+- **Privacy Policy**: https://gofully-extension.vercel.app/privacy
 - **Repository**: https://github.com/MUZEEBURRAHAMAN/gofully-extension
+
+(Note: this previously listed a "Help Center" at `/help.html` and a Privacy
+Policy at `/privacy.html` — neither route exists on the site; the real
+routes are `/support` and `/privacy`, both Next.js pages, no `.html`
+extension.)
 
 ## Privacy Practices
 - **Single Purpose**: Complete browser screenshot capture, on-device OCR text extraction, and privacy-focused visual annotation.

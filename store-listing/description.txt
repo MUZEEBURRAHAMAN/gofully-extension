@@ -128,3 +128,11 @@ A: Yes — GoFully covers everything those do (full page, visible area, PDF expo
 
 Q: Does GoFully save a history of my screenshots?
 A: Yes. A thumbnail grid of recent captures — with source site and timestamp — is available right in the popup for one-click reopening. That history is stored locally on your device only; nothing is ever uploaded.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔗 LINKS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Official Website: https://gofully-extension.vercel.app
+Support: https://gofully-extension.vercel.app/support
+Privacy Policy: https://gofully-extension.vercel.app/privacy
