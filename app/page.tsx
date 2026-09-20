@@ -777,7 +777,7 @@ export default function HomePage() {
               className="inline-flex items-center justify-center transition-transform hover:-translate-y-0.5"
             >
               <img
-                src="https://dofollow.tools/badge/badge_dark.svg"
+                src="/badges/dofollow-tools.svg"
                 alt="Featured on Dofollow.Tools"
                 width={200}
                 height={54}
@@ -792,7 +792,7 @@ export default function HomePage() {
               className="inline-flex items-center justify-center transition-transform hover:-translate-y-0.5"
             >
               <img
-                src="https://alternativeto.net/static/badges/badge-compact-color.svg"
+                src="/badges/alternativeto.svg"
                 alt="GoFully | AlternativeTo"
                 width={166}
                 height={54}
@@ -807,7 +807,7 @@ export default function HomePage() {
               className="inline-flex items-center justify-center transition-transform hover:-translate-y-0.5"
             >
               <img
-                src="https://ufind.best/badges/ufind-best-badge-light.svg"
+                src="/badges/ufind-best.svg"
                 alt="Featured on ufind.best"
                 width={150}
                 height={48}
@@ -822,7 +822,7 @@ export default function HomePage() {
               className="inline-flex items-center justify-center transition-transform hover:-translate-y-0.5"
             >
               <img
-                src="https://saasfame.com/badge-light.svg"
+                src="/badges/saasfame.svg"
                 alt="Featured on saasfame.com"
                 width={170}
                 height={54}

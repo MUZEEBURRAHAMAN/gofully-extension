@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="139" height="44" viewBox="0 0 139 44" role="img" aria-labelledby="badge-title badge-desc">
+  <title id="badge-title">Featured on ufind.best</title>
+  <desc id="badge-desc">This tool is featured on ufind.best</desc>
+  <rect x=".5" y=".5" width="138" height="43" rx="6.5" fill="#ffffff" stroke="#d1d5db"/>
+  <rect x="8" y="8" width="28" height="28" rx="7" fill="#111111"/>
+  <svg x="15.5" y="13" width="13" height="18" viewBox="370 226 281 393" aria-hidden="true">
+    <path fill="#ffffff" fill-rule="evenodd" d="M370 364V491C370 566 430 619 510 619C588 619 650 565 650 495L651 434 591 461V487C591 525 558 555 512 555C466 555 432 526 432 486V330ZM650 226 478 312V486L541 526V458L572 442 650 406V337L542 391 541 390 542 346 650 295Z"/>
+  </svg>
+  <text x="44" y="17" font-family="system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="8.5" font-weight="600" letter-spacing=".35" fill="#4b5563">FEATURED ON</text>
+  <text x="44" y="32" font-family="system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="13" font-weight="750" fill="#111111">ufind.best</text>
+</svg>
