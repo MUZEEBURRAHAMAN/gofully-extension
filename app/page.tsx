@@ -11,6 +11,7 @@ const ALTERNATIVETO_URL =
   "https://alternativeto.net/software/gofully/about/?utm_source=badge&utm_medium=referral";
 const DOFOLLOW_TOOLS_URL = "https://dofollow.tools";
 const UFIND_URL = "https://ufind.best/products/gofully";
+const SAASFAME_URL = "https://saasfame.com/item/gofully";
 
 const STEPS = [
   {
@@ -810,6 +811,21 @@ export default function HomePage() {
                 alt="Featured on ufind.best"
                 width={150}
                 height={48}
+                style={{ height: 50, width: "auto" }}
+              />
+            </a>
+
+            <a
+              href={SAASFAME_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center transition-transform hover:-translate-y-0.5"
+            >
+              <img
+                src="https://saasfame.com/badge-light.svg"
+                alt="Featured on saasfame.com"
+                width={170}
+                height={54}
                 style={{ height: 50, width: "auto" }}
               />
             </a>
