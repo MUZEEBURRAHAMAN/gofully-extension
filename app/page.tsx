@@ -13,6 +13,7 @@ const DOFOLLOW_TOOLS_URL = "https://dofollow.tools";
 const UFIND_URL = "https://ufind.best/products/gofully";
 const SAASFAME_URL =
   "https://saasfame.com/item/gofully-gofully-extensionvercelapp";
+const PRODUCTFAME_URL = "https://productfame.com";
 
 const STEPS = [
   {
@@ -826,6 +827,21 @@ export default function HomePage() {
                 src="https://saasfame.com/badge-light.svg"
                 alt="Featured on saasfame.com"
                 width={170}
+                height={54}
+                style={{ height: 54, width: "auto" }}
+              />
+            </a>
+
+            <a
+              href={PRODUCTFAME_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center transition-transform hover:-translate-y-0.5"
+            >
+              <img
+                src="https://productfame.com/badges/featured-light.svg"
+                alt="Featured on ProductFame"
+                width={245}
                 height={54}
                 style={{ height: 54, width: "auto" }}
               />
