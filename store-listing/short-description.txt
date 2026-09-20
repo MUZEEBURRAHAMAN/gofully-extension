@@ -1,1 +1,1 @@
-Capture full pages or selected areas, extract text with local OCR, annotate, redact sensitive details, and export to PNG or PDF.
+Capture full pages or areas, extract text with local OCR, annotate, redact sensitive details, and export to PNG, JPG, WebP, or PDF.

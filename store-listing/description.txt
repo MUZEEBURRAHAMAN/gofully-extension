@@ -1,6 +1,6 @@
-GoFully is a complete browser screenshot and screen capture extension for capturing full pages, visible viewports, custom selected areas, scrolling regions, and extracting text from images (OCR) with built-in annotation and privacy redaction.
+GoFully is a free Chrome extension for full page screenshots, scrolling screen capture, on-device OCR text extraction, and visual annotation — 100% local processing, no account, no cloud uploads.
 
-Capture entire scrollable webpages, select scrolling areas, extract text from web images, annotate with arrows and callout notes, blur sensitive details, and export to PNG or auto-paginated PDF files—all processed locally on your device.
+Capture entire scrollable webpages, visible viewports, custom selected areas, or a specific scrolling section like a chat panel or data table. Extract text from images with local OCR, annotate with arrows and callout notes, blur sensitive details, and export to PNG, JPG, WebP, or auto-paginated PDF — everything runs on your device, nothing leaves your browser.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📸 5 CAPTURE MODES
@@ -50,7 +50,7 @@ Protect private information before sharing screenshots:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 • Copy Image: Copy PNG directly to clipboard for Slack, Jira, Figma, Notion, or email
-• Save PNG: Download in Native Resolution, 1080p HD, or 4K UHD
+• Save PNG, JPG, or WebP: Download in Native Resolution, 1080p HD, or 4K UHD, with an adjustable Image Quality setting (Low/Medium/High/Maximum) for JPG and WebP
 • Export to PDF: Save clean, auto-paginated A4 documents
 • Quick In-Page Result Bar: Take immediate post-capture actions right on the page
 
@@ -70,3 +70,25 @@ Protect private information before sharing screenshots:
 • Alt+Shift+F — Capture full page
 • Alt+Shift+V — Capture visible area
 • Shortcuts can be customized at chrome://extensions/shortcuts
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❓ FREQUENTLY ASKED QUESTIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Q: Is GoFully free?
+A: Yes. Every capture mode, the full annotation editor, OCR, and PDF export are free — no account, subscription, or paywalled features.
+
+Q: Does GoFully work offline?
+A: Yes. Captures, annotations, and OCR all run 100% on-device in your browser. Nothing is uploaded to a server.
+
+Q: Can GoFully capture a full page without cutting anything off?
+A: Yes. Full Page Screenshot scrolls and stitches the entire page automatically, including pages with sticky headers, lazy-loaded images, and nested or shadow-DOM scroll containers.
+
+Q: Can I extract text from a screenshot or image?
+A: Yes. GoFully includes on-device OCR — select any area of text, a photo, a scanned PDF, or a video frame, and copy the extracted text to your clipboard.
+
+Q: What image and document formats can I export to?
+A: PNG, JPG, WebP (with an adjustable Image Quality setting), and auto-paginated PDF, at Native, 1080p HD, or 4K UHD resolution.
+
+Q: Is GoFully a good GoFullPage, FireShot, Awesome Screenshot, or Nimbus alternative?
+A: Yes — GoFully covers everything those do (full page, visible area, PDF export) plus scrolling-area capture, a free annotation editor with blur/redaction, and local OCR, without an account or paywall.
