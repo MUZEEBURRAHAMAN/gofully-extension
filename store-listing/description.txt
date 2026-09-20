@@ -46,6 +46,14 @@ Protect private information before sharing screenshots:
 • Redact Blackout: Solid black box redaction for credentials and private data
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🕒 CAPTURE HISTORY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+• Recent Captures Grid: Every capture is automatically saved with a thumbnail, source site, and timestamp
+• One-Click Reopen: Revisit, re-edit, or re-export any past capture straight from the popup
+• Fully Local: History lives only in your browser's own storage — nothing is uploaded, and Clear All wipes it instantly
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 💾 EXPORT & SHARING
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -92,3 +100,6 @@ A: PNG, JPG, WebP (with an adjustable Image Quality setting), and auto-paginated
 
 Q: Is GoFully a good GoFullPage, FireShot, Awesome Screenshot, or Nimbus alternative?
 A: Yes — GoFully covers everything those do (full page, visible area, PDF export) plus scrolling-area capture, a free annotation editor with blur/redaction, and local OCR, without an account or paywall.
+
+Q: Does GoFully save a history of my screenshots?
+A: Yes. A thumbnail grid of recent captures — with source site and timestamp — is available right in the popup for one-click reopening. That history is stored locally on your device only; nothing is ever uploaded.

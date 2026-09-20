@@ -53,13 +53,19 @@ https://gofully-extension.vercel.app/
 **Headline**: GoFully — Full Page Screenshot & Annotation Studio
 **Subline**: Capture full webpages, extract text from images with local OCR, redact sensitive details, and export in 4K or PDF.
 
-## 5-Screenshot Store Gallery Strategy (1280x800)
+## Screenshot Gallery Strategy (1280x800, CWS allows up to 5)
 
 1. **Full Page & Scrolling Capture** — "Capture entire scrollable webpages, visible viewports, or custom regions with automated sticky header handling."
 2. **Annotation & Visual Feedback Studio** — "Annotate with curved arrows, callout bubbles, step numbers (1, 2, 3), and spotlight highlights."
 3. **Privacy Redaction & Data Protection** — "Redact sensitive information with Glass Smooth Blur, Mosaic Pixelation, or Solid Blackout."
 4. **On-Device OCR Text Extraction** — "Extract and copy unselectable text from images, charts, and video frames instantly."
 5. **High-Res Export & PDF Generation** — "Export in Native, 1080p HD, 4K UHD, or multi-page paginated PDF — 100% client-side."
+
+Optional 6th / swap-in candidate now that it's shipped: **Capture History** —
+"Every screenshot saved locally with a thumbnail, site, and timestamp —
+reopen or re-export in one click, nothing ever uploaded." CWS's standard
+gallery caps at 5, so this would replace whichever of the above tests
+weakest rather than being added as a 6th.
 
 ## Store Tags / Search Terms
 - Full Page Screenshot
