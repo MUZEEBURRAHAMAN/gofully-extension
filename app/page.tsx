@@ -7,6 +7,9 @@ import { SiteFooterIndustry } from "@/components/site-footer-industry";
 
 const CWS_URL =
   "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
+const ALTERNATIVETO_URL =
+  "https://alternativeto.net/software/gofully/about/?utm_source=badge&utm_medium=referral";
+const DOFOLLOW_TOOLS_URL = "https://dofollow.tools";
 
 const STEPS = [
   {
@@ -742,6 +745,61 @@ export default function HomePage() {
           </span>
         </div>
       </div>
+
+      {/* Featured On Badges */}
+      <section className="border-t" style={{ padding: "64px 24px", borderColor: "rgba(29,31,32,.08)", background: "rgba(29,31,32,.02)" }}>
+        <div className="mx-auto text-center" style={{ maxWidth: 840 }}>
+          <SectionKicker
+            icon={
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+                <path d="M2 12h20" />
+              </svg>
+            }
+          >
+            Directories & Recognition
+          </SectionKicker>
+          <h2 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(22px, 4vw, 28px)", letterSpacing: "-0.01em", marginTop: 14 }}>
+            Featured On
+          </h2>
+          <p style={{ fontSize: "14px", color: "rgba(29,31,32,.55)", marginTop: 8, marginBottom: 32 }}>
+            GoFully is recognized across software directories and developer tools platforms.
+          </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-5 sm:gap-6">
+            <a
+              href={DOFOLLOW_TOOLS_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center justify-center transition-transform hover:-translate-y-0.5"
+            >
+              <img
+                src="https://dofollow.tools/badge/badge_dark.svg"
+                alt="Featured on Dofollow.Tools"
+                width={200}
+                height={54}
+                style={{ height: 54, width: "auto" }}
+              />
+            </a>
+
+            <a
+              href={ALTERNATIVETO_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center justify-center transition-transform hover:-translate-y-0.5"
+            >
+              <img
+                src="https://alternativeto.net/static/badges/badge-compact-color.svg"
+                alt="GoFully | AlternativeTo"
+                width={166}
+                height={54}
+                style={{ height: 54, width: "auto" }}
+              />
+            </a>
+          </div>
+        </div>
+      </section>
 
       <SiteFooterIndustry />
     </div>
