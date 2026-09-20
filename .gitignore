@@ -12,3 +12,21 @@ assets/Archivo/
 .impeccable/hook.cache.json
 test-results/
 demo-video/
+
+# Environment files
+.env
+.env*.local
+
+# AI Agent & IDE skill configs
+.agent/
+.cline/
+.clinerules
+.continue/
+.cursor/
+.windsurf/
+*.plugin
+.github/skills/
+
+# Raw screenshots
+public/screenshot*
+

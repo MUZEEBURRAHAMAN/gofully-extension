@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this software in research or projects, please cite it as below."
+title: "GoFully — Full Page Screenshot Tool & Extension"
+authors:
+  - family-names: "Rahaman"
+    given-names: "Muzeebur"
+version: 1.1.2
+date-released: 2026-09-20
+url: "https://gofully-extension.vercel.app/"
+repository-code: "https://github.com/MUZEEBURRAHAMAN/gofully-extension"
+license: MIT
