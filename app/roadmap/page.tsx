@@ -128,39 +128,18 @@ export default function RoadmapPage() {
           >
             <div className="p-6 border" style={{ borderColor: "rgba(22,103,242,.3)", background: "rgba(22,103,242,.04)", maxWidth: 600 }}>
               <div className="gf-heading-font font-semibold" style={{ fontSize: 20 }}>
-                Personalization, a stronger editor, and a better Beautify
+                A more personal editor
               </div>
               <p className="mt-2" style={{ fontSize: "13.5px", color: "rgba(29,31,32,.6)", lineHeight: 1.6 }}>
                 The next release, in active development.
               </p>
 
               <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
-                Personalize
-              </div>
-              <ul className="mt-2.5 flex flex-col gap-2">
-                <OutlineBullet>Language options for the interface.</OutlineBullet>
-                <OutlineBullet>Light and dark theme options.</OutlineBullet>
-                <OutlineBullet>OCR language selection — recognize text beyond English.</OutlineBullet>
-              </ul>
-
-              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
                 Editor tools
               </div>
               <ul className="mt-2.5 flex flex-col gap-2">
-                <OutlineBullet>Highlighter tool, for drawing attention instead of hiding it.</OutlineBullet>
-                <OutlineBullet>Shape tool consolidated into one button with a dropdown.</OutlineBullet>
                 <OutlineBullet>Upgraded text tool — color, font, and size controls.</OutlineBullet>
                 <OutlineBullet>Custom keyboard shortcuts for editor tools.</OutlineBullet>
-              </ul>
-
-              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
-                Beautify
-              </div>
-              <ul className="mt-2.5 flex flex-col gap-2">
-                <OutlineBullet>Save your own background, frame, and padding as a reusable preset.</OutlineBullet>
-                <OutlineBullet>Multi-image collage layouts — arrange 2-3 captures in one composition.</OutlineBullet>
-                <OutlineBullet>A gradient and pattern background library.</OutlineBullet>
-                <OutlineBullet>More device frames, including phone and Windows-style.</OutlineBullet>
               </ul>
 
               <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
@@ -168,8 +147,6 @@ export default function RoadmapPage() {
               </div>
               <ul className="mt-2.5 flex flex-col gap-2">
                 <OutlineBullet>Export capture + OCR&apos;d text as Markdown.</OutlineBullet>
-                <OutlineBullet>Optional URL and timestamp stamp on capture.</OutlineBullet>
-                <OutlineBullet>&quot;Copy as&quot; quick actions after OCR — plain text or structured JSON.</OutlineBullet>
               </ul>
             </div>
           </TimelineRow>
@@ -217,6 +194,21 @@ export default function RoadmapPage() {
                 <Bullet>Rectangle and Ellipse tools consolidated into a single Shape button with a dropdown — now six shapes (Rectangle, Square, Circle, Ellipse, Triangle, Polygon), not two.</Bullet>
                 <Bullet>Editor zoom raised from 500% to 1000% for pixel-precise annotation on large captures.</Bullet>
                 <Bullet>Fixed the &quot;Include Annotations&quot; export toggle's invisible hit-area covering the whole export panel and intercepting clicks on Save/PDF/WebP.</Bullet>
+              </ul>
+
+              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
+                Personalization &amp; Beautify
+              </div>
+              <ul className="mt-2.5 flex flex-col gap-2">
+                <Bullet>Interface language and light/dark theme options in Settings.</Bullet>
+                <Bullet>OCR language selection — recognize text in Spanish, French, German, Portuguese, or Simplified Chinese, still fully on-device.</Bullet>
+                <Bullet>Highlighter tool, for drawing attention instead of hiding it.</Bullet>
+                <Bullet>Save your own Beautify background, frame, and padding as a reusable preset.</Bullet>
+                <Bullet>Multi-image collage layouts — arrange captures side-by-side or stacked in one composition.</Bullet>
+                <Bullet>A gradient and pattern background library for Beautify.</Bullet>
+                <Bullet>More device frames, including phone and Windows-style.</Bullet>
+                <Bullet>Optional URL and timestamp stamp on capture.</Bullet>
+                <Bullet>&quot;Copy as JSON&quot; quick action after OCR, alongside plain text.</Bullet>
               </ul>
 
               <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
