@@ -6,7 +6,7 @@ GoFully - Full Page Screenshot, OCR & Editor
 (44/45 chars — this is pulled directly from `manifest.json`'s `name` field;
 Chrome Web Store shows that field verbatim as the listing title, it cannot
 be set separately in the dashboard. This value has been live since before
-v1.1.1 — see `seo-keywords.md` § Title Optimization for the SEO/AEO/GEO
+v1.1.1 and is unchanged in v1.1.2 — see `seo-keywords.md` § Title Optimization for the SEO/AEO/GEO
 rationale and alternatives considered.)
 
 ## Short Description (132 chars max — Chrome Web Store limit)

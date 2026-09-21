@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 };
 
 const CWS_URL =
-  "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
+  "https://chromewebstore.google.com/detail/gofully-full-page-screens/akfbmhmdlbmljklgajkgoekobofhhofc";
 
 function Bullet({ children }: { children: React.ReactNode }) {
   return (

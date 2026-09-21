@@ -87,7 +87,7 @@ export default function UninstallFeedbackPage() {
             <p className="mt-6 text-sm" style={{ color: "rgba(29,31,32,.4)" }}>
               Changed your mind?{" "}
               <a
-                href="https://chromewebstore.google.com/detail/gofully-full-page-screens/bjnhkdgbhajlhbcheoppbblbbgdbdbpl"
+                href="https://chromewebstore.google.com/detail/gofully-full-page-screens/akfbmhmdlbmljklgajkgoekobofhhofc"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: "var(--gf-color-accent)" }}

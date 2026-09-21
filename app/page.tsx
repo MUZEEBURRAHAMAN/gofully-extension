@@ -7,7 +7,7 @@ import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
 
 const CWS_URL =
-  "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
+  "https://chromewebstore.google.com/detail/gofully-full-page-screens/akfbmhmdlbmljklgajkgoekobofhhofc";
 const ALTERNATIVETO_URL =
   "https://alternativeto.net/software/gofully/about/?utm_source=badge&utm_medium=referral";
 const DOFOLLOW_TOOLS_URL = "https://dofollow.tools";

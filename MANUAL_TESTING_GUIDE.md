@@ -1,6 +1,6 @@
 # GoFully — End-to-End Manual Testing & Edge Case Matrix
 
-> **Product Version**: `v1.1.1` (with `v1.1.2` roadmap preview specifications)  
+> **Product Version**: `v1.1.2` (shipped — see `/roadmap` for the `v1.2.0` preview specifications)  
 > **Target Platforms**: Google Chrome / Chromium (macOS, Windows, Linux) & Live Marketing Site (`https://gofully-extension.vercel.app`)  
 > **Document Purpose**: Exhaustive, step-by-step manual test cases covering every user flow, button, keyboard shortcut, rendering mode, and critical edge case.
 
@@ -38,7 +38,7 @@
   1. Open `chrome://extensions`.
   2. Enable **Developer mode** (top-right toggle).
   3. Click **Load unpacked** and select the extension directory (`dist/` or project root).
-  4. Ensure GoFully appears with version `1.1.1` and its official logo.
+  4. Ensure GoFully appears with version `1.1.2` and its official logo.
 
 ---
 
@@ -635,7 +635,7 @@
   2. View source / inspect head:
      * Breadcrumbs render: `Home > Guides > Multi-Language OCR Guide`.
      * `application/ld+json` contains valid `TechArticle` schema with publisher, author, and headline.
-     * Header displays: `Coming Soon · Planned for v1.1.2` badge with pulsing dot.
+     * Header displays: `Available Now · Live in v1.1.2` badge with pulsing dot.
   3. Repeat verification for:
      * [`/guides/custom-keyboard-shortcuts-for-screen-capture`](https://gofully-extension.vercel.app/guides/custom-keyboard-shortcuts-for-screen-capture)
      * [`/guides/how-to-use-highlighter-tool-in-screenshots`](https://gofully-extension.vercel.app/guides/how-to-use-highlighter-tool-in-screenshots)

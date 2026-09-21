@@ -2,6 +2,8 @@
 
 > The modern, high-performance Chrome extension for full-page scrolling screenshots, on-device WebAssembly OCR text extraction in 6 languages, CleanShot-grade visual annotations, and PDF/4K export — 100% free, private & offline.
 
+Current version: v1.1.2 (live on the Chrome Web Store). Everything listed below ships in v1.1.2.
+
 ## Core Features & Capabilities
 
 - [Full Page Screenshot Tool](https://gofully-extension.vercel.app/): Capture full-height scrolling websites, dynamic feeds, and dashboards with automatic video auto-pause, cookie modal auto-dismiss, and sticky-header deduplication.
@@ -31,6 +33,6 @@
 
 ## Install & Source
 
-- [Chrome Web Store](https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc): Official extension installation link.
+- [Chrome Web Store](https://chromewebstore.google.com/detail/gofully-full-page-screens/akfbmhmdlbmljklgajkgoekobofhhofc): Official extension installation link.
 - [GitHub Repository](https://github.com/MUZEEBURRAHAMAN/gofully-extension): Open-source codebase and issue tracker.
 - [Public Roadmap](https://gofully-extension.vercel.app/roadmap): Shipped releases and upcoming features.

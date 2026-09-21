@@ -3,6 +3,14 @@ import { applyTheme, watchTheme } from "../utils/theme";
 applyTheme();
 watchTheme();
 
+// Read straight from the manifest so this can't drift out of sync with the
+// actual shipped version again (it previously sat hardcoded as "v1.1.0" while
+// the manifest had already moved to 1.1.2).
+const navVersionTag = document.getElementById("navVersionTag");
+if (navVersionTag) {
+  navVersionTag.textContent = `v${chrome.runtime.getManifest().version} Help & Guides`;
+}
+
 const accordions = document.querySelectorAll(".help-accordion");
 
 accordions.forEach((acc) => {

@@ -169,7 +169,7 @@ const jsonLd = {
       "image": "https://gofully-extension.vercel.app/logo.png",
       "screenshot": "https://gofully-extension.vercel.app/og-image.png",
       "softwareVersion": "1.1.2",
-      "installUrl": "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc",
+      "installUrl": "https://chromewebstore.google.com/detail/gofully-full-page-screens/akfbmhmdlbmljklgajkgoekobofhhofc",
       "author": { "@id": "https://gofully-extension.vercel.app/#person" },
       "publisher": { "@id": "https://gofully-extension.vercel.app/#organization" },
       "featureList": [
@@ -210,7 +210,7 @@ const jsonLd = {
       },
       "founder": { "@id": "https://gofully-extension.vercel.app/#person" },
       "sameAs": [
-        "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc",
+        "https://chromewebstore.google.com/detail/gofully-full-page-screens/akfbmhmdlbmljklgajkgoekobofhhofc",
         "https://github.com/MUZEEBURRAHAMAN/gofully-extension",
         "https://alternativeto.net/software/gofully/about/"
       ]

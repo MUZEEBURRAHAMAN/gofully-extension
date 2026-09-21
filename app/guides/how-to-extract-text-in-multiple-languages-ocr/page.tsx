@@ -6,7 +6,7 @@ import { BlueprintFrame } from "@/components/blueprint-frame";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 
 const CWS_URL =
-  "https://chromewebstore.google.com/detail/akfbmhmdlbmljklgajkgoekobofhhofc";
+  "https://chromewebstore.google.com/detail/gofully-full-page-screens/akfbmhmdlbmljklgajkgoekobofhhofc";
 
 export const metadata: Metadata = {
   title: "How to Extract Text in Multiple Languages with On-Device OCR",

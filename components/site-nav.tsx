@@ -4,8 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const ALTERNATIVETO_URL =
-  "https://alternativeto.net/software/gofully/about/?utm_source=badge&utm_medium=referral";
+const CWS_URL =
+  "https://chromewebstore.google.com/detail/gofully-full-page-screens/akfbmhmdlbmljklgajkgoekobofhhofc";
 
 export type NavLink = { label: string; href: string };
 
@@ -60,19 +60,25 @@ export function SiteNav() {
 
         <div className="flex items-center gap-2">
           <a
-            href={ALTERNATIVETO_URL}
+            href={CWS_URL}
             target="_blank"
             rel="noreferrer"
-            className="hidden sm:inline-flex items-center"
-            style={{ height: 38 }}
+            className="hidden sm:inline-flex items-center justify-center gap-2 border gf-heading-font font-semibold"
+            style={{
+              height: 38,
+              padding: "0 18px",
+              background: "var(--gf-color-accent)",
+              color: "#fff",
+              fontSize: 13,
+              letterSpacing: "0.02em",
+              borderColor: "rgba(29,31,32,.12)",
+            }}
           >
-            <img
-              src="https://alternativeto.net/static/badges/badge-compact-color.svg"
-              alt="GoFully | AlternativeTo"
-              width={117}
-              height={38}
-              style={{ height: 38, width: 117 }}
-            />
+            Install Extension
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14" />
+              <path d="m12 5 7 7-7 7" />
+            </svg>
           </a>
           <button
             type="button"
@@ -119,19 +125,26 @@ export function SiteNav() {
               );
             })}
             <a
-              href={ALTERNATIVETO_URL}
+              href={CWS_URL}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center"
-              style={{ height: 42, marginTop: 16 }}
+              onClick={() => setOpen(false)}
+              className="inline-flex items-center justify-center gap-2 border gf-heading-font font-semibold"
+              style={{
+                height: 46,
+                marginTop: 16,
+                background: "var(--gf-color-accent)",
+                color: "#fff",
+                fontSize: 14,
+                letterSpacing: "0.02em",
+                borderColor: "rgba(29,31,32,.12)",
+              }}
             >
-              <img
-                src="https://alternativeto.net/static/badges/badge-compact-color.svg"
-                alt="GoFully | AlternativeTo"
-                width={130}
-                height={42}
-                style={{ height: 42, width: 130 }}
-              />
+              Install Extension
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14" />
+                <path d="m12 5 7 7-7 7" />
+              </svg>
             </a>
           </div>
         </div>
