@@ -15,6 +15,8 @@ const UFIND_URL = "https://ufind.best/products/gofully";
 const SAASFAME_URL =
   "https://saasfame.com/item/gofully-gofully-extensionvercelapp";
 const PRODUCTFAME_URL = "https://productfame.com";
+const TINYSHELF_URL =
+  "https://www.tinyshelf.co/?ref=gofully-extension.vercel.app";
 
 const STEPS = [
   {
@@ -864,6 +866,22 @@ export default function HomePage() {
                 alt="Featured on ProductFame"
                 width={245}
                 height={54}
+                style={{ height: 54, width: "auto" }}
+              />
+            </a>
+
+            <a
+              href={TINYSHELF_URL}
+              title="Featured on TinyShelf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center transition-transform hover:-translate-y-0.5"
+            >
+              <img
+                src="https://www.tinyshelf.co/badge/tinyshelf-badge-dark-f4d1216a.svg"
+                alt="Featured on TinyShelf"
+                width={216}
+                height={64}
                 style={{ height: 54, width: "auto" }}
               />
             </a>
