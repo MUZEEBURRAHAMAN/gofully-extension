@@ -2,7 +2,7 @@ const cspHeader = `
   default-src 'self';
   script-src 'self' 'unsafe-inline' 'unsafe-eval';
   style-src 'self' 'unsafe-inline';
-  img-src 'self' data: blob: https://saasfame.com https://productfame.com;
+  img-src 'self' data: blob: https://saasfame.com https://productfame.com https://www.tinyshelf.co;
   font-src 'self' data:;
   connect-src 'self';
   frame-ancestors 'none';
