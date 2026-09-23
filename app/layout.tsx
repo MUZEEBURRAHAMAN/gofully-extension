@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Bricolage_Grotesque, Inter } from "next/font/google";
 import "./globals.css";
 import "@/components/originkit/hero-26.css";
@@ -277,6 +278,10 @@ export default function RootLayout({
       </head>
       <body className="bg-[#070b14] text-slate-100 antialiased selection:bg-sky-500 selection:text-white">
         {children}
+        <Script
+          src="https://images.dmca.com/Badges/DMCABadgeHelper.min.js"
+          strategy="lazyOnload"
+        />
       </body>
     </html>
   );
