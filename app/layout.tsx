@@ -269,6 +269,7 @@ export default function RootLayout({
     >
       <head>
         <meta name="google-site-verification" content="GjxLZnMKWrl0IzHC4J6K8B03R5riBt-uVERSerMOBF8" />
+        <meta name="dmca-site-verification" content="akg5a25Ob21PL0dlSmMxam1jd2oxU25zWThJYktCOEJlSmpNelphMmgvYz01" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
