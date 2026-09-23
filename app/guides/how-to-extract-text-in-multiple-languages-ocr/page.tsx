@@ -4,6 +4,7 @@ import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
 import { BlueprintFrame } from "@/components/blueprint-frame";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { RelatedGuides } from "@/components/related-guides";
 
 const CWS_URL =
   "https://chromewebstore.google.com/detail/gofully-full-page-screens/akfbmhmdlbmljklgajkgoekobofhhofc";
@@ -225,6 +226,8 @@ export default function MultiLanguageOcrGuidePage() {
           </BlueprintFrame>
         </div>
       </div>
+
+      <RelatedGuides currentSlug="how-to-extract-text-in-multiple-languages-ocr" />
 
       {/* Global CTA */}
       <div className="text-center" style={{ background: "#1d1f20", padding: "64px 24px" }}>

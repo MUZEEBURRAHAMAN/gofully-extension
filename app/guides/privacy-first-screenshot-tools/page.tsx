@@ -4,6 +4,7 @@ import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
 import { BlueprintFrame } from "@/components/blueprint-frame";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { RelatedGuides } from "@/components/related-guides";
 
 const CWS_URL =
   "https://chromewebstore.google.com/detail/gofully-full-page-screens/akfbmhmdlbmljklgajkgoekobofhhofc";
@@ -246,6 +247,8 @@ export default function PrivacyFirstScreenshotToolsGuide() {
           </BlueprintFrame>
         </div>
       </div>
+
+      <RelatedGuides currentSlug="privacy-first-screenshot-tools" />
 
       <div className="text-center" style={{ background: "var(--gf-color-text)", padding: "56px 24px" }}>
         <h2 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(20px, 5vw, 28px)", color: "#fff", letterSpacing: "-0.01em" }}>
