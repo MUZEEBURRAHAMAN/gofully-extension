@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 const ALL_LINKS = [
@@ -13,6 +14,8 @@ const ALL_LINKS = [
   { label: "Terms", href: "/terms" },
 ];
 
+const DMCA_ID = "77c114b5-c41b-44ac-9991-85a94ab2a971";
+
 export function SiteFooterIndustry({
   activeHref,
   showRoadmap = true,
@@ -21,6 +24,13 @@ export function SiteFooterIndustry({
   showRoadmap?: boolean;
 }) {
   const links = showRoadmap ? ALL_LINKS : ALL_LINKS.filter((l) => l.href !== "/roadmap");
+  const [currentUrl, setCurrentUrl] = useState("https://gofully-extension.vercel.app/");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setCurrentUrl(window.location.href);
+    }
+  }, []);
 
   return (
     <footer className="border-t" style={{ padding: "28px 24px", borderColor: "rgba(29,31,32,.08)" }}>
@@ -30,17 +40,17 @@ export function SiteFooterIndustry({
             © {new Date().getFullYear()} GoFully — Screenshot Studio
           </div>
           <a
-            href="//www.dmca.com/Protection/Status.aspx?ID=77c114b5-c41b-44ac-9991-85a94ab2a971"
+            href={`https://www.dmca.com/Protection/Status.aspx?ID=${DMCA_ID}&refurl=${encodeURIComponent(currentUrl)}`}
             title="DMCA.com Protection Status"
             className="dmca-badge inline-flex items-center opacity-85 hover:opacity-100 transition-opacity"
             target="_blank"
             rel="noreferrer"
           >
             <img
-              src="https://images.dmca.com/Badges/dmca_protected_sml_120c.png?ID=77c114b5-c41b-44ac-9991-85a94ab2a971"
+              src="/badges/dmca_protected_sml_120c.png"
               alt="DMCA.com Protection Status"
               width={120}
-              height={24}
+              height={21}
               style={{ height: 20, width: "auto" }}
             />
           </a>
