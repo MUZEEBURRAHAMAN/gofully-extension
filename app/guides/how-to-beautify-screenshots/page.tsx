@@ -217,6 +217,36 @@ export default function BeautifyScreenshotsGuide() {
               </p>
             </section>
 
+            <section className="space-y-4">
+              <div className="inline-flex items-center border border-blue-300 bg-blue-50/80 px-3 py-1 text-[11px] font-semibold text-blue-700 tracking-wide uppercase">New in v1.1.3</div>
+              <h2 className="gf-heading-font font-semibold text-[24px] text-[var(--gf-color-text)]">
+                More backgrounds, 3D mockups and progressive blur
+              </h2>
+              <p className="text-[15px] leading-relaxed text-neutral-600">Version 1.1.3 adds the controls that make a screenshot look designed.</p>
+              <div className="space-y-3 pt-2">
+                <div className="border border-neutral-200 p-4 bg-neutral-50/50">
+                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">Wallpapers and your own image</h3>
+                  <p className="text-[14px] text-neutral-600">Pick one of eight built-in wallpapers or choose + Your image to use your own.</p>
+                </div>
+                <div className="border border-neutral-200 p-4 bg-neutral-50/50">
+                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">Border, watermark and alignment</h3>
+                  <p className="text-[14px] text-neutral-600">Set a border width and colour, add a text watermark with size, opacity and position, and place the screenshot with a nine-point grid.</p>
+                </div>
+                <div className="border border-neutral-200 p-4 bg-neutral-50/50">
+                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">3D mockups</h3>
+                  <p className="text-[14px] text-neutral-600">Tilt, rotate, zoom and pan the screenshot in perspective. Six presets run from Flat to Hero.</p>
+                </div>
+                <div className="border border-neutral-200 p-4 bg-neutral-50/50">
+                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">Progressive blur</h3>
+                  <p className="text-[14px] text-neutral-600">Blur grows toward an edge or away from the centre. Apply it to the screenshot only or to the whole scene.</p>
+                </div>
+                <div className="border border-neutral-200 p-4 bg-neutral-50/50">
+                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">Preset files</h3>
+                  <p className="text-[14px] text-neutral-600">Export your presets as a .gofullypreset file. A teammate imports it and gets the same look. A custom background image stays on your device and does not travel inside a preset.</p>
+                </div>
+              </div>
+            </section>
+
           </BlueprintFrame>
         </div>
       </div>

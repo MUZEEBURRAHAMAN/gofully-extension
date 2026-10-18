@@ -34,6 +34,42 @@ interface GuideItem {
 
 const GUIDES: GuideItem[] = [
   {
+    slug: "how-to-draw-on-a-live-website",
+    title: "How to Draw on Any Live Website and Capture It with Your Marks",
+    subtitle:
+      "Use GoFully's Draw on Page to sketch arrows, highlight text and add sticky notes right on a live website, then capture the visible area or the full page with your marks in place.",
+    tag: "Visual Annotation",
+    readTime: "4 min read",
+    date: "New in v1.1.3",
+  },
+  {
+    slug: "how-to-capture-a-single-element",
+    title: "How to Capture a Single Element on a Webpage (Card, Table or Chat Message)",
+    subtitle:
+      "Capture just one card, table, chart or chat message in Chrome. GoFully's Capture Element outlines whatever is under your pointer and crops to it exactly.",
+    tag: "Capture Tutorial",
+    readTime: "3 min read",
+    date: "New in v1.1.3",
+  },
+  {
+    slug: "how-to-auto-redact-sensitive-info",
+    title: "How to Auto-Redact Emails, Card Numbers and API Keys in Screenshots",
+    subtitle:
+      "GoFully's Auto-redact reads your screenshot on your device and covers emails, card numbers, phone numbers, ID numbers, IP addresses and API keys with black boxes you review before export.",
+    tag: "Privacy & Security",
+    readTime: "4 min read",
+    date: "New in v1.1.3",
+  },
+  {
+    slug: "how-to-make-a-step-by-step-guide-from-screenshots",
+    title: "How to Build a Step-by-Step Guide from Screenshots (PDF or Markdown)",
+    subtitle:
+      "Turn several GoFully captures into one how-to document. Add captions, reorder steps and export a PDF or a Markdown ZIP, all on your device.",
+    tag: "Workflow & Docs",
+    readTime: "4 min read",
+    date: "New in v1.1.3",
+  },
+  {
     slug: "screenshot-tool-for-developers-and-qa",
     title: "The Screenshot Workflow Built for Developers & QA",
     subtitle:

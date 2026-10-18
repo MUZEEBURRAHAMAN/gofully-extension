@@ -249,6 +249,32 @@ export default function CustomShortcutsGuidePage() {
               </div>
             </section>
 
+            <section className="space-y-4">
+              <div className="inline-flex items-center border border-blue-300 bg-blue-50/80 px-3 py-1 text-[11px] font-semibold text-blue-700 tracking-wide uppercase">New in v1.1.3</div>
+              <h2 className="gf-heading-font font-semibold text-[24px] text-[var(--gf-color-text)]">
+                Shortcut changes in v1.1.3
+              </h2>
+              <p className="text-[15px] leading-relaxed text-neutral-600">Chrome allows an extension four default shortcuts. GoFully handles the rest so nothing is lost.</p>
+              <div className="space-y-3 pt-2">
+                <div className="border border-neutral-200 p-4 bg-neutral-50/50">
+                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">Draw on Page</h3>
+                  <p className="text-[14px] text-neutral-600">Press Cmd/Ctrl+Shift+H on a site, or use the popup tile. Assign your own key in Chrome if you want one.</p>
+                </div>
+                <div className="border border-neutral-200 p-4 bg-neutral-50/50">
+                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">In-page defaults</h3>
+                  <p className="text-[14px] text-neutral-600">On a normal web page the capture keys also work through GoFully itself: Cmd/Ctrl+Shift+F, V, A and H.</p>
+                </div>
+                <div className="border border-neutral-200 p-4 bg-neutral-50/50">
+                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">See what is bound</h3>
+                  <p className="text-[14px] text-neutral-600">Settings lists the key Chrome has bound to each GoFully command. It flags any key another extension took and links to chrome://extensions/shortcuts so you can pick a new one.</p>
+                </div>
+                <div className="border border-neutral-200 p-4 bg-neutral-50/50">
+                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">Clear messages</h3>
+                  <p className="text-[14px] text-neutral-600">If a shortcut cannot run, GoFully now says why. On pages that cannot show a message, the toolbar icon shows a badge.</p>
+                </div>
+              </div>
+            </section>
+
           </BlueprintFrame>
         </div>
       </div>

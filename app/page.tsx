@@ -23,7 +23,7 @@ const STEPS = [
   {
     n: 1,
     title: "CAPTURE THE PAGE",
-    body: "Pick full page, visible area, a custom region, or a scrolling feed. GoFully stitches it into one clean image.",
+    body: "Pick full page, visible area, a custom region, a single element, or a scrolling feed. GoFully stitches it into one clean image.",
     image: "/features/capture.webp",
     alt: "GoFully capture options showing full page, visible area, and scrolling area",
   },
@@ -81,7 +81,7 @@ const FEATURES = [
       </svg>
     ),
     title: "Annotate, highlight & redact",
-    body: "Mark up screenshots with curved arrows, callouts, auto-numbering steps, and a 6-shape tool (rectangles, ellipses, triangles, polygons). Use the CleanShot-style multiply-blend highlighter to emphasize text without hiding it, and zoom up to 1000% for pixel-precise blur and redaction of passwords or PII.",
+    body: "Draw directly on a live website before you capture it. Mark up screenshots with curved arrows, callouts, auto-numbering steps, and a 6-shape tool (rectangles, ellipses, triangles, polygons). Use the CleanShot-style multiply-blend highlighter to emphasize text without hiding it, and zoom up to 1000% for pixel-precise blur. Auto-redact finds emails, card numbers, phone numbers, IP addresses and API keys for you to review.",
     image: "/features/feature-annotate.webp",
     alt: "Annotated screenshot showing markup, callouts, highlighter, and redaction tools in GoFully editor",
     reverse: false,
@@ -98,7 +98,7 @@ const FEATURES = [
       </svg>
     ),
     title: "Screenshot beautifier & mockups",
-    body: "Transform raw screenshots into polished, presentation-ready assets. Customize vibrant backgrounds from a gradient library, add realistic window frames with real page URLs, tweak padding and shadows, assemble multi-image collages, and save your preferred styles as reusable presets.",
+    body: "Transform raw screenshots into polished, presentation-ready assets. Pick from gradients, eight wallpapers or your own image, tilt the shot in 3D perspective, add progressive blur, a border and a watermark, add realistic window frames with real page URLs, tweak padding and shadows, assemble multi-image collages, and save your preferred styles as reusable presets.",
     image: "/features/feature-beautify.webp",
     alt: "GoFully screenshot beautifier with customizable backgrounds, padding, shadows, and frame mockups",
     reverse: true,
@@ -128,7 +128,7 @@ const FEATURES = [
       </svg>
     ),
     title: "Every capture, saved automatically",
-    body: "GoFully keeps a rolling history of your recent screenshots right in the popup — thumbnail, site, and timestamp — so you can reopen, re-edit, or re-export a past capture in one click. Like everything else in GoFully, that history lives only in your browser's own local storage: nothing is uploaded, and Clear All wipes it instantly.",
+    body: "GoFully keeps a rolling history of your recent screenshots right in the popup — thumbnail, site, and timestamp — and you can search it by the words inside each screenshot. Turn on Keep recent captures and a click reopens one of your last 10 in the editor. Like everything else in GoFully, history lives only in your browser's own storage. Nothing is uploaded, and Clear All wipes it instantly.",
     image: "/features/feature-history.webp",
     alt: "GoFully popup history screen showing recent screenshot thumbnails with site and timestamp",
     reverse: true,
@@ -254,7 +254,7 @@ export default function HomePage() {
                 }}
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span>v1.1.2 Live · 6-Lang OCR &amp; Highlighter</span>
+                <span>New in v1.1.3 · Draw on Page, Auto-redact &amp; Guides</span>
               </span>
             </div>
             <h1
@@ -649,6 +649,9 @@ export default function HomePage() {
                 { feat: "Video auto-pause on scroll", vals: [true, false, false, false] },
                 { feat: "PNG, JPG, WebP & PDF export", vals: [true, false, "Partial", false] },
                 { feat: "Screenshot history gallery", vals: [true, false, true, false] },
+                { feat: "Draw on a live website", vals: [true, false, false, false] },
+                { feat: "Auto-redact emails, cards & keys", vals: [true, false, false, false] },
+                { feat: "Step-by-step guide export", vals: [true, false, false, false] },
                 { feat: "No account required", vals: [true, true, false, true] },
                 { feat: "100% free (no paywalled tools)", vals: [true, true, false, false] },
                 { feat: "Works 100% offline", vals: [true, true, false, true] },

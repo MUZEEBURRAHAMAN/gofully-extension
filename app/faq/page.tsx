@@ -63,8 +63,8 @@ const FAQ_GROUPS = [
       },
       {
         q: "Is my captured data stored anywhere?",
-        a: "Only locally on your device, and only until you export or discard the result.",
-        plainAnswer: "Only locally on your device, and only until you export or discard the result.",
+        a: "Only on your device. The last capture sits in session memory until you close the browser. History keeps thumbnails, page titles, addresses and OCR text in local storage, and Clear All deletes them. Nothing is uploaded.",
+        plainAnswer: "Only on your device. The last capture sits in session memory until you close the browser. History keeps thumbnails, page titles, addresses and OCR text in local storage, and Clear All deletes them. Nothing is uploaded.",
       },
     ],
   },
@@ -73,13 +73,43 @@ const FAQ_GROUPS = [
     items: [
       {
         q: "What capture modes are supported?",
-        a: "Full page scrolling capture, visible area, a custom selected region, or a scrolling feed.",
-        plainAnswer: "Full page scrolling capture, visible area, a custom selected region, or a scrolling feed.",
+        a: "Full page scrolling capture, visible area, a custom selected region, a single element, or a scrolling feed. You can also draw on a live page before you capture it.",
+        plainAnswer: "Full page scrolling capture, visible area, a custom selected region, a single element, or a scrolling feed. You can also draw on a live page before you capture it.",
       },
       {
         q: "Can I redact sensitive information?",
-        a: "Yes — blur or pixelate any region before you export or share the result.",
-        plainAnswer: "Yes — blur or pixelate any region before you export or share the result.",
+        a: "Yes. Blur, pixelate or black out any region, or let Auto-redact find emails, card numbers and keys for you to review.",
+        plainAnswer: "Yes. Blur, pixelate or black out any region, or let Auto-redact find emails, card numbers and keys for you to review.",
+      },
+      {
+        q: "Can I draw on a live website?",
+        a: "Yes. Draw on Page adds a toolbar to any site. Mark it up with a pen, highlighter, arrows, shapes, text and sticky notes, then capture the visible area or the full page with your marks in place.",
+        plainAnswer: "Yes. Draw on Page adds a toolbar to any site. Mark it up with a pen, highlighter, arrows, shapes, text and sticky notes, then capture the visible area or the full page with your marks in place.",
+      },
+      {
+        q: "Can I capture just one element?",
+        a: "Yes. Capture Element outlines whatever is under your pointer. Use the arrow keys to pick a parent or child, then click to crop to it.",
+        plainAnswer: "Yes. Capture Element outlines whatever is under your pointer. Use the arrow keys to pick a parent or child, then click to crop to it.",
+      },
+      {
+        q: "Does Auto-redact catch everything?",
+        a: "It finds emails, card numbers, phone numbers, ID numbers, IP addresses and API keys that OCR can read. Check each black box before you share, because text OCR misses stays visible.",
+        plainAnswer: "It finds emails, card numbers, phone numbers, ID numbers, IP addresses and API keys that OCR can read. Check each black box before you share, because text OCR misses stays visible.",
+      },
+      {
+        q: "Can I make a guide from several screenshots?",
+        a: "Yes. Add up to 30 captures to a guide, write a line under each, and export a PDF or a Markdown ZIP with its images.",
+        plainAnswer: "Yes. Add up to 30 captures to a guide, write a line under each, and export a PDF or a Markdown ZIP with its images.",
+      },
+      {
+        q: "Can I search my past captures?",
+        a: "Yes. History searches the words inside each screenshot, the page title and the address. GoFully reads each capture on your device. Turn it off with Search inside screenshots in Settings.",
+        plainAnswer: "Yes. History searches the words inside each screenshot, the page title and the address. GoFully reads each capture on your device. Turn it off with Search inside screenshots in Settings.",
+      },
+      {
+        q: "Can I reopen an old capture in the editor?",
+        a: "Yes, if you turn on Keep recent captures in Settings. GoFully then stores the full image of your last 10 captures on your device. With it off, History keeps thumbnails and opens the source page.",
+        plainAnswer: "Yes, if you turn on Keep recent captures in Settings. GoFully then stores the full image of your last 10 captures on your device. With it off, History keeps thumbnails and opens the source page.",
       },
       {
         q: "What export formats are available?",

@@ -210,6 +210,32 @@ export default function RedactScreenshotGuidePage() {
               </div>
             </section>
 
+            <section className="space-y-4">
+              <div className="inline-flex items-center border border-blue-300 bg-blue-50/80 px-3 py-1 text-[11px] font-semibold text-blue-700 tracking-wide uppercase">New in v1.1.3</div>
+              <h2 className="gf-heading-font font-semibold text-[24px] text-[var(--gf-color-text)]">
+                Auto-redact finds the sensitive text for you
+              </h2>
+              <p className="text-[15px] leading-relaxed text-neutral-600">Open the Blur menu in the editor and choose Auto-redact sensitive info. GoFully reads the screenshot on your device and covers what it finds.</p>
+              <div className="space-y-3 pt-2">
+                <div className="border border-neutral-200 p-4 bg-neutral-50/50">
+                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">What it covers</h3>
+                  <p className="text-[14px] text-neutral-600">Emails, card numbers, phone numbers, ID numbers, IP addresses and API keys.</p>
+                </div>
+                <div className="border border-neutral-200 p-4 bg-neutral-50/50">
+                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">You stay in control</h3>
+                  <p className="text-[14px] text-neutral-600">Each match gets a black box. Move or delete any box, then add your own blur for anything it missed.</p>
+                </div>
+                <div className="border border-neutral-200 p-4 bg-neutral-50/50">
+                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">Undo in one step</h3>
+                  <p className="text-[14px] text-neutral-600">Cmd/Ctrl+Z removes every auto-redact box at once.</p>
+                </div>
+                <div className="border border-neutral-200 p-4 bg-neutral-50/50">
+                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">Read the full walkthrough</h3>
+                  <p className="text-[14px] text-neutral-600">See How to Auto-Redact Emails, Card Numbers and API Keys in Screenshots in the guides list.</p>
+                </div>
+              </div>
+            </section>
+
           </BlueprintFrame>
         </div>
       </div>

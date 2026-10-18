@@ -10,6 +10,38 @@ export interface GuideMeta {
 
 export const ALL_GUIDES: GuideMeta[] = [
   {
+    slug: "how-to-draw-on-a-live-website",
+    title: "How to Draw on Any Live Website and Capture It with Your Marks",
+    subtitle:
+      "Use GoFully's Draw on Page to sketch arrows, highlight text and add sticky notes right on a live website, then capture the visible area or the full page with your marks in place.",
+    tag: "Visual Annotation",
+    readTime: "4 min read",
+  },
+  {
+    slug: "how-to-capture-a-single-element",
+    title: "How to Capture a Single Element on a Webpage (Card, Table or Chat Message)",
+    subtitle:
+      "Capture just one card, table, chart or chat message in Chrome.",
+    tag: "Capture Tutorial",
+    readTime: "3 min read",
+  },
+  {
+    slug: "how-to-auto-redact-sensitive-info",
+    title: "How to Auto-Redact Emails, Card Numbers and API Keys in Screenshots",
+    subtitle:
+      "GoFully's Auto-redact reads your screenshot on your device and covers emails, card numbers, phone numbers, ID numbers, IP addresses and API keys with black boxes you review before export.",
+    tag: "Privacy & Security",
+    readTime: "4 min read",
+  },
+  {
+    slug: "how-to-make-a-step-by-step-guide-from-screenshots",
+    title: "How to Build a Step-by-Step Guide from Screenshots (PDF or Markdown)",
+    subtitle:
+      "Turn several GoFully captures into one how-to document.",
+    tag: "Workflow & Docs",
+    readTime: "4 min read",
+  },
+  {
     slug: "screenshot-tool-for-developers-and-qa",
     title: "The Screenshot Workflow Built for Developers & QA",
     subtitle:

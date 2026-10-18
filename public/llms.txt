@@ -7,12 +7,16 @@ Current version: v1.1.2 (live on the Chrome Web Store). Everything listed below 
 ## Core Features & Capabilities
 
 - [Full Page Screenshot Tool](https://gofully-extension.vercel.app/): Capture full-height scrolling websites, dynamic feeds, and dashboards with automatic video auto-pause, cookie modal auto-dismiss, and sticky-header deduplication.
+- [Draw on a Live Website](https://gofully-extension.vercel.app/guides/how-to-draw-on-a-live-website): Use GoFully's Draw on Page to sketch arrows, highlight text and add sticky notes right on a live website, then capture the visible area or the full page with your marks in place.
+- [Capture a Single Element](https://gofully-extension.vercel.app/guides/how-to-capture-a-single-element): Capture just one card, table, chart or chat message in Chrome. GoFully's Capture Element outlines whatever is under your pointer and crops to it exactly.
+- [Auto-Redact Sensitive Info](https://gofully-extension.vercel.app/guides/how-to-auto-redact-sensitive-info): GoFully's Auto-redact reads your screenshot on your device and covers emails, card numbers, phone numbers, ID numbers, IP addresses and API keys with black boxes you review before export.
+- [Step-by-Step Guide Builder](https://gofully-extension.vercel.app/guides/how-to-make-a-step-by-step-guide-from-screenshots): Turn several GoFully captures into one how-to document. Add captions, reorder steps and export a PDF or a Markdown ZIP, all on your device.
 - [Local Multi-Language OCR](https://gofully-extension.vercel.app/guides/how-to-extract-text-in-multiple-languages-ocr): Extract text from images and locked web apps on-device in English, Spanish, French, German, Portuguese, and Simplified Chinese without cloud uploads. Includes instant 'Copy as JSON'.
 - [Screenshot Annotation & Highlighter](https://gofully-extension.vercel.app/guides/how-to-use-highlighter-tool-in-screenshots): CleanShot-style multiply-blend highlighter, curved arrows, callouts, step counters, and 6 shapes (rectangle, circle, ellipse, triangle, polygon).
 - [Privacy Redaction & Blur](https://gofully-extension.vercel.app/guides/how-to-blur-sensitive-info-in-screenshots): Gaussian smooth blur, mosaic pixelate, and black redaction for PII, tokens, and passwords.
 - [Screenshot Beautifier & Mockups](https://gofully-extension.vercel.app/guides/how-to-beautify-screenshots): Add customizable gradient backgrounds, realistic window frames with live page URLs and lock icons, padding, shadows, and multi-image collages.
 - [Flexible High-Resolution Export](https://gofully-extension.vercel.app/guides/how-to-save-webpage-as-pdf): Export to paginated A4 PDF, PNG, WebP, JPG with unified quality control, and 4K UHD.
-- [Local Screenshot History](https://gofully-extension.vercel.app/): Rolling history thumbnail gallery stored exclusively in browser local storage with one-click reopening.
+- [Local Screenshot History](https://gofully-extension.vercel.app/): Rolling history of your last 50 captures stored only in browser local storage, searchable by the text inside each screenshot, with optional full-image reopening for the last 10.
 
 ## Comparison & Alternatives
 
