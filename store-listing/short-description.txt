@@ -1,1 +1,1 @@
-Capture full pages or areas, extract text with local OCR, annotate, redact sensitive details, and export to PNG, JPG, WebP, or PDF.
+Full page screenshots with annotation, auto-redact, on-device OCR, backgrounds and PDF export. Free, offline, no account.

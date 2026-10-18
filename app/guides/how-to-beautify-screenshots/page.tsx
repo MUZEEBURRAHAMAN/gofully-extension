@@ -23,38 +23,31 @@ export const metadata: Metadata = {
   },
 };
 
-const howToJsonLd = {
+const articleJsonLd = {
   "@context": "https://schema.org",
-  "@type": "HowTo",
-  name: "How to Beautify Screenshots for Social Media and Presentations",
-  description: "Step-by-step guide to transforming raw screenshots into polished images with backgrounds, frames, and effects.",
-  totalTime: "PT1M",
-  step: [
-    {
-      "@type": "HowToStep",
-      name: "Capture Your Screenshot",
-      text: "Use GoFully to capture a full page, visible area, or selected region.",
-      url: "https://gofully-extension.vercel.app/guides/how-to-beautify-screenshots#capture",
+  "@type": "TechArticle",
+  "@id": "https://gofully-extension.vercel.app/guides/how-to-beautify-screenshots#article",
+  url: "https://gofully-extension.vercel.app/guides/how-to-beautify-screenshots",
+  headline: "How to Beautify Screenshots for Social Media and Presentations",
+  description:
+    "A guide to transforming raw screenshots into polished mockup images with gradient backgrounds, browser frames, rounded corners, and shadows.",
+  isPartOf: { "@id": "https://gofully-extension.vercel.app/#website" },
+  datePublished: "2026-09-08",
+  dateModified: "2026-09-20",
+  author: {
+    "@type": "Organization",
+    name: "GoFully",
+    url: "https://gofully-extension.vercel.app/",
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "GoFully",
+    url: "https://gofully-extension.vercel.app/",
+    logo: {
+      "@type": "ImageObject",
+      url: "https://gofully-extension.vercel.app/logo.png",
     },
-    {
-      "@type": "HowToStep",
-      name: "Open the Beautify Tab",
-      text: "Click Edit in the result bar, then switch to the Beautify tab in the editor.",
-      url: "https://gofully-extension.vercel.app/guides/how-to-beautify-screenshots#beautify",
-    },
-    {
-      "@type": "HowToStep",
-      name: "Customize the Design",
-      text: "Choose a background gradient, add a browser frame, adjust padding and corner radius, and apply a shadow.",
-      url: "https://gofully-extension.vercel.app/guides/how-to-beautify-screenshots#customize",
-    },
-    {
-      "@type": "HowToStep",
-      name: "Export the Polished Image",
-      text: "Download as PNG, WebP, or JPG, or copy directly to clipboard.",
-      url: "https://gofully-extension.vercel.app/guides/how-to-beautify-screenshots#export",
-    },
-  ],
+  },
 };
 
 export default function BeautifyScreenshotsGuide() {
@@ -62,7 +55,7 @@ export default function BeautifyScreenshotsGuide() {
     <div className="gf-industry min-h-screen">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
       />
       <SiteNav />
 

@@ -1,0 +1,14 @@
+{
+  "appName": {
+    "message": "GoFully - Ganzer Bildschirm Screenshot, OCR & Editor",
+    "description": "Extension name for German"
+  },
+  "shortName": {
+    "message": "GoFully",
+    "description": "Short extension name"
+  },
+  "appDesc": {
+    "message": "Ganze Webseiten aufnehmen, Text mit lokalem OCR kopieren, Anmerkungen einfügen, sensible Daten schwärzen und als PNG/PDF exportieren.",
+    "description": "Short description for German (max 132 chars)"
+  }
+}

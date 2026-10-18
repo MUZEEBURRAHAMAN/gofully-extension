@@ -11,11 +11,12 @@ import { captureScrollingArea } from "../capture-modes/scrolling-area";
 import { createScrollCapturer } from "../capture-modes/scroll-capturer";
 import type { ScrollCapturer } from "../capture-modes/scroll-capturer";
 import { generatePDF } from "../export/pdf-generator";
+import { addStepFromDataUrl } from "../utils/guide";
 import { isSupportedCapturePage } from "../utils/url-validator";
 import { dataUrlToBlob } from "../utils/image";
 import { cancelActiveCapture } from "./stitch-capture";
 import { recordCaptureCompleted } from "../utils/rate-nudge";
-import { generateThumbnail, addHistoryEntry } from "../utils/history";
+import { generateThumbnail, addHistoryEntry, setHistoryText, saveFullImage, getFullImage } from "../utils/history";
 
 // Uninstall feedback URL configuration pointing to live Vercel deployment
 chrome.runtime.onInstalled.addListener(async (details) => {
@@ -49,6 +50,8 @@ let lastCaptureResult: CaptureResult | null = null;
 let lastCaptureBlob: Blob | null = null;
 let lastCaptureDataUrl: string | null = null;
 let activeCapturer: ScrollCapturer | null = null;
+let isCaptureBusy = false;
+let lastCaptureTimestamp = 0;
 
 async function ensureOffscreenDocument(): Promise<void> {
   const existingContexts = await (chrome.runtime as any).getContexts({
@@ -190,11 +193,49 @@ function cacheCaptureInSession(dataUrl: string): void {
   chrome.storage.session.set({ lastCaptureDataUrl: dataUrl }).catch(() => {});
 }
 
+// Reads each new capture's text on-device, one at a time, so history can be
+// searched by what the screenshots say. Never blocks or fails a capture.
+let textIndexChain: Promise<void> = Promise.resolve();
+
+async function ocrInputFor(dataUrl: string): Promise<string> {
+  const blob = await (await fetch(dataUrl)).blob();
+  const bmp = await createImageBitmap(blob);
+  const scale = Math.min(1, 1600 / bmp.width);
+  const w = Math.max(1, Math.round(bmp.width * scale));
+  const h = Math.max(1, Math.min(Math.round(bmp.height * scale), 2400)); // top of long pages is what people remember
+  const c = new OffscreenCanvas(w, h);
+  c.getContext("2d")!.drawImage(bmp, 0, 0, bmp.width, Math.min(bmp.height, Math.round(h / scale)), 0, 0, w, h);
+  bmp.close();
+  return blobToDataUrl(await c.convertToBlob({ type: "image/png" }));
+}
+
+function queueTextIndex(id: string, dataUrl: string): void {
+  textIndexChain = textIndexChain.then(async () => {
+    try {
+      const stored = await chrome.storage.sync.get("settings");
+      const cfg = stored.settings as Partial<Settings> | undefined;
+      if (cfg?.indexCaptureText === false) return;
+      const input = await ocrInputFor(dataUrl);
+      await ensureOffscreenDocument();
+      const resp = await chrome.runtime.sendMessage({
+        type: "PERFORM_OCR",
+        payload: { dataUrl: input, lang: cfg?.ocrLanguage || DEFAULT_SETTINGS.ocrLanguage },
+      });
+      const text = String(resp?.text || "").replace(/\s+/g, " ").trim().slice(0, 2000);
+      if (text) await setHistoryText(id, text);
+    } catch {
+      // indexing is best-effort
+    }
+  });
+}
+
 async function saveToHistory(result: CaptureResult, dataUrl: string): Promise<void> {
   try {
     const thumbnail = await generateThumbnail(dataUrl);
+    const id = `h_${result.timestamp}_${Math.random().toString(36).slice(2, 8)}`;
+    queueTextIndex(id, dataUrl);
     await addHistoryEntry({
-      id: `h_${result.timestamp}_${Math.random().toString(36).slice(2, 8)}`,
+      id,
       thumbnail,
       url: result.url,
       title: result.title,
@@ -204,6 +245,8 @@ async function saveToHistory(result: CaptureResult, dataUrl: string): Promise<vo
       height: result.height,
       timestamp: result.timestamp,
     });
+    const cfg = ((await chrome.storage.sync.get("settings")) as { settings?: Partial<Settings> }).settings;
+    if (cfg?.keepFullImages === true) await saveFullImage(id, dataUrl);
   } catch {
     // Non-critical — don't block capture flow
   }
@@ -251,6 +294,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       speed?: "slow" | "medium" | "fast";
       tabId?: number;
     };
+
+    const now = Date.now();
+    if (isCaptureBusy || now - lastCaptureTimestamp < 600) {
+      console.warn("[GoFully] Dropping duplicate START_CAPTURE request (busy or debounced)");
+      if (isCaptureBusy && sender.tab?.id) {
+        notifyTab(sender.tab.id, "A capture is already running. Wait a moment.", "info");
+      }
+      sendResponse({ type: "CAPTURE_BUSY", error: "A capture is already in progress" });
+      return false;
+    }
 
     const targetTabId = tabId ?? sender.tab?.id;
     const fromContentScript = !!sender.tab;
@@ -329,6 +382,73 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     } else {
       sendResponse({ error: "No capture available" });
     }
+    return true;
+  }
+
+  if (message.type === "GUIDE_ADD_LAST_CAPTURE") {
+    (async () => {
+      const dataUrl = lastCaptureDataUrl ?? ((await chrome.storage.session.get("lastCaptureDataUrl")) as any).lastCaptureDataUrl ?? null;
+      if (!dataUrl) { sendResponse({ ok: false, error: "Nothing to add yet" }); return; }
+      sendResponse(await addStepFromDataUrl(dataUrl, { url: lastCaptureResult?.url }));
+    })();
+    return true;
+  }
+
+  if (message.type === "OCR_IMAGE_WORDS") {
+    // Called by extension pages (the editor): the offscreen document can only be
+    // created from here, so relay the request to it.
+    if (sender.id !== chrome.runtime.id) { sendResponse({ error: "Not allowed" }); return false; }
+    const dataUrl = message.payload?.dataUrl;
+    if (typeof dataUrl !== "string" || !dataUrl.startsWith("data:image/")) {
+      sendResponse({ error: "No image" });
+      return false;
+    }
+    (async () => {
+      try {
+        await ensureOffscreenDocument();
+        const stored = await chrome.storage.sync.get("settings");
+        const lang = (stored.settings as Partial<Settings> | undefined)?.ocrLanguage || DEFAULT_SETTINGS.ocrLanguage;
+        const resp = await chrome.runtime.sendMessage({ type: "PERFORM_OCR", payload: { dataUrl, lang, words: true } });
+        sendResponse(resp?.error ? { error: resp.error } : { text: resp?.text || "", words: resp?.words || [] });
+      } catch (err: any) {
+        sendResponse({ error: err?.message || "OCR failed" });
+      }
+    })();
+    return true;
+  }
+
+  if (message.type === "PIN_LAST_CAPTURE" || message.type === "PIN_IMAGE") {
+    (async () => {
+      let dataUrl: string | null = null;
+      if (message.type === "PIN_IMAGE") {
+        const d = message.payload?.dataUrl;
+        dataUrl = typeof d === "string" && d.startsWith("data:image/") ? d : null;
+      } else {
+        dataUrl = lastCaptureDataUrl ?? ((await chrome.storage.session.get("lastCaptureDataUrl")) as any).lastCaptureDataUrl ?? null;
+      }
+      if (!dataUrl) { sendResponse({ ok: false, error: "Nothing to pin" }); return; }
+
+      // The sender is either a web page (result card) or an extension page
+      // (the editor) — for the editor, pin onto the tab that opened it.
+      let target = message.payload?.tabId as number | undefined;
+      if (!target && sender.tab?.url && /^https?:/.test(sender.tab.url)) target = sender.tab.id;
+      if (!target && sender.tab?.openerTabId) target = sender.tab.openerTabId;
+      if (!target) {
+        const tabs = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+        target = tabs.find((t) => t.url && /^https?:/.test(t.url))?.id;
+      }
+      if (!target) { sendResponse({ ok: false, error: "Open the page you want to pin it on first" }); return; }
+      try {
+        await chrome.scripting.executeScript({ target: { tabId: target }, files: ["pin-overlay.js"] });
+        const resp = await chrome.tabs.sendMessage(target, {
+          type: "PIN_IMAGE",
+          payload: { dataUrl, width: message.payload?.width, height: message.payload?.height },
+        });
+        sendResponse({ ok: !!resp?.shown });
+      } catch (err: any) {
+        sendResponse({ ok: false, error: err?.message || "Couldn't pin on this page" });
+      }
+    })();
     return true;
   }
 
@@ -482,6 +602,34 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 
+  if (message.type === "REOPEN_HISTORY_CAPTURE") {
+    if (sender.id !== chrome.runtime.id) { sendResponse({ ok: false }); return false; }
+    (async () => {
+      const id = String(message.payload?.id || "");
+      const dataUrl = await getFullImage(id);
+      if (!dataUrl) { sendResponse({ ok: false, error: "The full image is no longer stored" }); return; }
+      const { getHistory } = await import("../utils/history");
+      const entry = (await getHistory()).find((e) => e.id === id);
+      lastCaptureBlob = await dataUrlToBlob(dataUrl);
+      lastCaptureDataUrl = dataUrl;
+      lastCaptureResult = entry
+        ? { blob: null as any, width: entry.width, height: entry.height, mode: entry.mode as any, method: entry.method as any, timestamp: entry.timestamp, url: entry.url, title: entry.title }
+        : lastCaptureResult;
+      cacheCaptureInSession(dataUrl);
+      await chrome.tabs.create({ url: chrome.runtime.getURL("editor.html") });
+      sendResponse({ ok: true });
+    })().catch(() => sendResponse({ ok: false, error: "Couldn't reopen that capture" }));
+    return true;
+  }
+
+  if (message.type === "LIST_FULL_IMAGES") {
+    (async () => {
+      const { listFullImageIds } = await import("../utils/history");
+      sendResponse({ ids: await listFullImageIds() });
+    })();
+    return true;
+  }
+
   if (message.type === "GET_HISTORY") {
     (async () => {
       const { getHistory } = await import("../utils/history");
@@ -542,12 +690,86 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   return false;
 });
 
+/**
+ * Always tells the user something when a shortcut capture can't run or fails.
+ * The in-page notice needs our content script; on pages where it can't run
+ * (chrome://, Web Store, a tab that is still loading) fall back to a badge on
+ * the toolbar icon, which needs no extra permission.
+ */
+async function notifyTab(
+  tabId: number,
+  message: string,
+  kind: "error" | "info" = "error"
+): Promise<void> {
+  try {
+    const resp = await chrome.tabs.sendMessage(tabId, {
+      type: kind === "error" ? "CAPTURE_ERROR_INLINE" : "CAPTURE_NOTICE",
+      payload: { message },
+    });
+    if (resp?.shown) return;
+  } catch {
+    // no receiver on this page — use the badge below
+  }
+  try {
+    await chrome.action.setBadgeBackgroundColor({ tabId, color: kind === "error" ? "#B42318" : "#1667F2" });
+    await chrome.action.setBadgeText({ tabId, text: kind === "error" ? "!" : "…" });
+    await chrome.action.setTitle({ tabId, title: `GoFully: ${message}` });
+    setTimeout(() => {
+      chrome.action.setBadgeText({ tabId, text: "" }).catch(() => {});
+      chrome.action.setTitle({ tabId, title: "" }).catch(() => {});
+    }, 4000);
+  } catch {
+    // tab closed meanwhile
+  }
+}
+
+/** Success confirmation; if the page can't show it, tick the toolbar icon instead. */
+async function sendQuickToast(tabId: number, dataUrl: string): Promise<void> {
+  try {
+    const resp = await chrome.tabs.sendMessage(tabId, {
+      type: "QUICK_CAPTURE_TOAST",
+      payload: { dataUrl },
+    });
+    if (resp?.shown) return;
+  } catch {
+    // fall through to the badge
+  }
+  try {
+    await chrome.action.setBadgeBackgroundColor({ tabId, color: "#027A48" });
+    await chrome.action.setBadgeText({ tabId, text: "✓" });
+    setTimeout(() => chrome.action.setBadgeText({ tabId, text: "" }).catch(() => {}), 2500);
+  } catch {
+    // tab closed meanwhile
+  }
+}
+
 chrome.commands.onCommand.addListener(async (command) => {
+  const now = Date.now();
+  if (isCaptureBusy || now - lastCaptureTimestamp < 600) {
+    console.warn(`[GoFully] Dropping shortcut command: ${command} (busy or debounced)`);
+    // A genuine second press while a capture runs deserves feedback; a key
+    // auto-repeat inside the debounce window does not.
+    if (isCaptureBusy) {
+      const [busyTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (busyTab?.id) notifyTab(busyTab.id, "A capture is already running. Wait a moment.", "info");
+    }
+    return;
+  }
+  // The area picker returns its own START_CAPTURE when the user finishes the
+  // drag; stamping the debounce here would swallow a quick selection.
+  if (command !== "capture-selected-area") lastCaptureTimestamp = now;
+
   const [tab] = await chrome.tabs.query({
     active: true,
     currentWindow: true,
   });
   if (!tab?.id) return;
+
+  const support = isSupportedCapturePage(tab.url || "");
+  if (!support.supported) {
+    notifyTab(tab.id, support.message || "This page cannot be captured.", "error");
+    return;
+  }
 
   await injectContentScripts(tab.id);
 
@@ -564,6 +786,7 @@ chrome.commands.onCommand.addListener(async (command) => {
       await openReviewTab(tab.id);
     } catch (e) {
       console.error("Keyboard shortcut capture-full-page failed:", e);
+      notifyTab(tab.id, (e as Error)?.message || "Full-page capture failed.", "error");
     }
   }
 
@@ -577,17 +800,19 @@ chrome.commands.onCommand.addListener(async (command) => {
       recordCaptureCompleted().catch(() => {});
       saveToHistory(result, lastCaptureDataUrl).catch(() => {});
 
-      chrome.tabs.sendMessage(tab.id, {
-        type: "QUICK_CAPTURE_TOAST",
-        payload: { dataUrl: lastCaptureDataUrl },
-      }).catch(() => {});
+      await sendQuickToast(tab.id, lastCaptureDataUrl);
     } catch (e) {
       console.error("Keyboard shortcut capture-visible failed:", e);
+      notifyTab(tab.id, (e as Error)?.message || "Capture failed.", "error");
     }
   }
 
   if (command === "capture-selected-area") {
     await initInteractiveMode("selected-area", tab.id);
+  }
+
+  if (command === "annotate-page") {
+    await initInteractiveMode("annotate-page", tab.id);
   }
 });
 
@@ -598,73 +823,83 @@ async function handleCapture(
   explicitTabId?: number,
   showInPageProgress: boolean = true
 ): Promise<CaptureResult> {
-  let targetTabId = explicitTabId;
-  let tab: chrome.tabs.Tab | undefined;
-
-  if (targetTabId) {
-    try {
-      tab = await chrome.tabs.get(targetTabId);
-    } catch {}
+  if (isCaptureBusy) {
+    throw new Error("A capture is already in progress");
   }
+  isCaptureBusy = true;
+  lastCaptureTimestamp = Date.now();
 
-  if (!tab) {
-    const [activeTab] = await chrome.tabs.query({
-      active: true,
-      currentWindow: true,
-    });
-    tab = activeTab;
-    targetTabId = tab?.id;
-  }
+  try {
+    let targetTabId = explicitTabId;
+    let tab: chrome.tabs.Tab | undefined;
 
-  if (!tab?.id) throw new Error("No active tab");
+    if (targetTabId) {
+      try {
+        tab = await chrome.tabs.get(targetTabId);
+      } catch {}
+    }
 
-  const tabUrl = tab.url || "";
-  const support = isSupportedCapturePage(tabUrl);
+    if (!tab) {
+      const [activeTab] = await chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
+      tab = activeTab;
+      targetTabId = tab?.id;
+    }
 
-  if (!support.supported) {
-    throw new Error(support.message || "This page cannot be captured.");
-  }
+    if (!tab?.id) throw new Error("No active tab");
 
-  if (mode === "full-page" || mode === "scrolling-area") {
-    await injectContentScripts(tab.id);
-  }
+    const tabUrl = tab.url || "";
+    const support = isSupportedCapturePage(tabUrl);
 
-  const sendProgress = (progress: any) => {
-    chrome.runtime.sendMessage({
-      type: "CAPTURE_PROGRESS",
-      payload: progress,
-    }).catch(() => {});
+    if (!support.supported) {
+      throw new Error(support.message || "This page cannot be captured.");
+    }
 
-    if (targetTabId && showInPageProgress) {
-      chrome.tabs.sendMessage(targetTabId, {
+    if (mode === "full-page" || mode === "scrolling-area") {
+      await injectContentScripts(tab.id);
+    }
+
+    const sendProgress = (progress: any) => {
+      chrome.runtime.sendMessage({
         type: "CAPTURE_PROGRESS",
         payload: progress,
       }).catch(() => {});
+
+      if (targetTabId && showInPageProgress) {
+        chrome.tabs.sendMessage(targetTabId, {
+          type: "CAPTURE_PROGRESS",
+          payload: progress,
+        }).catch(() => {});
+      }
+    };
+
+    switch (mode) {
+      case "full-page":
+        return await captureFullPage(targetTabId!, sendProgress);
+
+      case "visible-area":
+        return await captureVisibleArea(targetTabId!, sendProgress);
+
+      case "selected-area":
+        if (!region) throw new Error("Region required for selected-area mode");
+        return await captureSelectedArea(targetTabId!, region);
+
+      case "scrolling-area":
+        if (!region) throw new Error("Region required for scrolling-area mode");
+        return await captureScrollingArea(
+          targetTabId!,
+          region,
+          speed || "medium",
+          sendProgress
+        );
+
+      default:
+        throw new Error(`Unknown capture mode: ${mode}`);
     }
-  };
-
-  switch (mode) {
-    case "full-page":
-      return captureFullPage(targetTabId!, sendProgress);
-
-    case "visible-area":
-      return captureVisibleArea(targetTabId!, sendProgress);
-
-    case "selected-area":
-      if (!region) throw new Error("Region required for selected-area mode");
-      return captureSelectedArea(targetTabId!, region);
-
-    case "scrolling-area":
-      if (!region) throw new Error("Region required for scrolling-area mode");
-      return captureScrollingArea(
-        targetTabId!,
-        region,
-        speed || "medium",
-        sendProgress
-      );
-
-    default:
-      throw new Error(`Unknown capture mode: ${mode}`);
+  } finally {
+    isCaptureBusy = false;
   }
 }
 
@@ -707,6 +942,22 @@ async function initInteractiveMode(
         type: "START_SCROLLING_AREA_MODE",
         payload: { tabId },
       });
+    }
+
+    if (mode === "capture-element") {
+      await chrome.scripting.executeScript({
+        target: { tabId },
+        files: ["element-picker.js"],
+      });
+      await chrome.tabs.sendMessage(tabId, { type: "START_ELEMENT_PICKER_MODE", payload: { tabId } });
+    }
+
+    if (mode === "annotate-page") {
+      await chrome.scripting.executeScript({
+        target: { tabId },
+        files: ["live-annotate.js"],
+      });
+      await chrome.tabs.sendMessage(tabId, { type: "START_ANNOTATE_MODE" });
     }
 
     if (mode === "capture-text") {
@@ -813,10 +1064,7 @@ async function handleCaptureCompletionUI(
   }
   if (fromContentScript) {
     // showQuickCaptureToast() clears the in-page progress badge itself.
-    chrome.tabs.sendMessage(targetTabId, {
-      type: "QUICK_CAPTURE_TOAST",
-      payload: { dataUrl: payload.dataUrl },
-    }).catch(() => {});
+    await sendQuickToast(targetTabId, payload.dataUrl);
   } else {
     // Popup-triggered: the popup shows its own confirmation, but the fire-
     // and-forget CAPTURE_PROGRESS "done" message to the tab isn't a

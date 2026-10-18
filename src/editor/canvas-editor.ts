@@ -7,6 +7,8 @@ import Cropper from "cropperjs";
 import { canvasRGBA } from "stackblur-canvas";
 import { generatePDF } from "../export/pdf-generator";
 import { applyTheme, watchTheme } from "../utils/theme";
+import { addStepFromDataUrl } from "../utils/guide";
+import { findSensitive, hitBoxes, type OcrWord } from "../utils/sensitive";
 import { claimPendingRateNudge, markRatedYes, markDismissed } from "../utils/rate-nudge";
 
 applyTheme();
@@ -52,8 +54,13 @@ let stepCounter = 1;
 let drawStartX = 0, drawStartY = 0;
 let isDrawing = false;
 let tempShape: any = null;
-let undoStack: string[] = [];
-let redoStack: string[] = [];
+// A history step is the canvas JSON plus the view geometry it was made at.
+// Without the geometry, undoing a crop or a Beautify (both change the image's
+// size) restored the objects but left the canvas at the new size.
+interface ViewMeta { dispW: number; dispH: number; fitScale: number; imgNativeW: number; imgNativeH: number }
+interface HistoryStep { json: string; meta: ViewMeta }
+let undoStack: HistoryStep[] = [];
+let redoStack: HistoryStep[] = [];
 let backgroundImage: FabricImage | null = null;
 let fitScale = 1;
 let imgNativeW = 0, imgNativeH = 0;
@@ -156,7 +163,7 @@ async function init(): Promise<void> {
     if (url && url.startsWith("data:image/")) {
       await loadScreenshot(url);
     } else {
-      showToast("No image available — please capture first");
+      showToast("No image yet. Capture one first.");
     }
   } catch {
     showToast("Could not load image from service worker");
@@ -425,6 +432,81 @@ function setupDropdownMenus(): void {
       );
     });
   });
+
+  document.getElementById("smart-redact-btn")?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    blurMenu?.classList.remove("show");
+    void smartRedact();
+  });
+}
+
+// ─── Auto-redact: OCR the screenshot, box everything that looks sensitive ─────
+let smartRedactBusy = false;
+
+async function smartRedact(): Promise<void> {
+  if (!backgroundImage) { showToast("No image to scan"); return; }
+  if (smartRedactBusy) return;
+  smartRedactBusy = true;
+  showToast("Scanning this screenshot on your device…");
+  try {
+    // Work from the screenshot itself, scaled so text stays readable but the OCR
+    // engine isn't fed a huge bitmap; tall captures are read in overlapping slices.
+    const el = backgroundImage.getElement() as CanvasImageSource;
+    const scale = Math.min(1, 1800 / imgNativeW);
+    const W = Math.max(1, Math.round(imgNativeW * scale));
+    const H = Math.max(1, Math.round(imgNativeH * scale));
+    const SLICE = 2200, OVERLAP = 80, MAX_SLICES = 12;
+    const full = document.createElement("canvas");
+    full.width = W; full.height = H;
+    full.getContext("2d")!.drawImage(el, 0, 0, W, H);
+
+    const words: OcrWord[] = [];
+    let slices = 0;
+    for (let y = 0; y < H && slices < MAX_SLICES; y += SLICE - OVERLAP, slices++) {
+      const h = Math.min(SLICE, H - y);
+      const part = document.createElement("canvas");
+      part.width = W; part.height = h;
+      part.getContext("2d")!.drawImage(full, 0, y, W, h, 0, 0, W, h);
+      const resp: any = await chrome.runtime.sendMessage({ type: "OCR_IMAGE_WORDS", payload: { dataUrl: part.toDataURL("image/png") } });
+      if (resp?.error) { showToast(`Couldn't scan: ${resp.error}`); return; }
+      for (const w of (resp?.words || []) as OcrWord[]) {
+        words.push({ ...w, y0: w.y0 + y, y1: w.y1 + y, line: w.line + slices * 10000 });
+      }
+      if (y + h >= H) break;
+    }
+
+    const hits = findSensitive(words);
+    if (!hits.length) { showToast("No sensitive info found"); return; }
+
+    // Slices overlap, so the same match can be found twice — keep one box per place.
+    const boxes: ReturnType<typeof hitBoxes> = [];
+    for (const b of hitBoxes(words, hits, 4)) {
+      const dup = boxes.some((o) => {
+        const ix = Math.max(0, Math.min(o.x + o.w, b.x + b.w) - Math.max(o.x, b.x));
+        const iy = Math.max(0, Math.min(o.y + o.h, b.y + b.h) - Math.max(o.y, b.y));
+        return ix * iy > 0.5 * Math.min(o.w * o.h, b.w * b.h);
+      });
+      if (!dup) boxes.push(b);
+    }
+
+    const k = fitScale / scale; // OCR pixels → canvas units
+    for (const b of boxes) {
+      const box = new Rect({
+        left: b.x * k, top: b.y * k, width: b.w * k, height: b.h * k,
+        fill: "#000000", selectable: false, evented: false, originX: "left", originY: "top",
+      });
+      applyCleanShotStyle(box);
+      canvas.add(box);
+      box.setCoords();
+    }
+    canvas.renderAll();
+    saveState();
+    showToast(`Redacted ${boxes.length} item${boxes.length === 1 ? "" : "s"}. Check each box. Undo with ${/Mac/i.test(navigator.platform) ? "⌘" : "Ctrl+"}Z.`);
+  } catch (e: any) {
+    showToast(e?.message ? `Auto-redact failed: ${e.message}` : "Auto-redact failed");
+  } finally {
+    smartRedactBusy = false;
+  }
 }
 
 function applyCleanShotStyle(obj: any): void {
@@ -1255,7 +1337,7 @@ async function finaliseBlur(placeholder: any): Promise<void> {
     console.error("Blur failed:", err);
     canvas.remove(placeholder);
     canvas.renderAll();
-    showToast("Blur failed — try again");
+    showToast("Blur failed. Try again.");
   }
 }
 
@@ -1329,18 +1411,37 @@ function closeCropModal(andSelectTool = true): void {
 }
 
 function applyCropModal(): void {
-  if (!cropperInstance) return;
+  if (!cropperInstance || !backgroundImage) return;
   const data = cropperInstance.getData(true);
   if (!data.width || !data.height || data.width < 4 || data.height < 4) {
     document.getElementById("cropSizeDisplay")!.textContent = "Draw a selection first";
     return;
   }
-  const croppedCanvas = cropperInstance.getCroppedCanvas({
-    imageSmoothingEnabled: true,
-    imageSmoothingQuality: "high",
-  });
-  if (!croppedCanvas) { showToast("Crop failed — try again"); return; }
-  const resultDataUrl = croppedCanvas.toDataURL("image/png");
+
+  // The preview is canvas.toDataURL at multiplier m, so its pixels map back to
+  // the screenshot's native pixels by 1 / (fitScale * m). Cutting the crop from
+  // the background image itself (not the flattened preview) keeps annotations
+  // as live, editable objects instead of baking them into the pixels.
+  const m = Math.max(1, 1 / fitScale);
+  const f = 1 / (fitScale * m);
+  const cropX = Math.min(imgNativeW - 1, Math.max(0, Math.round(data.x * f)));
+  const cropY = Math.min(imgNativeH - 1, Math.max(0, Math.round(data.y * f)));
+  const cropW = Math.max(1, Math.min(imgNativeW - cropX, Math.round(data.width * f)));
+  const cropH = Math.max(1, Math.min(imgNativeH - cropY, Math.round(data.height * f)));
+
+  const out = document.createElement("canvas");
+  out.width = cropW;
+  out.height = cropH;
+  const octx = out.getContext("2d");
+  if (!octx) { showToast("Crop failed. Try again."); return; }
+  octx.imageSmoothingEnabled = true;
+  octx.imageSmoothingQuality = "high";
+  octx.drawImage(backgroundImage.getElement() as CanvasImageSource, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+  const resultDataUrl = out.toDataURL("image/png");
+
+  const annotations = canvas.getObjects().filter((o) => o !== backgroundImage);
+  const oldFit = fitScale;
+  canvas.discardActiveObject();
 
   if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
   const modal = document.getElementById("cropModal")!;
@@ -1348,11 +1449,25 @@ function applyCropModal(): void {
   modal.style.display = "none";
   img.src = "";
 
-  loadScreenshot(resultDataUrl, true).then(() => {
+  loadScreenshot(resultDataUrl, false).then(() => {
+    // Same screenshot-pixel position, new origin and (possibly) new display scale.
+    const k = fitScale / oldFit;
+    for (const o of annotations) {
+      o.set({
+        left: ((o.left ?? 0) / oldFit - cropX) * fitScale,
+        top: ((o.top ?? 0) / oldFit - cropY) * fitScale,
+        scaleX: (o.scaleX ?? 1) * k,
+        scaleY: (o.scaleY ?? 1) * k,
+      });
+      o.setCoords();
+      const r = o.getBoundingRect();
+      if (r.left > dispW || r.top > dispH || r.left + r.width < 0 || r.top + r.height < 0) canvas.remove(o);
+    }
+    canvas.renderAll();
     isCropped = true;
     setTool("select");
     saveState();
-    showToast("Cropped successfully");
+    showToast(annotations.length ? "Cropped — annotations kept" : "Cropped");
   });
 }
 
@@ -1684,7 +1799,7 @@ function setupExportButtons(): void {
       const blob = await exportToBlob();
       await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
       showToast("Copied to clipboard");
-    } catch { showToast("Copy failed — try Save PNG instead"); }
+    } catch { showToast("Copy failed. Try Save PNG."); }
   });
 
   document.getElementById("save-btn")!.addEventListener("click", async () => {
@@ -1708,6 +1823,37 @@ function setupExportButtons(): void {
       editorDirty = false;
       showToast("PDF saved");
     } catch { showToast("PDF failed"); }
+  });
+
+  document.getElementById("guide-btn")?.addEventListener("click", async () => {
+    try {
+      const blob = await exportToBlob();
+      const dataUrl = await blobToDataUrl(blob);
+      const res = await addStepFromDataUrl(dataUrl);
+      if (res.ok) {
+        showToast(`Added as step ${res.count}`);
+        editorDirty = false;
+      } else {
+        showToast(res.error);
+      }
+    } catch { showToast("Couldn't add to the guide"); }
+  });
+
+  document.getElementById("pin-btn")?.addEventListener("click", async () => {
+    try {
+      const blob = await exportToBlob();
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(String(r.result));
+        r.onerror = () => reject(r.error);
+        r.readAsDataURL(blob);
+      });
+      const resp: any = await chrome.runtime.sendMessage({
+        type: "PIN_IMAGE",
+        payload: { dataUrl, width: imgNativeW, height: imgNativeH },
+      });
+      showToast(resp?.ok ? "Pinned to the page" : resp?.error || "Couldn't pin");
+    } catch { showToast("Couldn't pin"); }
   });
 
   document.getElementById("copy-selected-btn")?.addEventListener("click", async () => {
@@ -1961,7 +2107,10 @@ function adjustZoom(delta: number): void {
 let editorDirty = false;
 
 function saveState(): void {
-  undoStack.push(JSON.stringify(canvas.toJSON()));
+  undoStack.push({
+    json: JSON.stringify(canvas.toJSON()),
+    meta: { dispW, dispH, fitScale, imgNativeW, imgNativeH },
+  });
   redoStack = [];
   if (undoStack.length > 50) undoStack.shift();
   editorDirty = true;
@@ -1989,10 +2138,20 @@ function restoreObjectInteractivity(): void {
   });
 }
 
-function undo(): void {
-  if (undoStack.length <= 1) return;
-  redoStack.push(undoStack.pop()!);
-  canvas.loadFromJSON(undoStack[undoStack.length - 1]).then(() => {
+function applyViewMeta(m: ViewMeta): void {
+  imgNativeW = m.imgNativeW; imgNativeH = m.imgNativeH;
+  fitScale = m.fitScale; dispW = m.dispW; dispH = m.dispH;
+  canvas.setDimensions({ width: dispW, height: dispH });
+  dimensionsEl.textContent = `${imgNativeW} × ${imgNativeH} px`;
+  applyContainerZoom(1);
+  zoomEl.textContent = "100%";
+  const hdrZoomVal = document.getElementById("hdr-zoom-val");
+  if (hdrZoomVal) hdrZoomVal.textContent = "100%";
+}
+
+function restoreStep(step: HistoryStep): void {
+  canvas.loadFromJSON(step.json).then(() => {
+    applyViewMeta(step.meta);
     backgroundImage = findBackgroundImage();
     if (backgroundImage) backgroundImage.set({ selectable: false, evented: false });
     restoreObjectInteractivity();
@@ -2000,16 +2159,17 @@ function undo(): void {
   });
 }
 
+function undo(): void {
+  if (undoStack.length <= 1) return;
+  redoStack.push(undoStack.pop()!);
+  restoreStep(undoStack[undoStack.length - 1]);
+}
+
 function redo(): void {
   if (!redoStack.length) return;
   const next = redoStack.pop()!;
   undoStack.push(next);
-  canvas.loadFromJSON(next).then(() => {
-    backgroundImage = findBackgroundImage();
-    if (backgroundImage) backgroundImage.set({ selectable: false, evented: false });
-    restoreObjectInteractivity();
-    canvas.renderAll();
-  });
+  restoreStep(next);
 }
 
 function deleteSelected(): void {
@@ -2137,6 +2297,277 @@ let beautifyActive = false;
 let originalScreenshotUrl: string | null = null;
 let collageImages: string[] = [];
 let collageLayout: "row" | "column" = "row";
+let customBgImg: HTMLImageElement | null = null;
+let bfAlign: [number, number] = [0.5, 0.5];
+
+// Built-in wallpapers: layered radial blobs over a base colour. Drawn in code, so
+// they cost no download, work offline and stay sharp at any export size.
+interface MeshDef { name: string; base: string; blobs: [number, number, number, string][] }
+const MESH_WALLPAPERS: Record<string, MeshDef> = {
+  aurora:   { name: "Aurora",   base: "#0b1020", blobs: [[0.15, 0.2, 0.7, "#1667F2"], [0.85, 0.15, 0.6, "#7C3AED"], [0.5, 0.95, 0.7, "#06B6D4"]] },
+  sunset:   { name: "Sunset",   base: "#2b1055", blobs: [[0.1, 0.9, 0.8, "#FF6B6B"], [0.9, 0.2, 0.7, "#FFB347"], [0.5, 0.5, 0.5, "#C026D3"]] },
+  ocean:    { name: "Ocean",    base: "#03133a", blobs: [[0.2, 0.1, 0.8, "#0EA5E9"], [0.85, 0.85, 0.7, "#1667F2"], [0.1, 0.9, 0.5, "#14B8A6"]] },
+  lavender: { name: "Lavender", base: "#ede9fe", blobs: [[0.1, 0.1, 0.7, "#C4B5FD"], [0.9, 0.3, 0.6, "#F0ABFC"], [0.4, 1, 0.7, "#A5B4FC"]] },
+  mint:     { name: "Mint",     base: "#ecfdf5", blobs: [[0.1, 0.8, 0.7, "#6EE7B7"], [0.9, 0.1, 0.6, "#67E8F9"], [0.6, 0.6, 0.5, "#BEF264"]] },
+  ember:    { name: "Ember",    base: "#1c0a0a", blobs: [[0.9, 0.9, 0.8, "#EF4444"], [0.1, 0.2, 0.6, "#F97316"], [0.5, 0.6, 0.45, "#7F1D1D"]] },
+  midnight: { name: "Midnight", base: "#0f172a", blobs: [[0.2, 0.2, 0.6, "#334155"], [0.8, 0.8, 0.7, "#1E3A8A"], [0.9, 0.1, 0.4, "#475569"]] },
+  rose:     { name: "Rose",     base: "#fff1f2", blobs: [[0.1, 0.2, 0.7, "#FDA4AF"], [0.9, 0.8, 0.7, "#FBCFE8"], [0.5, 0.5, 0.5, "#FECDD3"]] },
+};
+
+function hexToRgba(hex: string, a: number): string {
+  const h = hex.replace("#", "");
+  const n = parseInt(h.length === 3 ? h.split("").map((c) => c + c).join("") : h, 16);
+  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+}
+
+function meshCss(def: MeshDef): string {
+  return def.blobs
+    .map(([x, y, r, c]) => `radial-gradient(circle at ${x * 100}% ${y * 100}%, ${c} 0%, transparent ${Math.round(r * 100)}%)`)
+    .concat(def.base)
+    .join(", ");
+}
+
+function paintMesh(ctx: CanvasRenderingContext2D, def: MeshDef, w: number, h: number): void {
+  ctx.fillStyle = def.base;
+  ctx.fillRect(0, 0, w, h);
+  const span = Math.max(w, h);
+  for (const [x, y, r, c] of def.blobs) {
+    const g = ctx.createRadialGradient(x * w, y * h, 0, x * w, y * h, r * span);
+    g.addColorStop(0, hexToRgba(c, 1));
+    g.addColorStop(1, hexToRgba(c, 0));
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+  }
+}
+
+function paintCoverImage(ctx: CanvasRenderingContext2D, img: HTMLImageElement, w: number, h: number): void {
+  const scale = Math.max(w / img.naturalWidth, h / img.naturalHeight);
+  const dw = img.naturalWidth * scale;
+  const dh = img.naturalHeight * scale;
+  ctx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
+}
+
+// ── 3D mockup: perspective by mapping the shot onto a projected mesh ──
+interface PerspParams { rx: number; ry: number; rz: number; zoom: number; panX: number; panY: number }
+interface Pt { x: number; y: number }
+
+function perspActive(p: PerspParams): boolean {
+  return p.rx !== 0 || p.ry !== 0 || p.rz !== 0 || p.zoom !== 100 || p.panX !== 0 || p.panY !== 0;
+}
+
+function projectPoint(x: number, y: number, p: PerspParams, camD: number): Pt {
+  const ax = (p.rx * Math.PI) / 180, ay = (p.ry * Math.PI) / 180, az = (p.rz * Math.PI) / 180;
+  const y1 = y * Math.cos(ax), z1 = y * Math.sin(ax);
+  const x2 = x * Math.cos(ay) + z1 * Math.sin(ay);
+  const z2 = -x * Math.sin(ay) + z1 * Math.cos(ay);
+  const x3 = x2 * Math.cos(az) - y1 * Math.sin(az);
+  const y3 = x2 * Math.sin(az) + y1 * Math.cos(az);
+  const k = camD / (camD - z2);
+  return { x: x3 * k, y: y3 * k };
+}
+
+// Canvas 2D only does affine transforms, so a perspective quad is drawn as a
+// grid of small triangles, each one mapped affinely from the flat texture.
+function drawTexTri(ctx: CanvasRenderingContext2D, tex: CanvasImageSource, s: Pt[], d: Pt[]): void {
+  const [s0, s1, s2] = s, [d0, d1, d2] = d;
+  const u1x = s1.x - s0.x, u1y = s1.y - s0.y, u2x = s2.x - s0.x, u2y = s2.y - s0.y;
+  const det = u1x * u2y - u2x * u1y;
+  if (Math.abs(det) < 1e-9) return;
+  const v1x = d1.x - d0.x, v1y = d1.y - d0.y, v2x = d2.x - d0.x, v2y = d2.y - d0.y;
+  const a = (v1x * u2y - v2x * u1y) / det;
+  const c = (u1x * v2x - u2x * v1x) / det;
+  const b = (v1y * u2y - v2y * u1y) / det;
+  const dd = (u1x * v2y - u2x * v1y) / det;
+  const e = d0.x - a * s0.x - c * s0.y;
+  const f = d0.y - b * s0.x - dd * s0.y;
+  const mx = (d0.x + d1.x + d2.x) / 3, my = (d0.y + d1.y + d2.y) / 3;
+  ctx.save();
+  ctx.beginPath();
+  [d0, d1, d2].forEach((q, i) => {
+    const dx = q.x - mx, dy = q.y - my, len = Math.hypot(dx, dy) || 1;
+    const px = q.x + (dx / len) * 1.2, py = q.y + (dy / len) * 1.2; // grow so neighbouring cells overlap and leave no seams
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  });
+  ctx.closePath();
+  ctx.clip();
+  ctx.transform(a, b, c, dd, e, f);
+  ctx.drawImage(tex, 0, 0);
+  ctx.restore();
+}
+
+function drawPerspective(
+  ctx: CanvasRenderingContext2D, tex: HTMLCanvasElement, cx: number, cy: number,
+  p: PerspParams, availW: number, availH: number, shadow: { blur: number; opacity: number }
+): void {
+  const tw = tex.width, th = tex.height;
+  const camD = Math.max(tw, th) * 2.4;
+  const N = 24;
+  const grid: Pt[][] = [];
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  for (let j = 0; j <= N; j++) {
+    const row: Pt[] = [];
+    for (let i = 0; i <= N; i++) {
+      const q = projectPoint((i / N - 0.5) * tw, (j / N - 0.5) * th, p, camD);
+      row.push(q);
+      minX = Math.min(minX, q.x); maxX = Math.max(maxX, q.x);
+      minY = Math.min(minY, q.y); maxY = Math.max(maxY, q.y);
+    }
+    grid.push(row);
+  }
+  // Never grow past the flat size on its own; the Zoom slider does the zooming.
+  const fit = Math.min(1, availW / (maxX - minX), availH / (maxY - minY));
+  const sc = fit * (p.zoom / 100);
+  const ox = cx + (p.panX / 100) * availW - ((minX + maxX) / 2) * sc;
+  const oy = cy + (p.panY / 100) * availH - ((minY + maxY) / 2) * sc;
+  const D = grid.map((row) => row.map((q) => ({ x: ox + q.x * sc, y: oy + q.y * sc })));
+
+  if (shadow.blur > 0 && shadow.opacity > 0) {
+    // Draw the silhouette far off-canvas and shift only its shadow back, so the
+    // black fill itself never shows through the screenshot's transparent rounded corners.
+    const FAR = 20000;
+    ctx.save();
+    ctx.shadowColor = `rgba(0,0,0,${shadow.opacity / 100})`;
+    ctx.shadowBlur = shadow.blur;
+    ctx.shadowOffsetX = FAR;
+    ctx.shadowOffsetY = Math.round(shadow.blur * 0.3);
+    ctx.translate(-FAR, 0);
+    ctx.fillStyle = "#000";
+    ctx.beginPath();
+    const edge: Pt[] = [];
+    for (let i = 0; i <= N; i++) edge.push(D[0][i]);
+    for (let j = 1; j <= N; j++) edge.push(D[j][N]);
+    for (let i = N - 1; i >= 0; i--) edge.push(D[N][i]);
+    for (let j = N - 1; j > 0; j--) edge.push(D[j][0]);
+    edge.forEach((q, i) => (i === 0 ? ctx.moveTo(q.x, q.y) : ctx.lineTo(q.x, q.y)));
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  ctx.save();
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+  for (let j = 0; j < N; j++) {
+    for (let i = 0; i < N; i++) {
+      const s00 = { x: (i / N) * tw, y: (j / N) * th }, s10 = { x: ((i + 1) / N) * tw, y: (j / N) * th };
+      const s01 = { x: (i / N) * tw, y: ((j + 1) / N) * th }, s11 = { x: ((i + 1) / N) * tw, y: ((j + 1) / N) * th };
+      drawTexTri(ctx, tex, [s00, s10, s01], [D[j][i], D[j][i + 1], D[j + 1][i]]);
+      drawTexTri(ctx, tex, [s10, s11, s01], [D[j][i + 1], D[j + 1][i + 1], D[j + 1][i]]);
+    }
+  }
+  ctx.restore();
+}
+
+// ── Progressive blur: stacked blur layers, each revealed through a gradient mask ──
+interface ProgBlur { mode: "off" | "linear" | "radial"; dir: "top" | "bottom" | "left" | "right"; strength: number; scope: "inside" | "scene" }
+
+function padReplicate(src: HTMLCanvasElement, m: number): HTMLCanvasElement {
+  const w = src.width, h = src.height;
+  const out = document.createElement("canvas");
+  out.width = w + m * 2;
+  out.height = h + m * 2;
+  const c = out.getContext("2d")!;
+  c.drawImage(src, m, m);
+  c.drawImage(src, 0, 0, w, 1, m, 0, w, m);
+  c.drawImage(src, 0, h - 1, w, 1, m, h + m, w, m);
+  c.drawImage(src, 0, 0, 1, h, 0, m, m, h);
+  c.drawImage(src, w - 1, 0, 1, h, w + m, m, m, h);
+  c.drawImage(src, 0, 0, 1, 1, 0, 0, m, m);
+  c.drawImage(src, w - 1, 0, 1, 1, w + m, 0, m, m);
+  c.drawImage(src, 0, h - 1, 1, 1, 0, h + m, m, m);
+  c.drawImage(src, w - 1, h - 1, 1, 1, w + m, h + m, m, m);
+  return out;
+}
+
+function applyProgressiveBlur(
+  oc: HTMLCanvasElement, pb: ProgBlur, bounds: { x: number; y: number; w: number; h: number; r: number }
+): void {
+  if (pb.mode === "off" || pb.strength <= 0) return;
+  const W = oc.width, H = oc.height;
+  const ctx = oc.getContext("2d")!;
+  const base = document.createElement("canvas");
+  base.width = W; base.height = H;
+  base.getContext("2d")!.drawImage(oc, 0, 0);
+
+  const B = pb.scope === "inside" ? bounds : { x: 0, y: 0, w: W, h: H, r: 0 };
+  const steps = 4;
+  const sizeScale = Math.max(1, Math.max(W, H) / 1000);
+
+  for (let i = 1; i <= steps; i++) {
+    const radius = pb.strength * (i / steps) * sizeScale;
+    const pad = Math.ceil(radius * 3);
+    const layer = document.createElement("canvas");
+    layer.width = W; layer.height = H;
+    const lc = layer.getContext("2d")!;
+    lc.filter = `blur(${radius}px)`;
+    if (pb.scope === "inside") {
+      // sample only the screenshot itself, so the wallpaper can't bleed into its edges
+      const bx = Math.max(0, Math.round(B.x)), by = Math.max(0, Math.round(B.y));
+      const bw = Math.min(W - bx, Math.round(B.w)), bh = Math.min(H - by, Math.round(B.h));
+      const crop = document.createElement("canvas");
+      crop.width = bw; crop.height = bh;
+      crop.getContext("2d")!.drawImage(base, bx, by, bw, bh, 0, 0, bw, bh);
+      lc.drawImage(padReplicate(crop, pad), bx - pad, by - pad);
+    } else {
+      lc.drawImage(padReplicate(base, pad), -pad, -pad);
+    }
+    lc.filter = "none";
+
+    // each deeper layer starts a little later and ramps over the same distance
+    const start = 0.15 + ((i - 1) / steps) * 0.55;
+    const end = Math.min(1, start + 0.3);
+    let grad: CanvasGradient;
+    if (pb.mode === "radial") {
+      const mcx = B.x + B.w / 2, mcy = B.y + B.h / 2, R = Math.hypot(B.w, B.h) / 2;
+      grad = lc.createRadialGradient(mcx, mcy, 0, mcx, mcy, R);
+    } else if (pb.dir === "bottom") {
+      grad = lc.createLinearGradient(0, B.y, 0, B.y + B.h);
+    } else if (pb.dir === "top") {
+      grad = lc.createLinearGradient(0, B.y + B.h, 0, B.y);
+    } else if (pb.dir === "right") {
+      grad = lc.createLinearGradient(B.x, 0, B.x + B.w, 0);
+    } else {
+      grad = lc.createLinearGradient(B.x + B.w, 0, B.x, 0);
+    }
+    grad.addColorStop(0, "rgba(0,0,0,0)");
+    grad.addColorStop(start, "rgba(0,0,0,0)");
+    grad.addColorStop(end, "rgba(0,0,0,1)");
+    grad.addColorStop(1, "rgba(0,0,0,1)");
+    lc.globalCompositeOperation = "destination-in";
+    lc.fillStyle = grad;
+    lc.fillRect(0, 0, W, H);
+
+    ctx.save();
+    if (pb.scope === "inside") {
+      if (B.r > 0) roundedRect(ctx, B.x, B.y, B.w, B.h, B.r); else { ctx.beginPath(); ctx.rect(B.x, B.y, B.w, B.h); }
+      ctx.clip();
+    }
+    ctx.drawImage(layer, 0, 0);
+    ctx.restore();
+  }
+}
+
+function paintWatermark(
+  ctx: CanvasRenderingContext2D, outW: number, outH: number,
+  wm: { text: string; size: number; opacity: number; pos: string; color: string }
+): void {
+  if (!wm.text) return;
+  const px = Math.round(wm.size * Math.max(1, outW / 900));
+  const margin = Math.round(px * 1.1);
+  ctx.save();
+  ctx.font = `600 ${px}px Archivo, -apple-system, 'Segoe UI', sans-serif`;
+  ctx.globalAlpha = wm.opacity / 100;
+  ctx.fillStyle = wm.color;
+  ctx.shadowColor = "rgba(0,0,0,.35)";
+  ctx.shadowBlur = Math.round(px * 0.25);
+  const v = wm.pos[0], hz = wm.pos[1];
+  ctx.textAlign = hz === "l" ? "left" : hz === "r" ? "right" : "center";
+  ctx.textBaseline = v === "t" ? "top" : v === "b" ? "bottom" : "middle";
+  const x = hz === "l" ? margin : hz === "r" ? outW - margin : outW / 2;
+  const y = v === "t" ? margin : v === "b" ? outH - margin : outH / 2;
+  ctx.fillText(wm.text, x, y);
+  ctx.restore();
+}
 
 function setupBeautifier(): void {
   const panel = document.getElementById("beautifyPanel");
@@ -2159,6 +2590,19 @@ function setupBeautifier(): void {
       }
     }
   });
+
+  // Built-in wallpapers (generated in code) join the same swatch system
+  const meshGrid = document.getElementById("bf-mesh-grid");
+  if (meshGrid) {
+    for (const [id, def] of Object.entries(MESH_WALLPAPERS)) {
+      const sw = document.createElement("div");
+      sw.className = "bf-bg-swatch";
+      sw.dataset.bg = `mesh:${id}`;
+      sw.style.background = meshCss(def);
+      sw.innerHTML = `<span class="tip">${def.name}</span>`;
+      meshGrid.appendChild(sw);
+    }
+  }
 
   // Background swatches — click to immediately swap background on the original screenshot
   panel.querySelectorAll<HTMLElement>(".bf-bg-swatch").forEach((sw) => {
@@ -2195,6 +2639,16 @@ function setupBeautifier(): void {
     ["bf-shadow", "bf-shadow-val", "px"],
     ["bf-shadow-opacity", "bf-shadow-opacity-val", "%"],
     ["bf-noise", "bf-noise-val", "%"],
+    ["bf-border", "bf-border-val", "px"],
+    ["bf-wm-size", "bf-wm-size-val", "px"],
+    ["bf-wm-opacity", "bf-wm-opacity-val", "%"],
+    ["bf-rx", "bf-rx-val", "°"],
+    ["bf-ry", "bf-ry-val", "°"],
+    ["bf-rz", "bf-rz-val", "°"],
+    ["bf-zoom", "bf-zoom-val", "%"],
+    ["bf-panx", "bf-panx-val", "%"],
+    ["bf-pany", "bf-pany-val", "%"],
+    ["bf-pb-strength", "bf-pb-strength-val", "px"],
   ];
   for (const [id, valId, suffix] of sliders) {
     const sl = document.getElementById(id) as HTMLInputElement;
@@ -2211,6 +2665,83 @@ function setupBeautifier(): void {
       });
     }
   }
+
+  // Text, colour and select inputs re-render the same way the sliders do
+  for (const id of ["bf-border-color", "bf-wm-text", "bf-wm-color", "bf-wm-pos", "bf-pb-mode", "bf-pb-dir", "bf-pb-scope"]) {
+    const el = document.getElementById(id);
+    el?.addEventListener("input", () => {
+      if (!originalScreenshotUrl) return;
+      clearTimeout(beautifySliderDebounce);
+      beautifySliderDebounce = setTimeout(() => applyBeautify(false), 200);
+    });
+  }
+
+  // 3D mockup quick presets
+  panel.querySelectorAll<HTMLElement>("#bf-persp-presets [data-p]").forEach((b) => {
+    b.addEventListener("click", () => {
+      const [rx, ry, rz] = (b.dataset.p || "0,0,0").split(",").map(Number);
+      const set = (id: string, valId: string, v: number, suffix: string) => {
+        const el = document.getElementById(id) as HTMLInputElement | null;
+        if (el) el.value = String(v);
+        const out = document.getElementById(valId);
+        if (out) out.textContent = v + suffix;
+      };
+      set("bf-rx", "bf-rx-val", rx, "°");
+      set("bf-ry", "bf-ry-val", ry, "°");
+      set("bf-rz", "bf-rz-val", rz, "°");
+      set("bf-zoom", "bf-zoom-val", 100, "%");
+      set("bf-panx", "bf-panx-val", 0, "%");
+      set("bf-pany", "bf-pany-val", 0, "%");
+      if (originalScreenshotUrl) applyBeautify(false);
+    });
+  });
+
+  // Nine-point alignment
+  panel.querySelectorAll<HTMLElement>(".bf-align-btn").forEach((b) => {
+    b.addEventListener("click", () => {
+      panel.querySelectorAll(".bf-align-btn").forEach((x) => x.classList.remove("active"));
+      b.classList.add("active");
+      bfAlign = [parseFloat(b.dataset.ax || "0.5"), parseFloat(b.dataset.ay || "0.5")];
+      if (originalScreenshotUrl) applyBeautify(false);
+    });
+  });
+
+  // Your own background image
+  const bgImgBtn = document.getElementById("bf-bg-image-btn");
+  const bgImgInput = document.getElementById("bf-bg-image-input") as HTMLInputElement | null;
+  bgImgBtn?.addEventListener("click", () => bgImgInput?.click());
+  bgImgInput?.addEventListener("change", async () => {
+    const file = bgImgInput.files?.[0];
+    bgImgInput.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) { showToast("Choose an image file"); return; }
+    if (file.size > 20 * 1024 * 1024) { showToast("That image is over 20 MB. Pick a smaller one."); return; }
+    const url = await new Promise<string>((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(String(r.result));
+      r.onerror = () => reject(r.error);
+      r.readAsDataURL(file);
+    }).catch(() => "");
+    if (!url) { showToast("Couldn't read that image"); return; }
+    customBgImg = await loadImageElement(url);
+    let sw = panel.querySelector<HTMLElement>('.bf-bg-swatch[data-bg="custom-image"]');
+    if (!sw) {
+      sw = document.createElement("div");
+      sw.className = "bf-bg-swatch";
+      sw.dataset.bg = "custom-image";
+      sw.innerHTML = '<span class="tip">Your image</span>';
+      sw.addEventListener("click", () => {
+        panel.querySelectorAll(".bf-bg-swatch").forEach((x) => x.classList.remove("active"));
+        sw!.classList.add("active");
+        applyBeautify(false);
+      });
+      document.getElementById("bf-mesh-grid")?.appendChild(sw);
+    }
+    sw.style.background = `center / cover url("${url}")`;
+    panel.querySelectorAll(".bf-bg-swatch").forEach((x) => x.classList.remove("active"));
+    sw.classList.add("active");
+    if (originalScreenshotUrl || backgroundImage) applyBeautify(false);
+  });
 
   // Apply
   document.getElementById("bf-apply-btn")?.addEventListener("click", () => applyBeautify(true));
@@ -2360,6 +2891,13 @@ interface BeautifyPreset {
   shadowOpacity: number;
   noise: number;
   frame: string;
+  // added in v1.1.3 — optional so presets saved by older versions still load
+  border?: number;
+  borderColor?: string;
+  align?: [number, number];
+  wm?: { text: string; size: number; opacity: number; pos: string; color: string };
+  persp?: PerspParams;
+  pb?: ProgBlur;
 }
 
 function readCurrentBeautifySettings(): Omit<BeautifyPreset, "name"> {
@@ -2372,6 +2910,30 @@ function readCurrentBeautifySettings(): Omit<BeautifyPreset, "name"> {
     shadowOpacity: parseInt((document.getElementById("bf-shadow-opacity") as HTMLInputElement).value) || 0,
     noise: parseInt((document.getElementById("bf-noise") as HTMLInputElement).value) || 0,
     frame: document.querySelector<HTMLElement>(".bf-frame-btn.active")?.dataset.frame || "none",
+    border: parseInt((document.getElementById("bf-border") as HTMLInputElement).value) || 0,
+    borderColor: (document.getElementById("bf-border-color") as HTMLInputElement).value,
+    align: [...bfAlign] as [number, number],
+    wm: {
+      text: (document.getElementById("bf-wm-text") as HTMLInputElement).value.trim(),
+      size: parseInt((document.getElementById("bf-wm-size") as HTMLInputElement).value) || 20,
+      opacity: parseInt((document.getElementById("bf-wm-opacity") as HTMLInputElement).value) || 60,
+      pos: (document.getElementById("bf-wm-pos") as HTMLSelectElement).value,
+      color: (document.getElementById("bf-wm-color") as HTMLInputElement).value,
+    },
+    persp: {
+      rx: parseInt((document.getElementById("bf-rx") as HTMLInputElement).value) || 0,
+      ry: parseInt((document.getElementById("bf-ry") as HTMLInputElement).value) || 0,
+      rz: parseInt((document.getElementById("bf-rz") as HTMLInputElement).value) || 0,
+      zoom: parseInt((document.getElementById("bf-zoom") as HTMLInputElement).value) || 100,
+      panX: parseInt((document.getElementById("bf-panx") as HTMLInputElement).value) || 0,
+      panY: parseInt((document.getElementById("bf-pany") as HTMLInputElement).value) || 0,
+    },
+    pb: {
+      mode: (document.getElementById("bf-pb-mode") as HTMLSelectElement).value as ProgBlur["mode"],
+      dir: (document.getElementById("bf-pb-dir") as HTMLSelectElement).value as ProgBlur["dir"],
+      strength: parseInt((document.getElementById("bf-pb-strength") as HTMLInputElement).value) || 20,
+      scope: (document.getElementById("bf-pb-scope") as HTMLSelectElement).value as ProgBlur["scope"],
+    },
   };
 }
 
@@ -2400,6 +2962,35 @@ function applyBeautifyPreset(p: BeautifyPreset): void {
   setSlider("bf-shadow", "bf-shadow-val", p.shadow, "px");
   setSlider("bf-shadow-opacity", "bf-shadow-opacity-val", p.shadowOpacity, "%");
   setSlider("bf-noise", "bf-noise-val", p.noise, "%");
+  setSlider("bf-border", "bf-border-val", p.border ?? 0, "px");
+  (document.getElementById("bf-border-color") as HTMLInputElement).value = p.borderColor || "#ffffff";
+
+  const [ax, ay] = p.align || [0.5, 0.5];
+  bfAlign = [ax, ay];
+  panel.querySelectorAll<HTMLElement>(".bf-align-btn").forEach((b) =>
+    b.classList.toggle("active", parseFloat(b.dataset.ax || "0.5") === ax && parseFloat(b.dataset.ay || "0.5") === ay));
+
+  const wm = p.wm || { text: "", size: 20, opacity: 60, pos: "br", color: "#ffffff" };
+  (document.getElementById("bf-wm-text") as HTMLInputElement).value = wm.text;
+  (document.getElementById("bf-wm-color") as HTMLInputElement).value = wm.color;
+  (document.getElementById("bf-wm-pos") as HTMLSelectElement).value = wm.pos;
+  setSlider("bf-wm-size", "bf-wm-size-val", wm.size, "px");
+  setSlider("bf-wm-opacity", "bf-wm-opacity-val", wm.opacity, "%");
+
+  const pp = p.persp || { rx: 0, ry: 0, rz: 0, zoom: 100, panX: 0, panY: 0 };
+  setSlider("bf-rx", "bf-rx-val", pp.rx, "°");
+  setSlider("bf-ry", "bf-ry-val", pp.ry, "°");
+  setSlider("bf-rz", "bf-rz-val", pp.rz, "°");
+  setSlider("bf-zoom", "bf-zoom-val", pp.zoom, "%");
+  setSlider("bf-panx", "bf-panx-val", pp.panX, "%");
+  setSlider("bf-pany", "bf-pany-val", pp.panY, "%");
+  const pbp = p.pb || { mode: "off", dir: "bottom", strength: 20, scope: "inside" };
+  (document.getElementById("bf-pb-mode") as HTMLSelectElement).value = pbp.mode;
+  (document.getElementById("bf-pb-dir") as HTMLSelectElement).value = pbp.dir;
+  (document.getElementById("bf-pb-scope") as HTMLSelectElement).value = pbp.scope;
+  setSlider("bf-pb-strength", "bf-pb-strength-val", pbp.strength, "px");
+
+  if (p.bg === "custom-image" && !customBgImg) showToast("This preset used a custom image. Choose one with “+ Your image”.");
 
   applyBeautify(false);
 }
@@ -2450,6 +3041,102 @@ function setupBeautifyPresets(): void {
     nameInput.value = "";
     showToast(`Saved preset "${name}"`);
   });
+
+  // ── Share presets as files ──
+  const PRESET_FORMAT = "gofully-beautify-presets";
+  const clampNum = (v: unknown, min: number, max: number, dflt: number): number => {
+    const n = typeof v === "number" && Number.isFinite(v) ? v : dflt;
+    return Math.min(max, Math.max(min, Math.round(n)));
+  };
+  const hexOr = (v: unknown, dflt: string): string => (typeof v === "string" && /^#[0-9a-fA-F]{6}$/.test(v) ? v : dflt);
+
+  // Imported files are untrusted: rebuild each preset from known fields only,
+  // clamped to the ranges the sliders allow, so nothing else can ride along.
+  function sanitizePreset(raw: any): BeautifyPreset | null {
+    if (!raw || typeof raw !== "object" || typeof raw.name !== "string") return null;
+    const name = raw.name.trim().slice(0, 30);
+    if (!name) return null;
+    const bg = typeof raw.bg === "string" && raw.bg.length <= 200 ? raw.bg : "none";
+    const frames = ["none", "macos", "browser", "windows", "phone"];
+    const wmIn = raw.wm && typeof raw.wm === "object" ? raw.wm : {};
+    const pIn = raw.persp && typeof raw.persp === "object" ? raw.persp : {};
+    const pbIn = raw.pb && typeof raw.pb === "object" ? raw.pb : {};
+    const positions = ["tl", "tc", "tr", "ml", "mc", "mr", "bl", "bc", "br"];
+    const alignOk = Array.isArray(raw.align) && raw.align.length === 2 && raw.align.every((n: unknown) => n === 0 || n === 0.5 || n === 1);
+    return {
+      name, bg,
+      padding: clampNum(raw.padding, 0, 120, 40),
+      radius: clampNum(raw.radius, 0, 32, 12),
+      shadow: clampNum(raw.shadow, 0, 80, 30),
+      shadowOpacity: clampNum(raw.shadowOpacity, 0, 100, 40),
+      noise: clampNum(raw.noise, 0, 50, 0),
+      frame: frames.includes(raw.frame) ? raw.frame : "none",
+      border: clampNum(raw.border, 0, 24, 0),
+      borderColor: hexOr(raw.borderColor, "#ffffff"),
+      align: alignOk ? [raw.align[0], raw.align[1]] : [0.5, 0.5],
+      wm: {
+        text: typeof wmIn.text === "string" ? wmIn.text.slice(0, 60) : "",
+        size: clampNum(wmIn.size, 10, 64, 20),
+        opacity: clampNum(wmIn.opacity, 10, 100, 60),
+        pos: positions.includes(wmIn.pos) ? wmIn.pos : "br",
+        color: hexOr(wmIn.color, "#ffffff"),
+      },
+      persp: {
+        rx: clampNum(pIn.rx, -45, 45, 0), ry: clampNum(pIn.ry, -45, 45, 0), rz: clampNum(pIn.rz, -30, 30, 0),
+        zoom: clampNum(pIn.zoom, 50, 150, 100), panX: clampNum(pIn.panX, -50, 50, 0), panY: clampNum(pIn.panY, -50, 50, 0),
+      },
+      pb: {
+        mode: ["off", "linear", "radial"].includes(pbIn.mode) ? pbIn.mode : "off",
+        dir: ["top", "bottom", "left", "right"].includes(pbIn.dir) ? pbIn.dir : "bottom",
+        strength: clampNum(pbIn.strength, 2, 60, 20),
+        scope: ["inside", "scene"].includes(pbIn.scope) ? pbIn.scope : "inside",
+      },
+    };
+  }
+
+  document.getElementById("bf-preset-export-btn")?.addEventListener("click", async () => {
+    const res = await chrome.storage.sync.get("beautifyPresets");
+    const presets = (res.beautifyPresets as BeautifyPreset[]) || [];
+    if (!presets.length) { showToast("Save a preset first, then export it"); return; }
+    const file = { format: PRESET_FORMAT, version: 1, exportedAt: new Date().toISOString(), presets };
+    const url = URL.createObjectURL(new Blob([JSON.stringify(file, null, 2)], { type: "application/json" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "gofully-presets.gofullypreset";
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    showToast(`Exported ${presets.length} preset${presets.length === 1 ? "" : "s"}`);
+  });
+
+  const importInput = document.getElementById("bf-preset-import-input") as HTMLInputElement | null;
+  document.getElementById("bf-preset-import-btn")?.addEventListener("click", () => importInput?.click());
+  importInput?.addEventListener("change", async () => {
+    const file = importInput.files?.[0];
+    importInput.value = "";
+    if (!file) return;
+    if (file.size > 512 * 1024) { showToast("That file is too large to be a GoFully preset file"); return; }
+    let parsed: any;
+    try { parsed = JSON.parse(await file.text()); } catch { showToast("That isn't a valid preset file"); return; }
+    if (!parsed || parsed.format !== PRESET_FORMAT || typeof parsed.version !== "number" || !Array.isArray(parsed.presets)) {
+      showToast("That isn't a GoFully preset file"); return;
+    }
+    if (parsed.version > 1) { showToast("This file needs a newer GoFully. Update the extension to import it."); return; }
+    const incoming = parsed.presets.slice(0, 50).map(sanitizePreset).filter((p: BeautifyPreset | null): p is BeautifyPreset => !!p);
+    if (!incoming.length) { showToast("No usable presets in that file"); return; }
+    const res = await chrome.storage.sync.get("beautifyPresets");
+    const presets = (res.beautifyPresets as BeautifyPreset[]) || [];
+    for (const p of incoming) {
+      const i = presets.findIndex((x) => x.name === p.name);
+      if (i >= 0) presets[i] = p; else presets.push(p);
+    }
+    try {
+      await chrome.storage.sync.set({ beautifyPresets: presets.slice(0, 50) });
+    } catch {
+      showToast("Couldn't store those presets. Delete old ones to free space."); return;
+    }
+    populate(presets);
+    showToast(`Imported ${incoming.length} preset${incoming.length === 1 ? "" : "s"}`);
+  });
 }
 
 async function applyBeautify(showToastMsg = true): Promise<void> {
@@ -2474,6 +3161,30 @@ async function applyBeautify(showToastMsg = true): Promise<void> {
   const noiseAmount = parseInt((document.getElementById("bf-noise") as HTMLInputElement).value) || 0;
   const frameType = document.querySelector<HTMLElement>(".bf-frame-btn.active")?.dataset.frame || "none";
   const ratioStr = document.querySelector<HTMLElement>(".bf-ratio-btn.active")?.dataset.ratio || "";
+  const borderW = parseInt((document.getElementById("bf-border") as HTMLInputElement)?.value) || 0;
+  const borderColor = (document.getElementById("bf-border-color") as HTMLInputElement)?.value || "#ffffff";
+  const wm = {
+    text: ((document.getElementById("bf-wm-text") as HTMLInputElement)?.value || "").trim(),
+    size: parseInt((document.getElementById("bf-wm-size") as HTMLInputElement)?.value) || 20,
+    opacity: parseInt((document.getElementById("bf-wm-opacity") as HTMLInputElement)?.value) || 60,
+    pos: (document.getElementById("bf-wm-pos") as HTMLSelectElement)?.value || "br",
+    color: (document.getElementById("bf-wm-color") as HTMLInputElement)?.value || "#ffffff",
+  };
+  const [alignX, alignY] = bfAlign;
+  const numVal = (id: string, dflt: number) => {
+    const v = parseInt((document.getElementById(id) as HTMLInputElement | null)?.value ?? "");
+    return Number.isFinite(v) ? v : dflt;
+  };
+  const persp: PerspParams = {
+    rx: numVal("bf-rx", 0), ry: numVal("bf-ry", 0), rz: numVal("bf-rz", 0),
+    zoom: numVal("bf-zoom", 100), panX: numVal("bf-panx", 0), panY: numVal("bf-pany", 0),
+  };
+  const pb: ProgBlur = {
+    mode: ((document.getElementById("bf-pb-mode") as HTMLSelectElement | null)?.value as ProgBlur["mode"]) || "off",
+    dir: ((document.getElementById("bf-pb-dir") as HTMLSelectElement | null)?.value as ProgBlur["dir"]) || "bottom",
+    strength: numVal("bf-pb-strength", 20),
+    scope: ((document.getElementById("bf-pb-scope") as HTMLSelectElement | null)?.value as ProgBlur["scope"]) || "inside",
+  };
 
   // ALWAYS use the original screenshot image as source to prevent nesting/stacking
   const srcDataUrl = originalScreenshotUrl;
@@ -2554,6 +3265,11 @@ async function applyBeautify(showToastMsg = true): Promise<void> {
       ctx.lineTo(sx + outH, 0);
       ctx.stroke();
     }
+  } else if (bgValue.startsWith("mesh:") && MESH_WALLPAPERS[bgValue.slice(5)]) {
+    paintMesh(ctx, MESH_WALLPAPERS[bgValue.slice(5)], outW, outH);
+  } else if (bgValue === "custom-image") {
+    if (customBgImg) paintCoverImage(ctx, customBgImg, outW, outH);
+    else paintMesh(ctx, MESH_WALLPAPERS.aurora, outW, outH);
   } else {
     ctx.fillStyle = bgValue;
     ctx.fillRect(0, 0, outW, outH);
@@ -2574,46 +3290,88 @@ async function applyBeautify(showToastMsg = true): Promise<void> {
   }
 
   // Position screenshot centered with padding
-  const imgX = Math.round((outW - srcW) / 2);
-  const imgY = Math.round((outH - srcH - frameBarH) / 2) + frameBarH;
+  // The ratio can add free space around the padded shot; the nine-point
+  // alignment decides where in that space it sits (centre = the old behaviour).
+  const spareW = Math.max(0, outW - srcW - padding * 2);
+  const spareH = Math.max(0, outH - srcH - frameBarH - padding * 2);
+  const imgX = Math.round(padding + spareW * alignX);
+  const imgY = Math.round(padding + spareH * alignY) + frameBarH;
 
-  // Draw shadow
-  if (shadowBlur > 0 && shadowOpacity > 0) {
-    ctx.save();
-    ctx.shadowColor = `rgba(0,0,0,${shadowOpacity / 100})`;
-    ctx.shadowBlur = shadowBlur;
-    ctx.shadowOffsetY = Math.round(shadowBlur * 0.3);
-
+  // The screenshot, its window frame and its border, drawn at (ix, iy) = the
+  // screenshot's top-left. Used directly for a flat result, or onto a texture
+  // that the 3D mockup maps through perspective.
+  const drawShot = (c: CanvasRenderingContext2D, ix: number, iy: number): void => {
+    c.save();
     if (radius > 0) {
-      roundedRect(ctx, imgX, imgY, srcW, srcH, radius);
-      ctx.fillStyle = "rgba(0,0,0,1)";
-      ctx.fill();
-    } else {
-      ctx.fillStyle = "rgba(0,0,0,1)";
-      ctx.fillRect(imgX, imgY, srcW, srcH);
+      roundedRect(c, ix, iy, srcW, srcH, radius);
+      c.clip();
     }
-    ctx.restore();
+    c.drawImage(srcImg, ix, iy, srcW, srcH);
+    c.restore();
+
+    if (frameType === "macos") {
+      drawMacFrame(c, ix, iy - frameBarH, srcW, frameBarH, radius);
+    } else if (frameType === "browser") {
+      drawBrowserFrame(c, ix, iy - frameBarH, srcW, frameBarH, radius);
+    } else if (frameType === "windows") {
+      drawWindowsFrame(c, ix, iy - frameBarH, srcW, frameBarH, radius);
+    } else if (frameType === "phone") {
+      drawPhoneFrame(c, ix, iy - frameBarH, srcW, frameBarH, radius);
+    }
+
+    if (borderW > 0) {
+      c.save();
+      c.strokeStyle = borderColor;
+      c.lineWidth = borderW;
+      const bx = ix - borderW / 2;
+      const by = iy - frameBarH - borderW / 2;
+      const bw = srcW + borderW;
+      const bh = srcH + frameBarH + borderW;
+      if (radius > 0) {
+        roundedRect(c, bx, by, bw, bh, radius + borderW / 2);
+        c.stroke();
+      } else {
+        c.strokeRect(bx, by, bw, bh);
+      }
+      c.restore();
+    }
+  };
+
+  let blurBounds = { x: imgX, y: imgY - frameBarH, w: srcW, h: srcH + frameBarH, r: radius };
+
+  if (perspActive(persp)) {
+    const m = Math.ceil(borderW);
+    const tex = document.createElement("canvas");
+    tex.width = srcW + m * 2;
+    tex.height = srcH + frameBarH + m * 2;
+    drawShot(tex.getContext("2d")!, m, frameBarH + m);
+    drawPerspective(
+      ctx, tex, imgX + srcW / 2, imgY - frameBarH + (srcH + frameBarH) / 2, persp,
+      outW - padding * 2, outH - padding * 2, { blur: shadowBlur, opacity: shadowOpacity }
+    );
+    blurBounds = { x: padding, y: padding, w: outW - padding * 2, h: outH - padding * 2, r: 0 };
+  } else {
+    if (shadowBlur > 0 && shadowOpacity > 0) {
+      ctx.save();
+      ctx.shadowColor = `rgba(0,0,0,${shadowOpacity / 100})`;
+      ctx.shadowBlur = shadowBlur;
+      ctx.shadowOffsetY = Math.round(shadowBlur * 0.3);
+      if (radius > 0) {
+        roundedRect(ctx, imgX, imgY, srcW, srcH, radius);
+        ctx.fillStyle = "rgba(0,0,0,1)";
+        ctx.fill();
+      } else {
+        ctx.fillStyle = "rgba(0,0,0,1)";
+        ctx.fillRect(imgX, imgY, srcW, srcH);
+      }
+      ctx.restore();
+    }
+    drawShot(ctx, imgX, imgY);
   }
 
-  // Draw screenshot with rounded corners
-  ctx.save();
-  if (radius > 0) {
-    roundedRect(ctx, imgX, imgY, srcW, srcH, radius);
-    ctx.clip();
-  }
-  ctx.drawImage(srcImg, imgX, imgY, srcW, srcH);
-  ctx.restore();
+  applyProgressiveBlur(oc, pb, blurBounds);
 
-  // Draw window frame
-  if (frameType === "macos") {
-    drawMacFrame(ctx, imgX, imgY - frameBarH, srcW, frameBarH, radius);
-  } else if (frameType === "browser") {
-    drawBrowserFrame(ctx, imgX, imgY - frameBarH, srcW, frameBarH, radius);
-  } else if (frameType === "windows") {
-    drawWindowsFrame(ctx, imgX, imgY - frameBarH, srcW, frameBarH, radius);
-  } else if (frameType === "phone") {
-    drawPhoneFrame(ctx, imgX, imgY - frameBarH, srcW, frameBarH, radius);
-  }
+  paintWatermark(ctx, outW, outH, wm);
 
   // Load result into editor
   const resultUrl = oc.toDataURL("image/png");
@@ -2849,6 +3607,32 @@ async function resetBeautify(): Promise<void> {
       if (opc) { opc.value = "40"; const v = document.getElementById("bf-shadow-opacity-val"); if (v) v.textContent = "40%"; }
       const nse = document.getElementById("bf-noise") as HTMLInputElement;
       if (nse) { nse.value = "0"; const v = document.getElementById("bf-noise-val"); if (v) v.textContent = "0%"; }
+      const setDefault = (id: string, valId: string, v: string, suffix: string) => {
+        const el = document.getElementById(id) as HTMLInputElement | null;
+        if (el) el.value = v;
+        const out = document.getElementById(valId);
+        if (out) out.textContent = v + suffix;
+      };
+      setDefault("bf-rx", "bf-rx-val", "0", "°");
+      setDefault("bf-ry", "bf-ry-val", "0", "°");
+      setDefault("bf-rz", "bf-rz-val", "0", "°");
+      setDefault("bf-zoom", "bf-zoom-val", "100", "%");
+      setDefault("bf-panx", "bf-panx-val", "0", "%");
+      setDefault("bf-pany", "bf-pany-val", "0", "%");
+      setDefault("bf-pb-strength", "bf-pb-strength-val", "20", "px");
+      (document.getElementById("bf-pb-mode") as HTMLSelectElement).value = "off";
+      (document.getElementById("bf-pb-dir") as HTMLSelectElement).value = "bottom";
+      (document.getElementById("bf-pb-scope") as HTMLSelectElement).value = "inside";
+      setDefault("bf-border", "bf-border-val", "0", "px");
+      setDefault("bf-wm-size", "bf-wm-size-val", "20", "px");
+      setDefault("bf-wm-opacity", "bf-wm-opacity-val", "60", "%");
+      (document.getElementById("bf-border-color") as HTMLInputElement).value = "#ffffff";
+      (document.getElementById("bf-wm-text") as HTMLInputElement).value = "";
+      (document.getElementById("bf-wm-color") as HTMLInputElement).value = "#ffffff";
+      (document.getElementById("bf-wm-pos") as HTMLSelectElement).value = "br";
+      bfAlign = [0.5, 0.5];
+      panel.querySelectorAll<HTMLElement>(".bf-align-btn").forEach((b) =>
+        b.classList.toggle("active", b.dataset.ax === "0.5" && b.dataset.ay === "0.5"));
       collageImages = [];
       collageLayout = "row";
       panel.querySelectorAll(".bf-collage-layout-btn").forEach((s, idx) => s.classList.toggle("active", idx === 0));

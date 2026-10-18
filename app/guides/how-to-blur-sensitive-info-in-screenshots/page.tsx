@@ -23,38 +23,31 @@ export const metadata: Metadata = {
   },
 };
 
-const howToJsonLd = {
+const articleJsonLd = {
   "@context": "https://schema.org",
-  "@type": "HowTo",
-  name: "How to Blur or Redact Sensitive Information in Screenshots",
-  description: "Step-by-step instructions for masking private data in screenshots safely.",
-  totalTime: "PT1M",
-  step: [
-    {
-      "@type": "HowToStep",
-      name: "Capture the Webpage or Window",
-      text: "Use GoFully to take a full-page, visible area, or selected region screenshot.",
-      url: "https://gofully-extension.vercel.app/guides/how-to-blur-sensitive-info-in-screenshots#capture",
+  "@type": "TechArticle",
+  "@id": "https://gofully-extension.vercel.app/guides/how-to-blur-sensitive-info-in-screenshots#article",
+  url: "https://gofully-extension.vercel.app/guides/how-to-blur-sensitive-info-in-screenshots",
+  headline: "How to Blur or Redact Sensitive Information in Screenshots",
+  description:
+    "A complete technical guide to masking confidential data in screenshots using blur, mosaic pixelation, and solid blackouts on Mac, Windows, and Chrome.",
+  isPartOf: { "@id": "https://gofully-extension.vercel.app/#website" },
+  datePublished: "2026-09-08",
+  dateModified: "2026-09-20",
+  author: {
+    "@type": "Organization",
+    name: "GoFully",
+    url: "https://gofully-extension.vercel.app/",
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "GoFully",
+    url: "https://gofully-extension.vercel.app/",
+    logo: {
+      "@type": "ImageObject",
+      url: "https://gofully-extension.vercel.app/logo.png",
     },
-    {
-      "@type": "HowToStep",
-      name: "Select the Redaction Tool",
-      text: "Click the 'Redact' icon in the GoFully annotation toolbar. Choose between Smooth Glass Blur, Mosaic Pixelation, or Solid Blackout.",
-      url: "https://gofully-extension.vercel.app/guides/how-to-blur-sensitive-info-in-screenshots#select-tool",
-    },
-    {
-      "@type": "HowToStep",
-      name: "Drag Over Confidential Content",
-      text: "Drag a box over confidential API tokens, customer names, credit card numbers, or passwords. The pixels are permanently altered in client-side memory.",
-      url: "https://gofully-extension.vercel.app/guides/how-to-blur-sensitive-info-in-screenshots#drag-box",
-    },
-    {
-      "@type": "HowToStep",
-      name: "Export Clean Screenshot",
-      text: "Copy to clipboard or download as PNG. The original sensitive data cannot be recovered.",
-      url: "https://gofully-extension.vercel.app/guides/how-to-blur-sensitive-info-in-screenshots#export",
-    },
-  ],
+  },
 };
 
 export default function RedactScreenshotGuidePage() {
@@ -62,7 +55,7 @@ export default function RedactScreenshotGuidePage() {
     <div className="gf-industry min-h-screen">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
       />
       <SiteNav />
 

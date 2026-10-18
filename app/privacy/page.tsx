@@ -24,14 +24,14 @@ const PERMISSIONS = [
   },
   {
     name: "storage (Local)",
-    body: "Used exclusively with chrome.storage.local to store your non-identifying tool settings (such as default export format PNG/PDF, canvas annotation colors, and screenshot quality options) on your local hard drive.",
+    body: "Used exclusively with chrome.storage.local to store your non-identifying tool settings (such as default export format PNG/PDF, canvas annotation colors, and screenshot quality options) on your local hard drive. It also holds your capture history (thumbnails, page titles and addresses, plus the text OCR read from each capture if you leave Search inside screenshots on), your saved Draw on Page marks and your step-by-step guide. If you switch on Keep recent captures, the full image of your last 10 captures sits in your browser's own database. All of it stays on this device until you clear it, and none of it is sent to us or anyone else.",
   },
   {
     name: "offscreen (Manifest V3)",
     body: "Used to create an isolated background document to handle multi-megapixel canvas stitching, blur/pixelation filters, and WebAssembly OCR execution without freezing your active webpage interface.",
   },
   {
-    name: "scripting / debugger (Optional / CDP Capture)",
+    name: "scripting",
     body: "Used exclusively when capturing high-resolution full-page screenshots to automate smooth viewport scroll positions, suppress fixed/sticky headers during scrolling, and ensure pixel-perfect image stitching.",
   },
 ];

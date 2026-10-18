@@ -492,6 +492,15 @@
     .bf-bg-swatch:hover { transform: scale(1.1); }
     .bf-bg-swatch.active { border-color: var(--blue); transform: scale(1.05); }
 
+    .bf-align-grid { display: grid; grid-template-columns: repeat(3, 22px); gap: 4px; }
+    .bf-align-btn { width: 22px; height: 22px; border: 1px solid var(--border); background: rgba(var(--ink),.05); cursor: pointer; padding: 0; position: relative; }
+    .bf-align-btn::after { content: ""; position: absolute; inset: 6px; background: rgba(var(--ink),.35); }
+    .bf-align-btn:hover { background: rgba(var(--ink),.1); }
+    .bf-align-btn.active { border-color: var(--blue); background: rgba(22,103,242,.08); }
+    .bf-align-btn.active::after { background: var(--blue); }
+    .bf-text-input { flex: 1; height: 28px; padding: 0 8px; font-size: 11.5px; border: 1px solid var(--border); background: rgba(var(--ink),.05); color: var(--text); min-width: 0; }
+    .bf-color-input { width: 34px; height: 28px; padding: 0; border: 1px solid var(--border); background: transparent; cursor: pointer; }
+    .bf-mesh-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
     .bf-frame-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -1408,6 +1417,11 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="18" height="12" rx="0" fill="currentColor"/></svg>
           Redact Blackout
         </button>
+        <div style="height:1px; background:rgba(var(--ink),.12); margin:3px 4px;"></div>
+        <button class="tool-dropdown-item" id="smart-redact-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h3M17 4h3v3M4 17v3h3M17 20h3v-3"/><path d="M8 12h8"/></svg>
+          Auto-redact sensitive info
+        </button>
       </div>
     </div>
 
@@ -1720,6 +1734,18 @@
           </svg>
           Save as PDF
         </button>
+        <button class="export-drop-item" id="guide-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 6h11M10 12h11M10 18h11"/><path d="M4 6h1v4M4 10h2M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/>
+          </svg>
+          Add to guide
+        </button>
+        <button class="export-drop-item" id="pin-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 17v5"/><path d="M9 3h6l-1 6 3 3v2H7v-2l3-3z"/>
+          </svg>
+          Pin to page
+        </button>
       </div>
     </div>
 
@@ -1748,6 +1774,11 @@
     <div class="bf-row" style="justify-content: flex-start; gap: 6px;">
       <input type="text" id="bf-preset-name" placeholder="Preset name" maxlength="30" style="flex:1; height:28px; padding:0 8px; font-size:11.5px; border:1px solid var(--border); background:rgba(var(--ink),.05); color:var(--text);">
       <button id="bf-preset-save-btn" class="bf-small-btn" style="white-space:nowrap; padding:0 12px; height:28px;">Save</button>
+    </div>
+    <div class="bf-row" style="justify-content: flex-start; gap: 6px; margin-top: 8px;">
+      <button id="bf-preset-export-btn" class="bf-small-btn" style="white-space:nowrap; padding:0 10px; height:28px;">Export presets</button>
+      <button id="bf-preset-import-btn" class="bf-small-btn" style="white-space:nowrap; padding:0 10px; height:28px;">Import</button>
+      <input type="file" id="bf-preset-import-input" accept=".gofullypreset,application/json" style="display:none">
     </div>
   </div>
 
@@ -1797,6 +1828,15 @@
       <div class="bf-bg-swatch" data-bg="pattern:diagonal" style="background:#0c3483 repeating-linear-gradient(45deg, rgba(255,255,255,.18) 0 6px, transparent 6px 14px)">
       <span class="tip">Diagonal Stripes</span>
     </div>
+    </div>
+  </div>
+
+  <div class="bf-section">
+    <div class="bf-section-title">Wallpapers</div>
+    <div class="bf-mesh-grid" id="bf-mesh-grid"></div>
+    <div class="bf-row" style="justify-content: flex-start; gap: 6px; margin-top: 8px;">
+      <button class="bf-small-btn" id="bf-bg-image-btn" style="white-space:nowrap; padding:0 12px; height:28px;">+ Your image</button>
+      <input type="file" id="bf-bg-image-input" accept="image/*" style="display:none">
     </div>
   </div>
 
@@ -1867,6 +1907,102 @@
       <button class="bf-ratio-btn" data-ratio="1.333">4:3</button>
       <button class="bf-ratio-btn" data-ratio="1.778">16:9</button>
       <button class="bf-ratio-btn" data-ratio="0.5625">9:16</button>
+    </div>
+  </div>
+
+  <div class="bf-section">
+    <div class="bf-section-title">Border</div>
+    <div class="bf-row">
+      <span class="bf-label">Width</span>
+      <input type="range" class="bf-slider" id="bf-border" min="0" max="24" value="0">
+      <span class="bf-val" id="bf-border-val">0px</span>
+    </div>
+    <div class="bf-row">
+      <span class="bf-label">Color</span>
+      <input type="color" class="bf-color-input" id="bf-border-color" value="#ffffff">
+    </div>
+  </div>
+
+  <div class="bf-section">
+    <div class="bf-section-title">Alignment</div>
+    <div class="bf-row" style="justify-content: flex-start; gap: 12px;">
+      <div class="bf-align-grid" id="bf-align-grid">
+        <button class="bf-align-btn" data-ax="0" data-ay="0" aria-label="Top left"></button>
+        <button class="bf-align-btn" data-ax="0.5" data-ay="0" aria-label="Top"></button>
+        <button class="bf-align-btn" data-ax="1" data-ay="0" aria-label="Top right"></button>
+        <button class="bf-align-btn" data-ax="0" data-ay="0.5" aria-label="Left"></button>
+        <button class="bf-align-btn active" data-ax="0.5" data-ay="0.5" aria-label="Center"></button>
+        <button class="bf-align-btn" data-ax="1" data-ay="0.5" aria-label="Right"></button>
+        <button class="bf-align-btn" data-ax="0" data-ay="1" aria-label="Bottom left"></button>
+        <button class="bf-align-btn" data-ax="0.5" data-ay="1" aria-label="Bottom"></button>
+        <button class="bf-align-btn" data-ax="1" data-ay="1" aria-label="Bottom right"></button>
+      </div>
+      <span class="bf-label" style="flex:1; opacity:.6; font-size:10.5px; line-height:1.4;">Where the screenshot sits when an aspect ratio adds space</span>
+    </div>
+  </div>
+
+  <div class="bf-section">
+    <div class="bf-section-title">Watermark</div>
+    <div class="bf-row" style="gap: 6px;">
+      <input type="text" class="bf-text-input" id="bf-wm-text" placeholder="e.g. @yourname" maxlength="60">
+      <input type="color" class="bf-color-input" id="bf-wm-color" value="#ffffff">
+    </div>
+    <div class="bf-row">
+      <span class="bf-label">Size</span>
+      <input type="range" class="bf-slider" id="bf-wm-size" min="10" max="64" value="20">
+      <span class="bf-val" id="bf-wm-size-val">20px</span>
+    </div>
+    <div class="bf-row">
+      <span class="bf-label">Opacity</span>
+      <input type="range" class="bf-slider" id="bf-wm-opacity" min="10" max="100" value="60">
+      <span class="bf-val" id="bf-wm-opacity-val">60%</span>
+    </div>
+    <div class="bf-row">
+      <span class="bf-label">Place</span>
+      <select id="bf-wm-pos" class="bf-text-input">
+        <option value="br">Bottom right</option><option value="bc">Bottom center</option><option value="bl">Bottom left</option>
+        <option value="mr">Middle right</option><option value="mc">Center</option><option value="ml">Middle left</option>
+        <option value="tr">Top right</option><option value="tc">Top center</option><option value="tl">Top left</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="bf-section">
+    <div class="bf-section-title">3D Mockup</div>
+    <div class="bf-frame-grid" id="bf-persp-presets" style="margin-bottom:8px;">
+      <button class="bf-small-btn" data-p="0,0,0">Flat</button>
+      <button class="bf-small-btn" data-p="12,-24,0">Tilt left</button>
+      <button class="bf-small-btn" data-p="12,24,0">Tilt right</button>
+      <button class="bf-small-btn" data-p="28,-18,-6">Hero</button>
+      <button class="bf-small-btn" data-p="-14,0,0">Lean back</button>
+      <button class="bf-small-btn" data-p="0,0,-8">Rotate</button>
+    </div>
+    <div class="bf-row"><span class="bf-label">Tilt X</span><input type="range" class="bf-slider" id="bf-rx" min="-45" max="45" value="0"><span class="bf-val" id="bf-rx-val">0°</span></div>
+    <div class="bf-row"><span class="bf-label">Tilt Y</span><input type="range" class="bf-slider" id="bf-ry" min="-45" max="45" value="0"><span class="bf-val" id="bf-ry-val">0°</span></div>
+    <div class="bf-row"><span class="bf-label">Rotate</span><input type="range" class="bf-slider" id="bf-rz" min="-30" max="30" value="0"><span class="bf-val" id="bf-rz-val">0°</span></div>
+    <div class="bf-row"><span class="bf-label">Zoom</span><input type="range" class="bf-slider" id="bf-zoom" min="50" max="150" value="100"><span class="bf-val" id="bf-zoom-val">100%</span></div>
+    <div class="bf-row"><span class="bf-label">Pan X</span><input type="range" class="bf-slider" id="bf-panx" min="-50" max="50" value="0"><span class="bf-val" id="bf-panx-val">0%</span></div>
+    <div class="bf-row"><span class="bf-label">Pan Y</span><input type="range" class="bf-slider" id="bf-pany" min="-50" max="50" value="0"><span class="bf-val" id="bf-pany-val">0%</span></div>
+  </div>
+
+  <div class="bf-section">
+    <div class="bf-section-title">Progressive Blur</div>
+    <div class="bf-row">
+      <span class="bf-label">Type</span>
+      <select id="bf-pb-mode" class="bf-text-input"><option value="off">Off</option><option value="linear">Directional</option><option value="radial">Radial</option></select>
+    </div>
+    <div class="bf-row">
+      <span class="bf-label">Strongest</span>
+      <select id="bf-pb-dir" class="bf-text-input"><option value="bottom">Bottom</option><option value="top">Top</option><option value="left">Left</option><option value="right">Right</option></select>
+    </div>
+    <div class="bf-row">
+      <span class="bf-label">Amount</span>
+      <input type="range" class="bf-slider" id="bf-pb-strength" min="2" max="60" value="20">
+      <span class="bf-val" id="bf-pb-strength-val">20px</span>
+    </div>
+    <div class="bf-row">
+      <span class="bf-label">Applies to</span>
+      <select id="bf-pb-scope" class="bf-text-input"><option value="inside">Screenshot only</option><option value="scene">Whole scene</option></select>
     </div>
   </div>
 

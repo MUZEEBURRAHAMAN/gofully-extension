@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 const ALL_LINKS = [
   { label: "Guides", href: "/guides" },
@@ -46,7 +47,7 @@ export function SiteFooterIndustry({
             target="_blank"
             rel="noreferrer"
           >
-            <img
+            <Image
               src="/badges/dmca_protected_sml_120c.png"
               alt="DMCA.com Protection Status"
               width={120}

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { BlueprintFrame } from "@/components/blueprint-frame";
 
 const reasons = [
@@ -62,7 +63,7 @@ export default function UninstallFeedbackPage() {
 
           {/* Logo */}
           <div className="flex items-center gap-2.5 mb-8">
-            <img src="/logo-nav.png" alt="GoFully" width={32} height={32} className="h-8 w-8 object-contain" />
+            <Image src="/logo-nav.png" alt="GoFully" width={32} height={32} className="h-8 w-8 object-contain" />
             <span className="gf-heading-font font-semibold" style={{ fontSize: 16, color: "rgba(29,31,32,.4)" }}>
               GoFully
             </span>

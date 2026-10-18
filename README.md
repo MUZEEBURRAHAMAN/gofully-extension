@@ -15,13 +15,24 @@ A modern, high-performance Chrome extension for capturing full pages, viewports,
 
 **Current version: `v1.1.2`**
 
+Coming in `v1.1.3` (built, not yet published):
+- **Draw on Page** — mark up a live website with pen, highlighter, text highlight, arrows, shapes, text and sticky notes, then capture with the marks in place. Marks are saved per page address on your device
+- **Capture Element** — hover, pick a parent or child with the arrow keys, click
+- **Beautify** — eight wallpapers, your own background image, border, watermark, nine-point alignment, 3D perspective mockups, progressive blur, preset files you can share
+- **Auto-redact** — finds emails, card numbers, phone numbers, ID numbers, IP addresses and API keys with on-device OCR and covers them for you to review
+- **Crop** keeps your annotations editable and undo restores the previous size
+- **Step-by-step guides** — gather up to 30 captures, add captions, export a PDF or a Markdown ZIP
+- **Pin a capture** over any page as a reference
+- **History search** across the text inside past captures, the page title and the address (switch it off in Settings)
+- **Reliability** — shortcuts now report failures instead of staying silent, the OCR engine starts reliably, and Settings lists your live Chrome shortcuts and warns about dropped keys
+
 Recently shipped in `v1.1.2`:
 - **Capture engine** — one Image Quality setting for both JPG and WebP exports, sticky/fixed headers re-checked on every scroll step (fixes header duplication on sites where a header only becomes fixed after scrolling), progress-badge race fixed across all capture modes, seam verification in scroll-stitch
 - **Editor** — Rectangle/Ellipse consolidated into a single Shape button with six shapes (Rectangle, Square, Circle, Ellipse, Triangle, Polygon), zoom raised to 1000%, JPG export added to the quick-export result cards, editor toolbar adapts to laptop/tablet widths, export-at-high-zoom crash fixed
 - **Personalization & Beautify** — interface language and light/dark theme, OCR language selection (English, Spanish, French, German, Portuguese, Simplified Chinese — still fully on-device), highlighter tool, saveable Beautify presets, multi-image collage layouts, gradient background library, more device frames, optional URL/timestamp capture stamp, "Copy as JSON" after OCR
 - **Screenshot history** — thumbnail grid in the popup, browse and reopen past captures, stored locally on-device
 
-Full detail and what's genuinely still ahead (custom editor keyboard shortcuts, Markdown export, multi-tab batch capture, auto-redact detection, screen recording) is on the **[public roadmap](https://gofully-extension.vercel.app/roadmap)**.
+Full detail and what's genuinely still ahead (custom editor keyboard shortcuts, Markdown export, multi-tab batch capture, screen recording) is on the **[public roadmap](https://gofully-extension.vercel.app/roadmap)**.
 
 ---
 
@@ -29,7 +40,7 @@ Full detail and what's genuinely still ahead (custom editor keyboard shortcuts, 
 
 | Feature / Standard | GoFullPage | FireShot | Awesome Screenshot | Nimbus | **GoFully** |
 |---|:---:|:---:|:---:|:---:|:---:|
-| **Full-Page Capture** | ✅ | ✅ | ✅ | ✅ | **✅ (CDP single-shot + scroll-stitch fallback)** |
+| **Full-Page Capture** | ✅ | ✅ | ✅ | ✅ | **✅ (scroll-stitch with seam checks)** |
 | **Scrolling-Area Capture** (chat, code panels, data tables) | ❌ | ❌ | ❌ | ❌ | **✅** |
 | **On-Device OCR (Free)** | ❌ | ❌ | ❌ | ❌ | **✅ (100% local WASM, 6 languages)** |
 | **Glass Blur / Pixelate / Redact** | ❌ *(Paid)* | ❌ | ⚠️ *(Basic)* | ⚠️ *(Basic)* | **✅ (Glass + Pixel + Redact)** |
@@ -46,7 +57,7 @@ Full detail and what's genuinely still ahead (custom editor keyboard shortcuts, 
 ### 📸 Capture Modes
 | Mode | Shortcut | Description |
 |---|---|---|
-| **Full Page** | `Ctrl+Shift+F` (`⌘+Shift+F` on Mac) | Captures entire scrollable document via Chrome DevTools Protocol for pixel-perfect single-shot captures, with scroll-stitch fallback, smart sticky-header handling, and lazy-load pre-triggering |
+| **Full Page** | `Ctrl+Shift+F` (`⌘+Shift+F` on Mac) | Captures the entire scrollable document by scrolling and stitching with seam checks, smart sticky-header handling, and lazy-load pre-triggering |
 | **Visible Area** | `Ctrl+Shift+V` (`⌘+Shift+V` on Mac) | Captures exactly what's visible in your current viewport instantly |
 | **Selected Area** | `Ctrl+Shift+A` (`⌘+Shift+A` on Mac) | Interactive overlay with precise dimensions & snap guides to drag-select any custom region |
 | **Scrolling Area** | — | Select any fixed rectangular viewport area (a chat panel, code block, or data table) and automatically scroll-and-stitch its contents |

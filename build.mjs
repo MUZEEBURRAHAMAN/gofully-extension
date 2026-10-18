@@ -21,6 +21,9 @@ const contentScripts = [
   "region-selector",
   "scrolling-area-ui",
   "ocr-overlay",
+  "live-annotate",
+  "pin-overlay",
+  "element-picker",
 ];
 
 for (const name of contentScripts) {
@@ -59,6 +62,9 @@ if (existsSync(resolve(__dirname, "public/robots.txt"))) {
 }
 if (existsSync(resolve(__dirname, "public/sitemap.xml"))) {
   cpSync(resolve(__dirname, "public/sitemap.xml"), resolve(dist, "sitemap.xml"));
+}
+if (existsSync(resolve(__dirname, "_locales"))) {
+  cpSync(resolve(__dirname, "_locales"), resolve(dist, "_locales"), { recursive: true });
 }
 // gofully-wordmark(-dark).png were previously copied here too, but nothing
 // in popup/editor/settings/help.html references them — they're the
@@ -172,5 +178,13 @@ const reviewFixed = reviewHtml.replace(
   '<script type="module" src="review.js"></script>'
 );
 writeFileSync(resolve(dist, "review.html"), reviewFixed);
+
+// Guide HTML — replace .ts script reference with .js
+const guideHtml = readFileSync(resolve(__dirname, "src/guide/guide.html"), "utf8");
+const guideFixed = guideHtml.replace(
+  /<script\s+type="module"\s+src="guide\.ts"><\/script>/,
+  '<script type="module" src="guide.js"></script>'
+);
+writeFileSync(resolve(dist, "guide.html"), guideFixed);
 
 console.log("\nBuild complete! Load dist/ as unpacked extension in Chrome.");

@@ -121,6 +121,12 @@
       gap: 14px;
     }
     .stack { display: flex; flex-direction: column; gap: 14px; }
+    .grid > *, .stack > * { min-width: 0; }
+    @media (max-width: 720px) {
+      .grid { grid-template-columns: 1fr; }
+      .field { flex-wrap: wrap; }
+      .field select, .field input[type="number"], .field input[type="text"] { max-width: 100%; }
+    }
 
     /* ─── SECTION CARDS ─── */
     .section h2 {
@@ -232,6 +238,11 @@
     .shortcut-row:last-child { border-bottom: none; }
     .shortcut-row span { color: var(--text-2); }
 
+    kbd.unset { color: #B42318; border-color: #FECDCA; background: #FEF3F2; }
+    .shortcut-warn {
+      font-size: 11px; line-height: 1.5; color: #B54708; background: #FFFAEB; border: 1px solid #FEDF89;
+      padding: 8px 10px; margin: 4px 0 8px;
+    }
     kbd {
       background: var(--sunken);
       border: 1px solid var(--border);
@@ -519,6 +530,28 @@
 
         <div class="field">
           <div>
+            <div class="field-label" data-i18n="settings.capture.index.label">Search inside screenshots</div>
+            <div class="field-desc" data-i18n="settings.capture.index.desc">Read the text in each new capture on this device so History can be searched by what it says. Stored locally, never uploaded.</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="indexCaptureText">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="field">
+          <div>
+            <div class="field-label" data-i18n="settings.capture.keep.label">Keep recent captures</div>
+            <div class="field-desc" data-i18n="settings.capture.keep.desc">Save the full image of your last 10 captures on this device so History can reopen them in the editor. Off by default. Clear All in History deletes them.</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="keepFullImages">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="field">
+          <div>
             <div class="field-label" data-i18n="settings.capture.ocr_lang.label">OCR language</div>
             <div class="field-desc" data-i18n="settings.capture.ocr_lang.desc">Language used to recognize text in images (bundled, works offline)</div>
           </div>
@@ -588,14 +621,13 @@
     <!-- Keyboard Shortcuts -->
     <div class="section bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
       <h2>Keyboard Shortcuts</h2>
-      <div class="fields">
-        <div class="shortcut-row"><span>Open GoFully</span><kbd>ALT+S</kbd></div>
-        <div class="shortcut-row"><span>Capture full page</span><kbd>CMD / CTRL + SHIFT + F</kbd></div>
-        <div class="shortcut-row"><span>Capture visible area</span><kbd>CMD / CTRL + SHIFT + V</kbd></div>
-        <div class="shortcut-row" style="border-bottom:none;"><span>Capture selected area</span><kbd>CMD / CTRL + SHIFT + A</kbd></div>
-      </div>
+      <div class="fields" id="chromeShortcutRows"></div>
       <div class="fields" style="padding-bottom:14px;">
-        <div style="font-size:10.5px; color: var(--text-4); padding-top: 4px;">Customize at chrome://extensions/shortcuts</div>
+        <div id="chromeShortcutWarn" class="shortcut-warn" role="status" hidden></div>
+        <div class="shortcut-hint">
+          <span>Inside web pages, Cmd/Ctrl+Shift+F, V, A and H also work.</span>
+          <button class="shortcut-reset-btn" id="changeChromeShortcutsBtn" type="button">Change in Chrome</button>
+        </div>
       </div>
     </div>
 

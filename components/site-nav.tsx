@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import Image from "next/image";
+
 const CWS_URL =
   "https://chromewebstore.google.com/detail/gofully-full-page-screens/akfbmhmdlbmljklgajkgoekobofhhofc";
 
@@ -30,11 +32,12 @@ export function SiteNav() {
     <div className="border-b relative" style={{ padding: "0 24px", borderColor: "rgba(29,31,32,.1)", zIndex: 50 }}>
       <div className="mx-auto flex items-center justify-between" style={{ height: 72, maxWidth: 1320 }}>
         <Link href="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
-          <img
+          <Image
             src="/logo-nav.png"
             alt="GoFully — Full Page Screenshot Chrome Extension"
             width={40}
             height={40}
+            priority
             className="h-10 w-10 object-contain"
           />
           <div className="gf-heading-font font-semibold" style={{ fontSize: 18, letterSpacing: "-0.01em" }}>

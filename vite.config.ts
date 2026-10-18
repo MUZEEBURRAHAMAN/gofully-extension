@@ -25,6 +25,7 @@ export default defineConfig({
         offscreen: resolve(__dirname, "src/offscreen/canvas-stitcher.ts"),
         welcome: resolve(__dirname, "src/welcome/welcome.ts"),
         review: resolve(__dirname, "src/review/review.ts"),
+        guide: resolve(__dirname, "src/guide/guide.ts"),
       },
       output: {
         entryFileNames: "[name].js",

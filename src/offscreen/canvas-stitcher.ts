@@ -8,7 +8,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     return true;
   }
   if (message.type === "PERFORM_OCR") {
-    const { dataUrl, lang } = message.payload as { dataUrl: string; lang?: string };
+    const { dataUrl, lang, words: wantWords } = message.payload as { dataUrl: string; lang?: string; words?: boolean };
     const ocrLang = lang || "eng";
     (async () => {
       let worker: any = null;
@@ -35,6 +35,10 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
             workerPath,
             corePath,
             langPath,
+            // Load the worker straight from the extension file. The default builds a
+            // blob: worker that then importScripts() the extension URL, which some
+            // Chrome builds refuse ("failed to load") — leaving OCR silently dead.
+            workerBlobURL: false,
             logger: () => {},
             errorHandler: (err) => console.warn("Tesseract worker warning:", err),
           }),
@@ -45,10 +49,29 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
         await withTimeout(worker.initialize(ocrLang), "initializing engine");
         const ret: any = await withTimeout(worker.recognize(dataUrl), "recognizing text", 30000);
         const text = (ret?.data?.text || "").trim();
-        sendResponse({ text });
+        if (wantWords) {
+          // Word boxes in the image's own pixels, tagged with the line they sit on,
+          // for features that need to know WHERE text is (smart redact, search).
+          const words: { text: string; x0: number; y0: number; x1: number; y1: number; line: number }[] = [];
+          (ret?.data?.lines || []).forEach((ln: any, li: number) => {
+            for (const w of ln.words || []) {
+              const b = w.bbox || {};
+              if (typeof w.text === "string" && w.text.trim() && typeof b.x0 === "number") {
+                words.push({ text: w.text, x0: b.x0, y0: b.y0, x1: b.x1, y1: b.y1, line: li });
+              }
+            }
+          });
+          sendResponse({ text, words });
+        } else {
+          sendResponse({ text });
+        }
       } catch (err: any) {
         console.error("Offscreen OCR error:", err);
-        sendResponse({ error: err?.message || "OCR recognition failed" });
+        // tesseract.js rejects with strings, plain objects or Errors depending on where it fails
+        const detail =
+          typeof err === "string" ? err :
+          err?.message || (err && typeof err === "object" ? JSON.stringify(err) : "");
+        sendResponse({ error: detail ? `OCR recognition failed: ${detail}` : "OCR recognition failed" });
       } finally {
         if (worker) {
           try { await worker.terminate(); } catch {}

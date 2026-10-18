@@ -115,9 +115,9 @@ test.describe("04 - Local Tesseract OCR Engine Suite", () => {
     });
 
     expect(ocrResult).toBeDefined();
-    if (ocrResult?.text) {
-      expect(ocrResult.text).toMatch(/PATIENT|RECORD|1098/i);
-    }
+    // must actually succeed — an error response used to slip through unnoticed
+    expect(ocrResult.error).toBeUndefined();
+    expect(ocrResult.text).toMatch(/PATIENT|RECORD|1098/i);
     await popupPage.close();
   });
 });

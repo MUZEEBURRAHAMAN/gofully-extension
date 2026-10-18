@@ -11,10 +11,11 @@ export const test = base.extend<{
   serviceWorker: Worker;
 }>({
   context: async ({}, use) => {
-    // Launch persistent context with the unpacked extension loaded
+    const isHeaded = process.env.HEADED === "true";
     const context = await chromium.launchPersistentContext("", {
-      headless: false, // MV3 extensions require headed mode or new headless with extension support
+      headless: false, // In Playwright, --headless=new in args triggers Chromium's new headless engine while retaining extension support
       args: [
+        ...(isHeaded ? [] : ["--headless=new"]),
         `--disable-extensions-except=${pathToExtension}`,
         `--load-extension=${pathToExtension}`,
         "--no-sandbox",

@@ -3,7 +3,9 @@ export type CaptureMode =
   | "visible-area"
   | "selected-area"
   | "scrolling-area"
-  | "capture-text";
+  | "capture-text"
+  | "annotate-page"
+  | "capture-element";
 
 export type CaptureMethod = "scroll-stitch" | "visible-tab";
 
@@ -117,6 +119,8 @@ export interface Settings {
   theme: "light" | "dark" | "system";
   ocrLanguage: string;
   language: string;
+  indexCaptureText: boolean;
+  keepFullImages: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -137,4 +141,6 @@ export const DEFAULT_SETTINGS: Settings = {
   theme: "system",
   ocrLanguage: "eng",
   language: "system",
+  indexCaptureText: true,
+  keepFullImages: false,
 };

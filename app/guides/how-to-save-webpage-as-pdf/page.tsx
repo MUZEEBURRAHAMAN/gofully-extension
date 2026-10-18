@@ -23,32 +23,31 @@ export const metadata: Metadata = {
   },
 };
 
-const howToJsonLd = {
+const articleJsonLd = {
   "@context": "https://schema.org",
-  "@type": "HowTo",
-  name: "How to Save a Full Webpage as PDF in Chrome",
-  description: "Three methods to export entire webpages as clean, paginated PDFs without cutting off content.",
-  totalTime: "PT2M",
-  step: [
-    {
-      "@type": "HowToStep",
-      name: "Choose Your Method",
-      text: "Decide between Chrome's Print dialog, DevTools full-page screenshot, or the GoFully extension based on your needs.",
-      url: "https://gofully-extension.vercel.app/guides/how-to-save-webpage-as-pdf#methods",
+  "@type": "TechArticle",
+  "@id": "https://gofully-extension.vercel.app/guides/how-to-save-webpage-as-pdf#article",
+  url: "https://gofully-extension.vercel.app/guides/how-to-save-webpage-as-pdf",
+  headline: "How to Save a Full Webpage as PDF in Chrome",
+  description:
+    "Three methods to export entire webpages as clean, paginated PDFs without cutting off content or repeating headers.",
+  isPartOf: { "@id": "https://gofully-extension.vercel.app/#website" },
+  datePublished: "2026-09-08",
+  dateModified: "2026-09-20",
+  author: {
+    "@type": "Organization",
+    name: "GoFully",
+    url: "https://gofully-extension.vercel.app/",
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "GoFully",
+    url: "https://gofully-extension.vercel.app/",
+    logo: {
+      "@type": "ImageObject",
+      url: "https://gofully-extension.vercel.app/logo.png",
     },
-    {
-      "@type": "HowToStep",
-      name: "Capture the Full Page",
-      text: "For GoFully: click the extension icon and select Full Page capture. The extension scrolls automatically and waits for lazy content.",
-      url: "https://gofully-extension.vercel.app/guides/how-to-save-webpage-as-pdf#capture",
-    },
-    {
-      "@type": "HowToStep",
-      name: "Export as PDF",
-      text: "Click the PDF button in the result bar. GoFully automatically paginates the screenshot into A4 pages with proper margins.",
-      url: "https://gofully-extension.vercel.app/guides/how-to-save-webpage-as-pdf#export",
-    },
-  ],
+  },
 };
 
 export default function SaveWebpageAsPdfGuide() {
@@ -56,7 +55,7 @@ export default function SaveWebpageAsPdfGuide() {
     <div className="gf-industry min-h-screen">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
       />
       <SiteNav />
 

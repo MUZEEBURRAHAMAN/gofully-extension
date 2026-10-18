@@ -106,10 +106,16 @@ document.getElementById("historyBtn")?.addEventListener("click", () => {
   }
 });
 
+document.getElementById("guideBtn")?.addEventListener("click", () => {
+  chrome.tabs.create({ url: chrome.runtime.getURL("guide.html") });
+  window.close();
+});
+
 document.getElementById("historyBackBtn")?.addEventListener("click", closeHistory);
 
 document.getElementById("historyClearBtn")?.addEventListener("click", async () => {
   await chrome.runtime.sendMessage({ type: "CLEAR_HISTORY" });
+  allHistory = [];
   renderHistoryGrid([]);
 });
 
@@ -118,8 +124,12 @@ function openHistory(): void {
   statusLine.classList.remove("active");
   resultBar.classList.remove("active");
   historySection.classList.add("active");
-  chrome.runtime.sendMessage({ type: "GET_HISTORY" }, (resp) => {
-    renderHistoryGrid(resp?.history || []);
+  if (historySearch) historySearch.value = "";
+  chrome.runtime.sendMessage({ type: "GET_HISTORY" }, async (resp) => {
+    allHistory = resp?.history || [];
+    const full = await chrome.runtime.sendMessage({ type: "LIST_FULL_IMAGES" }).catch(() => null);
+    fullIds = new Set<string>(full?.ids || []);
+    filterHistory();
   });
 }
 
@@ -129,16 +139,45 @@ function closeHistory(): void {
   loadLastCaptureStatus();
 }
 
-function renderHistoryGrid(entries: any[]): void {
+let allHistory: any[] = [];
+const historySearch = document.getElementById("historySearch") as HTMLInputElement | null;
+const historyCount = document.getElementById("historyCount");
+
+function filterHistory(): void {
+  const q = (historySearch?.value || "").trim().toLowerCase();
+  const terms = q.split(/\s+/).filter(Boolean);
+  const shown = !terms.length
+    ? allHistory
+    : allHistory.filter((e) => {
+        const hay = `${e.title || ""} ${e.url || ""} ${e.text || ""}`.toLowerCase();
+        return terms.every((t) => hay.includes(t));
+      });
+  renderHistoryGrid(shown, terms.length > 0);
+  if (historyCount) {
+    historyCount.textContent = terms.length ? `${shown.length} of ${allHistory.length}` : "";
+  }
+}
+historySearch?.addEventListener("input", filterHistory);
+
+let fullIds = new Set<string>();
+
+function renderHistoryGrid(entries: any[], searching = false): void {
   historyGrid.innerHTML = "";
   if (entries.length === 0) {
-    historyGrid.innerHTML = '<div class="hist-empty">No screenshots yet</div>';
+    historyGrid.innerHTML = `<div class="hist-empty">${searching ? "No captures match that search" : "No screenshots yet"}</div>`;
     return;
   }
   for (const entry of entries) {
     const item = document.createElement("div");
     item.className = "hist-item";
-    item.title = `${entry.title || getDomain(entry.url)}\n${entry.width}×${entry.height}`;
+    const hasFull = fullIds.has(entry.id);
+    const canOpen = hasFull || /^https?:\/\//i.test(entry.url || "");
+    item.title = `${entry.title || getDomain(entry.url)}\n${entry.width}×${entry.height}${hasFull ? "\nClick to reopen in the editor" : canOpen ? "\nClick to open the source page" : ""}`;
+    if (canOpen) {
+      item.tabIndex = 0;
+      item.setAttribute("role", "link");
+      item.setAttribute("aria-label", `${hasFull ? "Reopen" : "Open"} ${entry.title || getDomain(entry.url)}`);
+    }
 
     const img = document.createElement("img");
     img.className = "hist-thumb";
@@ -164,16 +203,25 @@ function renderHistoryGrid(entries: any[]): void {
     del.addEventListener("click", async (e) => {
       e.stopPropagation();
       await chrome.runtime.sendMessage({ type: "DELETE_HISTORY_ENTRY", payload: { id: entry.id } });
+      allHistory = allHistory.filter((x) => x.id !== entry.id);
       item.remove();
-      if (historyGrid.children.length === 0) {
-        renderHistoryGrid([]);
-      }
+      if (historyGrid.children.length === 0) filterHistory();
     });
     item.appendChild(del);
 
-    item.addEventListener("click", () => {
-      chrome.tabs.create({ url: chrome.runtime.getURL("editor.html") });
-    });
+    if (canOpen) {
+      const open = () => {
+        if (hasFull) {
+          chrome.runtime.sendMessage({ type: "REOPEN_HISTORY_CAPTURE", payload: { id: entry.id } }).then((r) => { if (r?.ok) window.close(); });
+        } else {
+          chrome.tabs.create({ url: entry.url });
+        }
+      };
+      item.addEventListener("click", open);
+      item.addEventListener("keydown", (e) => {
+        if ((e.key === "Enter" || e.key === " ") && e.target === item) { e.preventDefault(); open(); }
+      });
+    }
 
     historyGrid.appendChild(item);
   }
@@ -407,6 +455,12 @@ async function startCapture(mode: CaptureMode): Promise<void> {
 
   const support = isSupportedCapturePage(tab.url);
   if (!support.supported) { applyPageSupportState(support); return; }
+
+  if (mode === "annotate-page" || mode === "capture-element") {
+    chrome.runtime.sendMessage({ type: "INIT_INTERACTIVE_MODE", payload: { mode, tabId: tab.id } });
+    window.close();
+    return;
+  }
 
   const countdown = await getCountdown();
 

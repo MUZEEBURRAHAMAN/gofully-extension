@@ -14,7 +14,21 @@ const cspHeader = `
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    unoptimized: true,
+    formats: ["image/avif", "image/webp"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "saasfame.com",
+      },
+      {
+        protocol: "https",
+        hostname: "productfame.com",
+      },
+      {
+        protocol: "https",
+        hostname: "www.tinyshelf.co",
+      },
+    ],
   },
   serverExternalPackages: ["fabric", "canvas", "tesseract.js", "jspdf", "cropperjs"],
   typescript: {

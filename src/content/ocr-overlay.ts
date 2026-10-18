@@ -476,7 +476,7 @@ async function processOCR(region: CaptureRegion): Promise<void> {
     playShutterSound();
     try {
       await navigator.clipboard.writeText(text);
-      showToast("Copied to clipboard!");
+      showToast("Copied to clipboard");
     } catch {
       // ignore
     }
@@ -536,14 +536,14 @@ async function processOCR(region: CaptureRegion): Promise<void> {
     resultModal.querySelector("#ocr-copy-btn")?.addEventListener("click", async () => {
       if (textarea) {
         await navigator.clipboard.writeText(textarea.value);
-        showToast("Copied to clipboard!");
+        showToast("Copied to clipboard");
       }
     });
     resultModal.querySelector("#ocr-copy-json-btn")?.addEventListener("click", async () => {
       if (!textarea) return;
       const lines = textarea.value.split("\n").filter((l) => l.trim().length > 0);
       await navigator.clipboard.writeText(JSON.stringify(lines, null, 2));
-      showToast("Copied as JSON!");
+      showToast("Copied as JSON");
     });
     resultModal.querySelector("#ocr-md-btn")?.addEventListener("click", () => {
       if (!textarea) return;
@@ -555,7 +555,7 @@ async function processOCR(region: CaptureRegion): Promise<void> {
       a.download = "gofully-ocr-text.md";
       a.click();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
-      showToast("Exported as Markdown!");
+      showToast("Exported as Markdown");
     });
   } catch (err: any) {
     resultModal.innerHTML = `

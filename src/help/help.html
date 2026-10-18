@@ -437,7 +437,7 @@
             <li>The captured screenshot opens in the in-page action bar and annotation studio for instant editing or saving.</li>
           </ol>
           <div class="help-tip-box">
-            <strong>Pro Tip:</strong> On standard web pages, GoFully uses direct Chrome DevTools Protocol rendering to capture the whole page in a single shot.
+            <strong>Pro Tip:</strong> GoFully scrolls the page, captures each screen and checks every seam. If two pieces do not line up, it captures that part again.
           </div>
         </div>
       </div>
@@ -529,11 +529,65 @@
         </div>
       </div>
 
-      <!-- 6. Crop, Zoom & Annotation Studio -->
       <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
         <h2><button class="help-header" aria-expanded="false">
           <div class="help-title-wrap">
             <div class="help-num-badge">6</div>
+            <span class="help-title">Capture Element <span class="help-tag green">New</span></span>
+          </div>
+          <span class="help-icon-toggle">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </span>
+        </button></h2>
+        <div class="help-content">
+          <p>Capture one card, table, chart or chat message without dragging a box around it.</p>
+          <ol>
+            <li>Click the GoFully icon and choose <strong>"Capture Element"</strong>.</li>
+            <li>Move the pointer over the page. A blue outline follows the element under it and shows its size.</li>
+            <li>Press <span class="help-shortcut">↑</span> to select the parent element or <span class="help-shortcut">↓</span> to step back down.</li>
+            <li>Click to capture. Press <span class="help-shortcut">Esc</span> to cancel.</li>
+          </ol>
+          <div class="help-tip-box">
+            <strong>Tall elements:</strong> GoFully scrolls the element to the middle of the screen and captures the part you can see. Use Full Page or Scrolling Area when you need the rest.
+          </div>
+        </div>
+      </div>
+
+      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+        <h2><button class="help-header" aria-expanded="false">
+          <div class="help-title-wrap">
+            <div class="help-num-badge">7</div>
+            <span class="help-title">Draw on Page <span class="help-tag green">New</span></span>
+          </div>
+          <span class="help-icon-toggle">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </span>
+        </button></h2>
+        <div class="help-content">
+          <p>Mark up a live website, then capture it with your marks in place.</p>
+          <ol>
+            <li>Click <strong>"Draw on Page"</strong> in the popup or press <span class="help-shortcut">Cmd/Ctrl+Shift+H</span>.</li>
+            <li>Pick a tool from the bar at the bottom of the page and drag to draw.</li>
+            <li>Click <strong>Visible</strong> or <strong>Full page</strong> in the bar to capture. GoFully hides the bar first, so it never appears in the image.</li>
+            <li>Press <span class="help-shortcut">Esc</span> to finish.</li>
+          </ol>
+          <ul>
+            <li><strong>Tools:</strong> Pen <span class="help-shortcut">P</span>, Highlighter <span class="help-shortcut">H</span>, Highlight text <span class="help-shortcut">T</span>, Arrow <span class="help-shortcut">A</span>, Rectangle <span class="help-shortcut">R</span>, Ellipse <span class="help-shortcut">O</span>, Text <span class="help-shortcut">X</span>, Sticky note <span class="help-shortcut">N</span>, Eraser <span class="help-shortcut">E</span>. Press <span class="help-shortcut">V</span> to use the page normally.</li>
+            <li><strong>Highlight text:</strong> Select words on the page and GoFully paints a marker over them.</li>
+            <li><strong>Undo and redo:</strong> <span class="help-shortcut">Cmd/Ctrl+Z</span> and <span class="help-shortcut">Cmd/Ctrl+Shift+Z</span>.</li>
+          </ul>
+          <div class="help-tip-box">
+            <strong>Your marks stay:</strong> GoFully saves them for each page address on this device. Open Draw on Page there again and they come back. The trash button clears them.
+          </div>
+          <p>Marks sit at fixed positions on the page. They do not follow content that scrolls inside its own box, which some web apps use.</p>
+        </div>
+      </div>
+
+      <!-- 6. Crop, Zoom & Annotation Studio -->
+      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+        <h2><button class="help-header" aria-expanded="false">
+          <div class="help-title-wrap">
+            <div class="help-num-badge">8</div>
             <span class="help-title">Annotation Studio (Shapes, Callouts, Blur &amp; Redact)</span>
           </div>
           <span class="help-icon-toggle">
@@ -548,8 +602,35 @@
             <li><strong>Step Numbers:</strong> Click to place auto-incrementing numbered badges (1, 2, 3...) for reproduction steps.</li>
             <li><strong>Spotlight Mode:</strong> Darkens the page around a focal box to draw attention.</li>
             <li><strong>Glass Blur &amp; Redaction:</strong> Protect private info using Glass Smooth Blur, Mosaic Pixelate, or Blackout redaction.</li>
-            <li><strong>Cropping Studio:</strong> Press <span class="help-shortcut">X</span> to open Cropper with aspect ratio presets (16:9, 4:3, 1:1, 3:2, 2:1) and keyboard nudging.</li>
+            <li><strong>Auto-redact:</strong> Open the Blur menu and choose <strong>Auto-redact sensitive info</strong>. GoFully reads the screenshot on your device and covers emails, card numbers, phone numbers, ID numbers, IP addresses and API keys with black boxes. Check each box, then move or delete any you do not want. Undo removes them all.</li>
+            <li><strong>Cropping Studio:</strong> Press <span class="help-shortcut">X</span> to open the cropper. Pick Free, Original, 1:1, 4:3, 3:2, 16:9, 9:16 or other presets, and nudge the box with the arrow keys. Your annotations move with the image and stay editable. Undo and redo bring back the previous size.</li>
           </ul>
+        </div>
+      </div>
+
+      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+        <h2><button class="help-header" aria-expanded="false">
+          <div class="help-title-wrap">
+            <div class="help-num-badge">9</div>
+            <span class="help-title">Beautify: Wallpapers, 3D Mockups &amp; Blur</span>
+          </div>
+          <span class="help-icon-toggle">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </span>
+        </button></h2>
+        <div class="help-content">
+          <p>Turn a plain screenshot into an image you can post. Click the sparkle tool in the editor.</p>
+          <ul>
+            <li><strong>Backgrounds:</strong> Choose a gradient or pattern, one of eight built-in wallpapers, or your own image with <strong>+ Your image</strong>.</li>
+            <li><strong>Layout:</strong> Set padding, corner radius, shadow, aspect ratio and a window frame. With an aspect ratio on, the nine-point grid decides where the screenshot sits in the extra space.</li>
+            <li><strong>Border:</strong> Pick a width and a colour.</li>
+            <li><strong>Watermark:</strong> Type your handle or site, then set size, opacity, colour and position.</li>
+            <li><strong>3D mockup:</strong> Tilt X, Tilt Y, Rotate, Zoom and Pan tilt the screenshot in perspective. Six presets give you a starting point, from Flat to Hero.</li>
+            <li><strong>Progressive blur:</strong> Blur grows toward one edge, or away from the centre. Apply it to the screenshot only or to the whole scene.</li>
+            <li><strong>Collage:</strong> Add more images and lay them out side by side or stacked.</li>
+          </ul>
+          <h3 style="margin-top:14px; font-size:13px;">Share your look</h3>
+          <p><strong>Save</strong> stores your settings as a preset. <strong>Export presets</strong> writes a <code>.gofullypreset</code> file. A teammate clicks <strong>Import</strong> and gets the same presets. A custom background image stays on your device and does not travel inside a preset.</p>
         </div>
       </div>
 
@@ -557,7 +638,7 @@
       <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
         <h2><button class="help-header" aria-expanded="false">
           <div class="help-title-wrap">
-            <div class="help-num-badge">7</div>
+            <div class="help-num-badge">10</div>
             <span class="help-title">Export Options (PNG, 4K HD &amp; Multi-Page PDF)</span>
           </div>
           <span class="help-icon-toggle">
@@ -574,11 +655,77 @@
         </div>
       </div>
 
+      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+        <h2><button class="help-header" aria-expanded="false">
+          <div class="help-title-wrap">
+            <div class="help-num-badge">11</div>
+            <span class="help-title">Build a Step-by-Step Guide <span class="help-tag green">New</span></span>
+          </div>
+          <span class="help-icon-toggle">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </span>
+        </button></h2>
+        <div class="help-content">
+          <p>Combine several captures into one how-to document.</p>
+          <ol>
+            <li>Capture the first screen. In the editor, open <strong>Export</strong> and choose <strong>Add to guide</strong>. On the capture card, click <strong>Guide</strong>.</li>
+            <li>Repeat for each screen.</li>
+            <li>Click the list icon in the popup to open your guide.</li>
+            <li>Name the guide and write a line under each step. Use the arrows to reorder steps and the cross to delete one.</li>
+            <li>Click <strong>Export PDF</strong>, or <strong>Markdown + images</strong> for a ZIP with <code>guide.md</code> and one JPG per step.</li>
+          </ol>
+          <p>A guide holds up to 30 steps. GoFully stores it on this device. <strong>Clear</strong> removes it.</p>
+        </div>
+      </div>
+
+      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+        <h2><button class="help-header" aria-expanded="false">
+          <div class="help-title-wrap">
+            <div class="help-num-badge">12</div>
+            <span class="help-title">Pin a Capture <span class="help-tag green">New</span></span>
+          </div>
+          <span class="help-icon-toggle">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </span>
+        </button></h2>
+        <div class="help-content">
+          <p>Keep a reference image on screen while you work.</p>
+          <ul>
+            <li>Click <strong>Pin</strong> on the capture card, or choose <strong>Export, Pin to page</strong> in the editor.</li>
+            <li>Drag the image to move it and drag its corner to resize it.</li>
+            <li>Hover over it to show the opacity slider and the close button.</li>
+          </ul>
+          <p>You can keep five pins on a page. They stay until you close them or reload the tab. GoFully does not save them.</p>
+        </div>
+      </div>
+
+      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+        <h2><button class="help-header" aria-expanded="false">
+          <div class="help-title-wrap">
+            <div class="help-num-badge">13</div>
+            <span class="help-title">Find an Old Capture <span class="help-tag green">New</span></span>
+          </div>
+          <span class="help-icon-toggle">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </span>
+        </button></h2>
+        <div class="help-content">
+          <p>History keeps your last 50 captures. Click the grid icon in the popup and type in the search box.</p>
+          <ul>
+            <li><strong>What it searches:</strong> the words inside the screenshot, the page title and the page address. Type several words to narrow the list.</li>
+            <li><strong>How it works:</strong> GoFully reads the text of each new capture on your device and stores it next to the thumbnail. On tall pages it reads the top.</li>
+            <li><strong>Opening one:</strong> Click a result to open the page it came from. With <strong>Keep recent captures</strong> on in Settings, History stores the full image of your last 10 captures on this device, and a click reopens that capture in the editor. With it off, History keeps thumbnails only. Save or pin a capture when you need the original.</li>
+            <li><strong>Older captures:</strong> Captures made before this version have no text to search. Their titles and addresses still match.</li>
+          </ul>
+          <p>To stop GoFully reading new captures, turn off <strong>Search inside screenshots</strong> in Settings. <strong>Clear All</strong> deletes thumbnails and text together.</p>
+        </div>
+      </div>
+
       <!-- 8. Keyboard Shortcuts -->
       <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
         <h2><button class="help-header" aria-expanded="false">
           <div class="help-title-wrap">
-            <div class="help-num-badge">8</div>
+            <div class="help-num-badge">14</div>
             <span class="help-title">Keyboard Shortcuts Quick Reference</span>
           </div>
           <span class="help-icon-toggle">
@@ -592,8 +739,10 @@
             <li><span class="help-shortcut">Cmd/Ctrl+Shift+F</span> — Capture full page</li>
             <li><span class="help-shortcut">Cmd/Ctrl+Shift+V</span> — Capture visible area</li>
             <li><span class="help-shortcut">Cmd/Ctrl+Shift+A</span> — Capture selected area</li>
+            <li><span class="help-shortcut">Cmd/Ctrl+Shift+H</span> — Draw on this page (pen, highlighter, arrows, text, sticky notes) — <span class="help-shortcut">Esc</span> to finish. Assign a Chrome-wide key in chrome://extensions/shortcuts.</li>
             <li><span class="help-shortcut">V</span> — Select tool | <span class="help-shortcut">A</span> — Arrow | <span class="help-shortcut">R</span> — Rectangle | <span class="help-shortcut">T</span> — Text</li>
             <li><span class="help-shortcut">B</span> — Blur/Redact | <span class="help-shortcut">N</span> — Step Number | <span class="help-shortcut">S</span> — Spotlight | <span class="help-shortcut">X</span> — Crop</li>
+            <li>Settings lists the key Chrome has bound to each command. If another extension already used one of your keys, Settings says so, and <strong>Change in Chrome</strong> opens the page where you pick a new one.</li>
             <li><span class="help-shortcut">⌘Z</span> / <span class="help-shortcut">Ctrl+Z</span> — Undo | <span class="help-shortcut">⌘Y</span> / <span class="help-shortcut">Ctrl+Y</span> — Redo</li>
           </ul>
         </div>
@@ -603,7 +752,7 @@
       <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
         <h2><button class="help-header" aria-expanded="false">
           <div class="help-title-wrap">
-            <div class="help-num-badge">9</div>
+            <div class="help-num-badge">15</div>
             <span class="help-title">Privacy, Security &amp; Offline Guarantees</span>
           </div>
           <span class="help-icon-toggle">
@@ -616,6 +765,8 @@
             <li><strong>100% Offline Processing:</strong> All stitching, cropping, blur filters, and OCR run locally on your device.</li>
             <li><strong>Zero Data Exfiltration:</strong> No screenshots or text are ever transmitted to external servers.</li>
             <li><strong>No Tracking:</strong> Zero analytics or telemetry SDKs included.</li>
+            <li><strong>Local reading:</strong> Auto-redact and History search read your screenshots with an OCR engine bundled in the extension. The text stays in your browser's storage.</li>
+            <li><strong>Local storage only:</strong> Guides, saved marks and presets live in your browser and leave only when you export them.</li>
           </ul>
         </div>
       </div>

@@ -642,16 +642,23 @@ export function stopScrollingAreaUI(): void { cleanup(); }
 // (network/permissions/canvas errors mid-capture) previously vanished with
 // no feedback at all — this gives the user something to see.
 function showInlineError(msg: string): void {
-  const el = document.createElement("div");
+  // Shared with result-bar.ts, which is always loaded: whichever script
+  // reacts first creates the element, the other just reuses it.
+  let el = document.getElementById("gofully-inline-notice");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "gofully-inline-notice";
+    el.style.cssText = `
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: #B42318; color: #fff; padding: 10px 18px;
+      font: 600 12.5px ${FONT_FAMILY}; z-index: 2147483647;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25); pointer-events: none;
+    `;
+    document.body.appendChild(el);
+  }
   el.textContent = msg;
-  el.style.cssText = `
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-    background: #B42318; color: #fff; padding: 10px 18px;
-    font: 600 12.5px ${FONT_FAMILY}; z-index: 2147483647;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.25); pointer-events: none;
-  `;
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 4000);
+  clearTimeout((el as any)._hideTimer);
+  (el as any)._hideTimer = setTimeout(() => el?.remove(), 4000);
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

@@ -204,7 +204,7 @@ test.describe("06 - Export Engines Suite (PNG, PDF, Clipboard)", () => {
     await annotCheckbox.uncheck();
     await expect(annotCheckbox).not.toBeChecked();
     await page.locator("#save-btn").click();
-    await expect(page.locator(".toast")).toContainText("PNG saved", { timeout: 10000 });
+    await page.waitForFunction(() => ((window as any).__capturedBlobs?.length ?? 0) >= 2, { timeout: 10000 });
 
     const sizeWithoutAnnotations: number = await page.evaluate(() => {
       const blobs = (window as any).__capturedBlobs as Blob[];

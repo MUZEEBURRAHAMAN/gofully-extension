@@ -1,0 +1,14 @@
+{
+  "appName": {
+    "message": "GoFully - Full Page Screenshot, OCR & Editor",
+    "description": "Extension name for English"
+  },
+  "shortName": {
+    "message": "GoFully",
+    "description": "Short extension name"
+  },
+  "appDesc": {
+    "message": "Full page screenshot & screen capture tool. Annotate, blur sensitive info, extract text with local OCR, and export to PNG or PDF.",
+    "description": "Short description for English (max 132 chars)"
+  }
+}

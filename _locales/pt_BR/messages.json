@@ -1,0 +1,14 @@
+{
+  "appName": {
+    "message": "GoFully - Captura de Tela Inteira, OCR e Editor",
+    "description": "Extension name for Portuguese (Brazil)"
+  },
+  "shortName": {
+    "message": "GoFully",
+    "description": "Short extension name"
+  },
+  "appDesc": {
+    "message": "Capture páginas inteiras ou áreas, extraia texto com OCR local, adicione notas, desfoque dados privados e exporte para PNG ou PDF.",
+    "description": "Short description for Portuguese (max 132 chars)"
+  }
+}

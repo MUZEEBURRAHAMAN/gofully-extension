@@ -23,38 +23,31 @@ export const metadata: Metadata = {
   },
 };
 
-const howToJsonLd = {
+const articleJsonLd = {
   "@context": "https://schema.org",
-  "@type": "HowTo",
-  name: "How to Take a Full Page Screenshot in Chrome Without Cutting Off Content",
-  description: "Step-by-step instructions for capturing entire scrolling webpages in Google Chrome.",
-  totalTime: "PT2M",
-  step: [
-    {
-      "@type": "HowToStep",
-      name: "Install a Full Page Screenshot Extension",
-      text: "Install GoFully from the Chrome Web Store for automated scrolling and sticky header handling.",
-      url: "https://gofully-extension.vercel.app/guides/how-to-take-full-page-screenshot-chrome#extension-method",
+  "@type": "TechArticle",
+  "@id": "https://gofully-extension.vercel.app/guides/how-to-take-full-page-screenshot-chrome#article",
+  url: "https://gofully-extension.vercel.app/guides/how-to-take-full-page-screenshot-chrome",
+  headline: "How to Take a Full Page Screenshot in Chrome Without Cutting Off Content",
+  description:
+    "Step-by-step instructions for capturing entire scrolling webpages in Google Chrome without cutting off content or repeating sticky headers.",
+  isPartOf: { "@id": "https://gofully-extension.vercel.app/#website" },
+  datePublished: "2026-09-08",
+  dateModified: "2026-09-20",
+  author: {
+    "@type": "Organization",
+    name: "GoFully",
+    url: "https://gofully-extension.vercel.app/",
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "GoFully",
+    url: "https://gofully-extension.vercel.app/",
+    logo: {
+      "@type": "ImageObject",
+      url: "https://gofully-extension.vercel.app/logo.png",
     },
-    {
-      "@type": "HowToStep",
-      name: "Trigger Full Page Capture",
-      text: "Press Ctrl+Shift+F (or Command+Shift+F on Mac) or click the GoFully extension icon and choose 'Full Page'.",
-      url: "https://gofully-extension.vercel.app/guides/how-to-take-full-page-screenshot-chrome#trigger-capture",
-    },
-    {
-      "@type": "HowToStep",
-      name: "Let GoFully Auto-Scroll and Stitch",
-      text: "The tool automatically scrolls through the webpage, waits for lazy-loaded images to load, hides repeating sticky navigation bars, and stitches the canvas.",
-      url: "https://gofully-extension.vercel.app/guides/how-to-take-full-page-screenshot-chrome#auto-scroll",
-    },
-    {
-      "@type": "HowToStep",
-      name: "Annotate, Redact or Export to PDF/PNG",
-      text: "Review the full-length capture in the editor. Add annotations, blur sensitive data, and export in 4K PNG or paginated PDF.",
-      url: "https://gofully-extension.vercel.app/guides/how-to-take-full-page-screenshot-chrome#export",
-    },
-  ],
+  },
 };
 
 export default function FullPageScreenshotGuidePage() {
@@ -62,7 +55,7 @@ export default function FullPageScreenshotGuidePage() {
     <div className="gf-industry min-h-screen">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
       />
       <SiteNav />
 

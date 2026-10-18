@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { BlueprintFrame } from "@/components/blueprint-frame";
 import { ContainerScroll } from "@/components/ui/container-scroll-animation";
 import { SiteNav } from "@/components/site-nav";
@@ -284,14 +285,15 @@ export default function HomePage() {
         }
       >
         {/* Hero tab mockup */}
-        <img
+        <Image
           src="/features/hero_cover.webp"
           alt="GoFully Screenshot Beautifier interface with full annotation and styling tools"
+          width={1000}
+          height={574}
+          priority
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1024px"
           className="mx-auto object-contain h-full w-full object-center"
           draggable={false}
-          loading="eager"
-          fetchPriority="high"
-          decoding="async"
         />
       </ContainerScroll>
 
@@ -386,13 +388,15 @@ export default function HomePage() {
               </div>
               <p style={{ fontSize: "12.5px", lineHeight: 1.55, color: "rgba(29,31,32,.5)", margin: "0 0 14px" }}>{s.body}</p>
               <BlueprintFrame className="p-2">
-                <img
+                <Image
                   src={s.image}
                   alt={s.alt}
+                  width={900}
+                  height={600}
+                  sizes="(max-width: 768px) 100vw, 33vw"
                   className="w-full block object-cover"
                   style={{ aspectRatio: "3/2" }}
                   loading="lazy"
-                  decoding="async"
                 />
               </BlueprintFrame>
             </div>
@@ -431,13 +435,15 @@ export default function HomePage() {
                 <p style={{ fontSize: 14, lineHeight: 1.65, color: "rgba(29,31,32,.5)", marginTop: 12, maxWidth: 440 }}>{f.body}</p>
               </div>
               <BlueprintFrame className={`p-2.5 ${f.reverse ? "md:order-1" : ""}`}>
-                <img
+                <Image
                   src={f.image}
                   alt={f.alt}
+                  width={900}
+                  height={600}
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   className="w-full block object-cover"
                   style={{ aspectRatio: "3/2" }}
                   loading="lazy"
-                  decoding="async"
                 />
               </BlueprintFrame>
             </div>
@@ -801,7 +807,7 @@ export default function HomePage() {
               rel="noreferrer"
               className="inline-flex items-center justify-center transition-transform hover:-translate-y-0.5"
             >
-              <img
+              <Image
                 src="/badges/dofollow-tools.svg"
                 alt="Featured on Dofollow.Tools"
                 width={200}
@@ -816,7 +822,7 @@ export default function HomePage() {
               rel="noreferrer"
               className="inline-flex items-center justify-center transition-transform hover:-translate-y-0.5"
             >
-              <img
+              <Image
                 src="/badges/alternativeto.svg"
                 alt="GoFully | AlternativeTo"
                 width={166}
@@ -831,7 +837,7 @@ export default function HomePage() {
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center transition-transform hover:-translate-y-0.5"
             >
-              <img
+              <Image
                 src="/badges/ufind-best.svg"
                 alt="Featured on ufind.best"
                 width={150}
@@ -846,12 +852,13 @@ export default function HomePage() {
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center transition-transform hover:-translate-y-0.5"
             >
-              <img
+              <Image
                 src="https://saasfame.com/badge-light.svg"
                 alt="Featured on saasfame.com"
                 width={170}
                 height={54}
                 style={{ height: 54, width: "auto" }}
+                unoptimized
               />
             </a>
 
@@ -861,12 +868,13 @@ export default function HomePage() {
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center transition-transform hover:-translate-y-0.5"
             >
-              <img
+              <Image
                 src="https://productfame.com/badges/featured-light.svg"
                 alt="Featured on ProductFame"
                 width={245}
                 height={54}
                 style={{ height: 54, width: "auto" }}
+                unoptimized
               />
             </a>
 
@@ -877,12 +885,13 @@ export default function HomePage() {
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center transition-transform hover:-translate-y-0.5"
             >
-              <img
+              <Image
                 src="https://www.tinyshelf.co/badge/tinyshelf-badge-dark-f4d1216a.svg"
                 alt="Featured on TinyShelf"
                 width={216}
                 height={64}
                 style={{ height: 54, width: "auto" }}
+                unoptimized
               />
             </a>
           </div>

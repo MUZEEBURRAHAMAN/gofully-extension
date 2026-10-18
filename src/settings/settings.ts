@@ -40,6 +40,8 @@ const elements = {
   skipStickyHeaders: document.getElementById("skipStickyHeaders") as HTMLInputElement,
   defaultExportFormat: document.getElementById("defaultExportFormat") as HTMLSelectElement,
   captureStamp: document.getElementById("captureStamp") as HTMLInputElement,
+  indexCaptureText: document.getElementById("indexCaptureText") as HTMLInputElement,
+  keepFullImages: document.getElementById("keepFullImages") as HTMLInputElement,
   ocrLanguage: document.getElementById("ocrLanguage") as HTMLSelectElement,
   uiLanguage: document.getElementById("uiLanguage") as HTMLSelectElement,
   savedToast: document.getElementById("savedToast")!,
@@ -68,6 +70,8 @@ async function loadSettings(): Promise<void> {
   elements.skipStickyHeaders.checked = settings.skipStickyHeaders;
   elements.defaultExportFormat.value = settings.defaultExportFormat;
   elements.captureStamp.checked = settings.captureStamp;
+  elements.indexCaptureText.checked = settings.indexCaptureText !== false;
+  elements.keepFullImages.checked = settings.keepFullImages === true;
   elements.ocrLanguage.value = settings.ocrLanguage;
 
   editorShortcuts = { ...DEFAULT_EDITOR_SHORTCUTS, ...(settings.editorShortcuts || {}) };
@@ -97,6 +101,8 @@ async function saveSettings(): Promise<void> {
     jpgQuality: 0.92,
     editorShortcuts,
     captureStamp: elements.captureStamp.checked,
+    indexCaptureText: elements.indexCaptureText.checked,
+    keepFullImages: elements.keepFullImages.checked,
     theme: currentTheme,
     ocrLanguage: elements.ocrLanguage.value,
     language: elements.uiLanguage.value,
@@ -228,6 +234,8 @@ const inputs = [
   elements.skipStickyHeaders,
   elements.defaultExportFormat,
   elements.captureStamp,
+  elements.indexCaptureText,
+  elements.keepFullImages,
   elements.ocrLanguage,
   elements.uiLanguage,
 ];
@@ -235,3 +243,53 @@ const inputs = [
 inputs.forEach((el) => el.addEventListener("change", saveSettings));
 
 loadSettings();
+
+
+// ── Browser-level shortcuts: show what Chrome actually has bound, and say so when it hasn't ──
+async function renderChromeShortcuts(): Promise<void> {
+  const rows = document.getElementById("chromeShortcutRows");
+  const warn = document.getElementById("chromeShortcutWarn");
+  if (!rows || !warn || !chrome.commands?.getAll) return;
+
+  const cmds = await chrome.commands.getAll();
+  const manifestCmds = (chrome.runtime.getManifest().commands || {}) as Record<string, { suggested_key?: unknown }>;
+  rows.innerHTML = "";
+  const dropped: string[] = [];
+
+  for (const c of cmds) {
+    const label = c.name === "_execute_action" ? "Open GoFully" : c.description || c.name || "Command";
+    const row = document.createElement("div");
+    row.className = "shortcut-row";
+    const name = document.createElement("span");
+    name.textContent = label;
+    const key = document.createElement("kbd");
+    if (c.shortcut) {
+      key.textContent = c.shortcut.toUpperCase();
+    } else {
+      key.textContent = "NOT SET";
+      key.className = "unset";
+      // A command that ships with a default key but has none now lost it to a conflict.
+      if (c.name && manifestCmds[c.name]?.suggested_key) dropped.push(label);
+    }
+    row.append(name, key);
+    rows.appendChild(row);
+  }
+  rows.lastElementChild?.setAttribute("style", "border-bottom:none;");
+
+  if (dropped.length) {
+    warn.hidden = false;
+    warn.textContent =
+      `Chrome removed the default key for ${dropped.join(", ")} because another extension or Chrome itself already uses it. ` +
+      `Choose a different key with “Change in Chrome”.`;
+  } else {
+    warn.hidden = true;
+    warn.textContent = "";
+  }
+}
+
+document.getElementById("changeChromeShortcutsBtn")?.addEventListener("click", () => {
+  chrome.tabs.create({ url: "chrome://extensions/shortcuts" });
+});
+void renderChromeShortcuts();
+// coming back from chrome://extensions/shortcuts should show the new bindings
+window.addEventListener("focus", () => void renderChromeShortcuts());

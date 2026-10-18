@@ -1,0 +1,14 @@
+{
+  "appName": {
+    "message": "GoFully - Capture d'écran pleine page, OCR et éditeur",
+    "description": "Extension name for French"
+  },
+  "shortName": {
+    "message": "GoFully",
+    "description": "Short extension name"
+  },
+  "appDesc": {
+    "message": "Capturez des pages web entières ou zones, extrayez du texte par OCR local, annotez, floutez les données et exportez en PNG ou PDF.",
+    "description": "Short description for French (max 132 chars)"
+  }
+}

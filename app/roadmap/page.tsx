@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { BlueprintFrame } from "@/components/blueprint-frame";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
@@ -117,6 +118,77 @@ export default function RoadmapPage() {
       {/* Timeline */}
       <div className="px-6 md:px-20" style={{ paddingTop: 8, paddingBottom: 90 }}>
         <div>
+
+          {/* v1.1.3 upcoming */}
+          <TimelineRow
+            tag="v1.1.3"
+            tagStyle={{ background: "var(--gf-color-accent)", color: "#fff", borderColor: "var(--gf-color-accent)" }}
+            status="NEXT"
+            statusColor="var(--gf-color-accent)"
+            dotStyle={{ background: "var(--gf-color-accent)", borderColor: "var(--gf-color-accent)", boxShadow: "0 0 0 4px rgba(22,103,242,.15)" }}
+          >
+            <div className="p-6 border" style={{ borderColor: "rgba(22,103,242,.3)", background: "rgba(22,103,242,.04)", maxWidth: 600 }}>
+              <div className="gf-heading-font font-semibold" style={{ fontSize: 20 }}>
+                Draw on any live page, capture one element, and finish with Beautify
+              </div>
+              <p className="mt-2" style={{ fontSize: "13.5px", color: "rgba(29,31,32,.6)", lineHeight: 1.6 }}>
+                Built and in testing. Publishing to the Chrome Web Store next.
+              </p>
+
+              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
+                Annotate live websites
+              </div>
+              <ul className="mt-2.5 flex flex-col gap-2">
+                <OutlineBullet>Draw directly on any open page — pen, highlighter, arrows, shapes, text, and sticky notes — then capture the page exactly as marked up.</OutlineBullet>
+                <OutlineBullet>Highlight text on the page itself, with one shortcut to start and stop.</OutlineBullet>
+                <OutlineBullet>Your marks save for each page address on your device and return when you reopen Draw on Page there.</OutlineBullet>
+              </ul>
+
+              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
+                Capture, redact &amp; find
+              </div>
+              <ul className="mt-2.5 flex flex-col gap-2">
+                <OutlineBullet>Capture Element: hover, use the arrow keys to pick a parent or child, and click.</OutlineBullet>
+                <OutlineBullet>Auto-redact finds emails, card numbers, phone numbers, ID numbers, IP addresses and API keys, and covers them with boxes you review before export.</OutlineBullet>
+                <OutlineBullet>Search past captures by the words inside them, the page title or the address. Switch it off in Settings.</OutlineBullet>
+                <OutlineBullet>Pin a capture over any page as a reference.</OutlineBullet>
+              </ul>
+
+              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
+                Step-by-step guides
+              </div>
+              <ul className="mt-2.5 flex flex-col gap-2">
+                <OutlineBullet>Gather up to 30 captures, write a line under each, then export a PDF or a Markdown ZIP with its images.</OutlineBullet>
+              </ul>
+
+              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
+                Backgrounds &amp; mockups
+              </div>
+              <ul className="mt-2.5 flex flex-col gap-2">
+                <OutlineBullet>Your own image as a background, plus a built-in set of generated wallpapers.</OutlineBullet>
+                <OutlineBullet>Border and text watermark controls, plus nine-point alignment for where the screenshot sits.</OutlineBullet>
+                <OutlineBullet>Save, import, and export your background presets as files you can share.</OutlineBullet>
+                <OutlineBullet>Perspective, rotation, and zoom controls for dimensional mockups.</OutlineBullet>
+                <OutlineBullet>Progressive blur, either inside the screenshot or bleeding into the background.</OutlineBullet>
+              </ul>
+
+              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
+                Crop
+              </div>
+              <ul className="mt-2.5 flex flex-col gap-2">
+                <OutlineBullet>Crop now carries your existing annotations into the cropped image so they stay editable, and undo and redo restore the image size too.</OutlineBullet>
+              </ul>
+
+              <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 20 }}>
+                Reliability
+              </div>
+              <ul className="mt-2.5 flex flex-col gap-2">
+                <OutlineBullet>Keyboard shortcuts now always show a confirmation when a capture finishes, and a clear message (or a toolbar-icon badge on pages that can&apos;t show one) when one can&apos;t run.</OutlineBullet>
+                <OutlineBullet>Settings lists the shortcuts Chrome has bound and flags any that another extension took.</OutlineBullet>
+                <OutlineBullet>The OCR engine starts reliably in more browser setups.</OutlineBullet>
+              </ul>
+            </div>
+          </TimelineRow>
 
           {/* v1.2.0 upcoming */}
           <TimelineRow
@@ -336,7 +408,15 @@ export default function RoadmapPage() {
                 <Bullet>Automatically manages sticky nav bars and pre-triggers lazy-loaded media; stitches long pages with zero overlap.</Bullet>
               </ul>
               <div className="mt-3 border overflow-hidden" style={{ borderColor: "rgba(29,31,32,.12)", height: 170 }}>
-                <img src="/features/feature-1.webp" alt="Full-page capture of a long webpage" className="w-full h-full object-cover object-top" />
+                <Image
+                  src="/features/feature-1.webp"
+                  alt="Full-page capture of a long webpage"
+                  width={1536}
+                  height={1024}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="w-full h-full object-cover object-top"
+                  loading="lazy"
+                />
               </div>
 
               <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 22 }}>
@@ -346,7 +426,15 @@ export default function RoadmapPage() {
                 <Bullet>A local WebAssembly model reads text and code out of any image and copies it straight to the clipboard.</Bullet>
               </ul>
               <div className="mt-3 border overflow-hidden" style={{ borderColor: "rgba(29,31,32,.12)", height: 170 }}>
-                <img src="/features/feature-2.webp" alt="On-device OCR text extraction result" className="w-full h-full object-cover object-top" />
+                <Image
+                  src="/features/feature-2.webp"
+                  alt="On-device OCR text extraction result"
+                  width={1536}
+                  height={1024}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="w-full h-full object-cover object-top"
+                  loading="lazy"
+                />
               </div>
 
               <div className="gf-heading-font font-semibold uppercase" style={{ fontSize: 13, letterSpacing: "0.02em", color: "var(--gf-color-accent)", marginTop: 22 }}>
@@ -358,15 +446,27 @@ export default function RoadmapPage() {
               </ul>
               <div className="mt-3 grid gap-3" style={{ gridTemplateColumns: "1.4fr 1fr" }}>
                 <div className="border overflow-hidden relative" style={{ borderColor: "rgba(29,31,32,.12)", height: 170 }}>
-                  <img
+                  <Image
                     src="/features/feature-3.webp"
                     alt="Annotated screenshot with arrows and callouts"
+                    width={1536}
+                    height={1024}
+                    sizes="(max-width: 768px) 100vw, 50vw"
                     className="absolute inset-0 w-full h-full object-cover"
                     style={{ objectPosition: "18% 30%", transform: "scale(2)", transformOrigin: "18% 30%" }}
+                    loading="lazy"
                   />
                 </div>
                 <div className="border overflow-hidden flex items-center justify-center p-2.5" style={{ borderColor: "rgba(29,31,32,.12)", height: 170, background: "#fff" }}>
-                  <img src="/features/feature-4.webp" alt="Export result card with copy, PNG, and PDF options" className="max-w-full max-h-full object-contain" />
+                  <Image
+                    src="/features/feature-4.webp"
+                    alt="Export result card with copy, PNG, and PDF options"
+                    width={923}
+                    height={686}
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className="max-w-full max-h-full object-contain"
+                    loading="lazy"
+                  />
                 </div>
               </div>
             </BlueprintFrame>

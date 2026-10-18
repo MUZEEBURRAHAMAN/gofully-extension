@@ -23,38 +23,31 @@ export const metadata: Metadata = {
   },
 };
 
-const howToJsonLd = {
+const articleJsonLd = {
   "@context": "https://schema.org",
-  "@type": "HowTo",
-  name: "How to Extract and Copy Unselectable Text from Any Webpage or Image",
-  description: "Step-by-step instructions for extracting text from images and locked web pages locally.",
-  totalTime: "PT1M",
-  step: [
-    {
-      "@type": "HowToStep",
-      name: "Activate GoFully Capture",
-      text: "Open the webpage containing unselectable text or an image. Click the GoFully icon or press Alt+S.",
-      url: "https://gofully-extension.vercel.app/guides/how-to-extract-unselectable-text#activate",
+  "@type": "TechArticle",
+  "@id": "https://gofully-extension.vercel.app/guides/how-to-extract-unselectable-text#article",
+  url: "https://gofully-extension.vercel.app/guides/how-to-extract-unselectable-text",
+  headline: "How to Extract and Copy Unselectable Text from Any Webpage or Image",
+  description:
+    "Step-by-step instructions for extracting text from images, charts, videos, and locked web pages locally using in-browser WebAssembly OCR.",
+  isPartOf: { "@id": "https://gofully-extension.vercel.app/#website" },
+  datePublished: "2026-09-08",
+  dateModified: "2026-09-20",
+  author: {
+    "@type": "Organization",
+    name: "GoFully",
+    url: "https://gofully-extension.vercel.app/",
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "GoFully",
+    url: "https://gofully-extension.vercel.app/",
+    logo: {
+      "@type": "ImageObject",
+      url: "https://gofully-extension.vercel.app/logo.png",
     },
-    {
-      "@type": "HowToStep",
-      name: "Select the Region",
-      text: "Choose 'Selected Region' and draw a bounding box around the image, video player, or locked text area.",
-      url: "https://gofully-extension.vercel.app/guides/how-to-extract-unselectable-text#select-region",
-    },
-    {
-      "@type": "HowToStep",
-      name: "Click 'Extract Text (OCR)'",
-      text: "The built-in WebAssembly OCR engine parses pixels directly on your CPU in milliseconds.",
-      url: "https://gofully-extension.vercel.app/guides/how-to-extract-unselectable-text#run-ocr",
-    },
-    {
-      "@type": "HowToStep",
-      name: "Copy Formatted Text",
-      text: "Click 'Copy Text' to paste directly into your editor, IDE, or document. Zero cloud transmission.",
-      url: "https://gofully-extension.vercel.app/guides/how-to-extract-unselectable-text#copy",
-    },
-  ],
+  },
 };
 
 export default function ExtractUnselectableTextGuidePage() {
@@ -62,7 +55,7 @@ export default function ExtractUnselectableTextGuidePage() {
     <div className="gf-industry min-h-screen">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
       />
       <SiteNav />
 

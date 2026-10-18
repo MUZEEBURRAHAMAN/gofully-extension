@@ -218,6 +218,14 @@ function showResultCard(payload: ResultCardPayload): void {
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13h6M9 17h3"/></svg>
         <span>PDF</span>
       </button>
+      <button class="res-btn" id="gf-res-guide">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6h11M10 12h11M10 18h11"/><path d="M4 6h1v4M4 10h2M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+        <span>Guide</span>
+      </button>
+      <button class="res-btn" id="gf-res-pin">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 3h6l-1 6 3 3v2H7v-2l3-3z"/></svg>
+        <span>Pin</span>
+      </button>
       <button class="res-btn" id="gf-res-edit">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
         <span>Edit</span>
@@ -290,6 +298,18 @@ function showResultCard(payload: ResultCardPayload): void {
     setBtnBusy(btn, "", resp?.success ? "Saved!" : "Failed", !!resp?.success);
   });
 
+  shadow.getElementById("gf-res-guide")!.addEventListener("click", async (e) => {
+    const btn = e.currentTarget as HTMLElement;
+    const resp = await chrome.runtime.sendMessage({ type: "GUIDE_ADD_LAST_CAPTURE" }).catch(() => null);
+    setBtnBusy(btn, "", resp?.ok ? `Step ${resp.count}` : "Failed", !!resp?.ok);
+  });
+
+  shadow.getElementById("gf-res-pin")!.addEventListener("click", async (e) => {
+    const btn = e.currentTarget as HTMLElement;
+    const resp = await chrome.runtime.sendMessage({ type: "PIN_LAST_CAPTURE" }).catch(() => null);
+    setBtnBusy(btn, "", resp?.ok ? "Pinned" : "Failed", !!resp?.ok);
+  });
+
   shadow.getElementById("gf-res-edit")!.addEventListener("click", () => {
     chrome.runtime.sendMessage({ type: "OPEN_EDITOR" }).catch(() => {});
     dismissResultCard();
@@ -358,6 +378,28 @@ async function showQuickCaptureToast(dataUrl: string): Promise<void> {
   claimPendingRateNudge().then((due) => {
     if (due) setTimeout(showQuickRateNudge, 1000);
   });
+}
+
+// Shared with region-selector.ts / scrolling-area-ui.ts (same element id), so
+// whichever script reacts first creates it and the others only update it.
+function showInlineNotice(msg: string, kind: "error" | "info"): void {
+  let el = document.getElementById("gofully-inline-notice");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "gofully-inline-notice";
+    el.setAttribute("role", "status");
+    el.setAttribute("aria-live", "polite");
+    (document.body || document.documentElement).appendChild(el);
+  }
+  el.style.cssText = `
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: ${kind === "error" ? "#B42318" : "rgba(16, 24, 40, 0.92)"}; color: #fff;
+    padding: 10px 18px; font: 600 12.5px ${FONT_STACK}; z-index: 2147483647;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25); pointer-events: none;
+  `;
+  el.textContent = msg;
+  clearTimeout((el as any)._hideTimer);
+  (el as any)._hideTimer = setTimeout(() => el?.remove(), kind === "error" ? 4000 : 2200);
 }
 
 // ─── Rate nudge (standalone, page-level — no longer tied to a result card) ──
@@ -620,6 +662,18 @@ if (!(window as any).__snapforge_result_bar_listener_registered) {
       sendResponse({ shown: true });
       return true;
     }
+    if (message.type === "CAPTURE_ERROR_INLINE" || message.type === "CAPTURE_NOTICE") {
+      // This script is always present, so a failed or skipped shortcut
+      // capture is never silent (region-selector / scrolling-area-ui only
+      // exist while their own picker is open).
+      removeProgressOverlay();
+      showInlineNotice(
+        message.payload?.message || "Capture failed",
+        message.type === "CAPTURE_NOTICE" ? "info" : "error"
+      );
+      sendResponse({ shown: true });
+      return true;
+    }
     return false;
   });
 
@@ -643,6 +697,9 @@ removeProgressOverlay();
 // Cmd/Ctrl/Alt + Shift + F (Full Page)
 // Cmd/Ctrl/Alt + Shift + V (Visible Area)
 // Cmd/Ctrl/Alt + Shift + A (Selected Area)
+// Cmd/Ctrl/Alt + Shift + H (Draw on page)
+let lastShortcutDispatchTime = 0;
+
 function handleCaptureShortcut(e: KeyboardEvent): void {
   const hasModifier = (e.metaKey || e.ctrlKey || e.altKey) && e.shiftKey;
   if (!hasModifier) return;
@@ -652,8 +709,15 @@ function handleCaptureShortcut(e: KeyboardEvent): void {
     target &&
     (target.tagName === "INPUT" ||
       target.tagName === "TEXTAREA" ||
-      target.isContentEditable)
+      target.isContentEditable ||
+      (typeof target.closest === "function" &&
+        target.closest("input, textarea, [contenteditable='true'], [role='textbox']")))
   ) {
+    return;
+  }
+
+  const now = Date.now();
+  if (now - lastShortcutDispatchTime < 600) {
     return;
   }
 
@@ -663,6 +727,11 @@ function handleCaptureShortcut(e: KeyboardEvent): void {
   const isF = code === "KeyF" || key === "f" || code === "Digit1" || key === "1";
   const isV = code === "KeyV" || key === "v" || code === "Digit3" || key === "3";
   const isA = code === "KeyA" || key === "a" || code === "Digit4" || key === "4";
+  const isH = code === "KeyH" || key === "h";
+
+  if (isF || isV || isA || isH) {
+    lastShortcutDispatchTime = now;
+  }
 
   if (isF) {
     e.preventDefault();
@@ -688,6 +757,15 @@ function handleCaptureShortcut(e: KeyboardEvent): void {
       type: "INIT_INTERACTIVE_MODE",
       payload: { mode: "selected-area" },
       mode: "selected-area",
+    }).catch(() => {});
+  } else if (isH) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    chrome.runtime.sendMessage({
+      type: "INIT_INTERACTIVE_MODE",
+      payload: { mode: "annotate-page" },
+      mode: "annotate-page",
     }).catch(() => {});
   }
 }

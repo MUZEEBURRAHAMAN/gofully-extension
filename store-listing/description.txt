@@ -1,13 +1,13 @@
-GoFully is a free Chrome extension for full page screenshots, scrolling screen capture, on-device OCR text extraction, and visual annotation — 100% local processing, no account, no cloud uploads.
+GoFully is a free full page screenshot extension for Chrome. Capture a whole page, one element or a scrolling panel. Draw on a live site, hide sensitive text, make the image presentable, and export it. Everything runs on your device. No account, no uploads.
 
-Capture entire scrollable webpages, visible viewports, custom selected areas, or a specific scrolling section like a chat panel or data table. Extract text from images with local OCR, annotate with arrows and callout notes, blur sensitive details, and export to PNG, JPG, WebP, or auto-paginated PDF — everything runs on your device, nothing leaves your browser.
+Annotate with arrows and callouts. Auto-redact emails, card numbers and API keys. Pull text out of images with on-device OCR. Add wallpapers, 3D mockups and watermarks. Export to PNG, JPG, WebP or PDF, or string several captures into a step-by-step guide.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📸 5 CAPTURE MODES
+📸 7 WAYS TO CAPTURE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 1. FULL PAGE SCREENSHOT
-Captures the entire scrollable page from top to bottom. Integrates with the Chrome DevTools Protocol for single-shot captures on standard pages to eliminate stitching seams, with automatic scroll-stitch fallback for long documents, smart sticky header handling, and lazy-load image pre-scrolling.
+Captures the entire scrollable page from top to bottom. GoFully scrolls the page, captures each screen and checks every seam, and captures a piece again when two pieces do not line up. Sticky headers and lazy-loaded images are handled for you.
 
 2. VISIBLE VIEWPORT
 One-click instant capture of exactly what is visible on your screen.
@@ -21,6 +21,12 @@ Draw a boundary around any fixed section of a webpage (such as an article column
 5. CAPTURE TEXT (ON-DEVICE OCR)
 Select any area containing text—including photos, scanned PDFs, diagrams, and video frames—to extract and copy editable text directly to your clipboard using on-device optical character recognition.
 
+6. CAPTURE ELEMENT
+Hover over the page and a blue outline follows the element under your pointer. Press the arrow keys to pick its parent or child, then click. Cards, tables and chat messages come out cropped to the pixel.
+
+7. DRAW ON PAGE
+Mark up a live website before you capture it. Pen, highlighter, text highlight, arrow, rectangle, ellipse, text and sticky notes, with undo and redo. Capture the visible area or the full page with your marks in place. GoFully saves your marks per page address on your device, and they come back when you reopen Draw on Page there.
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🎨 BUILT-IN ANNOTATION & MARKUP STUDIO
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -32,7 +38,7 @@ Annotate and organize visual feedback directly in the browser:
 • Step Numbers: Auto-incrementing badges (1, 2, 3...) for reproduction steps and tutorials
 • Spotlight Mode: Dim surrounding areas to focus attention on key UI components
 • Freehand Drawing: Pen tool with adjustable stroke width
-• Cropping Studio: Preset aspect ratios (Free, 1:1, 4:3, 3:2, 16:9, 9:16, 21:9, A4, Twitter, OG Image) with grid guides and keyboard nudging
+• Cropping Studio: Preset aspect ratios (Free, 1:1, 4:3, 3:2, 16:9, 9:16, 21:9, A4, Twitter, OG Image) with grid guides and keyboard nudging. Your annotations move with the crop and stay editable
 • Zoom up to 1000%: Fine-tune annotations pixel-by-pixel on large or full-page captures
 • Undo / Redo History: Multi-step history stack for seamless editing
 • Curated Palette: 8 preset color swatches with stroke width adjustment
@@ -45,14 +51,41 @@ Protect private information before sharing screenshots:
 • Glass Smooth Blur: Soft Gaussian-style blur for sensitive text or numbers
 • Mosaic Pixelate: Pixelation filter for avatars or user IDs
 • Redact Blackout: Solid black box redaction for credentials and private data
+• Auto-redact: One click finds emails, card numbers, phone numbers, ID numbers, IP addresses and API keys, and covers each with a black box. Review every box before you export
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✨ BEAUTIFY: BACKGROUNDS, 3D MOCKUPS & BLUR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Turn a plain screenshot into an image worth posting:
+• Backgrounds: Gradients, patterns, eight wallpapers, or your own image
+• Layout: Padding, corner radius, shadow, window frame and aspect ratio, with a nine-point grid to place the screenshot
+• Border and watermark: Choose width and colour, then add your handle with size, opacity and position
+• 3D mockup: Tilt, rotate, zoom and pan in perspective, with six presets from Flat to Hero
+• Progressive blur: Blur grows toward an edge or away from the centre
+• Collage: Lay out several images side by side or stacked
+• Presets: Save your look, export it as a file and share it with a teammate
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📖 STEP-BY-STEP GUIDES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Capture a screen, click Guide, repeat. Write a line under each step, reorder or delete steps, and export one PDF or a Markdown file with its images in a ZIP. A guide holds up to 30 steps and stays on your device.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📌 PIN A CAPTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Float a screenshot over any page as a reference. Drag it, resize it and fade it with the opacity slider. Pins last until you close them or reload the tab.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🕒 CAPTURE HISTORY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-• Recent Captures Grid: Every capture is automatically saved with a thumbnail, source site, and timestamp
-• One-Click Reopen: Revisit, re-edit, or re-export any past capture straight from the popup
-• Fully Local: History lives only in your browser's own storage — nothing is uploaded, and Clear All wipes it instantly
+• Recent Captures Grid: Your last 50 captures, each with a thumbnail, source site and timestamp
+• Search inside screenshots: Type a word and GoFully finds captures by the text in the image, the page title or the address. It reads each capture on your device
+• Reopen (optional): Turn on Keep recent captures in Settings and History stores the full image of your last 10 captures, so a click reopens one in the editor. It is off by default
+• Fully Local: History lives in your browser's own storage. Nothing is uploaded, and Clear All deletes thumbnails, text and saved images together
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 💾 EXPORT & SHARING
@@ -61,7 +94,7 @@ Protect private information before sharing screenshots:
 • Copy Image: Copy PNG directly to clipboard for Slack, Jira, Figma, Notion, or email
 • Save PNG, JPG, or WebP: Download in Native Resolution, 1080p HD, or 4K UHD, with an adjustable Image Quality setting (Low/Medium/High/Maximum) for JPG and WebP
 • Export to PDF: Save clean, auto-paginated A4 documents
-• Quick In-Page Result Bar: Take immediate post-capture actions right on the page
+• Quick In-Page Result Bar: Copy, save, edit, pin or add to a guide right on the page
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🛡️ PRIVACY & ON-DEVICE PROCESSING
@@ -70,6 +103,7 @@ Protect private information before sharing screenshots:
 • 100% Client-Side Processing: Captures, annotations, and OCR operations execute locally in your browser.
 • No Cloud Uploads: Screenshots and extracted text are never transmitted to external servers.
 • No Account Required: Install and use immediately without signups or tracking.
+• Local Storage Only: Guides, saved marks, presets and search text stay in your browser until you export them.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⌨️ KEYBOARD SHORTCUTS
@@ -80,7 +114,9 @@ Global
 • Ctrl+Shift+F (Cmd+Shift+F on Mac) — Capture full page
 • Ctrl+Shift+V (Cmd+Shift+V on Mac) — Capture visible area
 • Ctrl+Shift+A (Cmd+Shift+A on Mac) — Capture selected area
-• Shortcuts can be customized at chrome://extensions/shortcuts
+• Ctrl+Shift+H (Cmd+Shift+H on Mac) — Draw on page
+• Chrome allows four default shortcuts per extension, so GoFully handles the rest on the page. Settings lists the keys Chrome has bound and flags any another extension took
+• Change any shortcut at chrome://extensions/shortcuts
 
 Editor
 V Select · A Arrow · R Rectangle · E Ellipse · C Callout · L Line
@@ -97,7 +133,10 @@ P Pen · T Text · S Spotlight · B Blur · N Step · X Crop · H Highlight
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Compared to GoFullPage, FireShot, Awesome Screenshot, and Nimbus Screenshot:
-✅ Free on-device OCR text extraction — none of the above offer this at all
+✅ Free on-device OCR text extraction, with search across your past captures
+✅ Draw on a live website, then capture it
+✅ Auto-redact for emails, card numbers and API keys
+✅ Wallpapers, 3D mockups and progressive blur, built in
 ✅ Free scrolling-area capture for chat boxes, code panels, and data tables
 ✅ Free annotation editor with real blur, pixelate, and blackout redaction
 ✅ PNG, JPG, WebP, and PDF export — no watermarks, no paid plan required
@@ -115,7 +154,7 @@ Q: Does GoFully work offline?
 A: Yes. Captures, annotations, and OCR all run 100% on-device in your browser. Nothing is uploaded to a server.
 
 Q: Can GoFully capture a full page without cutting anything off?
-A: Yes. Full Page Screenshot scrolls and stitches the entire page automatically, including pages with sticky headers, lazy-loaded images, and nested or shadow-DOM scroll containers.
+A: Yes. Full Page Screenshot scrolls and stitches the entire page, including pages with sticky headers, lazy-loaded images, and nested or shadow-DOM scroll containers.
 
 Q: Can I extract text from a screenshot or image?
 A: Yes. GoFully includes on-device OCR — select any area of text, a photo, a scanned PDF, or a video frame, and copy the extracted text to your clipboard.
@@ -127,7 +166,13 @@ Q: Is GoFully a good GoFullPage, FireShot, Awesome Screenshot, or Nimbus alterna
 A: Yes — GoFully covers everything those do (full page, visible area, PDF export) plus scrolling-area capture, a free annotation editor with blur/redaction, and local OCR, without an account or paywall.
 
 Q: Does GoFully save a history of my screenshots?
-A: Yes. A thumbnail grid of recent captures — with source site and timestamp — is available right in the popup for one-click reopening. That history is stored locally on your device only; nothing is ever uploaded.
+A: Yes. The popup keeps a thumbnail grid of your last 50 captures with source site and timestamp. You can search by the words inside each screenshot, and reopen recent ones in the editor if you turn on Keep recent captures. History stays on your device and you can switch the text search off in Settings.
+
+Q: Can I annotate a live website?
+A: Yes. Draw on Page adds a toolbar to the site. Mark it up, then capture the visible area or the full page with your marks included.
+
+Q: Does Auto-redact catch everything?
+A: It finds emails, card numbers, phone numbers, ID numbers, IP addresses and API keys that OCR can read. Check each black box before you share. Text that OCR misses stays visible.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🔗 LINKS
