@@ -6,7 +6,7 @@
 
 import type { CaptureRegion } from "../types";
 
-import { T, FONT_FAMILY, applyOverlayTheme, alpha } from "../ui/overlay-kit";
+import { T, FONT_FAMILY, applyOverlayTheme, alpha, SQUIRCLE_CSS } from "../ui/overlay-kit";
 const FONT_STACK = FONT_FAMILY;
 
 declare global {
@@ -124,7 +124,7 @@ async function start(): Promise<void> {
   host.style.cssText = "all:initial; position:fixed; inset:0; z-index:2147483646; pointer-events:none;";
   const root = host.attachShadow({ mode: "open" });
   const style = document.createElement("style");
-  style.textContent = `
+  style.textContent = SQUIRCLE_CSS + `
     @font-face { font-family:'GoFully Inter'; src:url('${chrome.runtime.getURL("assets/inter-latin-wght-normal.woff2")}') format('woff2'); font-weight:100 900; font-display:swap; }
     /* Figma: Overlay / Element · hover */
     .box { position:fixed; display:none; border:2px solid ${T.focus}; border-radius:6px; background:${alpha(T.focus, 0.12)}; pointer-events:none; box-shadow:0 0 0 1px ${alpha(T.surface, 0.7)}; }

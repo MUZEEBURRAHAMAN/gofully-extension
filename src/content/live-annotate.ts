@@ -10,7 +10,7 @@
  * chrome.storage.local only.
  */
 
-import { T, FONT_FAMILY, applyOverlayTheme, alpha } from "../ui/overlay-kit";
+import { T, FONT_FAMILY, applyOverlayTheme, alpha, SQUIRCLE_CSS } from "../ui/overlay-kit";
 import { LIGHT } from "../ui/ds/tokens";
 import { icon as dsIcon, type IconName } from "../ui/ds/icons";
 
@@ -384,7 +384,7 @@ function buildUi(): void {
   root = host.attachShadow({ mode: "open" });
 
   const style = document.createElement("style");
-  style.textContent = `
+  style.textContent = SQUIRCLE_CSS + `
     :host { all: initial; }
     * { box-sizing: border-box; }
     #svg-layer, #html-layer { position:absolute; left:0; top:0; }
@@ -400,7 +400,7 @@ function buildUi(): void {
     #bar button.on { background:${T.accentBg}; color:${T.accent}; }
     #bar button:focus-visible { box-shadow:0 0 0 3px ${T.focus}; }
     #bar .sep { width:1px; align-self:stretch; background:${T.border}; margin:6px 4px; flex:none; }
-    #bar .sw { width:20px; height:20px; margin:0 3px; border-radius:50%; border:1px solid ${alpha(INK, 0.16)}; cursor:pointer; flex:none; }
+    #bar .sw { width:20px; height:20px; margin:0 3px; border-radius:50%; corner-shape: round; border:1px solid ${alpha(INK, 0.16)}; cursor:pointer; flex:none; }
     #bar .sw.on { box-shadow:0 0 0 2px ${T.surface}, 0 0 0 4px ${T.focus}; }
     #bar .wd { width:30px; }
     #bar .wd i { display:block; width:16px; border-radius:4px; background:currentColor; }

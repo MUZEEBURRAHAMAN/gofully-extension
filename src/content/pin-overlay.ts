@@ -4,7 +4,7 @@
  * memory — nothing is stored or sent anywhere.
  */
 
-import { T, FONT_FAMILY } from "../ui/overlay-kit";
+import { T, FONT_FAMILY, SQUIRCLE_CSS } from "../ui/overlay-kit";
 import { icon } from "../ui/ds/icons";
 import { isSafeImageDataUrl } from "../utils/safe-image";
 const FONT_STACK = FONT_FAMILY;
@@ -31,7 +31,7 @@ function createPin(dataUrl: string, natW: number, natH: number): void {
   const root = host.attachShadow({ mode: "open" });
 
   const style = document.createElement("style");
-  style.textContent = `
+  style.textContent = SQUIRCLE_CSS + `
     @font-face { font-family:'GoFully Inter'; src:url('${chrome.runtime.getURL("assets/inter-latin-wght-normal.woff2")}') format('woff2'); font-weight:100 900; font-display:swap; }
     * { box-sizing:border-box; }
     /* Figma: Overlay / Pin · resting, · hover controls */

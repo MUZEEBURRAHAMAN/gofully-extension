@@ -129,12 +129,12 @@ function buildCrosshair(): void {
   const hint = makePanel({
     position: "absolute", top: "16px", left: "50%", transform: "translateX(-50%)",
     padding: "8px 14px", pointerEvents: "none", background: T.text, border: "none",
-    borderRadius: T.radiusPill, display: "flex", alignItems: "center", gap: "10px", whiteSpace: "nowrap",
+    borderRadius: T.radiusPill, cornerShape: "squircle", display: "flex", alignItems: "center", gap: "10px", whiteSpace: "nowrap",
   });
   hint.id = "gf-hint";
   const title = makeText("Drag over the part of the page that scrolls", { size: "13px", weight: "500", color: T.surface });
   const key = makeText("Esc", { size: "11px", weight: "500", color: T.surface });
-  Object.assign(key.style, { padding: "1px 6px", borderRadius: "4px", background: alpha(T.surface, 0.16) });
+  Object.assign(key.style, { padding: "1px 6px", borderRadius: "4px", cornerShape: "squircle", background: alpha(T.surface, 0.16) });
   const sub = makeText("cancel", { size: "13px", color: alpha(T.surface, 0.72) });
   hint.append(title, key, sub);
   crosshair.appendChild(hint);
@@ -195,7 +195,7 @@ function showSizeBadge(x: number, y: number, w: number, h: number): void {
       background: T.accent, color: T.onAccent,
       font: `500 11px/1 ${FONT_FAMILY}`,
       fontVariantNumeric: "tabular-nums",
-      padding: "4px 8px", borderRadius: "6px", whiteSpace: "nowrap",
+      padding: "4px 8px", borderRadius: "6px", cornerShape: "squircle", whiteSpace: "nowrap",
       boxShadow: T.shadow,
     });
     document.body.appendChild(sizeBadge);
@@ -227,7 +227,7 @@ function buildReadyUI(): void {
   const mark = document.createElement("span");
   Object.assign(mark.style, {
     display: "inline-flex", alignItems: "center", justifyContent: "center",
-    width: "32px", height: "32px", borderRadius: "8px",
+    width: "32px", height: "32px", borderRadius: "8px", cornerShape: "squircle",
     background: T.accentBg, color: T.accent, flexShrink: "0",
   });
   mark.innerHTML = Icon.scroll(18);
@@ -243,7 +243,7 @@ function buildReadyUI(): void {
   const speedRow = document.createElement("div");
   Object.assign(speedRow.style, {
     display: "flex", alignItems: "center", gap: "6px",
-    padding: "6px 6px 6px 12px", borderRadius: T.radius,
+    padding: "6px 6px 6px 12px", borderRadius: T.radius, cornerShape: "squircle",
     background: T.surfaceSunken,
   });
   const speedLbl = makeText("Auto speed", { size: "12px", weight: "500", color: T.textMuted });
@@ -253,7 +253,7 @@ function buildReadyUI(): void {
   const segment = document.createElement("div");
   Object.assign(segment.style, {
     display: "flex", gap: "2px", padding: "0",
-    background: "transparent", borderRadius: "6px",
+    background: "transparent", borderRadius: "6px", cornerShape: "squircle",
   });
   const speeds: Array<{ label: string; value: "slow" | "medium" | "fast" }> = [
     { label: "Slow", value: "slow" },
@@ -266,7 +266,7 @@ function buildReadyUI(): void {
     b.type = "button";
     b.textContent = label;
     Object.assign(b.style, {
-      border: "none", cursor: "pointer", borderRadius: "6px",
+      border: "none", cursor: "pointer", borderRadius: "6px", cornerShape: "squircle",
       padding: "5px 10px", font: `500 12px/1 ${FONT_FAMILY}`,
       background: "transparent", color: T.textMuted, transition: "background .14s, color .14s",
     });
@@ -344,11 +344,11 @@ function startAuto(): void {
 
   const track = document.createElement("div");
   Object.assign(track.style, {
-    height: "6px", borderRadius: "3px", background: T.surfaceSunken, overflow: "hidden",
+    height: "6px", borderRadius: "3px", cornerShape: "squircle", background: T.surfaceSunken, overflow: "hidden",
   });
   autoProgressEl = document.createElement("div");
   Object.assign(autoProgressEl.style, {
-    height: "100%", width: "100%", background: T.accent, borderRadius: "3px",
+    height: "100%", width: "100%", background: T.accent, borderRadius: "3px", cornerShape: "squircle",
     transform: "scaleX(0)", transformOrigin: "left",
     transition: "transform .35s ease",
   });
@@ -464,7 +464,7 @@ function buildCapturePanel(): void {
   Object.assign(head.style, { display: "flex", alignItems: "center", gap: "6px" });
   const dot = document.createElement("span");
   Object.assign(dot.style, {
-    width: "8px", height: "8px", borderRadius: "50%",
+    width: "8px", height: "8px", borderRadius: "50%", cornerShape: "round",
     background: T.danger, flexShrink: "0", animation: "gf-pulse 1.2s infinite",
   });
   const recLbl = makeText("Recording", { size: "12px", weight: "500", color: T.danger });
@@ -482,7 +482,7 @@ function buildCapturePanel(): void {
   speedWarnEl = document.createElement("div");
   Object.assign(speedWarnEl.style, {
     display: "none", alignItems: "flex-start", gap: "5px",
-    padding: "8px 10px", borderRadius: "8px",
+    padding: "8px 10px", borderRadius: "8px", cornerShape: "squircle",
     background: T.warnBg, color: T.warn, font: `500 12px/1.4 ${FONT_FAMILY}`,
   });
   speedWarnEl.innerHTML = `${Icon.warning(16)}<span>Scroll more slowly</span>`;
@@ -494,7 +494,7 @@ function buildCapturePanel(): void {
   // than a full preview, and Done/Cancel stay put right below it.
   const shot = document.createElement("div");
   Object.assign(shot.style, {
-    borderRadius: "8px", overflow: "hidden", border: `1px solid ${T.border}`,
+    borderRadius: "8px", cornerShape: "squircle", overflow: "hidden", border: `1px solid ${T.border}`,
     background: T.surfaceSunken, display: "none",
     maxHeight: "140px", flexShrink: "0",
   });
@@ -527,7 +527,7 @@ function shortcutHints(pairs: Array<[string, string]>): HTMLDivElement {
     Object.assign(kbd.style, {
       font: `500 11px/16px ${FONT_FAMILY}`, color: T.textMuted,
       background: T.surface, border: `1px solid ${T.borderStrong}`,
-      padding: "1px 6px", borderRadius: "4px", minWidth: "20px", textAlign: "center",
+      padding: "1px 6px", borderRadius: "4px", cornerShape: "squircle", minWidth: "20px", textAlign: "center",
     });
     kbd.textContent = key;
     item.append(kbd, makeText(label, { size: "11px", color: T.textFaint }));

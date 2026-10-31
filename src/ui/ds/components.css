@@ -1,3 +1,5 @@
+/* 100% corner smoothing (squircle) on every radius. Circles opt out with corner-shape: round. */
+*, *::before, *::after { corner-shape: squircle; }
 /* GoFully DS v2 components. One class per Figma component (Design System v2 page).
    Values come only from tokens.css. No hex, rgb or raw px colours in this file. */
 
@@ -88,7 +90,7 @@
 .gf-toggle { position: relative; display: inline-flex; flex: none; width: 36px; height: 20px; }
 .gf-toggle input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
 .gf-toggle span { position: absolute; inset: 0; border-radius: var(--gf-r-pill); background: var(--gf-border-strong); transition: background-color .15s; pointer-events: none; }
-.gf-toggle span::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--gf-white); box-shadow: var(--gf-shadow-xs); transition: transform .15s; }
+.gf-toggle span::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; corner-shape: round; background: var(--gf-white); box-shadow: var(--gf-shadow-xs); transition: transform .15s; }
 .gf-toggle input:checked + span { background: var(--gf-brand); }
 .gf-toggle input:checked + span::after { transform: translateX(16px); }
 .gf-toggle input:focus-visible + span { box-shadow: var(--gf-ring); }
@@ -97,10 +99,10 @@
 
 /* ── Checkbox & Radio ── 18px ── */
 .gf-check { appearance: none; flex: none; width: 18px; height: 18px; margin: 0; border: 1.5px solid var(--gf-border-strong); border-radius: var(--gf-r-xs); background: var(--gf-bg-surface); display: inline-grid; place-content: center; cursor: pointer; }
-.gf-check[type="radio"] { border-radius: 50%; }
+.gf-check[type="radio"] { border-radius: 50%; corner-shape: round; }
 .gf-check:checked { background: var(--gf-brand); border-color: var(--gf-brand); }
 .gf-check[type="checkbox"]:checked::after { content: ""; width: 9px; height: 5px; border: 2px solid var(--gf-on-brand); border-top: 0; border-right: 0; transform: translateY(-1px) rotate(-45deg); }
-.gf-check[type="radio"]:checked::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--gf-on-brand); }
+.gf-check[type="radio"]:checked::after { content: ""; width: 6px; height: 6px; border-radius: 50%; corner-shape: round; background: var(--gf-on-brand); }
 
 /* ── Segmented control / chips ── Figma "Segmented Control" ── */
 .gf-seg { display: inline-flex; gap: 2px; padding: 3px; border-radius: var(--gf-r-md); background: var(--gf-bg-sunken); }
@@ -173,7 +175,7 @@
 
 /* ── Slider ── */
 .gf-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 4px; border-radius: 2px; background: linear-gradient(var(--gf-brand), var(--gf-brand)) 0 / var(--gf-fill, 50%) 100% no-repeat, var(--gf-bg-sunken); }
-.gf-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border: 2px solid var(--gf-brand); border-radius: 50%; background: var(--gf-bg-surface); }
+.gf-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border: 2px solid var(--gf-brand); border-radius: 50%; corner-shape: round; background: var(--gf-bg-surface); }
 
 /* ── Dialog ── */
 .gf-scrim { position: fixed; inset: 0; background: var(--gf-scrim); }

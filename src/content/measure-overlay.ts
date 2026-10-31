@@ -9,7 +9,7 @@
  * The measurement boxes stay visible in a capture (a redline); the toolbar is left out.
  */
 
-import { T, FONT_FAMILY, applyOverlayTheme, alpha } from "../ui/overlay-kit";
+import { T, FONT_FAMILY, applyOverlayTheme, alpha, SQUIRCLE_CSS } from "../ui/overlay-kit";
 import { icon } from "../ui/ds/icons";
 
 const FONT_STACK = FONT_FAMILY;
@@ -398,7 +398,7 @@ function styles(): string {
     .gap.h { height: 0; border-top: 1px solid ${T.danger}; }
     .gap.v { width: 0; border-left: 1px solid ${T.danger}; }
     .ruler { height: 0; border-top: 2px solid ${T.danger}; transform-origin: 0 0; }
-    .dot { width: 7px; height: 7px; border-radius: 50%; background: ${T.danger}; box-shadow: 0 0 0 2px ${T.surface}; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; corner-shape: round; background: ${T.danger}; box-shadow: 0 0 0 2px ${T.surface}; }
     .lab { font: 500 11px/16px ${FONT_STACK}; padding: 2px 6px; border-radius: 4px; white-space: nowrap; font-variant-numeric: tabular-nums;
       background: ${T.focus}; color: ${T.accent === T.focus ? T.surface : T.accent}; max-width: 360px; overflow: hidden; text-overflow: ellipsis; }
     .lab.kept, .lab.gapl { background: ${T.danger}; color: ${T.surface}; }
@@ -422,7 +422,7 @@ function barStyles(): string {
     kbd { font: 500 10px/14px ${FONT_STACK}; padding: 0 5px; border-radius: 4px; background: ${T.surfaceSunken}; color: ${T.textMuted}; }
     .sws { display: flex; gap: 4px; }
     .sw { padding: 0 10px 0 4px; gap: 6px; font-variant-numeric: tabular-nums; }
-    .chip { width: 20px; height: 20px; border-radius: 50%; box-shadow: inset 0 0 0 1px ${alpha(T.text, 0.15)}; }
+    .chip { width: 20px; height: 20px; border-radius: 50%; corner-shape: round; box-shadow: inset 0 0 0 1px ${alpha(T.text, 0.15)}; }
   `;
 }
 
@@ -436,7 +436,7 @@ async function start(): Promise<void> {
   host.style.cssText = "all:initial; position:fixed; inset:0; z-index:2147483646; pointer-events:none;";
   const root = host.attachShadow({ mode: "open" });
   const style = document.createElement("style");
-  style.textContent = styles();
+  style.textContent = SQUIRCLE_CSS + styles();
   layer = document.createElement("div");
   root.append(style, layer);
 
@@ -445,7 +445,7 @@ async function start(): Promise<void> {
   barHost.style.cssText = "all:initial; position:fixed; inset:auto 0 0 0; height:0; z-index:2147483647;";
   const barRoot = barHost.attachShadow({ mode: "open" });
   const barStyle = document.createElement("style");
-  barStyle.textContent = barStyles();
+  barStyle.textContent = SQUIRCLE_CSS + barStyles();
   const bar = document.createElement("div");
   bar.className = "bar";
   bar.setAttribute("role", "toolbar");

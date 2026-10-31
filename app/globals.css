@@ -1,3 +1,5 @@
+/* 100% corner smoothing (squircle) on every radius. Circles opt out with corner-shape: round. */
+*, *::before, *::after { corner-shape: squircle; }
 @import "tailwindcss";
 @import "../src/ui/ds/tokens.web.css";
 @import "./site.css";
@@ -137,7 +139,7 @@ a { color: inherit; }
 .gf-cta--light { background: var(--gf-sky); color: var(--gf-navy); }
 .gf-cta--light:hover { transform: translateY(-1px); filter: brightness(1.04); }
 .gf-cta:active { transform: scale(.98); }
-.gf-cta-badge { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: #fff; color: var(--gf-brand); }
+.gf-cta-badge { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; corner-shape: round; background: #fff; color: var(--gf-brand); }
 .gf-cta--md .gf-cta-badge { width: 24px; height: 24px; }
 .gf-cta--lg .gf-cta-badge { width: 30px; height: 30px; }
 

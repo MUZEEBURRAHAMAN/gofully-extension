@@ -1,6 +1,6 @@
 import type { CaptureRegion } from "../types";
 
-import { T, FONT_FAMILY, applyOverlayTheme, alpha } from "../ui/overlay-kit";
+import { T, FONT_FAMILY, applyOverlayTheme, alpha, SQUIRCLE_CSS } from "../ui/overlay-kit";
 import { icon } from "../ui/ds/icons";
 
 /** Same family as src/ui/overlay-kit.ts — this file styles a shadow root. */
@@ -92,7 +92,7 @@ function createUI(): void {
   void applyOverlayTheme().then(() => { if (host) setVars(host); });
 
   const style = document.createElement("style");
-  style.textContent = `
+  style.textContent = SQUIRCLE_CSS + `
     @font-face {
       font-family: 'GoFully Inter';
       src: url('${chrome.runtime.getURL("assets/inter-latin-wght-normal.woff2")}') format('woff2');

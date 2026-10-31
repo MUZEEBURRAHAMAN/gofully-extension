@@ -9,7 +9,7 @@
  * Done puts the page back exactly as it was.
  */
 
-import { T, FONT_FAMILY, applyOverlayTheme, alpha } from "../ui/overlay-kit";
+import { T, FONT_FAMILY, applyOverlayTheme, alpha, SQUIRCLE_CSS } from "../ui/overlay-kit";
 import { LIGHT } from "../ui/ds/tokens";
 import { icon } from "../ui/ds/icons";
 import { findSensitiveRanges, type SensitiveKind } from "../utils/sensitive";
@@ -312,7 +312,7 @@ function buildBar(): void {
   barHost.style.cssText = "all:initial; position:fixed; inset:0; z-index:2147483647; pointer-events:none;";
   const root = barHost.attachShadow({ mode: "open" });
   const css = document.createElement("style");
-  css.textContent = `
+  css.textContent = SQUIRCLE_CSS + `
     @font-face { font-family:'GoFully Inter'; src:url('${chrome.runtime.getURL("assets/inter-latin-wght-normal.woff2")}') format('woff2'); font-weight:100 900; font-display:swap; }
     * { box-sizing: border-box; }
     .outline { position: fixed; display: none; pointer-events: none; border: 2px dashed ${T.focus}; border-radius: 4px; background: ${alpha(T.focus, 0.06)}; }

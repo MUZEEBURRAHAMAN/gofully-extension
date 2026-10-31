@@ -234,3 +234,6 @@ export function makeText(
   } as Partial<CSSStyleDeclaration>);
   return s;
 }
+
+/** 100% corner smoothing for every radius inside a shadow root; circles set corner-shape: round. */
+export const SQUIRCLE_CSS = "*, *::before, *::after { corner-shape: squircle; }\n";

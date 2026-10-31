@@ -1,4 +1,4 @@
-import { T, FONT_FAMILY, applyOverlayTheme, alpha } from "../ui/overlay-kit";
+import { T, FONT_FAMILY, applyOverlayTheme, alpha, SQUIRCLE_CSS } from "../ui/overlay-kit";
 import { icon } from "../ui/ds/icons";
 import { isSafeImageDataUrl } from "../utils/safe-image";
 import { codeKind, safeLink, CODE_LABEL, type DecodedCode } from "../utils/code-links";
@@ -187,7 +187,7 @@ function stackStyles(): string {
     .code-btn:hover { background: var(--gf-bg-hover); }
     .res-footer { display: flex; align-items: center; justify-content: space-between; font-size: 11px; line-height: 16px; color: var(--gf-text-3); padding-top: 2px; }
     .res-ftr-left { display: flex; align-items: center; gap: 6px; }
-    .res-ftr-dot { width: 6px; height: 6px; background: var(--gf-success); border-radius: 50%; }
+    .res-ftr-dot { width: 6px; height: 6px; background: var(--gf-success); border-radius: 50%; corner-shape: round; }
     .row {
       display: flex; align-items: center; gap: 10px; padding: 8px; flex: none; cursor: pointer;
       background: var(--gf-bg-surface); border: 1px solid var(--gf-border); border-radius: 12px; box-shadow: var(--gf-shadow-lg);
@@ -219,7 +219,7 @@ function ensureStackHost(): void {
   setOverlayVars(stackHost);
   void applyOverlayTheme().then(() => { if (stackHost) setOverlayVars(stackHost); });
   const style = document.createElement("style");
-  style.textContent = stackStyles();
+  style.textContent = SQUIRCLE_CSS + stackStyles();
   stackRoot = document.createElement("div");
   shadow.append(style, stackRoot);
   stackRoot.addEventListener("pointerenter", () => { stackPointerInside = true; clearTimeout(stackIdleTimer); }, true);
@@ -564,11 +564,11 @@ function showCountdown(seconds: number): void {
   const shadow = host.attachShadow({ mode: "closed" });
   setOverlayVars(host);
   const style = document.createElement("style");
-  style.textContent = `
+  style.textContent = SQUIRCLE_CSS + `
     ${overlayFontFace()}
     .pill { display:flex; align-items:center; gap:10px; padding:6px 14px 6px 6px; border-radius:999px; background:${T.text}; color:${T.surface};
       font:500 13px/20px ${FONT_STACK}; box-shadow:${T.shadowLg}; white-space:nowrap; -webkit-font-smoothing:antialiased; }
-    .num { width:28px; height:28px; border-radius:50%; display:grid; place-items:center; background:${T.focus}; color:${T.accent === T.focus ? T.surface : T.accent};
+    .num { width:28px; height:28px; border-radius:50%; corner-shape: round; display:grid; place-items:center; background:${T.focus}; color:${T.accent === T.focus ? T.surface : T.accent};
       font:600 14px/1 ${FONT_STACK}; font-variant-numeric:tabular-nums; }
     .soft { color:${alpha(T.surface, 0.72)}; }
     kbd { font:500 11px/16px ${FONT_STACK}; padding:1px 6px; border-radius:4px; background:${alpha(T.surface, 0.16)}; }
@@ -692,7 +692,7 @@ function showQuickRateNudge(): void {
 
   setOverlayVars(rateNudgeHost);
   const style = document.createElement("style");
-  style.textContent = `
+  style.textContent = SQUIRCLE_CSS + `
     ${overlayFontFace()}
     .rate-nudge {
       position: fixed; bottom: 16px; right: 16px;
