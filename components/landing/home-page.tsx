@@ -71,14 +71,14 @@ export function HomePage() {
           <div className={s.wrap}>
             <div className={`${s.eyebrow} ${s.rise}`}>
               <span className={`${s.tag} ${s.tagGreen}`}>Free</span>
-              Chrome extension for full-page screenshots
+              Screenshot studio for Chrome
             </div>
             <h1 id="hero-title" className={s.h1}>
-              <span className={s.rise} style={{ ["--d" as string]: "80ms" }}>Screenshot the whole page.</span>
-              <span className={s.rise} style={{ ["--d" as string]: "180ms" }}>Share it ready to go.</span>
+              <span className={s.rise} style={{ ["--d" as string]: "80ms" }}>The screenshot studio</span>
+              <span className={s.rise} style={{ ["--d" as string]: "180ms" }}>that stays on your device.</span>
             </h1>
             <p className={`${s.sub} ${s.rise}`} style={{ ["--d" as string]: "280ms" }}>
-              GoFully captures any webpage top to bottom in one image, then lets you mark it up, hide private details and copy it out. All on your computer, with no account.
+              Capture a whole page, one element or just the words. Hide private details before you capture, measure, mark up and share. Everything runs on your computer, with no account.
             </p>
             <div className={`${s.ctas} ${s.rise}`} style={{ ["--d" as string]: "380ms" }}>
               <AddToChrome size="lg" />

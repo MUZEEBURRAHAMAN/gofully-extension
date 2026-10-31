@@ -8,12 +8,12 @@ import { serializeJsonLd } from "@/components/json-ld";
 export const metadata: Metadata = {
   metadataBase: new URL("https://gofully-extension.vercel.app"),
   title: {
-    default: "GoFully — Full Page Screenshot Tool, Visual Editor & Local OCR",
+    default: "GoFully — The Private Screenshot Studio for Chrome",
     template: "%s | GoFully",
   },
   applicationName: "GoFully",
   description:
-    "Capture full scrolling webpages, edit & annotate, blur sensitive data, and extract text with local OCR. 100% free, private & offline Chrome extension.",
+    "The screenshot studio that stays on your device. Full page, element and area capture, redact, measure, OCR, markup and export. Free, no account.",
   keywords: [
     "full page screenshot",
     "screenshot",
@@ -85,9 +85,9 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
   },
   openGraph: {
-    title: "GoFully — Full Page Screenshot Tool & Visual Editor",
+    title: "GoFully — The Screenshot Studio That Stays on Your Device",
     description:
-      "Capture entire webpages, annotate visually with arrows and callouts, blur sensitive data, extract text with local OCR, and export in 4K or PDF — 100% private and in-browser.",
+      "The screenshot studio that stays on your device. Full page, element and area capture, redact, measure, OCR, markup and export. Free, no account.",
     url: "https://gofully-extension.vercel.app",
     siteName: "GoFully",
     images: [
@@ -95,7 +95,7 @@ export const metadata: Metadata = {
         url: "https://gofully-extension.vercel.app/og-image.png",
         width: 1200,
         height: 630,
-        alt: "GoFully — Full Page Screenshot Tool, Visual Editor & Local OCR",
+        alt: "GoFully, the screenshot studio that stays on your device",
       },
     ],
     locale: "en_US",
@@ -103,8 +103,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "GoFully — Full Page Screenshot Tool & Visual Editor",
-    description: "Capture, annotate, redact, OCR, and export full scrolling webpages in seconds. Free, offline & 100% on-device.",
+    title: "GoFully — The Screenshot Studio That Stays on Your Device",
+    description: "The screenshot studio that stays on your device. Full page, element and area capture, redact, measure, OCR, markup and export. Free, no account.",
     images: ["https://gofully-extension.vercel.app/og-image.png"],
   },
 };
@@ -147,7 +147,7 @@ const jsonLd = {
         "worstRating": "1"
       },
       "description":
-        "High-performance Chrome extension for full-page scrolling screenshots, on-device WebAssembly OCR text extraction, CleanShot-grade visual annotations, and PDF/4K exports.",
+        "The screenshot studio for Chrome that stays on your device: full page, element and area capture, redact before you capture, measure, on-device OCR, markup and PDF export.",
       "url": "https://gofully-extension.vercel.app/",
       "image": "https://gofully-extension.vercel.app/logo.png",
       "screenshot": "https://gofully-extension.vercel.app/og-image.png",
@@ -178,7 +178,7 @@ const jsonLd = {
       "name": "GoFully",
       "alternateName": ["GoFully Extension", "GoFully Screenshot Tool", "GoFully Full Page Screenshot", "Go Fully"],
       "description":
-        "The complete web capture, full page screenshot, local OCR, and visual annotation studio for Chrome.",
+        "The screenshot studio that stays on your device: capture, redact, measure, read text, mark up and share.",
       "publisher": { "@id": "https://gofully-extension.vercel.app/#organization" },
     },
     {
