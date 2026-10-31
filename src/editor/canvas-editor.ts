@@ -1,3 +1,5 @@
+import { LIGHT } from "../ui/ds/tokens";
+import { icon } from "../ui/ds/icons";
 import {
   Canvas, FabricImage, Rect, Ellipse, Line, IText, Path, Group,
   Circle, FabricText, PencilBrush, FabricObject, ActiveSelection,
@@ -9,7 +11,9 @@ import { generatePDF } from "../export/pdf-generator";
 import { applyTheme, watchTheme } from "../utils/theme";
 import { addStepFromDataUrl } from "../utils/guide";
 import { findSensitive, hitBoxes, type OcrWord } from "../utils/sensitive";
+import { scanCodes, codeKind, safeLink, CODE_LABEL } from "../utils/codes";
 import { claimPendingRateNudge, markRatedYes, markDismissed } from "../utils/rate-nudge";
+import { initBeautifyGroups } from "./beautify-groups";
 
 applyTheme();
 watchTheme();
@@ -32,6 +36,19 @@ const shapeSvgs: Record<ShapeType, string> = {
   polygon: '<polygon points="12,3 20.66,8 20.66,18 12,23 3.34,18 3.34,8"/>',
 };
 
+/** Shape glyphs as full SVGs (Hugeicons has no triangle/hexagon); stroke matches the DS icons. */
+/** Tooltip chip for a swatch. Built with textContent so a preset name can never become markup. */
+function tipEl(text: string): HTMLSpanElement {
+  const tip = document.createElement("span");
+  tip.className = "tip";
+  tip.textContent = text;
+  return tip;
+}
+
+function shapeSvg(type: ShapeType, size = 20): string {
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${shapeSvgs[type]}</svg>`;
+}
+
 const shapeLabels: Record<ShapeType, string> = {
   rectangle: "Rectangle (R)",
   square: "Square",
@@ -48,7 +65,36 @@ let currentTool: ToolType = "select";
 let currentShapeType: ShapeType = "rectangle";
 let currentArrowType: ArrowType = "straight";
 let currentBlurType: BlurType = "glass";
-let currentColor = "#EF4444";
+/** Annotation ink, from the GoFully DS v2 palette (Figma: Editor / Colour menu). Fixed colours: they mark the image. */
+const ANNOT_COLORS: Array<{ name: string; value: string }> = [
+  { name: "Red", value: LIGHT.error },
+  { name: "Amber", value: LIGHT.warning },
+  { name: "Green", value: LIGHT.success },
+  { name: "Sky", value: LIGHT.sky },
+  { name: "Navy", value: LIGHT.navy },
+  { name: "Ink", value: LIGHT.ink },
+  { name: "White", value: LIGHT.white },
+];
+let currentColor = ANNOT_COLORS[0].value;
+
+/** Beautify background presets (image content). Order matters: tests and saved presets refer to them. */
+const BG_PRESETS: Array<{ name: string; bg: string; css?: string; active?: boolean }> = [
+  { name: "None", bg: "none", css: "transparent" },
+  { name: "Indigo Purple", bg: "linear-gradient(135deg,#667eea,#764ba2)", active: true },
+  { name: "Pink Red", bg: "linear-gradient(135deg,#f093fb,#f5576c)" },
+  { name: "Blue Cyan", bg: "linear-gradient(135deg,#4facfe,#00f2fe)" },
+  { name: "Green Teal", bg: "linear-gradient(135deg,#43e97b,#38f9d7)" },
+  { name: "Pink Yellow", bg: "linear-gradient(135deg,#fa709a,#fee140)" },
+  { name: "Lavender", bg: "linear-gradient(135deg,#a18cd1,#fbc2eb)" },
+  { name: "Peach", bg: "linear-gradient(135deg,#ffecd2,#fcb69f)" },
+  { name: "Navy", bg: "linear-gradient(135deg,#0c3483,#a2b6df)" },
+  { name: "Dark", bg: "linear-gradient(135deg,#1a1a2e,#16213e)" },
+  { name: "Coral", bg: "linear-gradient(135deg,#ff9a9e,#fad0c4)" },
+  { name: "White", bg: "#FFFFFF" },
+  { name: "Dot Grid", bg: "pattern:dots", css: "#1a1a2e radial-gradient(rgba(255,255,255,.35) 1.5px, transparent 1.5px) 0 0 / 10px 10px" },
+  { name: "Diagonal Stripes", bg: "pattern:diagonal", css: "#0c3483 repeating-linear-gradient(45deg, rgba(255,255,255,.18) 0 6px, transparent 6px 14px)" },
+];
+
 let strokeWidth = 4;
 let stepCounter = 1;
 let drawStartX = 0, drawStartY = 0;
@@ -188,15 +234,13 @@ async function maybeShowRateNudge(): Promise<void> {
   nudge.innerHTML = `
     <div class="gf-rn-row">
       <div class="gf-rn-star">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        ${icon("star", 18)}
       </div>
       <div style="flex:1">
         <div class="gf-rn-title">Enjoying GoFully?</div>
         <div class="gf-rn-sub">A quick rating helps others discover the extension.</div>
       </div>
-      <button class="gf-rn-close" id="gf-rn-close-btn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
+      <button class="gf-rn-close" id="gf-rn-close-btn" aria-label="Close">${icon("close", 16)}</button>
     </div>
     <div class="gf-rn-actions">
       <button class="gf-rn-btn gf-rn-btn-primary" id="gf-rn-yes-btn">Yes, rate it</button>
@@ -246,6 +290,12 @@ function openExportMenu(): void {
 // rect (same fix already used for the export menu) sidesteps the clip.
 function positionToolDropdown(anchorEl: HTMLElement, menu: HTMLElement): void {
   const r = anchorEl.getBoundingClientRect();
+  // Tools live in the left rail (Figma: Editor / *), so their menus open to the right.
+  if (anchorEl.closest(".rail")) {
+    menu.style.left = `${r.right + 8}px`;
+    menu.style.top = `${r.top}px`;
+    return;
+  }
   menu.style.left = `${r.left}px`;
   menu.style.top = `${r.bottom + 6}px`;
 }
@@ -271,8 +321,10 @@ function setupTooltipPositioning(): void {
     anchor.addEventListener("mouseenter", () => {
       const r = anchor.getBoundingClientRect();
       shared.textContent = tip.textContent;
-      shared.style.left = `${r.left + r.width / 2}px`;
-      shared.style.top = `${r.bottom + 6}px`;
+      const side = !!anchor.closest(".rail");
+      shared.classList.toggle("side", side);
+      shared.style.left = side ? `${r.right + 8}px` : `${r.left + r.width / 2}px`;
+      shared.style.top = side ? `${r.top + r.height / 2}px` : `${r.bottom + 6}px`;
       shared.classList.add("show");
     });
     anchor.addEventListener("mouseleave", () => {
@@ -282,6 +334,9 @@ function setupTooltipPositioning(): void {
 }
 
 function setupDropdownMenus(): void {
+  document.querySelectorAll<HTMLElement>("[data-shape-ico]").forEach((el) => {
+    el.innerHTML = shapeSvg(el.dataset.shapeIco as ShapeType, 16);
+  });
   // Arrow dropdown toggle
   const arrowExpand = document.getElementById("arrow-expand");
   const arrowWrapper = arrowExpand?.closest(".tool-dropdown-wrapper") as HTMLElement | null;
@@ -392,7 +447,7 @@ function setupDropdownMenus(): void {
       const mainBtn = document.getElementById("tool-shape");
       if (mainBtn) mainBtn.dataset.tool = shapeType;
       const iconEl = document.getElementById("shape-active-icon");
-      if (iconEl && shapeSvgs[shapeType]) iconEl.innerHTML = shapeSvgs[shapeType];
+      if (iconEl && shapeSvgs[shapeType]) iconEl.innerHTML = shapeSvg(shapeType);
       const tipEl = document.getElementById("shape-active-tip");
       if (tipEl && shapeLabels[shapeType]) tipEl.textContent = `Shape: ${shapeLabels[shapeType]}`;
       shapeMenu?.classList.remove("show");
@@ -409,8 +464,12 @@ function setupDropdownMenus(): void {
       item.classList.add("active");
       currentArrowType = (item as HTMLElement).dataset.arrowType as ArrowType;
       arrowMenu?.classList.remove("show");
+      // The rail button shows the arrow you'll draw.
+      const railIcon = document.querySelector("#tool-arrow .gf-icon");
+      const pickedIcon = item.querySelector(".gf-icon");
+      if (railIcon && pickedIcon) railIcon.innerHTML = pickedIcon.innerHTML.replace(/width="16" height="16"/, 'width="20" height="20"');
       setTool("arrow");
-      showToast(currentArrowType === "curved" ? "Curved Arrow selected" : "Straight Arrow selected");
+      showToast(currentArrowType === "curved" ? "Curved arrow" : "Straight arrow");
     });
   });
 
@@ -439,6 +498,63 @@ function setupDropdownMenus(): void {
     void smartRedact();
   });
 }
+
+// ─── Find codes: read QR codes and barcodes in the capture, on this device ───
+async function findCodes(): Promise<void> {
+  if (!backgroundImage) { showToast("No image to scan"); return; }
+  const dialog = document.getElementById("codesDialog") as HTMLDialogElement | null;
+  const list = document.getElementById("codesList");
+  const summary = document.getElementById("codesDialogSummary");
+  if (!dialog || !list || !summary) return;
+  showToast("Looking for codes…");
+  let codes: Awaited<ReturnType<typeof scanCodes>> = [];
+  try {
+    const bitmap = await createImageBitmap(backgroundImage.getElement() as ImageBitmapSource);
+    codes = await scanCodes(bitmap);
+    bitmap.close();
+  } catch {
+    codes = [];
+  }
+  list.replaceChildren();
+  summary.textContent = codes.length
+    ? `Found ${codes.length} ${codes.length === 1 ? "code" : "codes"}. Read on your device.`
+    : "No QR codes or barcodes found. Try zooming the page so the code is larger, then capture again.";
+  for (const c of codes) {
+    const li = document.createElement("li");
+    const text = document.createElement("div");
+    text.className = "code-text";
+    const kind = document.createElement("span");
+    kind.className = "code-kind gf-t-small";
+    kind.textContent = `${c.format === "qr_code" ? "QR code" : "Barcode"} · ${CODE_LABEL[codeKind(c.value)]}`;
+    const value = document.createElement("span");
+    value.className = "code-value";
+    value.textContent = c.value;
+    text.append(kind, value);
+    li.append(text);
+    const link = safeLink(c.value);
+    if (link) {
+      const open = document.createElement("button");
+      open.type = "button";
+      open.className = "gf-btn gf-btn--secondary";
+      open.textContent = "Open";
+      open.addEventListener("click", () => window.open(link, "_blank", "noopener,noreferrer"));
+      li.append(open);
+    }
+    const copy = document.createElement("button");
+    copy.type = "button";
+    copy.className = "gf-btn gf-btn--secondary";
+    copy.textContent = "Copy";
+    copy.addEventListener("click", async () => {
+      try { await navigator.clipboard.writeText(c.value); copy.textContent = "Copied"; } catch { copy.textContent = "Failed"; }
+      setTimeout(() => { copy.textContent = "Copy"; }, 1500);
+    });
+    li.append(copy);
+    list.append(li);
+  }
+  dialog.showModal();
+}
+
+document.getElementById("find-codes-btn")?.addEventListener("click", () => void findCodes());
 
 // ─── Auto-redact: OCR the screenshot, box everything that looks sensitive ─────
 let smartRedactBusy = false;
@@ -496,6 +612,7 @@ async function smartRedact(): Promise<void> {
         fill: "#000000", selectable: false, evented: false, originX: "left", originY: "top",
       });
       applyCleanShotStyle(box);
+      markPrivacy(box);
       canvas.add(box);
       box.setCoords();
     }
@@ -513,8 +630,8 @@ function applyCleanShotStyle(obj: any): void {
   try {
     obj.set({
       cornerColor: "#FFFFFF",
-      cornerStrokeColor: "#1667F2",
-      borderColor: "#1667F2",
+      cornerStrokeColor: LIGHT.sky,
+      borderColor: LIGHT.sky,
       cornerStyle: "circle",
       cornerSize: 8,
       transparentCorners: false,
@@ -641,7 +758,7 @@ function setTool(tool: ToolType): void {
     const mainBtn = document.getElementById("tool-shape");
     if (mainBtn) mainBtn.dataset.tool = tool;
     const iconEl = document.getElementById("shape-active-icon");
-    if (iconEl && shapeSvgs[currentShapeType]) iconEl.innerHTML = shapeSvgs[currentShapeType];
+    if (iconEl && shapeSvgs[currentShapeType]) iconEl.innerHTML = shapeSvg(currentShapeType);
     const tipEl = document.getElementById("shape-active-tip");
     if (tipEl && shapeLabels[currentShapeType]) tipEl.textContent = `Shape: ${shapeLabels[currentShapeType]}`;
     document.querySelectorAll("[data-shape-type]").forEach((i) => {
@@ -650,22 +767,22 @@ function setTool(tool: ToolType): void {
   }
 
   const names: Record<ToolType, string> = {
-    select: "Select & Transform",
-    arrow: "CleanShot Arrow",
+    select: "Select",
+    arrow: "Arrow",
     rectangle: "Rectangle",
     square: "Square",
     circle: "Circle",
     ellipse: "Ellipse",
     triangle: "Triangle",
-    polygon: "Polygon (Hexagon)",
-    callout: "Callout Speech Bubble",
-    line: "Straight Line",
-    freedraw: "Pen / Marker",
-    text: "Text Annotation",
-    spotlight: "CleanShot Spotlight",
-    blur: "Blur / Redaction",
-    step: "Step Number Counter",
-    crop: "Crop & Resize Image",
+    polygon: "Hexagon",
+    callout: "Callout",
+    line: "Line",
+    freedraw: "Pen",
+    text: "Text",
+    spotlight: "Spotlight",
+    blur: "Blur and redact",
+    step: "Step number",
+    crop: "Crop",
     highlight: "Highlighter",
   };
   toolNameEl.textContent = names[tool] || tool;
@@ -715,7 +832,7 @@ function setupCanvasEvents(): void {
       evt.preventDefault();
       evt.stopPropagation();
       const delta = evt.deltaY > 0 ? -0.08 : 0.08;
-      adjustZoom(delta);
+      adjustZoom(delta, { x: evt.clientX, y: evt.clientY });
     }
   });
 
@@ -901,7 +1018,7 @@ function createShape(tool: ToolType, x: number, y: number): any {
         left: x, top: y, width: 0, height: 0,
         rx: 8, ry: 8,
         fill: "transparent",
-        stroke: "#1667F2",
+        stroke: LIGHT.sky,
         strokeWidth: 2,
         strokeDashArray: [6, 4],
         originX: "left", originY: "top",
@@ -1275,6 +1392,7 @@ async function finaliseBlur(placeholder: any): Promise<void> {
       originY: "top",
     });
     applyCleanShotStyle(redactBox);
+    markPrivacy(redactBox);
     canvas.add(redactBox);
     redactBox.setCoords();
     saveState();
@@ -1327,6 +1445,7 @@ async function finaliseBlur(placeholder: any): Promise<void> {
       selectable: false, evented: false,
     });
     applyCleanShotStyle(img);
+    markPrivacy(img);
 
     canvas.remove(placeholder);
     canvas.add(img);
@@ -1597,6 +1716,22 @@ function setupColorPicker(): void {
   };
   syncColorTrigger();
 
+  // Swatches come from the DS palette so editor.html carries no colour values.
+  const group = document.getElementById("color-group");
+  const custom = document.getElementById("customColorSwatch");
+  if (group && !group.querySelector(".color-swatch[data-color]")) {
+    for (const c of ANNOT_COLORS) {
+      const sw = document.createElement("button");
+      sw.type = "button";
+      sw.className = "color-swatch" + (c.value === currentColor ? " active" : "");
+      sw.dataset.color = c.value;
+      sw.style.background = c.value;
+      sw.setAttribute("aria-label", c.name);
+      sw.title = c.name;
+      group.insertBefore(sw, custom);
+    }
+  }
+
   document.querySelectorAll(".color-swatch:not(.color-swatch-custom)").forEach((swatch) => {
     swatch.addEventListener("click", () => {
       document.querySelectorAll(".color-swatch").forEach((s) => s.classList.remove("active"));
@@ -1662,6 +1797,47 @@ function getResizeDims(): { w: number; h: number } | null {
   const h = parseInt(hEl?.value ?? "");
   if (w > 0 && h > 0) return { w, h };
   return null;
+}
+
+/** Blur, pixelate and redaction boxes hide private details: saving without annotations would drop them. */
+function markPrivacy(obj: FabricObject): void {
+  (obj as FabricObject & { gfPrivacy?: boolean }).gfPrivacy = true;
+}
+
+let annotAnsweredMarks = -1; // how many marks existed when the person last answered the dialog or flipped the menu switch
+const ANNOT_PREF_KEY = "gf-editor-annot-choice"; // "include" | "without" once "Don't ask again" is ticked
+
+/** Before any export: if the capture has marks, ask whether to keep them. Resolves false when the person cancels. */
+async function confirmAnnotationChoice(): Promise<boolean> {
+  const marks = canvas.getObjects().filter((o) => o !== backgroundImage);
+  // New marks since the last answer (a blur added after "without", say) are a new question.
+  if (!marks.length || marks.length <= annotAnsweredMarks) return true;
+  const privacy = marks.filter((o) => (o as FabricObject & { gfPrivacy?: boolean }).gfPrivacy).length;
+  const toggle = document.getElementById("annot-toggle-check") as HTMLInputElement | null;
+  const remembered = localStorage.getItem(ANNOT_PREF_KEY);
+  // A remembered "without" must never drop a blur or redaction: those marks exist to hide something.
+  if (remembered === "include" || (remembered === "without" && privacy === 0)) {
+    if (toggle) toggle.checked = remembered === "include";
+    annotAnsweredMarks = marks.length;
+    return true;
+  }
+  const dialog = document.getElementById("annotDialog") as HTMLDialogElement | null;
+  if (!dialog) return true;
+  dialog.querySelector("#annotDialogCount")!.textContent = `${marks.length} ${marks.length === 1 ? "mark" : "marks"}`;
+  (dialog.querySelector("#annotDialogWarn") as HTMLElement).hidden = privacy === 0;
+  (dialog.querySelector("#annotDialogRemember") as HTMLInputElement).checked = false;
+  dialog.returnValue = "";
+  dialog.showModal();
+  (dialog.querySelector("#annotDialogInclude") as HTMLButtonElement).focus();
+  const choice = await new Promise<string>((resolve) => dialog.addEventListener("close", () => resolve(dialog.returnValue), { once: true }));
+  if (choice !== "include" && choice !== "without") return false;
+  if (toggle) toggle.checked = choice === "include";
+  annotAnsweredMarks = marks.length;
+  const remember = (dialog.querySelector("#annotDialogRemember") as HTMLInputElement).checked;
+  if (remember && (choice === "include" || privacy === 0)) {
+    try { localStorage.setItem(ANNOT_PREF_KEY, choice); } catch { /* storage unavailable: ask again next time */ }
+  }
+  return true;
 }
 
 async function exportToBlob(): Promise<Blob> {
@@ -1795,6 +1971,7 @@ function setupExportButtons(): void {
   }
 
   document.getElementById("copy-btn")!.addEventListener("click", async () => {
+    if (!(await confirmAnnotationChoice())) return;
     try {
       const blob = await exportToBlob();
       await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
@@ -1803,6 +1980,7 @@ function setupExportButtons(): void {
   });
 
   document.getElementById("save-btn")!.addEventListener("click", async () => {
+    if (!(await confirmAnnotationChoice())) return;
     const blob = await exportToBlob();
     const url  = URL.createObjectURL(blob);
     const a    = Object.assign(document.createElement("a"), { href: url, download: getExportFilename("png") });
@@ -1813,6 +1991,7 @@ function setupExportButtons(): void {
   });
 
   document.getElementById("pdf-btn")!.addEventListener("click", async () => {
+    if (!(await confirmAnnotationChoice())) return;
     try {
       const blob = await exportToBlob();
       const pdfBlob = await generatePDF(blob, "a4");
@@ -1826,6 +2005,7 @@ function setupExportButtons(): void {
   });
 
   document.getElementById("guide-btn")?.addEventListener("click", async () => {
+    if (!(await confirmAnnotationChoice())) return;
     try {
       const blob = await exportToBlob();
       const dataUrl = await blobToDataUrl(blob);
@@ -1840,6 +2020,7 @@ function setupExportButtons(): void {
   });
 
   document.getElementById("pin-btn")?.addEventListener("click", async () => {
+    if (!(await confirmAnnotationChoice())) return;
     try {
       const blob = await exportToBlob();
       const dataUrl = await new Promise<string>((resolve, reject) => {
@@ -1882,6 +2063,7 @@ function setupExportButtons(): void {
   const getExportQuality = () => (imageQualitySelect ? parseInt(imageQualitySelect.value) : 92) / 100;
 
   document.getElementById("save-webp-btn")?.addEventListener("click", async () => {
+    if (!(await confirmAnnotationChoice())) return;
     const pngBlob = await exportToBlob();
     const bitmap = await createImageBitmap(pngBlob);
     const dims = getResizeDims();
@@ -1900,6 +2082,7 @@ function setupExportButtons(): void {
   });
 
   document.getElementById("save-jpg-btn")?.addEventListener("click", async () => {
+    if (!(await confirmAnnotationChoice())) return;
     const pngBlob = await exportToBlob();
     const bitmap = await createImageBitmap(pngBlob);
     const dims = getResizeDims();
@@ -1923,10 +2106,10 @@ function setupExportButtons(): void {
   document.getElementById("delete-btn")!.addEventListener("click", deleteSelected);
   document.getElementById("duplicate-btn")?.addEventListener("click", duplicateSelected);
   document.getElementById("lock-btn")?.addEventListener("click", toggleLockSelected);
-  document.getElementById("zoom-in-btn")?.addEventListener("click",  () => adjustZoom(0.1));
-  document.getElementById("zoom-out-btn")?.addEventListener("click", () => adjustZoom(-0.1));
-  document.getElementById("hdr-zoom-in-btn")?.addEventListener("click",  () => adjustZoom(0.1));
-  document.getElementById("hdr-zoom-out-btn")?.addEventListener("click", () => adjustZoom(-0.1));
+  document.getElementById("zoom-in-btn")?.addEventListener("click",  () => stepZoom(1));
+  document.getElementById("zoom-out-btn")?.addEventListener("click", () => stepZoom(-1));
+  document.getElementById("hdr-zoom-in-btn")?.addEventListener("click",  () => stepZoom(1));
+  document.getElementById("hdr-zoom-out-btn")?.addEventListener("click", () => stepZoom(-1));
   document.getElementById("hdr-zoom-val")?.addEventListener("click", () => {
     if (!backgroundImage) return;
     cssZoom = 1;
@@ -2092,10 +2275,51 @@ function setupRotateControls(): void {
 
 // ─── Zoom ─────────────────────────────────────────────────────────────────────
 
-function adjustZoom(delta: number): void {
+// Fine 10% steps from 100% to 200% (lining up annotations), round levels beyond: 1000% is 17 clicks, not 90.
+const ZOOM_STEPS = [0.1, 0.25, 0.5, 0.75, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2, 2.5, 3, 4, 5, 6, 8, 10];
+
+/** Buttons and keys: the next zoom level in the ladder above. */
+function stepZoom(direction: 1 | -1, anchor?: { x: number; y: number }): void {
+  const now = Math.round(cssZoom * 100) / 100;
+  const next = direction > 0
+    ? ZOOM_STEPS.find((z) => z > now + 0.001)
+    : [...ZOOM_STEPS].reverse().find((z) => z < now - 0.001);
+  if (next !== undefined) setZoomAround(next, anchor);
+}
+
+/** Ctrl+wheel: smooth, about 10% per notch. */
+function adjustZoom(delta: number, anchor?: { x: number; y: number }): void {
+  const factor = delta > 0 ? 1.1 : 1 / 1.1;
+  setZoomAround(Math.round(cssZoom * factor * 100) / 100, anchor);
+}
+
+/**
+ * Zooms to `target`, keeping the same point of the image under `anchor` (the cursor for Ctrl+wheel, the middle of the
+ * window otherwise). Without this, a canvas larger than the window grows from its top-left corner and whatever you
+ * were looking at jumps out of view.
+ */
+function setZoomAround(target: number, anchor?: { x: number; y: number }): void {
   if (!backgroundImage) return;
-  cssZoom = Math.min(10.0, Math.max(0.1, Math.round((cssZoom + delta) * 100) / 100));
-  applyContainerZoom(cssZoom);
+  const next = Math.min(10.0, Math.max(0.1, target));
+  if (next === cssZoom) return;
+
+  const wrap = document.getElementById("canvasContainer") as HTMLElement;
+  const holder = canvas.wrapperEl as HTMLElement;
+  const box = wrap.getBoundingClientRect();
+  const ax = anchor?.x ?? box.left + wrap.clientWidth / 2;
+  const ay = anchor?.y ?? box.top + wrap.clientHeight / 2;
+  const r0 = holder.getBoundingClientRect();
+  const clamp01 = (v: number): number => Math.min(1, Math.max(0, v));
+  const fx = clamp01((ax - r0.left) / (r0.width || 1));
+  const fy = clamp01((ay - r0.top) / (r0.height || 1));
+
+  applyContainerZoom(next);
+
+  // Scroll so the same point of the image is back under the anchor.
+  const r1 = holder.getBoundingClientRect();
+  wrap.scrollLeft += r1.left + fx * r1.width - ax;
+  wrap.scrollTop += r1.top + fy * r1.height - ay;
+
   const zStr = `${Math.round(cssZoom * 100)}%`;
   zoomEl.textContent = zStr;
   const hdrZoomVal = document.getElementById("hdr-zoom-val");
@@ -2108,7 +2332,7 @@ let editorDirty = false;
 
 function saveState(): void {
   undoStack.push({
-    json: JSON.stringify(canvas.toJSON()),
+    json: JSON.stringify(canvas.toObject(["gfPrivacy"])),
     meta: { dispW, dispH, fitScale, imgNativeW, imgNativeH },
   });
   redoStack = [];
@@ -2254,8 +2478,8 @@ function setupKeyboardShortcuts(): void {
     if ((e.metaKey || e.ctrlKey) && e.key === "z") { e.preventDefault(); e.shiftKey ? redo() : undo(); return; }
     if ((e.metaKey || e.ctrlKey) && e.key === "y") { e.preventDefault(); redo(); return; }
     if ((e.key === "Delete" || e.key === "Backspace") && activeObj) { e.preventDefault(); deleteSelected(); return; }
-    if ((e.metaKey || e.ctrlKey) && e.key === "=") { e.preventDefault(); adjustZoom(0.1);  return; }
-    if ((e.metaKey || e.ctrlKey) && e.key === "-") { e.preventDefault(); adjustZoom(-0.1); return; }
+    if ((e.metaKey || e.ctrlKey) && e.key === "=") { e.preventDefault(); stepZoom(1);  return; }
+    if ((e.metaKey || e.ctrlKey) && e.key === "-") { e.preventDefault(); stepZoom(-1); return; }
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "d" && activeObj) { e.preventDefault(); duplicateSelected(); return; }
 
     if (!e.metaKey && !e.ctrlKey && !e.shiftKey) {
@@ -2592,6 +2816,20 @@ function setupBeautifier(): void {
   });
 
   // Built-in wallpapers (generated in code) join the same swatch system
+  // Background presets are image content, not UI, so they live here rather than in editor.html.
+  const bgGrid = document.getElementById("bf-bg-grid");
+  if (bgGrid && !bgGrid.querySelector(".bf-bg-swatch")) {
+    for (const p of BG_PRESETS) {
+      const sw = document.createElement("div");
+      sw.className = "bf-bg-swatch" + (p.active ? " active" : "");
+      sw.dataset.bg = p.bg;
+      sw.style.background = p.css ?? p.bg;
+      if (p.bg === "none") sw.innerHTML = icon("close", 14);
+      sw.append(tipEl(p.name));
+      bgGrid.appendChild(sw);
+    }
+  }
+
   const meshGrid = document.getElementById("bf-mesh-grid");
   if (meshGrid) {
     for (const [id, def] of Object.entries(MESH_WALLPAPERS)) {
@@ -2599,7 +2837,7 @@ function setupBeautifier(): void {
       sw.className = "bf-bg-swatch";
       sw.dataset.bg = `mesh:${id}`;
       sw.style.background = meshCss(def);
-      sw.innerHTML = `<span class="tip">${def.name}</span>`;
+      sw.append(tipEl(def.name));
       meshGrid.appendChild(sw);
     }
   }
@@ -2729,7 +2967,7 @@ function setupBeautifier(): void {
       sw = document.createElement("div");
       sw.className = "bf-bg-swatch";
       sw.dataset.bg = "custom-image";
-      sw.innerHTML = '<span class="tip">Your image</span>';
+      sw.replaceChildren(tipEl("Your image"));
       sw.addEventListener("click", () => {
         panel.querySelectorAll(".bf-bg-swatch").forEach((x) => x.classList.remove("active"));
         sw!.classList.add("active");
@@ -2747,6 +2985,9 @@ function setupBeautifier(): void {
   document.getElementById("bf-apply-btn")?.addEventListener("click", () => applyBeautify(true));
   // Reset
   document.getElementById("bf-reset-btn")?.addEventListener("click", resetBeautify);
+  initBeautifyGroups();
+  // Flipping "Include annotations" in the save menu is an answer too: don't ask again this session.
+  document.getElementById("annot-toggle-check")?.addEventListener("change", () => { annotAnsweredMarks = canvas.getObjects().filter((o) => o !== backgroundImage).length; });
 }
 
 function loadImageElement(src: string): Promise<HTMLImageElement> {

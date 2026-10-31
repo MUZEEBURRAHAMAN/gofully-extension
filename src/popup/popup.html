@@ -2,1173 +2,292 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=340">
+  <meta name="viewport" content="width=380">
   <title>GoFully</title>
+  <!-- Design: Figma "Extension UI v2" › Popup / * (see .claude/skills/gofully-ui/references/screens.md) -->
+  <script src="ds/chrome-stub.js"></script>
+  <link rel="stylesheet" href="ds/tokens.css">
+  <link rel="stylesheet" href="ds/components.css">
   <style>
-    @font-face {
-      font-family: 'Archivo';
-      font-style: normal;
-      font-weight: 100 900;
-      font-display: swap;
-      src: url('assets/Archivo.woff2') format('woff2');
-    }
-  </style>
-  <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { margin: 0; }
+    /* Chrome caps extension popups at 600px tall: header + footer stay fixed, main scrolls. */
+    body { width: 380px; min-height: 420px; max-height: 600px; display: flex; flex-direction: column; overflow: hidden; user-select: none; }
 
-    :root {
-      --blue:     #1667F2;
-      --blue-h:   #1257D8;
-      --blue-a:   #0E4AB8;
-      --blue-bg:  #EDF1FE;
-      --blue-bd:  #BDD0FB;
-      --blue-lt:  #D4E2FD;
+    /* Header */
+    .hdr { display: flex; align-items: center; gap: var(--gf-s-2); padding: var(--gf-s-3) var(--gf-s-3) var(--gf-s-3) var(--gf-s-4); background: var(--gf-bg-surface); border-bottom: 1px solid var(--gf-border); }
+    .brand { display: flex; align-items: center; gap: var(--gf-s-2); flex: 1; min-width: 0; }
+    .brand img { width: 24px; height: 24px; border-radius: var(--gf-r-sm); }
+    .hdr-right { display: flex; align-items: center; gap: 2px; }
+    .hdr-right .gf-icon-btn { position: relative; }
+    .tip { position: absolute; top: calc(100% + 6px); right: 0; z-index: 10; opacity: 0; transform: translateY(-2px); transition: opacity .12s, transform .12s; }
+    .gf-icon-btn:hover .tip, .gf-icon-btn:focus-visible .tip { opacity: 1; transform: none; }
+    .rate-us-btn { color: var(--gf-warning); }
 
-      --text:     #101828;
-      --text-2:   #344054;
-      --text-3:   #667085;
-      --text-4:   #98A2B3;
+    /* Body */
+    main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: var(--gf-s-3); padding: var(--gf-s-4); overflow-y: auto; }
+    .hdr, .ftr { flex: none; }
 
-      --border:   #E3E8EF;
-      --border-h: #C8D0D9;
-      --surface:  #F7F8FA;
-      --sunken:   #F1F3F7;
-      --white:    #FFFFFF;
-      --card:     #FFFFFF;
-
-      --green:    #027A48;
-      --green-bg: #ECFDF3;
-      --green-bd: #A6F4C5;
-      --green-dot:#16B364;
-
-      --red:      #B42318;
-      --red-bg:   #FEF3F2;
-      --red-bd:   #FECDCA;
-
-      --r-sm:     0px;
-      --r-md:     0px;
-      --r-lg:     0px;
-      --r-xl:     0px;
-      --r-pill:   0px;
-
-      --shadow-sm: 0 1px 3px rgba(22,103,242,0.04), 0 4px 8px rgba(22,103,242,0.06);
-      --shadow-md: 0 4px 6px -2px rgba(22,103,242,0.04), 0 12px 16px -4px rgba(22,103,242,0.10);
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root:not([data-theme="light"]) {
-        --blue:      #4C8DFF;
-        --blue-h:    #6BA0FF;
-        --blue-a:    #82B2FF;
-        --blue-bg:   rgba(76,141,255,.14);
-        --blue-bd:   rgba(76,141,255,.4);
-        --blue-lt:   rgba(76,141,255,.22);
-        --text:      #F0F2F5;
-        --text-2:    #C5CAD3;
-        --text-3:    #9AA1AF;
-        --text-4:    #7D8590;
-        --border:    #33383F;
-        --border-h:  #454B54;
-        --surface:   #1B1D21;
-        --sunken:    #222428;
-        --card:      #232529;
-        --green:     #2FBE79;
-        --green-bg:  rgba(47,190,121,.14);
-        --green-bd:  rgba(47,190,121,.4);
-        --green-dot: #2FBE79;
-      }
-    }
-    :root[data-theme="dark"] {
-      --blue:      #4C8DFF;
-      --blue-h:    #6BA0FF;
-      --blue-a:    #82B2FF;
-      --blue-bg:   rgba(76,141,255,.14);
-      --blue-bd:   rgba(76,141,255,.4);
-      --blue-lt:   rgba(76,141,255,.22);
-      --text:      #F0F2F5;
-      --text-2:    #C5CAD3;
-      --text-3:    #9AA1AF;
-      --text-4:    #7D8590;
-      --border:    #33383F;
-      --border-h:  #454B54;
-      --surface:   #1B1D21;
-      --sunken:    #222428;
-      --card:      #232529;
-      --green:     #2FBE79;
-      --green-bg:  rgba(47,190,121,.14);
-      --green-bd:  rgba(47,190,121,.4);
-      --green-dot: #2FBE79;
-    }
-
-    body {
-      width: 340px;
-      background: var(--card);
-      color: var(--text);
-      font-family: 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      -webkit-font-smoothing: antialiased;
-      font-size: 12.5px;
-      line-height: 1.4;
-      overflow: hidden;
-      user-select: none;
-    }
-
-    svg { display: block; flex-shrink: 0; }
-
-    /* ─── HEADER ─── */
-    .hdr {
-      height: 48px;
-      padding: 0 12px 0 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .logo-img {
-      width: 24px; height: 24px;
-      flex-shrink: 0;
-      display: block;
-      object-fit: contain;
-    }
-
-    .wm {
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: -0.4px;
-      line-height: 1;
-    }
-    .wm-go   { color: var(--text-2); font-weight: 500; }
-    .wm-full { color: var(--blue); font-weight: 700; }
-    .wm-y    { color: var(--blue); opacity: 0.45; font-weight: 700; }
-
-    .hdr-right { display: flex; align-items: center; gap: 6px; }
-
-    .rate-us-btn {
-      display: flex; align-items: center; gap: 4px;
-      height: 26px; padding: 0 9px;
-      border: 1px solid var(--blue-bd);
-      background: var(--blue-bg);
-      color: var(--blue);
-      font-family: inherit;
-      font-size: 10.5px; font-weight: 700;
-      cursor: pointer;
-      transition: background .12s, color .12s;
-    }
-    .rate-us-btn:hover { background: var(--blue); color: #fff; }
-    .rate-us-btn svg { flex-shrink: 0; }
-
-    .icon-btn {
-      position: relative;
-      width: 32px; height: 32px;
-      display: flex; align-items: center; justify-content: center;
-      border: none; background: transparent; cursor: pointer;
-      color: var(--text-3);
-      border-radius: var(--r-sm);
-      transition: color .12s, background .12s;
-    }
-    .icon-btn:hover { color: var(--text-2); background: var(--surface); }
-    .icon-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
-
-    /* Tooltip — same dark styled tooltip used in the editor toolbar, so
-       hover labels look consistent across the whole app instead of the
-       browser's native title tooltip. */
-    .icon-btn .tip {
-      position: absolute;
-      top: calc(100% + 6px);
-      right: 0;
-      background: #1d1f20;
-      border: 1px solid rgba(255,255,255,0.1);
-      color: #f2f2f3;
-      font-size: 10.5px;
-      font-weight: 500;
-      padding: 3px 8px;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .12s;
-      z-index: 100;
-    }
-    .icon-btn:hover .tip { opacity: 1; }
-
-    /* ─── BLUEPRINT FRAME (Industry design system) ───
-       Hairline border + four "+" registration marks at the corners, used
-       instead of filled/rounded surfaces. */
-    .bp { position: relative; border: 1px solid var(--border); }
-    .bp > .cm { position: absolute; width: 8px; height: 8px; color: var(--blue-bd); }
-    .bp > .cm::before { content: ""; position: absolute; left: 3px; top: 0; width: 1px; height: 100%; background: currentColor; }
-    .bp > .cm::after  { content: ""; position: absolute; top: 3px; left: 0; width: 100%; height: 1px; background: currentColor; }
-    .bp > .cm.tl { top: -4px; left: -4px; }
-    .bp > .cm.tr { top: -4px; right: -4px; }
-    .bp > .cm.bl { bottom: -4px; left: -4px; }
-    .bp > .cm.br { bottom: -4px; right: -4px; }
-
-    /* ─── UNSUPPORTED PAGE NOTICE PANEL ─── */
-    #unsupportedPanel {
-      display: none;
-      margin: 12px 16px 0;
-      padding: 14px;
-      background: rgba(234,179,8,.06);
-      border: 1px solid rgba(234,179,8,.25);
-      animation: fadeIn 0.16s ease-out;
-    }
-    #unsupportedPanel.active { display: block; }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-3px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .unsupp-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 6px;
-    }
-
-    .unsupp-icon {
-      color: #ca8a04;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .unsupp-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 12px;
-      font-weight: 600;
-      color: #92400e;
-      letter-spacing: 0.02em;
-      text-transform: uppercase;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root:not([data-theme="light"]) #unsupportedPanel {
-        background: rgba(234,179,8,.1);
-        border-color: rgba(234,179,8,.3);
-      }
-      :root:not([data-theme="light"]) .unsupp-icon { color: #f2c14e; }
-      :root:not([data-theme="light"]) .unsupp-title { color: #f2c14e; }
-    }
-    :root[data-theme="dark"] #unsupportedPanel {
-      background: rgba(234,179,8,.1);
-      border-color: rgba(234,179,8,.3);
-    }
-    :root[data-theme="dark"] .unsupp-icon,
-    :root[data-theme="dark"] .unsupp-title { color: #f2c14e; }
-
-    .unsupp-desc {
-      font-family: 'Barlow', sans-serif;
-      font-size: 11px;
-      color: var(--text-3);
-      line-height: 1.5;
-      margin-bottom: 12px;
-    }
-
-    .unsupp-actions {
-      display: flex;
-      justify-content: flex-end;
-    }
-
-    .unsupp-btn {
-      height: 28px;
-      padding: 0 14px;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--text-2);
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-      text-transform: uppercase;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.12s, border-color 0.12s;
-    }
-    .unsupp-btn:hover { background: var(--surface); border-color: var(--border-h); }
-    .unsupp-btn:active { transform: scale(0.97); }
-    .unsupp-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
-
-    /* ─── MODE GRID ─── */
-    #modesSection {
-      padding: 14px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .mode-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 6px;
-      min-height: 92px;
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: var(--r-lg);
-      background: var(--card);
-      cursor: pointer;
-      text-align: left;
-      transition: background .1s, border-color .1s, transform .06s, box-shadow .14s;
-    }
-    .mode-btn:hover {
-      background: var(--surface);
-      border-color: var(--border-h);
-      box-shadow: var(--shadow-sm);
-    }
-    .mode-btn:active { transform: scale(0.98); }
-    .mode-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
-
-    /* Full Page — primary CTA spanning both columns */
-    .mode-btn.primary {
-      grid-column: 1 / -1;
-      flex-direction: row;
-      align-items: center;
-      height: 56px;
-      background: var(--blue);
-      border-color: var(--blue);
-      border-radius: var(--r-xl);
-      color: var(--white);
-      box-shadow: var(--shadow-sm);
-    }
-    .mode-btn.primary:hover {
-      background: var(--blue-h); border-color: var(--blue-h);
-      transform: none;
-      box-shadow: var(--shadow-sm);
-    }
-    .mode-btn.primary:active {
-      background: var(--blue-a); border-color: var(--blue-a);
-      transform: none;
-    }
-    .mode-btn.primary .m-icon,
-    .mode-btn.primary:hover .m-icon,
-    .mode-btn.primary:focus .m-icon,
-    .mode-btn.primary:focus-visible .m-icon,
-    .mode-btn.primary:active .m-icon {
-      width: 34px; height: 34px;
-      background: rgba(255,255,255,0.18) !important;
-      border-radius: var(--r-sm);
-      color: var(--white) !important;
-    }
-    .mode-btn.primary .m-icon svg { width: 17px; height: 17px; }
+    /* Capture modes */
+    #modesSection { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gf-s-3); }
+    #unsupportedPanel.active ~ #modesSection { display: none !important; }
+    .mode-btn { display: flex; flex-direction: column; align-items: flex-start; gap: var(--gf-s-2); min-width: 0; padding: 10px var(--gf-s-3); }
+    .mode-btn .m-top { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+    .m-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .m-name { color: var(--gf-text); }
+    .m-desc { color: var(--gf-text-3); }
+    .mode-btn.primary { grid-column: 1 / -1; flex-direction: row; align-items: center; gap: var(--gf-s-3); padding: 14px; }
     .mode-btn.primary .m-text { flex: 1; }
-    .mode-btn.primary .m-name { color: var(--white); font-weight: 700; font-size: 14px; }
-    .mode-btn.primary .m-desc { color: rgba(255,255,255,0.72); font-size: 10.5px; }
-    .mode-btn.primary .m-kbd {
-      background: rgba(255,255,255,0.18);
-      border-color: rgba(255,255,255,0.22);
-      color: rgba(255,255,255,0.85);
-      /* Base .m-kbd sets margin-top:auto for the column-layout mode buttons
-         (pins the badge to the bottom); the primary button is a row layout,
-         where that same rule pushes the badge to the bottom of the CROSS
-         axis instead, fighting align-items:center and landing it wedged in
-         the bottom-right corner. Reset it here so it centers normally. */
-      margin-top: 0;
-      margin-left: 8px;
-      flex-shrink: 0;
-    }
+    .mode-btn.primary .m-desc { color: var(--gf-text-2); }
+    .mode-btn:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
+    .more { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: var(--gf-s-2); margin: var(--gf-s-1) 0 calc(var(--gf-s-1) * -1); color: var(--gf-text-3); }
+    .more p { margin: 0; }
+    .delay { display: inline-flex; align-items: center; gap: 6px; color: var(--gf-text-2); cursor: pointer; }
+    .delay .gf-icon { display: inline-flex; color: var(--gf-text-3); }
+    .delay-select { height: 28px; min-width: 0; width: auto; padding-block: 0; font-size: 12px; }
 
-    /* Disabled mode button on unsupported pages */
-    .mode-btn:disabled {
-      cursor: not-allowed;
-      pointer-events: none;
-      background: var(--surface) !important;
-      border-color: var(--border) !important;
-      box-shadow: none !important;
-    }
-    .mode-btn:disabled .m-icon { color: var(--text-3) !important; background: var(--sunken) !important; }
-    .mode-btn:disabled .m-name { color: var(--text-3) !important; }
-    .mode-btn:disabled .m-desc { color: var(--text-3) !important; }
-    .mode-btn:disabled .m-kbd { color: var(--text-3) !important; border-color: var(--border) !important; background: var(--sunken) !important; }
+    /* Unsupported page */
+    #unsupportedPanel { display: none; flex-direction: column; align-items: center; gap: var(--gf-s-2); padding: var(--gf-s-6) var(--gf-s-2); text-align: center; }
+    #unsupportedPanel.active { display: flex; }
+    #unsupportedPanel p { margin: 0 0 var(--gf-s-2); color: var(--gf-text-2); max-width: 300px; }
 
-    .m-icon {
-      width: 28px; height: 28px;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-      background: var(--surface);
-      border-radius: var(--r-sm);
-      color: var(--text-3);
-      transition: color .1s, background .1s;
-    }
-    .m-icon svg { width: 15px; height: 15px; }
-    .mode-btn:hover:not(.primary) .m-icon { color: var(--blue); background: var(--blue-bg); }
-
-    .m-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-
-    .m-name {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text);
-      display: block;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .m-desc {
-      font-size: 10px;
-      color: var(--text-3);
-      display: block;
-      line-height: 1.3;
-    }
-
-    .m-kbd {
-      font-size: 9.5px;
-      font-weight: 600;
-      color: var(--text-2);
-      background: var(--sunken);
-      border: 1px solid var(--border-h);
-      padding: 2px 5px;
-      border-radius: 2px;
-      font-family: inherit;
-      letter-spacing: 0.01em;
-      margin-top: auto;
-      white-space: nowrap;
-    }
-
-    /* ─── STATUS LINE ─── */
-    #statusLine {
-      display: none;
-      align-items: center;
-      gap: 8px;
-      margin: 0 14px 12px;
-      padding: 10px 12px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--r-md);
-    }
+    /* Last capture */
+    #statusLine { display: none; align-items: center; gap: 10px; padding: var(--gf-s-2) var(--gf-s-2) var(--gf-s-2) var(--gf-s-2); }
     #statusLine.active { display: flex; }
-    .status-thumb {
-      width: 28px; height: 28px;
-      border-radius: var(--r-sm);
-      object-fit: cover;
-      object-position: top center;
-      border: 1px solid var(--border);
-      flex-shrink: 0;
-      background: var(--card);
-    }
-    .status-text {
-      flex: 1;
-      min-width: 0;
-      font-size: 11px;
-      color: var(--text-3);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .status-text b { color: var(--text-2); font-weight: 600; }
-    .status-view {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--blue);
-      cursor: pointer;
-      flex-shrink: 0;
-      background: none;
-      border: none;
-      font-family: inherit;
-      padding: 2px 4px;
-      border-radius: 0;
-      transition: background .12s;
-    }
-    .status-view:hover { background: var(--blue-bg); }
+    .status-thumb { width: 44px; height: 32px; object-fit: cover; object-position: top; border-radius: var(--gf-r-xs); border: 1px solid var(--gf-border); background: var(--gf-bg-sunken); }
+    .status-text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--gf-text-3); }
+    .status-text b { color: var(--gf-text); font-weight: 500; }
 
-    /* ─── PROGRESS ─── */
-    #progressSection {
-      display: none;
-      padding: 20px 16px 20px;
-    }
-    #progressSection.active { display: block; }
+    /* Progress */
+    /* While capturing the popup shrinks to a small card instead of keeping its full height. */
+    body.is-capturing { min-height: 0; }
+    body.is-capturing main { overflow: visible; }
+    #progressSection { display: none; flex-direction: column; gap: var(--gf-s-3); padding: var(--gf-s-3) var(--gf-s-4); border: 1px solid var(--gf-border); border-radius: var(--gf-r-lg); background: var(--gf-bg-surface); box-shadow: var(--gf-shadow-xs); }
+    #progressSection.active { display: flex; }
+    .prog-top { display: flex; align-items: center; gap: var(--gf-s-3); }
+    .prog-top .gf-tile svg { animation: prog-spin 1.1s linear infinite; }
+    @keyframes prog-spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { .prog-top .gf-tile svg { animation: none; } }
+    .prog-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .prog-text .gf-t-body-medium { font-variant-numeric: tabular-nums; }
+    #progressSection .gf-progress { width: 100%; }
+    #progressFill { width: 100%; transform: scaleX(0); transform-origin: left; transition: transform .25s; }
 
-    .prog-top {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
+    /* Result */
+    #resultBar { display: none; flex-direction: column; gap: var(--gf-s-3); }
+    #resultBar.active { display: flex; }
+    .popup-preview { position: relative; height: 184px; overflow: hidden; align-items: flex-start; justify-content: center; border: 1px solid var(--gf-border); border-radius: var(--gf-r-lg); background: var(--gf-bg-sunken); }
+    .popup-preview img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: top; }
+    .popup-preview-fade { position: absolute; inset: auto 0 0 0; height: 64px; align-items: flex-end; justify-content: center; padding-bottom: var(--gf-s-2); background: linear-gradient(transparent, var(--gf-bg-sunken)); }
+    .res-status { display: flex; flex-direction: column; gap: 2px; }
+    .res-status .gf-t-small { color: var(--gf-text-3); }
+    .res-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+    .res-row .gf-btn { padding: 0 6px; }
 
-    .prog-icon {
-      width: 36px; height: 36px;
-      flex-shrink: 0;
-      background: var(--blue-bg);
-      display: flex; align-items: center; justify-content: center;
-      color: var(--blue);
-    }
-    .prog-icon > .cm { color: var(--blue-bd); }
-    #progressSection.active .prog-icon {
-      animation: gfProgPulse 1.6s ease-in-out infinite;
-    }
-    @keyframes gfProgPulse {
-      0%, 100% { transform: scale(1); }
-      50%      { transform: scale(1.1); }
-    }
-
-    .prog-label {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: 0.01em;
-      color: var(--text);
-    }
-
-    .prog-sub {
-      font-size: 11px;
-      color: var(--text-3);
-      margin-top: 3px;
-    }
-
-    .prog-track {
-      height: 4px;
-      border-radius: var(--r-pill);
-      background: var(--sunken);
-      overflow: hidden;
-    }
-
-    .prog-fill {
-      position: relative;
-      height: 100%;
-      width: 100%;
-      background: var(--blue);
-      border-radius: var(--r-pill);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform .3s ease;
-      overflow: hidden;
-    }
-    .prog-fill::after {
-      content: "";
-      position: absolute; inset: 0;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,.6), transparent);
-      background-size: 60% 100%;
-      background-repeat: no-repeat;
-      animation: gfProgShine 1.3s linear infinite;
-    }
-    @keyframes gfProgShine {
-      from { background-position: -60% 0; }
-      to   { background-position: 160% 0; }
-    }
-
-    /* ─── RESULT ─── */
-    #resultBar { display: none; }
-    #resultBar.active { display: block; }
-
-    .res-status {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 16px;
-      background: rgba(22,103,242,.08);
-      border-bottom: 1px solid rgba(22,103,242,.12);
-    }
-
-    .res-check { color: var(--blue); flex-shrink: 0; }
-
-    .res-title {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--blue-h);
-      flex: 1;
-    }
-
-    .res-dim {
-      font-size: 10.5px;
-      font-weight: 500;
-      color: rgba(22,103,242,.7);
-      font-variant-numeric: tabular-nums;
-    }
-
-    .res-actions {
-      display: flex;
-      flex-wrap: wrap;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .res-btn {
-      flex: 1 1 20%;
-      min-width: 0;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      border: none;
-      border-right: 1px solid var(--border);
-      background: transparent;
-      cursor: pointer;
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.02em;
-      text-transform: uppercase;
-      color: var(--text-2);
-      font-family: 'Barlow Condensed', sans-serif;
-      transition: background .08s, color .08s;
-    }
-    .res-btn:last-child { border-right: none; }
-    .res-btn:hover { background: var(--surface); color: var(--text); }
-    .res-btn:active { background: var(--sunken); }
-    .res-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
-
-    /* Copy gets its own full-width row — both the emphasis a primary action
-       deserves and the simplest fix for 5 format/edit buttons no longer
-       fitting next to it on one line now that JPG joined PNG/WebP/PDF/Edit. */
-    .res-btn.prim {
-      flex-basis: 100%;
-      background: var(--blue);
-      border-right: none;
-      border-bottom: 1px solid var(--blue-h);
-      color: #f2f2f3;
-      font-weight: 600;
-    }
-    .res-btn.prim:hover { background: var(--blue-h); }
-
-    .popup-preview {
-      position: relative;
-      width: 100%;
-      height: 150px;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      overflow: hidden;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-    }
-    .popup-preview img {
-      width: 100%;
-      height: auto;
-      display: block;
-      object-fit: cover;
-      object-position: top center;
-    }
-    .popup-preview-fade {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 48px;
-      background: linear-gradient(to bottom, rgba(241, 243, 247, 0) 0%, rgba(241, 243, 247, 0.92) 80%, rgba(241, 243, 247, 1) 100%);
-      backdrop-filter: blur(2px);
-      -webkit-backdrop-filter: blur(2px);
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      padding-bottom: 6px;
-      pointer-events: none;
-    }
-    .popup-preview-pill {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 9.5px;
-      font-weight: 700;
-      color: var(--text-3);
-      background: rgba(242,242,243,.9);
-      border: 1px solid var(--border);
-      padding: 2px 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-
-    /* ─── ERROR ─── */
+    /* Error */
     #errorBar { display: none; }
-    #errorBar.active {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      padding: 10px 14px;
-      background: var(--red-bg);
-      border-top: 1px solid var(--red-bd);
-    }
+    #errorBar.active { display: flex; }
 
-    .err-icon { color: var(--red); flex-shrink: 0; margin-top: 1px; }
-    .err-text  { font-size: 11px; color: #991B1B; line-height: 1.45; }
-
-    /* ─── FOOTER ─── */
-    .ftr {
-      height: 30px;
-      padding: 0 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-top: 1px solid var(--border);
-      background: var(--surface);
-    }
-
-    .ftr-left  { display: flex; align-items: center; gap: 5px; }
-    .ftr-dot   { width: 5px; height: 5px; background: var(--green-dot); border-radius: 50%; }
-    .ftr-text  { font-size: 10px; font-weight: 500; color: var(--text-3); }
-
-    /* ─── TOAST ─── */
-    .toast {
-      position: fixed;
-      bottom: 36px; left: 50%;
-      transform: translateX(-50%) translateY(6px);
-      background: #1d1f20;
-      color: #f2f2f3;
-      padding: 6px 14px;
-      font-size: 11px; font-weight: 600;
-      border-radius: var(--r-pill);
-      box-shadow: 0 4px 12px rgba(0,0,0,.2);
-      opacity: 0; pointer-events: none;
-      transition: opacity .18s, transform .18s;
-      white-space: nowrap; z-index: 999;
-    }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-    /* ─── HISTORY PANEL ─── */
-    #historySection {
-      display: none;
-      padding: 8px 14px 14px;
-    }
-    #historySection.active { display: block; }
-
-    .hist-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-    .hist-search {
-      width: 100%; height: 30px; padding: 0 10px; margin-bottom: 6px;
-      font: 400 12px var(--font, inherit); color: var(--text); background: var(--surface);
-      border: 1px solid var(--border); outline: none; border-radius: 0;
-    }
-    .hist-search:focus { border-color: var(--blue); box-shadow: 0 0 0 2px var(--blue-bg); }
-    .hist-search::placeholder { color: var(--text-4); }
-    .hist-count { font-size: 10.5px; color: var(--text-3); min-height: 14px; margin-bottom: 4px; }
-    .hist-title {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text-2);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-    .hist-clear {
-      font-size: 10px;
-      font-weight: 600;
-      color: var(--red);
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-family: inherit;
-      padding: 2px 6px;
-      transition: opacity .12s;
-    }
-    .hist-clear:hover { opacity: 0.7; }
-
-    .hist-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 6px;
-      max-height: 320px;
-      overflow-y: auto;
-      scrollbar-width: thin;
-    }
-
-    .hist-item {
-      position: relative;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      cursor: pointer;
-      overflow: hidden;
-      transition: border-color .12s, box-shadow .12s;
-    }
-    .hist-item:hover {
-      border-color: var(--blue-bd);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .hist-thumb {
-      width: 100%;
-      aspect-ratio: 3 / 2;
-      object-fit: cover;
-      object-position: top center;
-      display: block;
-    }
-
-    .hist-meta {
-      padding: 4px 5px;
-      border-top: 1px solid var(--border);
-    }
-
-    .hist-domain {
-      font-size: 9px;
-      font-weight: 600;
-      color: var(--text-2);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: block;
-    }
-
-    .hist-time {
-      font-size: 8.5px;
-      color: var(--text-4);
-      display: block;
-      margin-top: 1px;
-    }
-
-    .hist-delete {
-      position: absolute;
-      top: 3px;
-      right: 3px;
-      width: 18px;
-      height: 18px;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0,0,0,0.6);
-      border: none;
-      cursor: pointer;
-      color: #fff;
-      padding: 0;
-    }
+    /* History */
+    #historySection { display: none; flex-direction: column; gap: var(--gf-s-3); }
+    #historySection.active { display: flex; }
+    .hist-header { display: flex; align-items: center; gap: 6px; }
+    .hist-title { flex: 1; }
+    .hist-count { min-height: 16px; margin-top: calc(var(--gf-s-1) * -1); color: var(--gf-text-3); }
+    .hist-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gf-s-3); }
+    .hist-item { position: relative; display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--gf-border); border-radius: var(--gf-r-lg); background: var(--gf-bg-surface); transition: border-color .15s, box-shadow .15s; }
+    .hist-item[role="link"] { cursor: pointer; }
+    .hist-item:hover { border-color: var(--gf-border-strong); box-shadow: var(--gf-shadow-sm); }
+    .hist-thumb { width: 100%; height: 96px; object-fit: cover; object-position: top; background: var(--gf-bg-sunken); border-bottom: 1px solid var(--gf-border); }
+    .hist-meta { display: flex; flex-direction: column; gap: 0; padding: var(--gf-s-2) 10px; min-width: 0; }
+    .hist-domain { font-size: 13px; font-weight: 500; line-height: 18px; color: var(--gf-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .hist-time { font-size: 11px; line-height: 16px; color: var(--gf-text-3); }
+    .hist-delete { position: absolute; top: 6px; right: 6px; display: none; width: 24px; height: 24px; align-items: center; justify-content: center; padding: 0; border: 1px solid var(--gf-border); border-radius: var(--gf-r-pill); background: var(--gf-bg-surface); color: var(--gf-text-2); box-shadow: var(--gf-shadow-xs); }
+    .hist-delete:hover { color: var(--gf-error); }
     .hist-item:hover .hist-delete, .hist-item:focus-within .hist-delete { display: flex; }
-    .hist-item:focus-visible { outline: 2px solid var(--blue, #1667F2); outline-offset: 2px; }
+    .hist-empty { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; gap: var(--gf-s-2); padding: var(--gf-s-4) var(--gf-s-3) var(--gf-s-6); text-align: center; }
+    .hist-empty p { margin: 0; max-width: 280px; color: var(--gf-text-2); }
 
-    .hist-empty {
-      text-align: center;
-      padding: 24px 16px;
-      color: var(--text-4);
-      font-size: 11px;
-    }
+    /* Footer */
+    .ftr { display: flex; align-items: center; gap: var(--gf-s-2); padding: 10px var(--gf-s-4); background: var(--gf-bg-surface); border-top: 1px solid var(--gf-border); }
+    .ftr-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gf-success); }
+    .ftr-text { flex: 1; color: var(--gf-text-2); }
+    #ftrVersion { color: var(--gf-text-3); }
 
-    .hist-back {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 10.5px;
-      font-weight: 600;
-      color: var(--text-3);
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-family: inherit;
-      padding: 2px 4px;
-      transition: color .12s;
-    }
-    .hist-back:hover { color: var(--text); }
-
-    /* ─── REDUCED MOTION ─── */
-    /* Keep color/background/opacity feedback (it carries state), drop only
-       the spatial motion for users with vestibular sensitivity. */
-    @media (prefers-reduced-motion: reduce) {
-      .mode-btn.primary:hover,
-      .mode-btn:active,
-      .unsupp-btn:active {
-        transform: none;
-      }
-      .toast {
-        transition: opacity .18s;
-      }
-      .toast.show { transform: translateX(-50%); }
-    }
+    /* Toast */
+    .toast { position: fixed; left: 50%; bottom: 56px; z-index: 20; opacity: 0; pointer-events: none; transform: translateX(-50%) translateY(6px); transition: opacity .18s, transform .18s; }
+    .toast.show { opacity: 1; transform: translateX(-50%); }
   </style>
 </head>
-<body>
-
-<!-- HEADER -->
-<div class="hdr">
+<body class="gf">
+<header class="hdr">
   <div class="brand">
-    <img class="logo-img" src="assets/icon-128.png" alt="">
-    <span class="wm">
-      <span class="wm-go">Go</span><span class="wm-full">Full</span><span class="wm-y">y</span>
-    </span>
+    <img src="assets/gofully-symbol.png" alt="">
+    <span class="gf-t-heading">GoFully</span>
   </div>
   <div class="hdr-right">
-    <button class="rate-us-btn" id="rateUsBtn" type="button">
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-      <span data-i18n="header.rate_us">Rate us</span>
+    <button class="gf-icon-btn rate-us-btn" id="rateUsBtn" type="button" aria-label="Rate us">
+      <i class="gf-icon" data-icon="star" data-size="18"></i>
+      <span class="tip gf-tooltip" data-i18n="header.rate_us">Rate us</span>
     </button>
-    <button class="icon-btn" id="guideBtn" type="button">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M10 6h11M10 12h11M10 18h11"/><path d="M4 6h1v4M4 10h2M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/>
-      </svg>
-      <span class="tip">Guide</span>
+    <button class="gf-icon-btn" id="guideBtn" type="button" aria-label="Guide">
+      <i class="gf-icon" data-icon="guide" data-size="18"></i>
+      <span class="tip gf-tooltip">Guide</span>
     </button>
-    <button class="icon-btn" id="historyBtn">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="7" height="7"/>
-        <rect x="14" y="3" width="7" height="7"/>
-        <rect x="3" y="14" width="7" height="7"/>
-        <rect x="14" y="14" width="7" height="7"/>
-      </svg>
-      <span class="tip">History</span>
+    <button class="gf-icon-btn" id="historyBtn" type="button" aria-label="History">
+      <i class="gf-icon" data-icon="history" data-size="18"></i>
+      <span class="tip gf-tooltip">History</span>
     </button>
-    <button class="icon-btn" id="helpBtn">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="12" y1="16" x2="12" y2="12"/>
-        <line x1="12" y1="8" x2="12.01" y2="8"/>
-      </svg>
-      <span class="tip" data-i18n="header.help_tip">How Features Work (Help Guide)</span>
+    <button class="gf-icon-btn" id="helpBtn" type="button" aria-label="Help">
+      <i class="gf-icon" data-icon="help" data-size="18"></i>
+      <span class="tip gf-tooltip" data-i18n="header.help_tip">Help</span>
     </button>
-    <button class="icon-btn" id="settingsBtn">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="3"/>
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-      </svg>
-      <span class="tip" data-i18n="header.settings_tip">Settings</span>
+    <button class="gf-icon-btn" id="settingsBtn" type="button" aria-label="Settings">
+      <i class="gf-icon" data-icon="settings" data-size="18"></i>
+      <span class="tip gf-tooltip" data-i18n="header.settings_tip">Settings</span>
     </button>
   </div>
-</div>
+</header>
 
-<!-- UNSUPPORTED NOTICE PANEL -->
-<div id="unsupportedPanel">
-  <div class="unsupp-header">
-    <div class="unsupp-icon">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="12" y1="8" x2="12" y2="12"/>
-        <line x1="12" y1="16" x2="12.01" y2="16"/>
-      </svg>
-    </div>
-    <span class="unsupp-title" id="unsupportedTitle">Capture isn't available here</span>
-  </div>
-  <div class="unsupp-desc" id="unsupportedDesc">
-    GoFully can't capture browser or restricted pages. Open a regular webpage and try again.
-  </div>
-  <div class="unsupp-actions">
-    <button class="unsupp-btn" id="unsupportedDismissBtn" type="button" data-i18n="unsupported.dismiss">Got it</button>
-  </div>
-</div>
+<main>
+  <!-- Popup / Page can't be captured -->
+  <section id="unsupportedPanel" aria-live="polite">
+    <i class="gf-ill" data-ill="page-cant-be-captured" data-width="160"></i>
+    <h2 class="gf-t-title" id="unsupportedTitle" style="margin:0">This page can't be captured</h2>
+    <p class="gf-t-body" id="unsupportedDesc">Chrome doesn't allow GoFully to capture this page.</p>
+    <button class="gf-btn gf-btn--secondary gf-btn--md" id="unsupportedDismissBtn" type="button" data-i18n="unsupported.dismiss">Got it</button>
+  </section>
 
-<!-- MODE GRID -->
-<div id="modesSection">
-
-  <button class="mode-btn primary" data-mode="full-page">
-    <div class="m-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="4" width="20" height="16" rx="2"/>
-        <path d="M2 9h20"/>
-        <circle cx="5.5" cy="6.5" r=".9" fill="currentColor" stroke="none"/>
-        <circle cx="8.5" cy="6.5" r=".9" fill="currentColor" stroke="none"/>
-        <circle cx="11.5" cy="6.5" r=".9" fill="currentColor" stroke="none"/>
-      </svg>
-    </div>
-    <div class="m-text">
-      <span class="m-name" data-i18n="mode.full_page.name">Full Page</span>
-      <span class="m-desc" data-i18n="mode.full_page.desc">Entire scrollable document</span>
-    </div>
-    <span class="m-kbd" data-command="capture-full-page">Cmd+Shift+F</span>
-  </button>
-
-  <button class="mode-btn" data-mode="visible-area">
-    <div class="m-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="3" width="20" height="14" rx="2"/>
-        <path d="M8 21h8M12 17v4"/>
-      </svg>
-    </div>
-    <div class="m-text">
-      <span class="m-name" data-i18n="mode.visible_area.name">Visible Area</span>
-      <span class="m-desc" data-i18n="mode.visible_area.desc">Current viewport</span>
-    </div>
-    <span class="m-kbd" data-command="capture-visible">Cmd+Shift+V</span>
-  </button>
-
-  <button class="mode-btn" data-mode="selected-area">
-    <div class="m-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M6 2v16h16"/>
-        <path d="M2 6h16v16"/>
-      </svg>
-    </div>
-    <div class="m-text">
-      <span class="m-name" data-i18n="mode.selected_area.name">Selected Area</span>
-      <span class="m-desc" data-i18n="mode.selected_area.desc">Drag to select region</span>
-    </div>
-    <span class="m-kbd" data-command="capture-selected-area">Cmd+Shift+A</span>
-  </button>
-
-  <button class="mode-btn" data-mode="scrolling-area">
-    <div class="m-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 3v18"/>
-        <path d="M8 7l4-4 4 4"/>
-        <path d="M8 17l4 4 4-4"/>
-      </svg>
-    </div>
-    <div class="m-text">
-      <span class="m-name" data-i18n="mode.scrolling_area.name">Scrolling Area</span>
-      <span class="m-desc" data-i18n="mode.scrolling_area.desc">Select + auto-scroll</span>
-    </div>
-  </button>
-
-  <button class="mode-btn" data-mode="capture-element">
-    <div class="m-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
-        <rect x="8" y="8" width="8" height="8"/>
-      </svg>
-    </div>
-    <div class="m-text">
-      <span class="m-name" data-i18n="mode.capture_element.name">Capture Element</span>
-      <span class="m-desc" data-i18n="mode.capture_element.desc">Click any part of the page</span>
-    </div>
-  </button>
-
-  <button class="mode-btn" data-mode="annotate-page">
-    <div class="m-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M17 3a2.83 2.83 0 0 1 4 4L8 20l-5 1 1-5Z"/>
-        <path d="M14 6l4 4"/>
-      </svg>
-    </div>
-    <div class="m-text">
-      <span class="m-name" data-i18n="mode.annotate_page.name">Draw on Page</span>
-      <span class="m-desc" data-i18n="mode.annotate_page.desc">Annotate the live site</span>
-    </div>
-    <span class="m-kbd">Cmd+Shift+H</span>
-  </button>
-
-  <button class="mode-btn" data-mode="capture-text">
-    <div class="m-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 7V4h16v3"/>
-        <path d="M9 20h6"/>
-        <path d="M12 4v16"/>
-        <path d="M3 12h3"/>
-        <path d="M18 12h3"/>
-      </svg>
-    </div>
-    <div class="m-text">
-      <span class="m-name" data-i18n="mode.capture_text.name">Capture Text</span>
-      <span class="m-desc" data-i18n="mode.capture_text.desc">Extract & copy (OCR)</span>
-    </div>
-  </button>
-
-</div>
-
-<!-- STATUS LINE (last capture) -->
-<div id="statusLine">
-  <img class="status-thumb" id="statusThumb" src="" alt="">
-  <span class="status-text" id="statusText"></span>
-  <button class="status-view" id="statusViewBtn" type="button" data-i18n="status.view">View</button>
-</div>
-
-<!-- HISTORY -->
-<div id="historySection">
-  <div class="hist-header">
-    <button class="hist-back" id="historyBackBtn" type="button">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-      Back
+  <!-- Popup / Default -->
+  <section id="modesSection">
+    <button class="mode-btn primary gf-card gf-card--interactive" data-mode="full-page" type="button">
+      <span class="gf-tile"><i class="gf-icon" data-icon="full-page" data-size="20"></i></span>
+      <span class="m-text">
+        <span class="m-name gf-t-heading" data-i18n="mode.full_page.name">Full page</span>
+        <span class="m-desc gf-t-small" data-i18n="mode.full_page.desc">Top to bottom, one image</span>
+      </span>
+      <span class="m-kbd gf-keys" data-command="capture-full-page"></span>
     </button>
-    <span class="hist-title">History</span>
-    <button class="hist-clear" id="historyClearBtn" type="button">Clear All</button>
-  </div>
-  <input class="hist-search" id="historySearch" type="search" placeholder="Search text, site or title" aria-label="Search history" autocomplete="off" spellcheck="false">
-  <div class="hist-count" id="historyCount" aria-live="polite"></div>
-  <div class="hist-grid" id="historyGrid"></div>
-</div>
-
-<!-- PROGRESS -->
-<div id="progressSection">
-  <div class="prog-top">
-    <div class="prog-icon bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/>
-        <path d="M12 6v6l4 2"/>
-      </svg>
+    <div class="more">
+      <p class="gf-t-label" data-i18n="popup.more_ways">More ways to capture</p>
+      <label class="delay" title="Full page and visible area wait this long. The popup closes so you can open a menu or hover a tooltip first.">
+        <i class="gf-icon" data-icon="timer" data-size="14"></i>
+        <span class="gf-t-small" data-i18n="popup.delay">Delay</span>
+        <select class="gf-select delay-select" id="delaySelect" aria-label="Delay before full page and visible area captures">
+          <option value="0">Off</option>
+          <option value="3">3 s</option>
+          <option value="5">5 s</option>
+          <option value="10">10 s</option>
+        </select>
+      </label>
     </div>
-    <div>
-      <div class="prog-label" id="progressLabel" data-i18n="progress.preparing">Preparing capture...</div>
-      <div class="prog-sub" data-i18n="progress.please_wait">Please wait</div>
+    <button class="mode-btn gf-card gf-card--interactive" data-mode="visible-area" type="button">
+      <span class="m-top"><span class="gf-tile gf-tile--32 gf-tile--blue"><i class="gf-icon" data-icon="visible" data-size="18"></i></span><span class="m-kbd gf-keys" data-command="capture-visible"></span></span>
+      <span class="m-text"><span class="m-name gf-t-body-medium" data-i18n="mode.visible_area.name">Visible area</span><span class="m-desc gf-t-small" data-i18n="mode.visible_area.desc">What you see now</span></span>
+    </button>
+    <button class="mode-btn gf-card gf-card--interactive" data-mode="selected-area" type="button">
+      <span class="m-top"><span class="gf-tile gf-tile--32 gf-tile--blue"><i class="gf-icon" data-icon="region" data-size="18"></i></span><span class="m-kbd gf-keys" data-command="capture-selected-area"></span></span>
+      <span class="m-text"><span class="m-name gf-t-body-medium" data-i18n="mode.selected_area.name">Selected area</span><span class="m-desc gf-t-small" data-i18n="mode.selected_area.desc">Drag a box</span></span>
+    </button>
+    <button class="mode-btn gf-card gf-card--interactive" data-mode="scrolling-area" type="button">
+      <span class="m-top"><span class="gf-tile gf-tile--32 gf-tile--blue"><i class="gf-icon" data-icon="scrolling" data-size="18"></i></span></span>
+      <span class="m-text"><span class="m-name gf-t-body-medium" data-i18n="mode.scrolling_area.name">Scrolling area</span><span class="m-desc gf-t-small" data-i18n="mode.scrolling_area.desc">A panel that scrolls</span></span>
+    </button>
+    <button class="mode-btn gf-card gf-card--interactive" data-mode="capture-element" type="button">
+      <span class="m-top"><span class="gf-tile gf-tile--32 gf-tile--blue"><i class="gf-icon" data-icon="element" data-size="18"></i></span></span>
+      <span class="m-text"><span class="m-name gf-t-body-medium" data-i18n="mode.capture_element.name">Element</span><span class="m-desc gf-t-small" data-i18n="mode.capture_element.desc">Click any part</span></span>
+    </button>
+    <button class="mode-btn gf-card gf-card--interactive" data-mode="annotate-page" type="button">
+      <span class="m-top"><span class="gf-tile gf-tile--32 gf-tile--green"><i class="gf-icon" data-icon="draw" data-size="18"></i></span><span class="m-kbd gf-keys" data-keys="Cmd+Shift+H"></span></span>
+      <span class="m-text"><span class="m-name gf-t-body-medium" data-i18n="mode.annotate_page.name">Draw on page</span><span class="m-desc gf-t-small" data-i18n="mode.annotate_page.desc">Mark up the live site</span></span>
+    </button>
+    <button class="mode-btn gf-card gf-card--interactive" data-mode="capture-text" type="button">
+      <span class="m-top"><span class="gf-tile gf-tile--32 gf-tile--lilac"><i class="gf-icon" data-icon="text-ocr" data-size="18"></i></span></span>
+      <span class="m-text"><span class="m-name gf-t-body-medium" data-i18n="mode.capture_text.name">Capture text</span><span class="m-desc gf-t-small" data-i18n="mode.capture_text.desc">Copy words from pixels</span></span>
+    </button>
+    <button class="mode-btn gf-card gf-card--interactive" data-mode="redact-page" type="button">
+      <span class="m-top"><span class="gf-tile gf-tile--32 gf-tile--green"><i class="gf-icon" data-icon="auto-redact" data-size="18"></i></span></span>
+      <span class="m-text"><span class="m-name gf-t-body-medium" data-i18n="mode.redact_page.name">Redact page</span><span class="m-desc gf-t-small" data-i18n="mode.redact_page.desc">Hide private text first</span></span>
+    </button>
+    <button class="mode-btn gf-card gf-card--interactive" data-mode="measure-page" type="button">
+      <span class="m-top"><span class="gf-tile gf-tile--32 gf-tile--lilac"><i class="gf-icon" data-icon="ruler" data-size="18"></i></span></span>
+      <span class="m-text"><span class="m-name gf-t-body-medium" data-i18n="mode.measure_page.name">Measure</span><span class="m-desc gf-t-small" data-i18n="mode.measure_page.desc">Sizes, gaps and colors</span></span>
+    </button>
+  </section>
+
+  <!-- Last capture -->
+  <div id="statusLine" class="gf-card">
+    <img class="status-thumb" id="statusThumb" src="" alt="">
+    <span class="status-text gf-t-small" id="statusText"></span>
+    <button class="gf-btn gf-btn--ghost status-view" id="statusViewBtn" type="button" data-i18n="status.view">View</button>
+  </div>
+
+  <!-- Popup / History, History · search, · empty, · no results -->
+  <section id="historySection">
+    <div class="hist-header">
+      <button class="gf-icon-btn" id="historyBackBtn" type="button" aria-label="Back">
+        <i class="gf-icon" data-icon="chevron-left" data-size="18"></i>
+      </button>
+      <span class="hist-title gf-t-heading">History</span>
+      <button class="gf-btn gf-btn--ghost" id="historyClearBtn" type="button">Clear all</button>
     </div>
-  </div>
-  <div class="prog-track">
-    <div class="prog-fill" id="progressFill"></div>
-  </div>
-</div>
+    <label class="gf-search">
+      <i class="gf-icon" data-icon="search" data-size="16"></i>
+      <input class="gf-input" id="historySearch" type="search" placeholder="Search text, titles and links" aria-label="Search history" autocomplete="off" spellcheck="false">
+    </label>
+    <div class="hist-count gf-t-small" id="historyCount" aria-live="polite"></div>
+    <div class="hist-grid" id="historyGrid"></div>
+  </section>
 
-<!-- RESULT -->
-<div id="resultBar">
-  <div class="res-status">
-    <div class="res-check">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M20 6L9 17l-5-5"/>
-      </svg>
+  <!-- Popup / Capturing -->
+  <section id="progressSection" aria-live="polite">
+    <div class="prog-top">
+      <span class="gf-tile"><i class="gf-icon" data-icon="loader" data-size="18"></i></span>
+      <div class="prog-text">
+        <div class="gf-t-body-medium" id="progressLabel" data-i18n="progress.preparing">Getting the page ready</div>
+        <div class="gf-t-small gf-muted" data-i18n="progress.please_wait">Keep this tab open.</div>
+      </div>
     </div>
-    <span class="res-title" data-i18n="result.captured">Screenshot captured</span>
-    <span class="res-dim" id="resultText"></span>
-  </div>
-  <div class="popup-preview" id="popupPreviewContainer" style="display:none;">
-    <img id="popupPreviewImg" src="" alt="Capture Preview" />
-    <div class="popup-preview-fade" id="popupPreviewFade" style="display:none;">
-      <span class="popup-preview-pill" data-i18n="result.preview_pill">Full Page View</span>
+    <div class="gf-progress"><i id="progressFill"></i></div>
+  </section>
+
+  <!-- Popup / Capture complete -->
+  <section id="resultBar">
+    <div class="popup-preview" id="popupPreviewContainer" style="display:none;">
+      <img id="popupPreviewImg" src="" alt="Capture preview">
+      <div class="popup-preview-fade" id="popupPreviewFade" style="display:none;">
+        <span class="gf-tag" data-i18n="result.preview_pill">Full Page View</span>
+      </div>
     </div>
-  </div>
-  <div class="res-actions">
-    <button class="res-btn prim" id="copyBtn">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="9" y="9" width="13" height="13" rx="1"/>
-        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-      </svg>
-      <span data-i18n="action.copy">Copy</span>
+    <div class="res-status">
+      <span class="gf-t-title" data-i18n="result.captured">Screenshot captured</span>
+      <span class="gf-t-small" id="resultText"></span>
+    </div>
+    <button class="gf-btn gf-btn--primary gf-btn--md gf-btn--block" id="copyBtn" type="button">
+      <i class="gf-icon" data-icon="copy" data-size="16"></i><span data-i18n="action.copy">Copy</span>
     </button>
-    <button class="res-btn" id="savePngBtn">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-        <polyline points="7 10 12 15 17 10"/>
-        <line x1="12" y1="15" x2="12" y2="3"/>
-      </svg>
-      <span data-i18n="action.png">PNG</span>
-    </button>
-    <button class="res-btn" id="saveWebpBtn">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-        <polyline points="7 10 12 15 17 10"/>
-        <line x1="12" y1="15" x2="12" y2="3"/>
-      </svg>
-      <span data-i18n="action.webp">WebP</span>
-    </button>
-    <button class="res-btn" id="saveJpgBtn">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-        <polyline points="7 10 12 15 17 10"/>
-        <line x1="12" y1="15" x2="12" y2="3"/>
-      </svg>
-      <span data-i18n="action.jpg">JPG</span>
-    </button>
-    <button class="res-btn" id="savePdfBtn">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-        <polyline points="14 2 14 8 20 8"/>
-        <path d="M9 13h6M9 17h3"/>
-      </svg>
-      <span data-i18n="action.pdf">PDF</span>
-    </button>
-    <button class="res-btn" id="editBtn">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
-      </svg>
-      <span data-i18n="action.edit">Edit</span>
-    </button>
-  </div>
-</div>
+    <div class="res-row">
+      <button class="gf-btn gf-btn--secondary" id="savePngBtn" type="button"><span data-i18n="action.png">PNG</span></button>
+      <button class="gf-btn gf-btn--secondary" id="saveJpgBtn" type="button"><span data-i18n="action.jpg">JPG</span></button>
+      <button class="gf-btn gf-btn--secondary" id="saveWebpBtn" type="button"><span data-i18n="action.webp">WebP</span></button>
+      <button class="gf-btn gf-btn--secondary" id="savePdfBtn" type="button"><span data-i18n="action.pdf">PDF</span></button>
+      <button class="gf-btn gf-btn--secondary" id="editBtn" type="button"><span data-i18n="action.edit">Edit</span></button>
+    </div>
+  </section>
 
-<!-- ERROR -->
-<div id="errorBar">
-  <svg class="err-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="12" r="10"/>
-    <path d="M12 8V12"/>
-    <path d="M12 16H12.01"/>
-  </svg>
-  <span class="err-text" id="errorMsg"></span>
-</div>
-
-<!-- FOOTER -->
-<div class="ftr">
-  <div class="ftr-left">
-    <div class="ftr-dot"></div>
-    <span class="ftr-text" id="ftrVersion">GoFully</span>
+  <!-- Popup / Capture failed (inline notice) -->
+  <div id="errorBar" class="gf-banner gf-banner--error" role="alert">
+    <i class="gf-icon" data-icon="alert" data-size="18"></i>
+    <span id="errorMsg"></span>
   </div>
-  <span class="ftr-text" data-i18n="footer.offline">100% Offline</span>
-</div>
+</main>
 
-<div class="toast" id="toast"></div>
+<footer class="ftr gf-t-small">
+  <span class="ftr-dot"></span>
+  <span class="ftr-text" data-i18n="footer.offline">Runs on your device</span>
+  <span class="gf-t-caption" id="ftrVersion">GoFully</span>
+</footer>
+
+<div class="toast gf-toast" id="toast" role="status"></div>
 <script src="popup.ts" type="module"></script>
 </body>
 </html>

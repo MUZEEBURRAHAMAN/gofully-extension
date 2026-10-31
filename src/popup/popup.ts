@@ -6,6 +6,8 @@ import { isSupportedCapturePage, type PageSupportResult } from "../utils/url-val
 import { applyTheme, watchTheme } from "../utils/theme";
 import { initI18n, t, watchLanguage } from "../utils/i18n";
 import { markRatedYes } from "../utils/rate-nudge";
+import { icon } from "../ui/ds/icons";
+import { illustration } from "../ui/ds/illustrations";
 
 applyTheme();
 watchTheme();
@@ -16,7 +18,7 @@ watchLanguage(() => applyPageSupportState(currentSupportState));
 // actual shipped version again (it previously sat hardcoded as "v1.1" while
 // the manifest had already moved to 1.1.2).
 const ftrVersion = document.getElementById("ftrVersion");
-if (ftrVersion) ftrVersion.textContent = `GoFully v${chrome.runtime.getManifest().version}`;
+if (ftrVersion) ftrVersion.textContent = `v${chrome.runtime.getManifest().version}`;
 
 const modesSection = document.getElementById("modesSection")!;
 const progressSection = document.getElementById("progressSection")!;
@@ -76,8 +78,21 @@ async function playCaptureSound(): Promise<void> {
 
 async function getCountdown(): Promise<number> {
   try {
-    return (await readSettings()).captureCountdown ?? 0;
+    const v = Number((await readSettings()).captureCountdown ?? 0);
+    // Older versions offered 1 to 3 seconds; those now mean the shortest choice.
+    return !v || v <= 0 ? 0 : v <= 3 ? 3 : v <= 5 ? 5 : 10;
   } catch { return 0; }
+}
+
+// Delay before full page and visible area captures. Same value as "Delay before capture" in Settings.
+const delaySelect = document.getElementById("delaySelect") as HTMLSelectElement | null;
+if (delaySelect) {
+  void getCountdown().then((v) => { delaySelect.value = String(v); if (delaySelect.selectedIndex < 0) delaySelect.value = "0"; });
+  delaySelect.addEventListener("change", async () => {
+    const stored = (await chrome.storage.sync.get("settings")) as { settings?: Partial<Settings> };
+    const seconds = Number(delaySelect.value) as Settings["captureCountdown"];
+    await chrome.storage.sync.set({ settings: { ...(stored.settings ?? {}), captureCountdown: seconds } });
+  });
 }
 
 // Settings & Help buttons
@@ -164,7 +179,28 @@ let fullIds = new Set<string>();
 function renderHistoryGrid(entries: any[], searching = false): void {
   historyGrid.innerHTML = "";
   if (entries.length === 0) {
-    historyGrid.innerHTML = `<div class="hist-empty">${searching ? "No captures match that search" : "No screenshots yet"}</div>`;
+    const query = historySearch?.value.trim() ?? "";
+    const empty = document.createElement("div");
+    empty.className = "hist-empty";
+    empty.innerHTML = illustration(searching ? "no-search-results" : "history-empty", 140);
+    const title = document.createElement("div");
+    title.className = "gf-t-heading";
+    title.textContent = searching ? `Nothing matches “${query}”` : "No captures yet";
+    const desc = document.createElement("p");
+    desc.className = "gf-t-small";
+    desc.textContent = searching
+      ? "Try a word from the page title, the address or the text in the image."
+      : "Your last 50 captures land here, searchable by the words inside them. They never leave this device.";
+    empty.append(title, desc);
+    if (searching) {
+      const clear = document.createElement("button");
+      clear.type = "button";
+      clear.className = "gf-btn gf-btn--secondary";
+      clear.textContent = "Clear search";
+      clear.addEventListener("click", () => { if (historySearch) historySearch.value = ""; filterHistory(); historySearch?.focus(); });
+      empty.appendChild(clear);
+    }
+    historyGrid.appendChild(empty);
     return;
   }
   for (const entry of entries) {
@@ -199,7 +235,9 @@ function renderHistoryGrid(entries: any[], searching = false): void {
 
     const del = document.createElement("button");
     del.className = "hist-delete";
-    del.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+    del.type = "button";
+    del.setAttribute("aria-label", "Delete capture");
+    del.innerHTML = icon("close", 14);
     del.addEventListener("click", async (e) => {
       e.stopPropagation();
       await chrome.runtime.sendMessage({ type: "DELETE_HISTORY_ENTRY", payload: { id: entry.id } });
@@ -230,6 +268,8 @@ function renderHistoryGrid(entries: any[], searching = false): void {
 // Unsupported panel dismiss button ("Got it")
 unsupportedDismissBtn?.addEventListener("click", () => {
   unsupportedPanel.classList.remove("active");
+  // The button just hid itself; keep keyboard focus inside the popup.
+  document.querySelector<HTMLElement>(".hdr .gf-icon-btn")?.focus();
 });
 
 // Mode buttons — use mousedown so first interaction works without needing focus first
@@ -456,25 +496,26 @@ async function startCapture(mode: CaptureMode): Promise<void> {
   const support = isSupportedCapturePage(tab.url);
   if (!support.supported) { applyPageSupportState(support); return; }
 
-  if (mode === "annotate-page" || mode === "capture-element") {
+  if (mode === "annotate-page" || mode === "capture-element" || mode === "measure-page" || mode === "redact-page") {
     chrome.runtime.sendMessage({ type: "INIT_INTERACTIVE_MODE", payload: { mode, tabId: tab.id } });
     window.close();
     return;
   }
-
-  const countdown = await getCountdown();
 
   if (mode === "selected-area" || mode === "scrolling-area" || mode === "capture-text") {
-    if (countdown > 0) {
-      await runCountdown(countdown, tab.id);
-    }
     chrome.runtime.sendMessage({ type: "INIT_INTERACTIVE_MODE", payload: { mode, tabId: tab.id } });
     window.close();
     return;
   }
 
-  if (countdown > 0) {
-    await runCountdown(countdown, tab.id);
+  // Delay: the background page runs the timer and the page shows the countdown, so the popup can
+  // close and the person can open the menu or hover the tooltip they want in the shot.
+  const delay = await getCountdown();
+  if (delay > 0 && (mode === "full-page" || mode === "visible-area")) {
+    const resp = await chrome.runtime.sendMessage({ type: "START_DELAYED_CAPTURE", payload: { mode, tabId: tab.id, seconds: delay } }).catch(() => null);
+    if (resp?.ok) { window.close(); return; }
+    showError(resp?.error || "Couldn't start the delay on this page");
+    return;
   }
 
   if (mode === "full-page") {
@@ -495,11 +536,14 @@ async function startCapture(mode: CaptureMode): Promise<void> {
       { type: "START_CAPTURE", payload: { mode, tabId: tab.id } },
       (response) => {
         if (response?.type === "CAPTURE_COMPLETE") {
-          captureMetadata = response.payload;
-          currentUrl = response.payload.url || "";
-          chrome.runtime.sendMessage({ type: "GET_CAPTURE_BLOB_URL" }, (resp) => {
-            if (resp?.url) currentBlobUrl = resp.url;
-            showResult(response.payload);
+          // "After a capture" set to something other than the card: let the background page do it on the page.
+          void readSettings().then((cfg) => {
+            if (cfg.defaultAction && cfg.defaultAction !== "result-bar" && response.payload?.captureId) {
+              chrome.runtime.sendMessage({ type: "AFTER_CAPTURE_ACTION", payload: { captureId: response.payload.captureId, tabId: tab.id } }).catch(() => {});
+              window.close();
+              return;
+            }
+            showPopupResult(response);
           });
         } else if (response?.type === "CAPTURE_ERROR") {
           showError(response.payload?.message || "Capture failed");
@@ -507,6 +551,15 @@ async function startCapture(mode: CaptureMode): Promise<void> {
       }
     );
   }
+}
+
+function showPopupResult(response: any): void {
+  captureMetadata = response.payload;
+  currentUrl = response.payload.url || "";
+  chrome.runtime.sendMessage({ type: "GET_CAPTURE_BLOB_URL" }, (resp) => {
+    if (resp?.url) currentBlobUrl = resp.url;
+    showResult(response.payload);
+  });
 }
 
 function completeReviewTabCapture(): void {
@@ -533,17 +586,12 @@ async function completeQuickCapture(payload: { dataUrl: string }): Promise<void>
   setTimeout(() => window.close(), 900);
 }
 
-function runCountdown(seconds: number, tabId: number): Promise<void> {
-  return new Promise((resolve) => {
-    chrome.tabs.sendMessage(tabId, { type: "SHOW_COUNTDOWN", payload: { seconds } }).catch(() => {});
-    setTimeout(resolve, seconds * 1000);
-  });
-}
 
 function showProgress(): void {
   modesSection.style.display = "none";
   statusLine.classList.remove("active");
   progressSection.classList.add("active");
+  document.body.classList.add("is-capturing");
   resultBar.classList.remove("active");
   errorBar.classList.remove("active");
   progressLabel.textContent = t("progress.preparing");
@@ -572,6 +620,7 @@ function updateProgress(progress: CaptureProgress): void {
 
 function showResult(result: any): void {
   progressSection.classList.remove("active");
+  document.body.classList.remove("is-capturing");
   modesSection.style.display = "none";
   statusLine.classList.remove("active");
   resultBar.classList.add("active");
@@ -599,6 +648,7 @@ function showResult(result: any): void {
 
 function showError(message: string): void {
   progressSection.classList.remove("active");
+  document.body.classList.remove("is-capturing");
   modesSection.style.display = "grid";
   errorBar.classList.add("active");
   errorMsg.textContent = message;
@@ -651,7 +701,9 @@ async function loadLastCaptureStatus(): Promise<void> {
     const label = MODE_LABEL[result.mode] || result.mode;
     const w = Math.round(result.width);
     const h = Math.round(result.height);
-    statusText.innerHTML = `<b>${label}</b> · ${w}×${h} · ${timeAgo(result.timestamp)}`;
+    const strong = document.createElement("b");
+    strong.textContent = String(label);
+    statusText.replaceChildren(strong, ` · ${w}×${h} · ${timeAgo(result.timestamp)}`);
 
     const blobResp = await chrome.runtime.sendMessage({ type: "GET_CAPTURE_BLOB_URL" });
     if (blobResp?.url) {
@@ -709,9 +761,10 @@ function updateShortcutLabels(): void {
 
   document.querySelectorAll<HTMLElement>(".m-kbd[data-command]").forEach((el) => {
     const cmd = el.dataset.command;
-    if (cmd && defaultShortcuts[cmd]) {
-      el.textContent = defaultShortcuts[cmd];
-    }
+    if (cmd && defaultShortcuts[cmd]) renderKeys(el, defaultShortcuts[cmd], isMac);
+  });
+  document.querySelectorAll<HTMLElement>(".m-kbd[data-keys]").forEach((el) => {
+    renderKeys(el, el.dataset.keys!.replace(/^Cmd/, mod), isMac);
   });
 
   if (chrome.commands?.getAll) {
@@ -719,12 +772,22 @@ function updateShortcutLabels(): void {
       commands.forEach((c) => {
         if (!c.name || !c.shortcut) return;
         const el = document.querySelector<HTMLElement>(`.m-kbd[data-command="${c.name}"]`);
-        if (el) {
-          el.textContent = formatShortcutForDisplay(c.shortcut, isMac);
-        }
+        if (el) renderKeys(el, formatShortcutForDisplay(c.shortcut, isMac), isMac);
       });
     });
   }
+}
+
+/** "Cmd+Shift+F" → one <kbd class="gf-kbd"> per key, with Mac symbols on a Mac. */
+function renderKeys(el: HTMLElement, combo: string, isMac: boolean): void {
+  const SYMBOL: Record<string, string> = { Cmd: "⌘", Option: "⌥", Shift: "⇧", Ctrl: "⌃" };
+  el.replaceChildren(...combo.split("+").filter(Boolean).map((part) => {
+    const k = document.createElement("kbd");
+    k.className = "gf-kbd";
+    k.textContent = isMac && SYMBOL[part] ? SYMBOL[part] : part;
+    return k;
+  }));
+  el.setAttribute("aria-label", combo.replace(/\+/g, " + "));
 }
 
 // Run active tab support check on popup open

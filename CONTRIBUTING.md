@@ -8,7 +8,7 @@ Whether you are fixing a bug, improving documentation, or proposing new features
 
 ## Code of Conduct
 
-By participating in this project, you agree to abide by our [Code of Conduct](file:///Users/muzeeburrahaman/Documents/full%20page%20screenshot/CODE_OF_CONDUCT.md). Please report unacceptable behavior to project maintainers.
+By participating in this project, you agree to abide by our [Code of Conduct](CODE_OF_CONDUCT.md). Please report unacceptable behavior to project maintainers.
 
 ---
 
@@ -28,7 +28,7 @@ This repository contains both the Chrome extension (Manifest V3) and the officia
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (v18.0.0 or higher recommended)
+- [Node.js](https://nodejs.org/) (v20 or newer)
 - `npm` (v9 or higher)
 - Google Chrome (or any Chromium-based browser like Brave or Edge)
 
@@ -82,12 +82,22 @@ npm run build
 
 ### 3. Running Tests
 
-Run end-to-end and security tests with Playwright:
+Build the extension first (`npm run build:extension`): the tests load `dist/` in a real Chromium.
+
 ```bash
-npm test
-npm run test:e2e
-npm run test:security
+npx tsc --noEmit            # types
+node scripts/ds-lint.mjs    # design-system rules
+npm audit                   # dependencies
+
+npm test                    # everything (about 11 minutes)
+npm run test:security       # security and policy checks only
+npm run test:e2e            # end-to-end tests only
+
+# While working on one feature, run just its spec:
+npx playwright test tests/e2e/28-v12-capture-tools.spec.ts
 ```
+
+Add a test with every change. For anything that touches page content, messages between the extension's parts, or the manifest, also read the [security review](docs/qa-security-review.md) and keep `security/package-policy.json` in step with `manifest.json`: `npm run package:extension` fails if they disagree.
 
 ---
 
@@ -105,7 +115,8 @@ npm run test:security
 3. **Verify locally before pushing**:
    - Ensure `npm run build` passes with zero errors.
    - If modifying the extension, verify `npm run build:extension` builds cleanly and test the unpacked extension in Chrome.
-   - Run tests using `npm test`.
+   - Run `npx tsc --noEmit`, `node scripts/ds-lint.mjs` and the tests for what you changed (or `npm test` for everything).
+   - If you changed a permission, host access, web-accessible file or CSP, update `security/package-policy.json` and say why in the pull request.
 
 4. **Write clear commit messages**:
    Follow conventional commits when possible (e.g., `feat: add keyboard shortcut for visible area capture`, `fix: handle sticky headers during vertical scrolling`).

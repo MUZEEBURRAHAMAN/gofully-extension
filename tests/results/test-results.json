@@ -4,7 +4,7 @@
       "/Users/muzeeburrahaman/.nvm/versions/node/v24.2.0/bin/node",
       "/Users/muzeeburrahaman/Documents/full page screenshot/node_modules/.bin/playwright",
       "test",
-      "tests/security/sensitive-detect.spec.ts"
+      "tests/security/site-headers.spec.ts"
     ],
     "configFile": "/Users/muzeeburrahaman/Documents/full page screenshot/playwright.config.ts",
     "rootDir": "/Users/muzeeburrahaman/Documents/full page screenshot/tests",
@@ -71,20 +71,88 @@
   },
   "suites": [
     {
-      "title": "security/sensitive-detect.spec.ts",
-      "file": "security/sensitive-detect.spec.ts",
+      "title": "security/site-headers.spec.ts",
+      "file": "security/site-headers.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Sensitive-info detector",
-          "file": "security/sensitive-detect.spec.ts",
-          "line": 18,
+          "title": "website security headers",
+          "file": "security/site-headers.spec.ts",
+          "line": 20,
           "column": 6,
           "specs": [
             {
-              "title": "finds emails, even inside a sentence",
+              "title": "SEC-WEB-001: production CSP has no eval, no plugins, no framing, and upgrades insecure requests",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 108,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-22T07:40:24.362Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "23f495428a638e180311-a192a6f821e26245faac",
+              "file": "security/site-headers.spec.ts",
+              "line": 21,
+              "column": 3
+            },
+            {
+              "title": "SEC-WEB-002: transport and isolation headers are present",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-22T07:40:24.494Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "23f495428a638e180311-918a664d5347b8d484ea",
+              "file": "security/site-headers.spec.ts",
+              "line": 32,
+              "column": 3
+            },
+            {
+              "title": "SEC-WEB-003: eval is allowed only in the dev server",
               "ok": true,
               "tags": [],
               "tests": [
@@ -104,7 +172,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-10-18T05:32:43.873Z",
+                      "startTime": "2026-10-22T07:40:24.506Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -112,47 +180,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "8a080bfbb10f8d630db3-acb1371451eab1fc6d34",
-              "file": "security/sensitive-detect.spec.ts",
-              "line": 19,
+              "id": "23f495428a638e180311-c08a2a121eeb07012c79",
+              "file": "security/site-headers.spec.ts",
+              "line": 42,
               "column": 3
             },
             {
-              "title": "finds a card number split across words, but only if the Luhn check passes",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 3,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-10-18T05:32:43.910Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8a080bfbb10f8d630db3-e110ce43bf371d8ae14e",
-              "file": "security/sensitive-detect.spec.ts",
-              "line": 23,
-              "column": 3
-            },
-            {
-              "title": "a card is not also reported as a phone number",
+              "title": "SEC-WEB-004: JSON-LD cannot close its script tag",
               "ok": true,
               "tags": [],
               "tests": [
@@ -172,7 +206,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-10-18T05:32:43.925Z",
+                      "startTime": "2026-10-22T07:40:24.523Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -180,13 +214,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "8a080bfbb10f8d630db3-cc4f80efd369e557a8a8",
-              "file": "security/sensitive-detect.spec.ts",
-              "line": 28,
+              "id": "23f495428a638e180311-417b149d5b4eefc05541",
+              "file": "security/site-headers.spec.ts",
+              "line": 46,
               "column": 3
             },
             {
-              "title": "finds phone numbers in common formats",
+              "title": "SEC-WEB-005: every dangerouslySetInnerHTML is JSON-LD through the helper or a bundled SVG",
               "ok": true,
               "tags": [],
               "tests": [
@@ -201,12 +235,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1,
+                      "duration": 6,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-10-18T05:32:43.934Z",
+                      "startTime": "2026-10-22T07:40:24.537Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -214,149 +248,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "8a080bfbb10f8d630db3-3008046870caf80c1176",
-              "file": "security/sensitive-detect.spec.ts",
-              "line": 32,
+              "id": "23f495428a638e180311-0b0ef6f3022bf1f7e747",
+              "file": "security/site-headers.spec.ts",
+              "line": 52,
               "column": 3
             },
             {
-              "title": "finds SSN-shaped numbers, IPv4 addresses and rejects impossible IPs",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-10-18T05:32:43.944Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8a080bfbb10f8d630db3-d2bc3fa422ca208d5663",
-              "file": "security/sensitive-detect.spec.ts",
-              "line": 37,
-              "column": 3
-            },
-            {
-              "title": "finds API keys and tokens",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 3,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-10-18T05:32:43.959Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8a080bfbb10f8d630db3-c679a823891c64e8e102",
-              "file": "security/sensitive-detect.spec.ts",
-              "line": 43,
-              "column": 3
-            },
-            {
-              "title": "validates IBANs with the mod-97 check",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-10-18T05:32:43.975Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8a080bfbb10f8d630db3-6d6b42098cfe56405dad",
-              "file": "security/sensitive-detect.spec.ts",
-              "line": 49,
-              "column": 3
-            },
-            {
-              "title": "leaves ordinary text, dates, prices and short numbers alone",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-10-18T05:32:43.999Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8a080bfbb10f8d630db3-7cc060cfd6eefd980eff",
-              "file": "security/sensitive-detect.spec.ts",
-              "line": 54,
-              "column": 3
-            },
-            {
-              "title": "maps hits back to padded boxes covering every word of the match",
+              "title": "SEC-WEB-006: links that open a new tab never leak window.opener",
               "ok": true,
               "tags": [],
               "tests": [
@@ -376,7 +274,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-10-18T05:32:44.017Z",
+                      "startTime": "2026-10-22T07:40:24.549Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -384,221 +282,9 @@
                   "status": "expected"
                 }
               ],
-              "id": "8a080bfbb10f8d630db3-9a5e2172c78fe8ae062f",
-              "file": "security/sensitive-detect.spec.ts",
-              "line": 65,
-              "column": 3
-            },
-            {
-              "title": "respects the kinds filter",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-10-18T05:32:44.048Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8a080bfbb10f8d630db3-13257288fe7b11cadaf1",
-              "file": "security/sensitive-detect.spec.ts",
-              "line": 75,
-              "column": 3
-            }
-          ]
-        },
-        {
-          "title": "Sensitive-info detector: edge cases",
-          "file": "security/sensitive-detect.spec.ts",
-          "line": 81,
-          "column": 6,
-          "specs": [
-            {
-              "title": "empty and whitespace input yields nothing",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-10-18T05:32:44.059Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8a080bfbb10f8d630db3-1d5810381e6a7eb243fc",
-              "file": "security/sensitive-detect.spec.ts",
-              "line": 82,
-              "column": 3
-            },
-            {
-              "title": "multiple hits on one line are all found",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 3,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-10-18T05:32:44.070Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8a080bfbb10f8d630db3-3c868cb5a929c0e4af45",
-              "file": "security/sensitive-detect.spec.ts",
-              "line": 86,
-              "column": 3
-            },
-            {
-              "title": "a card number that fails Luhn is ignored",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-10-18T05:32:44.086Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8a080bfbb10f8d630db3-a66e9b60f993d35e8da0",
-              "file": "security/sensitive-detect.spec.ts",
-              "line": 90,
-              "column": 3
-            },
-            {
-              "title": "version strings and dates are not IPs or phones",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-10-18T05:32:44.098Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8a080bfbb10f8d630db3-d57ef2f6019d03d3e2a6",
-              "file": "security/sensitive-detect.spec.ts",
-              "line": 93,
-              "column": 3
-            },
-            {
-              "title": "a hit's boxes stay inside the word extents",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-10-18T05:32:44.112Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8a080bfbb10f8d630db3-44d4bcf6332f6cd7cc0b",
-              "file": "security/sensitive-detect.spec.ts",
-              "line": 98,
+              "id": "23f495428a638e180311-7bff22742710d9c2b1ea",
+              "file": "security/site-headers.spec.ts",
+              "line": 71,
               "column": 3
             }
           ]
@@ -608,9 +294,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-10-18T05:32:43.102Z",
-    "duration": 1053.839,
-    "expected": 15,
+    "startTime": "2026-10-22T07:40:23.724Z",
+    "duration": 846.4079999999999,
+    "expected": 6,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

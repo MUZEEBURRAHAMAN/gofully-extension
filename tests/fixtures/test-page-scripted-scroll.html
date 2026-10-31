@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GoFully Test - Script-driven scroll animation</title>
+  <!-- Animation done the way scrub-based sites do it (GSAP ScrollTrigger scrub, Framer Motion useScroll): a script
+       reads each element's position on every frame and eases its opacity and offset toward a target that depends
+       on where it is on screen, with lag. Nothing here is a CSS animation, so it cannot be frozen from outside.
+       A card is fully visible only while it sits clearly inside the screen. Every [data-probe] is a solid block:
+       a correct capture shows each one in its exact colour.
+       ?marker=1 adds the .pin-spacer element that ScrollTrigger creates, which the extension uses to recognise
+       this kind of page. -->
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, sans-serif; background: #f1f5f9; color: #0f172a; }
+    .bar { position: fixed; top: 0; left: 0; right: 0; z-index: 50; height: 56px; background: #0f172a; color: #fff; display: flex; align-items: center; padding: 0 24px; font-weight: 700; }
+    .hero { padding: 120px 24px 80px; height: 720px; background: #e2e8f0; }
+    h1 { font-size: 40px; }
+    .stage { padding: 40px 24px 0; display: flex; flex-direction: column; gap: 56px; }
+    .card { height: 200px; border-radius: 16px; background: #10b981; will-change: opacity, transform; }
+    .card.alt { background: #6366f1; }
+    .end { height: 700px; padding: 40px 24px; }
+  </style>
+</head>
+<body>
+  <div class="bar">Header</div>
+  <section class="hero"><h1>Scripted scroll animation</h1></section>
+  <div class="stage" id="stage"></div>
+  <div class="end">The end.</div>
+  <script>
+    if (new URLSearchParams(location.search).has("marker")) {
+      const s = document.createElement("div"); s.className = "pin-spacer"; s.style.cssText = "height:0;overflow:hidden"; document.body.appendChild(s);
+    }
+    const stage = document.getElementById("stage");
+    const cards = [];
+    for (let i = 0; i < 16; i++) {
+      const el = document.createElement("div");
+      el.className = "card" + (i % 2 ? " alt" : "");
+      el.dataset.probe = "card-" + i;
+      el.dataset.color = i % 2 ? "99,102,241" : "16,185,129";
+      stage.appendChild(el);
+      cards.push({ el, p: 0, y: 40 });
+    }
+    const clamp = (v) => Math.max(0, Math.min(1, v));
+    function frame() {
+      const vh = innerHeight;
+      for (const c of cards) {
+        const r = c.el.getBoundingClientRect();
+        // Layout position, ignoring the offset applied below, so the target does not feed back on itself.
+        const top = r.top - (c.y || 0), bottom = r.bottom - (c.y || 0);
+        const enter = clamp((vh - top) / (vh * 0.25));   // 0 below the screen, 1 once the top is 3/4 of the way down
+        const leave = clamp(bottom / (vh * 0.2));         // fades as the bottom nears the top of the screen
+        const targetP = enter * leave, targetY = (1 - enter) * 40;
+        c.p += (targetP - c.p) * 0.12;                    // scrub lag
+        c.y += (targetY - c.y) * 0.12;
+        if (Math.abs(targetP - c.p) < 0.002) c.p = targetP;
+        if (Math.abs(targetY - c.y) < 0.05) c.y = targetY;
+        const op = c.p.toFixed(3), tr = `translateY(${c.y.toFixed(2)}px)`;
+        if (c.el.style.opacity !== op) c.el.style.opacity = op;
+        if (c.el.style.transform !== tr) c.el.style.transform = tr;
+      }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  </script>
+</body>
+</html>

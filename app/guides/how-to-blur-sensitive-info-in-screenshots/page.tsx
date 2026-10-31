@@ -2,12 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
-import { BlueprintFrame } from "@/components/blueprint-frame";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { RelatedGuides } from "@/components/related-guides";
-
-const CWS_URL =
-  "https://chromewebstore.google.com/detail/gofully-full-page-screens/akfbmhmdlbmljklgajkgoekobofhhofc";
+import { PageHeader, CtaBand } from "@/components/site/content";
+import { serializeJsonLd } from "@/components/json-ld";
 
 export const metadata: Metadata = {
   title: "How to Blur Text & Redact Sensitive Info in Screenshots (2026)",
@@ -55,13 +53,13 @@ export default function RedactScreenshotGuidePage() {
     <div className="gf-industry min-h-screen">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(articleJsonLd) }}
       />
       <SiteNav />
 
       {/* Breadcrumbs */}
-      <div style={{ padding: "36px 24px 0" }}>
-        <div className="mx-auto" style={{ maxWidth: 840 }}>
+      <div className="gf-crumbs">
+        <div>
           <Breadcrumbs
             items={[
               { label: "Guides", href: "/guides" },
@@ -72,64 +70,52 @@ export default function RedactScreenshotGuidePage() {
       </div>
 
       {/* Header */}
-      <div className="text-center" style={{ padding: "40px 24px 44px" }}>
-        <div className="mx-auto" style={{ maxWidth: 780 }}>
-          <h1 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(28px, 6vw, 46px)", lineHeight: 1.15, letterSpacing: "-0.01em", marginTop: 12 }}>
-            How to Blur or Redact Sensitive Information in Screenshots
-          </h1>
-          <p className="mx-auto" style={{ fontSize: "16px", lineHeight: 1.65, color: "rgba(29,31,32,.6)", maxWidth: 640, marginTop: 18 }}>
-            Sharing a bug report, documentation guide, or customer support ticket? Never leak API keys, auth tokens, email addresses, or internal metrics. Here is how to redact screenshots safely.
-          </p>
-          <div className="flex items-center justify-center gap-4 text-[12px] text-neutral-400 mt-6">
-            <span>By GoFully Security Team</span>
-            <span>·</span>
-            <span>Published September 2026</span>
-            <span>·</span>
-            <span>4 min read</span>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        title="How to Blur or Redact Sensitive Information in Screenshots"
+        lede="Sharing a bug report, documentation guide, or customer support ticket? Never leak API keys, auth tokens, email addresses, or internal metrics. Here is how to redact screenshots safely."
+        meta={["By GoFully Security Team", "Published September 2026", "4 min read"]}
+      />
 
       {/* Article Body */}
-      <div style={{ padding: "0 24px 80px" }}>
-        <div className="mx-auto" style={{ maxWidth: 840 }}>
-          <BlueprintFrame className="bg-white p-8 md:p-12 space-y-10">
+      <div className="gf-article-wrap">
+        <div>
+          <article className="gf-article">
 
             {/* The Danger of Marker / Highlighter */}
-            <div className="bg-rose-50 border border-rose-200 p-5 rounded-none">
-              <h2 className="gf-heading-font font-semibold text-[16px] text-rose-950 mb-2">
-                ⚠️ Critical Warning: Do Not Use Translucent Digital Highlighters
+            <div className="gf-callout gf-callout--danger">
+              <h2>
+                Critical warning: don’t hide text with a translucent highlighter
               </h2>
-              <p className="text-[14px] leading-relaxed text-rose-900">
+              <p>
                 A common and dangerous mistake on iOS and Mac is scribbling over text with the default black digital highlighter or marker tool. Because digital highlighters have opacity levels (e.g., 85%), anyone who downloads your image can adjust brightness, contrast, and exposure to reveal the hidden text underneath in seconds.
               </p>
             </div>
 
             {/* The 3 Proper Redaction Methods */}
             <section className="space-y-4">
-              <h2 className="gf-heading-font font-semibold text-[24px] text-[var(--gf-color-text)]">
+              <h2>
                 The 3 Safe Methods to Mask Information
               </h2>
-              <p className="text-[15px] leading-relaxed text-neutral-600">
+              <p className="gf-p">
                 To truly protect private information, the underlying pixel values must be mathematically rewritten or replaced before the image leaves your machine:
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-                <div className="border p-4 bg-neutral-50">
-                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">1. Glass Blur</h3>
-                  <p className="text-[13px] text-neutral-600">
+                <div className="gf-tcard">
+                  <h3 className="gf-h3">1. Glass Blur</h3>
+                  <p className="gf-small">
                     Calculates a Gaussian or Box blur matrix over the bounding box. Retains the aesthetic layout of the page while rendering text completely illegible.
                   </p>
                 </div>
-                <div className="border p-4 bg-neutral-50">
-                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">2. Mosaic Pixelation</h3>
-                  <p className="text-[13px] text-neutral-600">
+                <div className="gf-tcard">
+                  <h3 className="gf-h3">2. Mosaic Pixelation</h3>
+                  <p className="gf-small">
                     Downsamples the selected region into chunky color blocks. This is the industry standard for developer logs, Jira tickets, and bug reports.
                   </p>
                 </div>
-                <div className="border p-4 bg-neutral-50">
-                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">3. Solid Blackout</h3>
-                  <p className="text-[13px] text-neutral-600">
+                <div className="gf-tcard">
+                  <h3 className="gf-h3">3. Solid Blackout</h3>
+                  <p className="gf-small">
                     Replaces the entire bounding box with 100% opaque black pixels. Recommended for HIPAA, PCI-DSS compliance, credit cards, and master passwords.
                   </p>
                 </div>
@@ -137,47 +123,47 @@ export default function RedactScreenshotGuidePage() {
             </section>
 
             {/* Step-by-Step with GoFully */}
-            <section className="space-y-4 pt-4 border-t border-neutral-200">
-              <h2 className="gf-heading-font font-semibold text-[24px] text-[var(--gf-color-text)]">
+            <section className="gf-sep">
+              <h2>
                 Step-by-Step: Redacting in Chrome in 10 Seconds
               </h2>
 
               <div className="space-y-4 pt-2">
                 <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-600 text-white font-bold text-sm flex items-center justify-center">1</div>
+                  <div className="gf-num">1</div>
                   <div>
-                    <h3 className="font-semibold text-neutral-800 text-[15px]">Capture the Screen with GoFully</h3>
-                    <p className="text-[14px] text-neutral-600 mt-1">
+                    <h3 className="gf-h3">Capture the Screen with GoFully</h3>
+                    <p className="gf-small">
                       Click the GoFully extension icon and choose your capture mode (Full Page, Visible Area, or Selected Region).
                     </p>
                   </div>
                 </div>
 
                 <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-600 text-white font-bold text-sm flex items-center justify-center">2</div>
+                  <div className="gf-num">2</div>
                   <div>
-                    <h3 className="font-semibold text-neutral-800 text-[15px]">Select the Redaction Tool</h3>
-                    <p className="text-[14px] text-neutral-600 mt-1">
+                    <h3 className="gf-h3">Select the Redaction Tool</h3>
+                    <p className="gf-small">
                       In the toolbar at the top of the editor, click the <strong>Redact</strong> button. Choose your style: Blur, Pixelate, or Blackout.
                     </p>
                   </div>
                 </div>
 
                 <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-600 text-white font-bold text-sm flex items-center justify-center">3</div>
+                  <div className="gf-num">3</div>
                   <div>
-                    <h3 className="font-semibold text-neutral-800 text-[15px]">Draw Across Sensitive Fields</h3>
-                    <p className="text-[14px] text-neutral-600 mt-1">
+                    <h3 className="gf-h3">Draw Across Sensitive Fields</h3>
+                    <p className="gf-small">
                       Click and drag over passwords, auth tokens, database credentials, or personal names. The blur is processed in local browser memory with zero cloud uploads.
                     </p>
                   </div>
                 </div>
 
                 <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-600 text-white font-bold text-sm flex items-center justify-center">4</div>
+                  <div className="gf-num">4</div>
                   <div>
-                    <h3 className="font-semibold text-neutral-800 text-[15px]">Copy or Save</h3>
-                    <p className="text-[14px] text-neutral-600 mt-1">
+                    <h3 className="gf-h3">Copy or Save</h3>
+                    <p className="gf-small">
                       Click <strong>Copy to Clipboard</strong> (Ctrl+C / Cmd+C) to paste directly into Slack, Linear, or GitHub, or download as a high-resolution PNG.
                     </p>
                   </div>
@@ -186,8 +172,8 @@ export default function RedactScreenshotGuidePage() {
             </section>
 
             {/* Checklist */}
-            <section className="space-y-4 pt-4 border-t border-neutral-200">
-              <h2 className="gf-heading-font font-semibold text-[22px] text-[var(--gf-color-text)]">
+            <section className="gf-sep">
+              <h2>
                 Pre-Sharing Security Checklist
               </h2>
               <div className="space-y-2 text-[14px] text-neutral-700">
@@ -211,55 +197,42 @@ export default function RedactScreenshotGuidePage() {
             </section>
 
             <section className="space-y-4">
-              <div className="inline-flex items-center border border-blue-300 bg-blue-50/80 px-3 py-1 text-[11px] font-semibold text-blue-700 tracking-wide uppercase">New in v1.1.3</div>
-              <h2 className="gf-heading-font font-semibold text-[24px] text-[var(--gf-color-text)]">
+              <div className="gf-badge gf-badge--blue">New in v1.1.3</div>
+              <h2>
                 Auto-redact finds the sensitive text for you
               </h2>
-              <p className="text-[15px] leading-relaxed text-neutral-600">Open the Blur menu in the editor and choose Auto-redact sensitive info. GoFully reads the screenshot on your device and covers what it finds.</p>
+              <p className="gf-p">Open the Blur menu in the editor and choose Auto-redact sensitive info. GoFully reads the screenshot on your device and covers what it finds.</p>
               <div className="space-y-3 pt-2">
-                <div className="border border-neutral-200 p-4 bg-neutral-50/50">
-                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">What it covers</h3>
-                  <p className="text-[14px] text-neutral-600">Emails, card numbers, phone numbers, ID numbers, IP addresses and API keys.</p>
+                <div className="gf-tcard">
+                  <h3 className="gf-h3">What it covers</h3>
+                  <p className="gf-small">Emails, card numbers, phone numbers, ID numbers, IP addresses and API keys.</p>
                 </div>
-                <div className="border border-neutral-200 p-4 bg-neutral-50/50">
-                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">You stay in control</h3>
-                  <p className="text-[14px] text-neutral-600">Each match gets a black box. Move or delete any box, then add your own blur for anything it missed.</p>
+                <div className="gf-tcard">
+                  <h3 className="gf-h3">You stay in control</h3>
+                  <p className="gf-small">Each match gets a black box. Move or delete any box, then add your own blur for anything it missed.</p>
                 </div>
-                <div className="border border-neutral-200 p-4 bg-neutral-50/50">
-                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">Undo in one step</h3>
-                  <p className="text-[14px] text-neutral-600">Cmd/Ctrl+Z removes every auto-redact box at once.</p>
+                <div className="gf-tcard">
+                  <h3 className="gf-h3">Undo in one step</h3>
+                  <p className="gf-small">Cmd/Ctrl+Z removes every auto-redact box at once.</p>
                 </div>
-                <div className="border border-neutral-200 p-4 bg-neutral-50/50">
-                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">Read the full walkthrough</h3>
-                  <p className="text-[14px] text-neutral-600">See How to Auto-Redact Emails, Card Numbers and API Keys in Screenshots in the guides list.</p>
+                <div className="gf-tcard">
+                  <h3 className="gf-h3">Read the full walkthrough</h3>
+                  <p className="gf-small">See How to Auto-Redact Emails, Card Numbers and API Keys in Screenshots in the guides list.</p>
                 </div>
               </div>
             </section>
 
-          </BlueprintFrame>
+          </article>
         </div>
       </div>
 
       <RelatedGuides currentSlug="how-to-blur-sensitive-info-in-screenshots" />
 
       {/* CTA */}
-      <div className="text-center" style={{ background: "#1d1f20", padding: "64px 24px" }}>
-        <h2 className="gf-heading-font font-semibold" style={{ fontSize: 28, color: "#fff", letterSpacing: "-0.01em" }}>
-          Protect your team&apos;s data with GoFully
-        </h2>
-        <p className="mx-auto" style={{ fontSize: "14.5px", color: "rgba(255,255,255,.55)", maxWidth: 460, marginTop: 12, lineHeight: 1.6 }}>
-          100% on-device capture, instant blur redaction, and local OCR. Never leak confidential details again.
-        </p>
-        <a
-          href={CWS_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gf-heading-font font-semibold"
-          style={{ height: 44, padding: "0 24px", background: "var(--gf-color-accent)", color: "#fff", fontSize: 13, letterSpacing: "0.02em", marginTop: 22 }}
-        >
-          Add to Chrome — It&apos;s Free
-        </a>
-      </div>
+      <CtaBand
+        title="Protect your team’s data with GoFully"
+        sub="100% on-device capture, instant blur redaction, and local OCR. Never leak confidential details again."
+      />
 
       <SiteFooterIndustry activeHref="/guides" />
     </div>

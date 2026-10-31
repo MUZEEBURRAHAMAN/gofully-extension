@@ -144,90 +144,29 @@ export function RelatedGuides({ currentSlug }: { currentSlug: string }) {
   ];
 
   return (
-    <section
-      className="border-t"
-      style={{
-        padding: "60px 24px",
-        borderColor: "rgba(29,31,32,.08)",
-        background: "rgba(29,31,32,.02)",
-      }}
-    >
-      <div className="mx-auto" style={{ maxWidth: 1100 }}>
-        <div className="flex items-center justify-between flex-wrap gap-4 mb-8">
+    <section className="gf-related" aria-labelledby="related-guides">
+      <div className="gf-related-in">
+        <div className="gf-related-head">
           <div>
-            <span
-              className="inline-flex items-center gap-1.5 border gf-heading-font font-semibold uppercase"
-              style={{
-                borderColor: "rgba(22,103,242,.25)",
-                background: "rgba(22,103,242,.06)",
-                color: "var(--gf-color-accent)",
-                fontSize: 10.5,
-                letterSpacing: "0.06em",
-                padding: "4px 10px",
-              }}
-            >
-              Continue Learning
-            </span>
-            <h2
-              className="gf-heading-font font-semibold text-2xl mt-2.5"
-              style={{ color: "var(--gf-color-text)", letterSpacing: "-0.01em" }}
-            >
-              Related Guides &amp; Tutorials
-            </h2>
+            <span className="gf-badge gf-badge--blue">Keep reading</span>
+            <h2 id="related-guides">Related guides</h2>
           </div>
-          <Link
-            href="/guides"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold gf-heading-font hover:underline"
-            style={{ color: "var(--gf-color-accent)" }}
-          >
-            <span>View all 11 guides</span>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
+          <Link href="/guides" className="gf-link-arrow">
+            All {ALL_GUIDES.length} guides <span className="gf-arrow" aria-hidden="true">→</span>
           </Link>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="gf-grid-3">
           {related.map((guide) => (
-            <Link
-              key={guide.slug}
-              href={`/guides/${guide.slug}`}
-              className="group block relative border border-[rgba(29,31,32,.12)] bg-white p-6 transition-all duration-150 hover:-translate-y-1 hover:border-[rgba(22,103,242,.4)] hover:shadow-md flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span
-                    className="border text-[10.5px] uppercase font-semibold gf-heading-font px-2 py-0.5"
-                    style={{
-                      borderColor: "rgba(29,31,32,.1)",
-                      color: "rgba(29,31,32,.5)",
-                      letterSpacing: "0.04em",
-                    }}
-                  >
-                    {guide.tag}
-                  </span>
-                  <span className="text-[11px]" style={{ color: "rgba(29,31,32,.4)" }}>
-                    {guide.readTime}
-                  </span>
-                </div>
-                <h3
-                  className="gf-heading-font font-semibold text-[15px] leading-snug mb-2 group-hover:text-[var(--gf-color-accent)] transition-colors"
-                  style={{ color: "var(--gf-color-text)" }}
-                >
-                  {guide.title}
-                </h3>
-                <p className="text-[12.5px] leading-relaxed line-clamp-3" style={{ color: "rgba(29,31,32,.55)" }}>
-                  {guide.subtitle}
-                </p>
+            <Link key={guide.slug} href={`/guides/${guide.slug}`} className="gf-card-link">
+              <div className="gf-card-top">
+                <span className="gf-badge gf-badge--neutral gf-badge--sm">{guide.tag}</span>
+                <span>{guide.readTime}</span>
               </div>
-
-              <div
-                className="mt-4 pt-3 border-t border-[rgba(29,31,32,.08)] flex items-center gap-1.5 text-xs font-semibold gf-heading-font group-hover:text-[var(--gf-color-accent)]"
-                style={{ color: "rgba(29,31,32,.6)" }}
-              >
-                <span>Read guide</span>
-                <span className="transition-transform group-hover:translate-x-1">&rarr;</span>
-              </div>
+              <h3>{guide.title}</h3>
+              <p>{guide.subtitle}</p>
+              <span className="gf-card-more">
+                Read guide <span className="gf-arrow" aria-hidden="true">→</span>
+              </span>
             </Link>
           ))}
         </div>

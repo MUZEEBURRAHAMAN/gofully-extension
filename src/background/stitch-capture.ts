@@ -8,8 +8,14 @@ import type {
 import { detectDPRFromCapture } from "../utils/dpr-handler";
 import { loadImage, canvasToBlob } from "../utils/image";
 import { hideProgressInTab, suppressProgressInTab, unsuppressProgressInTab } from "../utils/progress-overlay";
+import { prepareFrameForCapture, restorePageAfterCapture, detectScriptedScroll } from "./page-prep";
+import { bandMargin, firstTile, nextTile, placeTile, type StitchMode } from "./tile-plan";
 
 const CAPTURE_DELAY = 300;
+// Landing-page mode waits longer after each scroll: scrubbed animations ease toward their target over a second or so.
+const LANDING_DELAY = 450;
+const LANDING_QUIET_MS = 220;
+const LANDING_MAX_PHOTOS = 120;
 const OVERLAP_PX = 20;
 const SEAM_MISMATCH_THRESHOLD = 0.08;
 
@@ -45,12 +51,12 @@ export async function captureWithScrollStitch(
   // Falls back to common defaults, not `window` — this runs in the MV3
   // service worker, which has no window global (unlike the func: () => {}
   // callbacks below, which execute in the page and can use it freely).
-  const viewportHeight = pageInit.viewportHeight || dimensions.viewportHeight || 800;
+  let viewportHeight = pageInit.viewportHeight || dimensions.viewportHeight || 800;
   const viewportWidth = pageInit.viewportWidth || dimensions.viewportWidth || 1280;
 
   const frames: CaptureFrame[] = [];
   let dpr = dimensions.devicePixelRatio || 1;
-  const maxSteps = Math.min(150, Math.ceil(scrollHeight / (viewportHeight * 0.5)) + 10);
+  let maxSteps = Math.min(150, Math.ceil(scrollHeight / (viewportHeight * 0.5)) + 10);
 
   let coveredY = 0;
   let lastFrameHash = "";
@@ -60,6 +66,37 @@ export async function captureWithScrollStitch(
     await chrome.storage.local.get("settings").catch(() => null);
   const shouldSkipSticky =
     (settingsRes?.settings as Partial<Settings> | undefined)?.skipStickyHeaders ?? true;
+
+  // Standard mode photographs one screen at a time. Landing-page mode (pages animated by scripts) photographs
+  // every half screen and keeps only the middle of each photo. "auto" picks it when the page uses scroll-driven
+  // scripts such as ScrollTrigger or a smooth-scroll library.
+  // Stored settings can be edited or imported, so anything unexpected counts as "auto".
+  const storedMode = (settingsRes?.settings as Partial<Settings> | undefined)?.fullPageMode as unknown;
+  const requestedMode: "auto" | "standard" | "landing" = storedMode === "landing" || storedMode === "standard" ? storedMode : "auto";
+  let stitchMode: StitchMode = requestedMode === "landing" ? "landing" : "standard";
+  const stitchReasons: string[] = requestedMode === "landing" ? ["set in Settings"] : [];
+  if (requestedMode === "auto") {
+    const [detected] = await chrome.scripting
+      .executeScript({ target: { tabId }, world: "MAIN", func: detectScriptedScroll })
+      .catch(() => [] as chrome.scripting.InjectionResult<{ scripted: boolean; reasons: string[] }>[]);
+    if (detected?.result?.scripted) {
+      stitchMode = "landing";
+      stitchReasons.push(...detected.result.reasons);
+    }
+  }
+  // Landing mode keeps about twice as many photos in memory. Past this many, fall back to standard mode
+  // instead of risking an out-of-memory crash of the service worker.
+  if (stitchMode === "landing") {
+    const photosNeeded = Math.ceil(scrollHeight / Math.max(1, viewportHeight - 2 * bandMargin("landing", viewportHeight)));
+    if (photosNeeded > LANDING_MAX_PHOTOS) {
+      stitchMode = "standard";
+      stitchReasons.length = 0;
+      stitchReasons.push(`page too long for landing mode (${photosNeeded} photos, limit ${LANDING_MAX_PHOTOS})`);
+    }
+  }
+  const landing = stitchMode === "landing";
+  // Landing mode keeps waiting for the page to go quiet after each scroll, unless the page never does.
+  let quietMs = landing ? LANDING_QUIET_MS : 0;
 
   // Hide sticky elements so they appear only once at the top. This is NOT a
   // one-time check: many real headers are position:static at scrollY=0 and
@@ -101,6 +138,20 @@ export async function captureWithScrollStitch(
         });
       },
     }).catch(() => {});
+  };
+
+  // Landing pages animate on scroll. Before every photo: let running animations and reveal transitions
+  // finish, and pin scroll-driven ones to their revealed state (see page-prep.ts). Reversed in the finally
+  // block, so the page behaves normally afterwards.
+  const prepareFrame = async (): Promise<void> => {
+    const [res] = await chrome.scripting
+      .executeScript({ target: { tabId }, func: prepareFrameForCapture, args: [quietMs] })
+      .catch(() => [] as chrome.scripting.InjectionResult<{ neverQuiet: boolean }>[]);
+    // A page that never stops moving (carousel, ticker) must not make every remaining photo wait.
+    if (res?.result?.neverQuiet) quietMs = 0;
+  };
+  const restoreAnimations = async (): Promise<void> => {
+    await chrome.scripting.executeScript({ target: { tabId }, func: restorePageAfterCapture }).catch(() => {});
   };
 
   // Hide cookie banners, consent dialogs, and fixed overlays before capture
@@ -155,13 +206,24 @@ export async function captureWithScrollStitch(
       scrollHeight = initialScroll.docHeight;
     }
 
+    await prepareFrame();
     const firstDataUrl = await captureFrameSafely(tabId, windowId);
     const img0 = await loadImage(firstDataUrl);
     dpr = detectDPRFromCapture(img0.width, viewportWidth);
+    // Size the tiles from the photo we actually got. The page can report a taller viewport than the picture
+    // shows (emulated or resized windows); assuming they match would stretch every tile.
+    const photoRows = Math.floor(img0.height / dpr);
+    if (photoRows > 0 && photoRows < viewportHeight - 2) viewportHeight = photoRows;
     lastFrameHash = await hashFrame(firstDataUrl);
     lastScrollY = 0;
 
-    const frame0Height = Math.min(viewportHeight, scrollHeight);
+    const margin = bandMargin(stitchMode, viewportHeight);
+    const geo = () => ({ viewportHeight, scrollHeight, margin });
+    const first = firstTile(geo());
+    const frame0Height = first.placedH;
+    // Landing mode takes about twice as many photos.
+    maxSteps = Math.min(landing ? 260 : 150, Math.ceil(scrollHeight / Math.max(1, viewportHeight - 2 * margin)) * 2 + 10);
+    const totalPhotos = (): number => Math.max(1, Math.ceil(scrollHeight / Math.max(1, viewportHeight - 2 * margin)));
     frames.push({
       dataUrl: firstDataUrl,
       x: 0,
@@ -178,12 +240,12 @@ export async function captureWithScrollStitch(
 
     onProgress?.({
       current: 1,
-      total: Math.max(1, Math.ceil(scrollHeight / viewportHeight)),
+      total: totalPhotos(),
       phase: "capturing",
     });
 
     // If page extends beyond initial viewport, capture remaining contiguous slices
-    if (scrollHeight > viewportHeight) {
+    if (!first.isLast) {
       await hideStickyForCurrentPosition();
 
       let step = 0;
@@ -191,27 +253,17 @@ export async function captureWithScrollStitch(
         if (isCaptureCancelled) break;
         step++;
 
-        const remaining = scrollHeight - coveredY;
-        if (remaining <= 0) break;
-
-        let targetY: number;
-        let isLastStep = false;
-
-        if (remaining >= viewportHeight) {
-          targetY = coveredY;
-        } else {
-          // Final partial remainder step: scroll to bottom so the tail is visible
-          targetY = Math.max(0, scrollHeight - viewportHeight);
-          isLastStep = true;
-        }
+        if (scrollHeight - coveredY <= 0) break;
+        const { targetY, isLast: isLastStep } = nextTile(coveredY, geo());
 
         await performScroll(tabId, targetY, pageInit.targetSelector);
-        await sleep(CAPTURE_DELAY);
+        await sleep(landing ? LANDING_DELAY : CAPTURE_DELAY);
 
         // Re-check for newly fixed/sticky elements at this scroll position
         // (see hideStickyForCurrentPosition above) before this frame's
         // shutter opens, not just once at the top of the page.
         await hideStickyForCurrentPosition();
+        await prepareFrame();
 
         const scrollInfo = await getActualScrollPosition(tabId, pageInit.targetSelector);
         if (scrollInfo.docHeight && scrollInfo.docHeight > scrollHeight) {
@@ -225,51 +277,40 @@ export async function captureWithScrollStitch(
 
         const dataUrl = await captureFrameSafely(tabId, windowId);
 
+        // "Same picture twice" only means the end of the page when the page really is at the bottom: a tall
+        // flat-coloured section (a plain hero, a blank gap between sections) looks identical from one tile
+        // to the next and used to cut the capture short.
         const currentHash = await hashFrame(dataUrl);
-        if (currentHash === lastFrameHash && step > 1) {
-          // Content is unchanged — reached bottom
+        if (currentHash === lastFrameHash && step > 1 && scrollInfo.isAtBottom) {
           break;
         }
         lastFrameHash = currentHash;
         lastScrollY = scrollInfo.currentY;
 
-        if (!isLastStep) {
-          // Full viewport tile placed seamlessly at coveredY
-          frames.push({
-            dataUrl,
-            x: 0,
-            y: coveredY,
-            width: viewportWidth,
-            height: viewportHeight,
-            scrollX: 0,
-            scrollY: scrollInfo.currentY,
-            cropY: 0,
-            cropHeight: viewportHeight,
-            dstY: coveredY,
-          });
-          coveredY += viewportHeight;
-        } else {
-          // Final tile: crop only the uncaptured bottom remainder
-          const cropY = Math.max(0, viewportHeight - remaining);
-          frames.push({
-            dataUrl,
-            x: 0,
-            y: coveredY,
-            width: viewportWidth,
-            height: viewportHeight,
-            scrollX: 0,
-            scrollY: scrollInfo.currentY,
-            cropY,
-            cropHeight: remaining,
-            dstY: coveredY,
-          });
-          coveredY += remaining;
-          break;
-        }
+        // Place the tile where the page actually scrolled to, not where we asked it to. If it landed above
+        // the target (scroll snapping, late layout) the rows already in the image are skipped; if it landed
+        // below, the tile sits at its true position. Either way nothing is duplicated or shifted.
+        const placement = placeTile(scrollInfo.currentY, coveredY, geo(), isLastStep);
+        if (!placement) break;
+        const { skipTop, placedY, placedH } = placement;
+        frames.push({
+          dataUrl,
+          x: 0,
+          y: placedY,
+          width: viewportWidth,
+          height: viewportHeight,
+          scrollX: 0,
+          scrollY: scrollInfo.currentY,
+          cropY: skipTop,
+          cropHeight: placedH,
+          dstY: placedY,
+        });
+        coveredY = placedY + placedH;
+        if (isLastStep) break;
 
         onProgress?.({
           current: step + 1,
-          total: Math.max(1, Math.ceil(scrollHeight / viewportHeight)),
+          total: totalPhotos(),
           phase: "capturing",
         });
 
@@ -289,6 +330,8 @@ export async function captureWithScrollStitch(
         }
       },
     }).catch(() => {});
+
+    await restoreAnimations();
 
     // Restore hidden cookie banners and overlays
     await chrome.scripting.executeScript({
@@ -325,8 +368,10 @@ export async function captureWithScrollStitch(
 
   onProgress?.({ current: 0, total: 0, phase: "stitching" });
 
-  // Seam verification: compare adjacent frame boundaries and re-capture bad seams
-  if (frames.length >= 2) {
+  // Seam verification: compare adjacent frame boundaries and re-capture bad seams. Not in landing mode: its
+  // neighbouring photos come from different scroll positions on purpose, so animated content legitimately
+  // differs a little across a seam, and re-photographing it would only repeat the same result.
+  if (frames.length >= 2 && !landing) {
     const badSeams = await verifySeams(frames, dpr);
     if (badSeams.length > 0 && !isCaptureCancelled) {
       try {
@@ -344,17 +389,20 @@ export async function captureWithScrollStitch(
         for (const seamIdx of badSeams) {
           if (isCaptureCancelled) break;
           const badFrame = frames[seamIdx + 1];
-          const targetY = badFrame.dstY ?? badFrame.scrollY;
+          // Scroll to where this tile was originally photographed (its crop is relative to that position).
+          const targetY = badFrame.scrollY;
 
           await performScroll(tabId, targetY, pageInit.targetSelector);
           await sleep(CAPTURE_DELAY + 100);
           await hideStickyForCurrentPosition();
+          await prepareFrame();
 
           const newDataUrl = await captureFrameSafely(tabId, windowId);
           badFrame.dataUrl = newDataUrl;
         }
 
         await chrome.tabs.sendMessage(tabId, { type: "CAPTURE_KEEPALIVE_STOP" }).catch(() => {});
+        await restoreAnimations();
         await chrome.scripting.executeScript({
           target: { tabId },
           func: () => {
@@ -383,6 +431,7 @@ export async function captureWithScrollStitch(
     timestamp: Date.now(),
     url: tab?.url || "",
     title: tab?.title || "",
+    stitch: { mode: stitchMode, reasons: stitchReasons },
   };
 }
 

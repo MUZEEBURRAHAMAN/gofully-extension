@@ -1,27 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import Script from "next/script";
-import { Bricolage_Grotesque, Inter } from "next/font/google";
+import { ViewTransition } from "react";
+import "@fontsource-variable/inter";
+import "@fontsource/instrument-serif";
 import "./globals.css";
-import "@/components/originkit/hero-26.css";
-
-// Loaded (self-hosted at build time) via next/font instead of the old
-// `@import url("https://fonts.googleapis.com/...")` in globals.css — Next's
-// CSS bundler silently drops a remote @import that isn't first in the file
-// (it lands after Tailwind's expanded output), so that import was never
-// actually reaching the browser and the fonts were always falling back.
-const bricolageGrotesque = Bricolage_Grotesque({
-  subsets: ["latin"],
-  weight: "variable",
-  variable: "--font-heading",
-  display: "swap",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: "variable",
-  variable: "--font-sans",
-  display: "swap",
-});
+import { serializeJsonLd } from "@/components/json-ld";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://gofully-extension.vercel.app"),
@@ -266,22 +248,18 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`dark ${bricolageGrotesque.variable} ${inter.variable}`}
+      data-theme="light"
     >
       <head>
         <meta name="google-site-verification" content="GjxLZnMKWrl0IzHC4J6K8B03R5riBt-uVERSerMOBF8" />
         <meta name="dmca-site-verification" content="akg5a25Ob21PL0dlSmMxam1jd2oxU25zWThJYktCOEJlSmpNelphMmgvYz01" />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
         />
       </head>
-      <body className="bg-[#070b14] text-slate-100 antialiased selection:bg-sky-500 selection:text-white">
-        {children}
-        <Script
-          src="https://images.dmca.com/Badges/DMCABadgeHelper.min.js"
-          strategy="lazyOnload"
-        />
+      <body>
+        <ViewTransition default="gf-page">{children}</ViewTransition>
       </body>
     </html>
   );

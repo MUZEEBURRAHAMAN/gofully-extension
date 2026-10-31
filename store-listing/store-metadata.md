@@ -1,5 +1,7 @@
 # GoFully — Chrome Web Store Listing Metadata
 
+> For the 1.1.3 submission, use [`v1.1.3-store-content.md`](v1.1.3-store-content.md) (listing text, update notes and the five screenshot briefs), `description.txt` and `short-description.txt`. The older notes below are kept for reference.
+
 ## Extension Name
 GoFully - Full Page Screenshot, OCR & Editor
 

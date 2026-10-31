@@ -1,0 +1,209 @@
+/* GoFully DS v2 components. One class per Figma component (Design System v2 page).
+   Values come only from tokens.css. No hex, rgb or raw px colours in this file. */
+
+/* ── Base ─────────────────────────────────────────────── */
+.gf, .gf *, .gf *::before, .gf *::after { box-sizing: border-box; }
+.gf {
+  margin: 0;
+  font-family: var(--gf-font-sans);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--gf-text);
+  background: var(--gf-bg-canvas);
+  -webkit-font-smoothing: antialiased;
+}
+.gf :where(button, input, select, textarea) { font: inherit; color: inherit; }
+.gf :where(button) { cursor: pointer; }
+.gf :where(a) { color: var(--gf-link); text-decoration: none; }
+.gf :where(a:hover) { text-decoration: underline; }
+.gf :focus-visible { outline: none; box-shadow: var(--gf-ring); }
+.gf ::selection { background: var(--gf-accent-tint); }
+.gf [hidden] { display: none !important; } /* component display rules must never beat the hidden attribute */
+.gf-muted { color: var(--gf-text-2); }
+.gf-faint { color: var(--gf-text-3); }
+.gf-icon { display: inline-flex; flex: none; line-height: 0; }
+.gf-icon svg { display: block; }
+.gf-ill { display: block; line-height: 0; }
+.gf-ill svg { display: block; max-width: 100%; height: auto; }
+@media (prefers-reduced-motion: reduce) { .gf *, .gf *::before, .gf *::after { transition: none !important; animation: none !important; } }
+
+/* ── Button ── Figma "Button" (Variant × Size × State) ── */
+.gf-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 32px; padding: 0 var(--gf-s-3);
+  border: 1px solid transparent; border-radius: var(--gf-r-pill);
+  font-family: var(--gf-font-sans); font-size: 12px; font-weight: 500; line-height: 16px; white-space: nowrap;
+  transition: background-color .15s, border-color .15s, color .15s;
+}
+.gf-btn--md { height: 36px; padding: 0 var(--gf-s-4); font-size: 14px; line-height: 20px; }
+.gf-btn--block { width: 100%; }
+.gf-btn--primary { background: var(--gf-brand); color: var(--gf-on-brand); box-shadow: var(--gf-shadow-button); }
+.gf-btn--primary:hover { background: var(--gf-brand-hover); }
+.gf-btn--secondary { background: var(--gf-bg-surface); border-color: var(--gf-border-strong); color: var(--gf-text); }
+.gf-btn--secondary:hover { background: var(--gf-bg-hover); }
+.gf-btn--ghost { background: transparent; color: var(--gf-text); }
+.gf-btn--ghost:hover { background: var(--gf-bg-hover); }
+.gf-btn--danger { background: var(--gf-error); color: var(--gf-white); }
+.gf-btn--danger:hover { background: var(--gf-error-hover); }
+.gf-btn:disabled, .gf-btn[aria-disabled="true"] { background: var(--gf-bg-sunken); border-color: transparent; color: var(--gf-text-placeholder); box-shadow: none; cursor: not-allowed; }
+.gf-btn:focus-visible { box-shadow: var(--gf-ring); }
+
+/* Icon button: square, 32px, used in headers and tool rails. */
+.gf-icon-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; padding: 0; border: 0; border-radius: var(--gf-r-md);
+  background: transparent; color: var(--gf-text-2);
+  transition: background-color .15s, color .15s;
+}
+.gf-icon-btn:hover { background: var(--gf-bg-hover); color: var(--gf-text); }
+.gf-icon-btn[aria-pressed="true"], .gf-icon-btn.is-active { background: var(--gf-accent-tint); color: var(--gf-brand); }
+.gf-icon-btn--lg { width: 36px; height: 36px; }
+
+/* ── Input / Select / Textarea ── Figma "Input" ── */
+.gf-label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 500; line-height: 16px; color: var(--gf-text-2); }
+.gf-input, .gf-select, .gf-textarea {
+  width: 100%; min-height: 36px; padding: 7px var(--gf-s-3);
+  border: 1px solid var(--gf-border); border-radius: var(--gf-r-md);
+  background: var(--gf-bg-surface); color: var(--gf-text);
+  font-size: 14px; line-height: 20px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.gf-input::placeholder, .gf-textarea::placeholder { color: var(--gf-text-placeholder); }
+.gf-input:hover, .gf-select:hover, .gf-textarea:hover { border-color: var(--gf-border-strong); }
+.gf-input:focus, .gf-select:focus, .gf-textarea:focus { outline: none; border-color: var(--gf-accent); box-shadow: var(--gf-ring); }
+.gf-input[aria-invalid="true"] { border-color: var(--gf-error); }
+.gf-input:disabled, .gf-select:disabled { background: var(--gf-bg-sunken); color: var(--gf-text-placeholder); }
+.gf-textarea { resize: vertical; min-height: 64px; }
+.gf-select {
+  appearance: none; padding-right: 32px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--gf-text-3) 50%), linear-gradient(135deg, var(--gf-text-3) 50%, transparent 50%);
+  background-position: calc(100% - 16px) 50%, calc(100% - 11px) 50%;
+  background-size: 5px 5px, 5px 5px; background-repeat: no-repeat;
+}
+.gf-search { position: relative; }
+.gf-search > .gf-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--gf-text-3); pointer-events: none; }
+.gf-search > .gf-input { padding-left: 34px; }
+
+/* ── Toggle ── Figma "Toggle" 36×20 ── */
+.gf-toggle { position: relative; display: inline-flex; flex: none; width: 36px; height: 20px; }
+.gf-toggle input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+.gf-toggle span { position: absolute; inset: 0; border-radius: var(--gf-r-pill); background: var(--gf-border-strong); transition: background-color .15s; pointer-events: none; }
+.gf-toggle span::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--gf-white); box-shadow: var(--gf-shadow-xs); transition: transform .15s; }
+.gf-toggle input:checked + span { background: var(--gf-brand); }
+.gf-toggle input:checked + span::after { transform: translateX(16px); }
+.gf-toggle input:focus-visible + span { box-shadow: var(--gf-ring); }
+.gf-toggle input:disabled + span { background: var(--gf-bg-sunken); }
+.gf-toggle input:disabled:checked + span { background: var(--gf-accent-border); }
+
+/* ── Checkbox & Radio ── 18px ── */
+.gf-check { appearance: none; flex: none; width: 18px; height: 18px; margin: 0; border: 1.5px solid var(--gf-border-strong); border-radius: var(--gf-r-xs); background: var(--gf-bg-surface); display: inline-grid; place-content: center; cursor: pointer; }
+.gf-check[type="radio"] { border-radius: 50%; }
+.gf-check:checked { background: var(--gf-brand); border-color: var(--gf-brand); }
+.gf-check[type="checkbox"]:checked::after { content: ""; width: 9px; height: 5px; border: 2px solid var(--gf-on-brand); border-top: 0; border-right: 0; transform: translateY(-1px) rotate(-45deg); }
+.gf-check[type="radio"]:checked::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--gf-on-brand); }
+
+/* ── Segmented control / chips ── Figma "Segmented Control" ── */
+.gf-seg { display: inline-flex; gap: 2px; padding: 3px; border-radius: var(--gf-r-md); background: var(--gf-bg-sunken); }
+.gf-seg--block { display: flex; width: 100%; }
+.gf-seg > button, .gf-seg > label {
+  flex: 1 1 auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 26px; padding: 3px 10px; border: 0; border-radius: var(--gf-r-sm);
+  background: transparent; color: var(--gf-text-2); font-size: 12px; font-weight: 500; line-height: 16px; white-space: nowrap;
+}
+.gf-seg > button:hover, .gf-seg > label:hover { color: var(--gf-text); }
+.gf-seg > [aria-pressed="true"], .gf-seg > .is-active, .gf-seg > label:has(input:checked) { background: var(--gf-bg-surface); color: var(--gf-text); box-shadow: var(--gf-shadow-xs); }
+.gf-seg > label input { position: absolute; opacity: 0; pointer-events: none; }
+
+/* ── Tag ── Figma "Tag" (Tone) ── */
+.gf-tag { display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 2px var(--gf-s-2); border-radius: var(--gf-r-pill); font-size: 11px; font-weight: 500; line-height: 16px; white-space: nowrap; background: var(--gf-bg-sunken); color: var(--gf-text-2); }
+.gf-tag--sky { background: var(--gf-accent-tint); color: var(--gf-brand); }
+.gf-tag--blue { background: var(--gf-tint-blue-bg); color: var(--gf-tint-blue-ink); }
+.gf-tag--green { background: var(--gf-tint-green-bg); color: var(--gf-tint-green-ink); }
+.gf-tag--peach { background: var(--gf-tint-peach-bg); color: var(--gf-tint-peach-ink); }
+.gf-tag--lilac { background: var(--gf-tint-lilac-bg); color: var(--gf-tint-lilac-ink); }
+
+/* ── Kbd ── */
+.gf-kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 1px 6px; border: 1px solid var(--gf-border-strong); border-radius: var(--gf-r-xs); background: var(--gf-bg-surface); color: var(--gf-text-2); font-family: var(--gf-font-sans); font-size: 11px; font-weight: 500; line-height: 16px; }
+.gf-keys { display: inline-flex; gap: 3px; }
+
+/* ── Card ── */
+.gf-card { border: 1px solid var(--gf-border); border-radius: var(--gf-r-lg); background: var(--gf-bg-surface); }
+.gf-card--interactive { cursor: pointer; text-align: left; transition: border-color .15s, box-shadow .15s, background-color .15s; }
+.gf-card--interactive:hover { border-color: var(--gf-border-strong); box-shadow: var(--gf-shadow-sm); }
+.gf-card--interactive:active { background: var(--gf-bg-hover); }
+
+/* ── Icon Tile ── Figma "Icon Tile" (Tone × Size) ── */
+.gf-tile { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: var(--gf-r-lg); background: var(--gf-accent-tint); color: var(--gf-brand); }
+.gf-tile--32 { width: 32px; height: 32px; border-radius: var(--gf-r-md); }
+.gf-tile--blue { background: var(--gf-tint-blue-bg); color: var(--gf-tint-blue-ink); }
+.gf-tile--green { background: var(--gf-tint-green-bg); color: var(--gf-tint-green-ink); }
+.gf-tile--peach { background: var(--gf-tint-peach-bg); color: var(--gf-tint-peach-ink); }
+.gf-tile--lilac { background: var(--gf-tint-lilac-bg); color: var(--gf-tint-lilac-ink); }
+.gf-tile--neutral { background: var(--gf-bg-sunken); color: var(--gf-text-2); }
+
+/* ── Banner ── */
+.gf-banner { display: flex; align-items: flex-start; gap: 10px; padding: var(--gf-s-3) var(--gf-s-4); border-radius: var(--gf-r-md); background: var(--gf-tint-blue-bg); color: var(--gf-tint-blue-ink); font-size: 13px; line-height: 19.5px; }
+.gf-banner--warning { background: var(--gf-tint-peach-bg); color: var(--gf-tint-peach-ink); }
+.gf-banner--success { background: var(--gf-success-bg); color: var(--gf-success); }
+.gf-banner--error { background: var(--gf-error-bg); color: var(--gf-error); }
+
+/* ── Toast ── Figma "Toast" ── */
+.gf-toast { display: inline-flex; align-items: center; gap: 10px; padding: var(--gf-s-3) 14px; border: 1px solid var(--gf-border); border-radius: var(--gf-r-lg); background: var(--gf-bg-surface); color: var(--gf-text); box-shadow: var(--gf-shadow-lg); font-size: 14px; font-weight: 500; line-height: 20px; }
+.gf-toast .gf-icon { color: var(--gf-success); }
+.gf-toast--error .gf-icon { color: var(--gf-error); }
+.gf-toast--warning .gf-icon { color: var(--gf-warning); }
+.gf-toast--info .gf-icon { color: var(--gf-link); }
+
+/* ── Menu ── Figma "Menu" ── */
+.gf-menu { display: flex; flex-direction: column; gap: 2px; min-width: 220px; padding: 6px; border: 1px solid var(--gf-border); border-radius: var(--gf-r-lg); background: var(--gf-bg-surface); box-shadow: var(--gf-shadow-lg); }
+.gf-menu-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 7px var(--gf-s-2); border: 0; border-radius: var(--gf-r-md); background: transparent; color: var(--gf-text); font-size: 14px; line-height: 20px; text-align: left; }
+.gf-menu-item:hover, .gf-menu-item:focus-visible { background: var(--gf-bg-hover); box-shadow: none; }
+.gf-menu-item .gf-icon { color: var(--gf-text-2); }
+.gf-menu-item .gf-menu-hint { margin-left: auto; color: var(--gf-text-3); font-size: 11px; }
+.gf-menu-item--danger { color: var(--gf-error); }
+.gf-menu-item--danger .gf-icon { color: var(--gf-error); }
+.gf-divider { height: 1px; margin: 4px 0; border: 0; background: var(--gf-border); }
+
+/* ── Tooltip ── */
+.gf-tooltip { padding: 5px var(--gf-s-2); border-radius: var(--gf-r-sm); background: var(--gf-text); color: var(--gf-bg-surface); font-size: 11px; line-height: 16px; white-space: nowrap; pointer-events: none; }
+
+/* ── Progress ── */
+.gf-progress { position: relative; height: 6px; border-radius: var(--gf-r-pill); background: var(--gf-bg-sunken); overflow: hidden; }
+.gf-progress > i { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: inherit; background: var(--gf-brand); transition: width .2s; }
+
+/* ── Slider ── */
+.gf-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 4px; border-radius: 2px; background: linear-gradient(var(--gf-brand), var(--gf-brand)) 0 / var(--gf-fill, 50%) 100% no-repeat, var(--gf-bg-sunken); }
+.gf-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border: 2px solid var(--gf-brand); border-radius: 50%; background: var(--gf-bg-surface); }
+
+/* ── Dialog ── */
+.gf-scrim { position: fixed; inset: 0; background: var(--gf-scrim); }
+.gf-dialog { width: min(440px, calc(100vw - 32px)); padding: var(--gf-s-6); border: 0; border-radius: var(--gf-r-xl); background: var(--gf-bg-surface); color: var(--gf-text); box-shadow: var(--gf-shadow-overlay); }
+.gf-dialog::backdrop { background: var(--gf-scrim); }
+
+/* ── Skeleton ── */
+.gf-skeleton { border-radius: var(--gf-r-sm); background: var(--gf-bg-sunken); }
+
+/* ── Scrollbars ── */
+.gf ::-webkit-scrollbar { width: 10px; height: 10px; }
+.gf ::-webkit-scrollbar-thumb { border: 3px solid transparent; border-radius: 999px; background: var(--gf-border-strong) padding-box; }
+.gf ::-webkit-scrollbar-track { background: transparent; }
+
+/* ── Rate nudge ── built by the editor and Review scripts; Figma: rate prompt */
+#gf-rate-nudge {
+  position: fixed; right: 16px; bottom: 24px; z-index: 3000; width: 296px; padding: var(--gf-s-4);
+  background: var(--gf-bg-surface); border: 1px solid var(--gf-border); border-radius: var(--gf-r-lg); box-shadow: var(--gf-shadow-lg);
+  opacity: 0; transform: translateY(12px); transition: opacity .2s, transform .2s;
+}
+#gf-rate-nudge.show { opacity: 1; transform: none; }
+.gf-rn-row { display: flex; align-items: flex-start; gap: 10px; }
+.gf-rn-star { width: 32px; height: 32px; flex: none; border-radius: var(--gf-r-md); display: grid; place-items: center; background: var(--gf-warning-bg); color: var(--gf-warning); }
+.gf-rn-title { font-size: 14px; font-weight: 500; }
+.gf-rn-sub { margin-top: 2px; color: var(--gf-text-2); font-size: 13px; line-height: 19px; }
+.gf-rn-close { width: 24px; height: 24px; border: 0; border-radius: var(--gf-r-sm); background: none; color: var(--gf-text-3); display: grid; place-items: center; }
+.gf-rn-close:hover { background: var(--gf-bg-hover); color: var(--gf-text); }
+.gf-rn-actions { display: flex; gap: var(--gf-s-2); margin-top: var(--gf-s-3); }
+.gf-rn-btn { flex: 1; height: 32px; border-radius: var(--gf-r-pill); font-size: 13px; font-weight: 500; }
+.gf-rn-btn-primary { border: 1px solid var(--gf-brand); background: var(--gf-brand); color: var(--gf-on-brand); }
+.gf-rn-btn-secondary { border: 1px solid var(--gf-border-strong); background: var(--gf-bg-surface); color: var(--gf-text); }
+
+.gf-rn-btn:focus-visible, .gf-rn-close:focus-visible { outline: none; box-shadow: var(--gf-ring); }

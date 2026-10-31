@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GoFully Test - Landing page with scroll effects</title>
+  <!-- A landing page the way modern ones are built: cards that fade in tied to scroll position
+       (animation-timeline: view()), blocks that fade in once they enter the viewport (IntersectionObserver
+       plus a slow transition), a pinned block (position: sticky) and elements that fade out as they leave.
+       Every [data-probe] is a solid block: a correct full-page capture shows each one in its exact colour. -->
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, sans-serif; background: #f1f5f9; color: #0f172a; }
+    .bar { position: fixed; top: 0; left: 0; right: 0; z-index: 50; height: 56px; background: #0f172a; color: #fff; display: flex; align-items: center; padding: 0 24px; font-weight: 700; }
+    .pad { height: 56px; }
+    h2 { padding: 40px 24px 16px; font-size: 28px; }
+    p.fill { padding: 0 24px; max-width: 760px; line-height: 1.7; color: #475569; }
+    .hero { height: 720px; padding: 60px 24px; background: #e2e8f0; }
+    .hero .exit { width: 60%; height: 260px; background: #1d4ed8; animation: fadeAway linear both; animation-timeline: view(); animation-range: exit 0% exit 100%; }
+
+    /* 1. Cards that fade in tied to scroll, staggered like a typical feature grid */
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; padding: 24px; }
+    .card { height: 230px; background: #10b981; border-radius: 16px; animation: cardIn linear both; animation-timeline: view(); animation-range: entry 0% entry 80%; }
+    .card:nth-child(3n+2) { animation-range: entry 8% entry 88%; }
+    .card:nth-child(3n) { animation-range: entry 16% entry 96%; }
+
+    /* 2. Fade in once visible, over 900 ms (longer than the capture delay) */
+    .rv-wrap { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; padding: 24px; }
+    .rv { height: 200px; border-radius: 16px; background: #f59e0b; opacity: 0; transform: translateY(24px); transition: opacity .9s ease, transform .9s ease; }
+    .rv.in { opacity: 1; transform: none; }
+
+    /* 3. Pinned panel inside a tall story section */
+    .story { position: relative; height: 1500px; margin: 24px; background: #e9d5ff; border-radius: 16px; }
+    .pin { position: sticky; top: 80px; height: 220px; margin: 0 24px; background: #7c3aed; border-radius: 16px; }
+
+    /* 4. Fades out while leaving the screen */
+    .leave-wrap { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; padding: 24px; }
+    .leave { height: 240px; border-radius: 16px; background: #ef4444; animation: fadeAway linear both; animation-timeline: view(); animation-range: exit 0% exit 70%; }
+
+    @keyframes cardIn { from { opacity: .25; transform: translateY(36px); } to { opacity: 1; transform: none; } }
+    @keyframes fadeAway { from { opacity: 1; } to { opacity: 0; } }
+  </style>
+</head>
+<body>
+  <div class="bar">Header</div>
+  <div class="pad"></div>
+
+  <section class="hero"><div class="exit" data-probe="exit-hero" data-color="29,78,216"></div></section>
+
+  <h2>Cards tied to scroll</h2>
+  <div class="grid" id="grid"></div>
+
+  <h2>Fade in when they appear</h2>
+  <div class="rv-wrap" id="rv"></div>
+
+  <h2>Pinned panel</h2>
+  <div class="story"><div class="pin" data-probe="pin" data-color="124,58,237"></div></div>
+
+  <h2>Fade out when they leave</h2>
+  <div class="leave-wrap" id="leave"></div>
+
+  <p class="fill" style="padding-bottom:600px">The end.</p>
+
+  <script>
+    const mk = (parent, cls, n, color) => {
+      const host = document.getElementById(parent);
+      for (let i = 0; i < n; i++) { const d = document.createElement("div"); d.className = cls; d.dataset.probe = `${cls}-${i}`; d.dataset.color = color; host.appendChild(d); }
+    };
+    mk("grid", "card", 12, "16,185,129");
+    mk("rv", "rv", 9, "245,158,11");
+    mk("leave", "leave", 6, "239,68,68");
+    // Fade in once the block enters the viewport.
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: 0.35 });
+    document.querySelectorAll(".rv").forEach((el) => io.observe(el));
+  </script>
+</body>
+</html>

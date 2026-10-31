@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BlueprintFrame } from "@/components/blueprint-frame";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { PageHeader, CtaBand } from "@/components/site/content";
+import { serializeJsonLd } from "@/components/json-ld";
 
 export const metadata: Metadata = {
   title: "Frequently Asked Questions — Full Page Capture & OCR",
@@ -57,7 +58,7 @@ const FAQ_GROUPS = [
       {
         q: "What permissions does the extension need?",
         a: (
-          <>Just enough to capture the active tab, save exports, and copy to your clipboard. See the <Link href="/security" style={{ color: "var(--gf-color-accent)", fontWeight: 600 }}>security page</Link> for the full breakdown.</>
+          <>Just enough to capture the active tab, save exports, and copy to your clipboard. See the <Link href="/security">security page</Link> for the full breakdown.</>
         ),
         plainAnswer: "Just enough to capture the active tab, save exports, and copy to your clipboard. See the security page for the full breakdown.",
       },
@@ -113,8 +114,38 @@ const FAQ_GROUPS = [
       },
       {
         q: "What export formats are available?",
-        a: "Copy to clipboard, save as PNG, WebP, or export a paginated multi-page PDF.",
-        plainAnswer: "Copy to clipboard, save as PNG, WebP, or export a paginated multi-page PDF.",
+        a: "Copy to clipboard, save as PNG, JPG or WebP, or export a paginated multi-page PDF.",
+        plainAnswer: "Copy to clipboard, save as PNG, JPG or WebP, or export a paginated multi-page PDF.",
+      },
+    ],
+  },
+  {
+    category: "New in 1.1.3",
+    items: [
+      {
+        q: "Can I hide private details on the page before I capture it?",
+        a: "Yes. Redact page covers emails, card numbers, phone numbers, ID numbers, IBANs, IP addresses and API keys on the live page, in text and form fields, plus anything you click. It keeps covering text that loads later, so full-page captures stay covered. Done puts the page back exactly as it was.",
+        plainAnswer: "Yes. Redact page covers emails, card numbers, phone numbers, ID numbers, IBANs, IP addresses and API keys on the live page, in text and form fields, plus anything you click. It keeps covering text that loads later, so full-page captures stay covered. Done puts the page back exactly as it was.",
+      },
+      {
+        q: "Can GoFully measure spacing and pick colors?",
+        a: "Yes. Measure shows what an element is, its size, padding, margin and text style. Click one and hover another to see the gap, or drag a free ruler. Press C to pick any color on screen and copy its hex value.",
+        plainAnswer: "Yes. Measure shows what an element is, its size, padding, margin and text style. Click one and hover another to see the gap, or drag a free ruler. Press C to pick any color on screen and copy its hex value.",
+      },
+      {
+        q: "Can I capture a dropdown menu or a tooltip?",
+        a: "Yes. Set Delay in the popup to 3, 5 or 10 seconds. The popup closes, a countdown shows on the page, and you open the menu or hover the tooltip before GoFully captures. Esc cancels.",
+        plainAnswer: "Yes. Set Delay in the popup to 3, 5 or 10 seconds. The popup closes, a countdown shows on the page, and you open the menu or hover the tooltip before GoFully captures. Esc cancels.",
+      },
+      {
+        q: "What happens after a capture?",
+        a: "Quick captures stack in the top right corner of the page, each with its own Copy, Save, Edit and Pin buttons, and you can drag one onto your desktop or into a folder or an app that accepts files. In Settings, After a capture can copy, save as PNG or PDF, open the editor or pin the image instead.",
+        plainAnswer: "Quick captures stack in the top right corner of the page, each with its own Copy, Save, Edit and Pin buttons, and you can drag one onto your desktop or into a folder or an app that accepts files. In Settings, After a capture can copy, save as PNG or PDF, open the editor or pin the image instead.",
+      },
+      {
+        q: "Can GoFully read QR codes?",
+        a: "Yes. QR codes and common barcodes in a capture are read on your device and listed on its card, and Find codes in the editor lists every code in a long capture. Only web links get an Open button.",
+        plainAnswer: "Yes. QR codes and common barcodes in a capture are read on your device and listed on its card, and Find codes in the editor lists every code in a long capture. Only web links get an Open button.",
       },
     ],
   },
@@ -150,57 +181,61 @@ const faqJsonLd = {
   ),
 };
 
+function slug(s: string) {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
 export default function FAQPage() {
   return (
     <div className="gf-industry min-h-screen">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(faqJsonLd) }}
       />
       <SiteNav />
 
-      {/* Hero & Breadcrumb */}
-      <div style={{ padding: "40px 24px 20px" }}>
-        <div className="mx-auto" style={{ maxWidth: 880 }}>
-          <Breadcrumbs items={[{ label: "FAQ" }]} />
-        </div>
+      <div className="gf-crumbs">
+        <Breadcrumbs items={[{ label: "FAQ" }]} />
       </div>
 
-      <div className="text-center" style={{ padding: "20px 24px 64px" }}>
-        <div className="mx-auto" style={{ maxWidth: 700 }}>
-          <span className="inline-block border gf-heading-font font-semibold uppercase" style={{ borderColor: "rgba(22,103,242,.25)", background: "rgba(22,103,242,.06)", color: "var(--gf-color-accent)", fontSize: "10.5px", letterSpacing: "0.06em", padding: "6px 14px" }}>
-            FAQ
-          </span>
-          <h1 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(30px, 8vw, 48px)", lineHeight: 1.08, letterSpacing: "-0.01em", marginTop: 20 }}>
-            Frequently Asked Questions
-          </h1>
-          <p className="mx-auto" style={{ fontSize: "15.5px", lineHeight: 1.6, color: "rgba(29,31,32,.55)", maxWidth: 520, marginTop: 18 }}>
-            Everything you need to know about capturing, editing, and exporting with GoFully. Can&apos;t find it here?{" "}
-            <Link href="/support" style={{ color: "var(--gf-color-accent)", fontWeight: 600 }}>Contact our team</Link>.
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        eyebrow="FAQ"
+        title="Frequently Asked Questions"
+        lede=<>Everything you need to know about capturing, editing, and exporting with GoFully. Can&apos;t find it here?{" "}
+            <Link href="/support">Contact our team</Link>.</>
+      />
 
-      {/* FAQ categories */}
-      <div style={{ padding: "0 24px 90px" }}>
-        <div className="mx-auto flex flex-col" style={{ maxWidth: 880, gap: 40 }}>
+      <div className="gf-faq">
+        <nav className="gf-faq-nav" aria-label="FAQ topics">
           {FAQ_GROUPS.map((group) => (
-            <BlueprintFrame key={group.category} className="bg-white">
-              <h2 className="gf-heading-font font-semibold uppercase border-b" style={{ padding: "22px 32px", borderColor: "rgba(29,31,32,.1)", fontSize: 13, letterSpacing: "0.06em", color: "var(--gf-color-accent)" }}>
-                {group.category}
-              </h2>
-              <div style={{ padding: "8px 32px 8px" }}>
-                {group.items.map((item, i) => (
-                  <div key={item.q} style={{ padding: "18px 0", borderBottom: i < group.items.length - 1 ? "1px solid rgba(29,31,32,.08)" : undefined }}>
-                    <h3 className="gf-heading-font font-semibold" style={{ fontSize: 16 }}>{item.q}</h3>
-                    <p className="mt-1.5" style={{ fontSize: "13.5px", lineHeight: 1.6, color: "rgba(29,31,32,.55)" }}>{item.a}</p>
-                  </div>
+            <a key={group.category} href={`#${slug(group.category)}`}>{group.category}</a>
+          ))}
+        </nav>
+        <div className="gf-faq-groups">
+          {FAQ_GROUPS.map((group) => (
+            <section key={group.category} id={slug(group.category)} className="gf-faq-group">
+              <h2>{group.category}</h2>
+              <div className="gf-faq-list">
+                {group.items.map((item) => (
+                  <details key={item.q} className="gf-faq-item">
+                    <summary>
+                      <h3>{item.q}</h3>
+                      <span className="gf-faq-icon" aria-hidden="true" />
+                    </summary>
+                    <p>{item.a}</p>
+                  </details>
                 ))}
               </div>
-            </BlueprintFrame>
+            </section>
           ))}
         </div>
       </div>
+
+      <CtaBand
+        title="Still stuck?"
+        sub="Email us or open an issue on GitHub. Both are on the Support page."
+        action={{ href: "/support", label: "Contact support" }}
+      />
 
       <SiteFooterIndustry activeHref="/faq" />
     </div>

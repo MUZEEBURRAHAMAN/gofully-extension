@@ -4,303 +4,71 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GoFully Review</title>
+  <!-- Design: Figma "Extension UI v2" › Review / * (see .claude/skills/gofully-ui/references/screens.md) -->
+  <script src="ds/chrome-stub.js"></script>
+  <link rel="stylesheet" href="ds/tokens.css">
+  <link rel="stylesheet" href="ds/components.css">
   <style>
-    @font-face {
-      font-family: 'Archivo';
-      font-style: normal;
-      font-weight: 100 900;
-      font-display: swap;
-      src: url('assets/Archivo.woff2') format('woff2');
-    }
-  </style>
-  <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-    :root {
-      --ink:       29,31,32;
-      --bg:        #d4d4d7;
-      --bar:       #f2f2f3;
-      --bar-bd:    rgba(var(--ink),.12);
-      --hover:     rgba(var(--ink),.06);
-      --blue:      #1667F2;
-      --blue-h:    #1257D8;
-      --blue-bg:   #EDF1FE;
-      --blue-bd:   #BDD0FB;
-      --text:      #1d1f20;
-      --text-2:    rgba(var(--ink),.6);
-      --text-4:    rgba(var(--ink),.35);
-      --muted:     rgba(var(--ink),.4);
-      --border:    rgba(var(--ink),.12);
-      --surface:   #f2f2f3;
-      --sunken:    rgba(var(--ink),.05);
-    }
-    @media (prefers-color-scheme: dark) {
-      :root:not([data-theme="light"]) {
-        --ink:     255,255,255;
-        --bg:      #18181a;
-        --bar:     #232326;
-        --blue:    #4C8DFF;
-        --blue-h:  #6BA0FF;
-        --blue-bg: rgba(76,141,255,.14);
-        --blue-bd: rgba(76,141,255,.4);
-        --text:    #F2F2F3;
-        --surface: #232326;
-      }
-    }
-    :root[data-theme="dark"] {
-      --ink:     255,255,255;
-      --bg:      #18181a;
-      --bar:     #232326;
-      --blue:    #4C8DFF;
-      --blue-h:  #6BA0FF;
-      --blue-bg: rgba(76,141,255,.14);
-      --blue-bd: rgba(76,141,255,.4);
-      --text:    #F2F2F3;
-      --surface: #232326;
-    }
-
-    html, body {
-      height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Barlow', 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      overflow: hidden;
-    }
-    body { display: flex; flex-direction: column; }
-
-    /* ─── Header ─── */
-    .topbar {
-      height: 52px;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 0 14px;
-      background: var(--bar);
-      border-bottom: 1px solid var(--bar-bd);
-    }
+    html, body { height: 100%; }
+    body { display: flex; flex-direction: column; overflow: hidden; }
+    .topbar { flex: none; display: flex; align-items: center; gap: var(--gf-s-3); padding: 12px var(--gf-s-6); background: var(--gf-bg-surface); border-bottom: 1px solid var(--gf-border); }
     .topbar-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
-    .logo-img { width: 22px; height: 22px; flex-shrink: 0; object-fit: contain; }
-    .brand-name { font-size: 13.5px; font-weight: 700; letter-spacing: -0.3px; white-space: nowrap; }
-    .dim-pill {
-      font-size: 11px; font-weight: 600; color: var(--text-2);
-      background: var(--sunken);
-      padding: 3px 8px;
-      white-space: nowrap;
-    }
-    .method-label { font-size: 11px; color: var(--text-4); white-space: nowrap; }
-
-    .topbar-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-    .tbar-sep { width: 1px; height: 22px; background: var(--bar-bd); margin: 0 4px; flex-shrink: 0; }
-
-    .icon-btn {
-      width: 30px; height: 30px;
-      display: flex; align-items: center; justify-content: center;
-      border: none; background: transparent; cursor: pointer;
-      color: var(--text-2);
-      transition: background .12s, color .12s;
-      flex-shrink: 0;
-    }
-    .icon-btn:hover { background: var(--hover); color: var(--text); }
-
-    #zoomPct {
-      font-size: 11.5px; font-weight: 600; color: var(--text-2);
-      width: 42px; text-align: center; flex-shrink: 0;
-    }
-
-    .action-btn {
-      display: flex; align-items: center; gap: 6px;
-      height: 30px; padding: 0 12px;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--text);
-      font-family: inherit;
-      font-size: 12px; font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background .12s;
-    }
-    .action-btn:hover { background: var(--hover); }
-
-    .action-btn.primary {
-      background: var(--blue); border-color: var(--blue); color: #fff;
-    }
-    .action-btn.primary:hover { background: var(--blue-h); border-color: var(--blue-h); }
-
-    /* Export dropdown (mirrors editor.html) */
-    .export-drop-wrap { position: relative; flex-shrink: 0; }
-    .export-drop-menu {
-      display: none;
-      position: fixed;
-      width: 220px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-      z-index: 20;
-      padding: 6px 0;
-    }
-    .export-drop-menu.show { display: block; }
-    .export-settings { padding: 8px 14px 10px; display: flex; flex-direction: column; gap: 8px; }
-    .export-row-label { font-size: 11px; font-weight: 600; color: var(--text-2); }
-    .export-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-    #review-filename {
-      width: 100%; height: 26px;
-      border: 1px solid rgba(var(--ink),.25);
-      background: rgba(var(--ink),.05);
-      color: var(--text);
-      font-size: 11px; font-family: inherit;
-      padding: 0 8px;
-    }
-    #review-filename:focus { outline: none; border-color: var(--blue); }
-    #review-filename::placeholder { color: rgba(var(--ink),.35); }
-    #review-image-quality {
-      height: 30px;
-      padding: 0 8px;
-      border-radius: 0;
-      border: 1px solid var(--border);
-      background: rgba(var(--ink),.05);
-      color: var(--text-2);
-      font-size: 11.5px;
-      font-weight: 600;
-      font-family: inherit;
-      cursor: pointer;
-      outline: none;
-    }
-    #review-image-quality:hover { background: rgba(var(--ink),.12); }
-    #review-image-quality:focus-visible { outline: 2px solid var(--blue); outline-offset: -1px; }
-    #review-image-quality option { background: var(--surface); color: var(--text); }
-    .export-drop-sep { height: 1px; background: var(--border); margin: 6px 0; }
-    .export-drop-label {
-      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
-      color: var(--text-4); padding: 4px 14px;
-    }
-    .export-drop-item {
-      display: flex; align-items: center; gap: 8px;
-      width: 100%; padding: 7px 14px;
-      border: none; background: transparent;
-      color: var(--text);
-      font-family: inherit; font-size: 12.5px; font-weight: 500;
-      cursor: pointer; text-align: left;
-    }
-    .export-drop-item:hover { background: var(--hover); }
-
-    /* ─── Preview area ─── */
-    .preview-area {
-      flex: 1;
-      overflow: auto;
-      display: flex;
-      justify-content: center;
-      /* Without this, flex's default align-items:stretch squishes the
-         image to the container's cross-size (one screen's height) instead
-         of showing it at its real height with the container scrolling. */
-      align-items: flex-start;
-      padding: 32px;
-      background:
-        linear-gradient(45deg, rgba(var(--ink),.05) 25%, transparent 25%, transparent 75%, rgba(var(--ink),.05) 75%, rgba(var(--ink),.05)),
-        linear-gradient(45deg, rgba(var(--ink),.05) 25%, transparent 25%, transparent 75%, rgba(var(--ink),.05) 75%, rgba(var(--ink),.05));
-      background-size: 20px 20px;
-      background-position: 0 0, 10px 10px;
-    }
-    #previewImg {
-      display: block;
-      max-width: none;
-      height: auto;
-      box-shadow: 0 4px 24px rgba(0,0,0,.18);
-      background: #fff;
-    }
-
-    .empty-state {
-      margin: auto;
-      color: var(--text-4);
-      font-size: 13px;
-    }
-
-    /* ─── Rate nudge ─── */
-    #gf-rate-nudge {
-      position: fixed; bottom: 20px; right: 20px;
-      width: 280px; z-index: 10000;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.12), 0 20px 24px -4px rgba(0,0,0,0.16);
-      padding: 14px;
-      opacity: 0; transform: translateY(12px);
-      transition: opacity 0.2s cubic-bezier(0.16,1,0.3,1), transform 0.2s cubic-bezier(0.16,1,0.3,1);
-      font-family: 'Barlow', 'Archivo', -apple-system, sans-serif;
-    }
-    #gf-rate-nudge.show { opacity: 1; transform: translateY(0); }
-    .gf-rn-row { display: flex; align-items: flex-start; gap: 10px; }
-    .gf-rn-star {
-      width: 28px; height: 28px; flex-shrink: 0;
-      background: rgba(251,191,36,.15); color: #B45309;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .gf-rn-title { font-size: 12.5px; font-weight: 700; color: var(--text); line-height: 1.3; }
-    .gf-rn-sub { font-size: 11px; font-weight: 500; color: var(--text-2); margin-top: 3px; line-height: 1.4; }
-    .gf-rn-close {
-      border: none; background: none; cursor: pointer; color: var(--text-4);
-      width: 22px; height: 22px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .gf-rn-actions { display: flex; gap: 7px; margin-top: 12px; }
-    .gf-rn-btn {
-      flex: 1; height: 32px; cursor: pointer;
-      font-size: 11.5px; font-weight: 600; font-family: inherit;
-      transition: opacity 0.12s;
-    }
-    .gf-rn-btn:hover { opacity: 0.85; }
-    .gf-rn-btn-primary { border: 1.5px solid var(--blue); background: var(--blue); color: #fff; }
-    .gf-rn-btn-secondary { border: 1.5px solid var(--border); background: transparent; color: var(--text-2); }
-
-    .toast {
-      position: fixed; bottom: 20px; left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: #101828; color: #fff;
-      padding: 8px 16px;
-      font-size: 12px; font-weight: 600;
-      box-shadow: 0 4px 20px rgba(15,23,42,0.2);
-      transition: transform 0.22s cubic-bezier(0.16,1,0.3,1), opacity 0.22s;
-      pointer-events: none; white-space: nowrap; opacity: 0;
-      z-index: 10001;
-    }
-    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .topbar-left img { width: 28px; height: 28px; border-radius: var(--gf-r-sm); }
+    .crumb { color: var(--gf-text-placeholder); }
+    .method-label { color: var(--gf-text-3); font-size: 12px; }
+    .topbar-right { margin-left: auto; display: flex; align-items: center; gap: var(--gf-s-2); }
+    .zoom { display: flex; align-items: center; gap: 2px; padding: 2px; border: 1px solid var(--gf-border); border-radius: var(--gf-r-md); }
+    .zoom .gf-icon-btn { width: 28px; height: 28px; }
+    #zoomPct { min-width: 48px; text-align: center; font-size: 12px; font-weight: 500; font-variant-numeric: tabular-nums; }
+    .export-drop-wrap { position: relative; }
+    .export-drop-menu { position: fixed; z-index: 50; display: none; width: 280px; flex-direction: column; gap: 2px; padding: 6px; background: var(--gf-bg-surface); border: 1px solid var(--gf-border); border-radius: var(--gf-r-lg); box-shadow: var(--gf-shadow-lg); }
+    .export-drop-menu.show { display: flex; }
+    .export-settings { display: flex; flex-direction: column; gap: 8px; padding: 8px 8px 10px; }
+    .export-row { display: flex; align-items: center; justify-content: space-between; gap: var(--gf-s-2); }
+    .export-row-label { font-size: 13px; }
+    .export-settings .gf-input, .export-settings .gf-select { min-height: 32px; font-size: 13px; }
+    .export-row .gf-select { width: auto; }
+    .export-drop-sep { height: 1px; margin: 4px 0; background: var(--gf-border); }
+    .export-drop-label { padding: 6px var(--gf-s-2) 2px; color: var(--gf-text-3); font-size: 12px; font-weight: 500; }
+    .export-drop-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 7px var(--gf-s-2); border: 0; border-radius: var(--gf-r-md); background: transparent; color: var(--gf-text); font-size: 14px; line-height: 20px; text-align: left; }
+    .export-drop-item:hover { background: var(--gf-bg-hover); }
+    .export-drop-item .gf-icon { color: var(--gf-text-2); }
+    .preview-area { flex: 1; min-height: 0; overflow: auto; display: flex; flex-direction: column; align-items: center; padding: var(--gf-s-8) var(--gf-s-8) var(--gf-s-12); background: var(--gf-bg-sunken); }
+    #previewImg { display: block; max-width: none; border: 1px solid var(--gf-border); border-radius: var(--gf-r-md); background: var(--gf-bg-surface); box-shadow: var(--gf-shadow-lg); }
+    .empty-state { display: none; margin: auto; text-align: center; color: var(--gf-text-2); }
+    .empty-state .gf-t-title { color: var(--gf-text); margin: var(--gf-s-2) 0 4px; }
+    .toast { position: fixed; left: 50%; bottom: 24px; z-index: 60; transform: translateX(-50%) translateY(8px); opacity: 0; pointer-events: none; transition: opacity .18s, transform .18s; }
+    .toast.show { opacity: 1; transform: translateX(-50%); }
+    @media (max-width: 720px) { .topbar { flex-wrap: wrap; padding: 10px var(--gf-s-4); } .method-label, .crumb, .zoom { display: none; } .preview-area { padding: var(--gf-s-4); } }
   </style>
 </head>
-<body>
-
-  <div class="topbar">
+<body class="gf">
+  <header class="topbar">
     <div class="topbar-left">
-      <img class="logo-img" src="assets/icon-128.png" alt="">
-      <span class="brand-name">GoFully</span>
-      <span class="dim-pill" id="dimPill">— × —</span>
+      <img src="assets/gofully-symbol.png" alt="">
+      <span class="gf-t-heading">GoFully</span>
+      <span class="crumb">/</span>
+      <span class="gf-t-body-medium gf-muted">Review</span>
+      <span class="gf-tag" id="dimPill">— × —</span>
       <span class="method-label" id="methodLabel"></span>
     </div>
     <div class="topbar-right">
-      <button class="icon-btn" id="zoom-out-btn" title="Zoom out">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
-      </button>
-      <span id="zoomPct">100%</span>
-      <button class="icon-btn" id="zoom-in-btn" title="Zoom in">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
-      </button>
-      <div class="tbar-sep"></div>
-      <button class="action-btn" id="copy-btn">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="1"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-        <span>Copy</span>
-      </button>
+      <div class="zoom">
+        <button class="gf-icon-btn" id="zoom-out-btn" type="button" title="Zoom out" aria-label="Zoom out"><i class="gf-icon" data-icon="zoom-out" data-size="16"></i></button>
+        <span id="zoomPct">100%</span>
+        <button class="gf-icon-btn" id="zoom-in-btn" type="button" title="Zoom in" aria-label="Zoom in"><i class="gf-icon" data-icon="zoom-in" data-size="16"></i></button>
+      </div>
+      <button class="gf-btn gf-btn--secondary" id="copy-btn" type="button"><i class="gf-icon" data-icon="copy" data-size="16"></i><span>Copy</span></button>
+      <button class="gf-btn gf-btn--secondary" id="edit-btn" type="button"><i class="gf-icon" data-icon="edit" data-size="16"></i>Edit</button>
       <div class="export-drop-wrap">
-        <button class="action-btn" id="export-menu-btn">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Export ▾
-        </button>
+        <button class="gf-btn gf-btn--primary" id="export-menu-btn" type="button"><i class="gf-icon" data-icon="download" data-size="16"></i>Save<i class="gf-icon" data-icon="chevron-down" data-size="14"></i></button>
         <div class="export-drop-menu" id="export-drop-menu">
           <div class="export-settings">
-            <span class="export-row-label">Filename</span>
-            <input type="text" id="review-filename" placeholder="auto-generated" autocomplete="off" spellcheck="false">
+            <label class="gf-label" for="review-filename" style="margin:0">Filename</label>
+            <input class="gf-input" type="text" id="review-filename" placeholder="Created from the page title" autocomplete="off" spellcheck="false">
             <div class="export-row">
-              <span class="export-row-label">Image Quality</span>
-              <select id="review-image-quality" title="Compression quality for JPG and WebP exports">
+              <span class="export-row-label">JPG and WebP quality</span>
+              <select class="gf-select" id="review-image-quality" title="Compression quality for JPG and WebP exports">
                 <option value="50">Low</option>
                 <option value="75">Medium</option>
                 <option value="92" selected>High</option>
@@ -310,26 +78,26 @@
           </div>
           <div class="export-drop-sep"></div>
           <div class="export-drop-label">Save as</div>
-          <button class="export-drop-item" id="save-png-btn">PNG</button>
-          <button class="export-drop-item" id="save-jpg-btn">JPG</button>
-          <button class="export-drop-item" id="save-webp-btn">WebP</button>
-          <button class="export-drop-item" id="save-pdf-btn">PDF</button>
+          <button class="export-drop-item" id="save-png-btn" type="button"><i class="gf-icon" data-icon="image" data-size="16"></i>PNG</button>
+          <button class="export-drop-item" id="save-jpg-btn" type="button"><i class="gf-icon" data-icon="image" data-size="16"></i>JPG</button>
+          <button class="export-drop-item" id="save-webp-btn" type="button"><i class="gf-icon" data-icon="image" data-size="16"></i>WebP</button>
+          <button class="export-drop-item" id="save-pdf-btn" type="button"><i class="gf-icon" data-icon="pdf" data-size="16"></i>PDF</button>
         </div>
       </div>
-      <div class="tbar-sep"></div>
-      <button class="action-btn primary" id="edit-btn">Edit</button>
-      <button class="icon-btn" id="close-btn" title="Close">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
+      <button class="gf-icon-btn" id="close-btn" type="button" title="Close" aria-label="Close"><i class="gf-icon" data-icon="close" data-size="18"></i></button>
     </div>
-  </div>
+  </header>
 
-  <div class="preview-area" id="previewArea">
-    <img id="previewImg" style="display:none">
-    <div class="empty-state" id="emptyState">No image available — please capture first</div>
-  </div>
+  <main class="preview-area" id="previewArea">
+    <img id="previewImg" alt="Your capture" style="display:none">
+    <div class="empty-state" id="emptyState">
+      <i class="gf-ill" data-ill="history-empty" data-width="180"></i>
+      <div class="gf-t-title">No capture to review</div>
+      <div class="gf-t-body">Take a capture from the popup and it opens here.</div>
+    </div>
+  </main>
 
-  <div class="toast" id="toast"></div>
+  <div class="toast gf-toast" id="toast" role="status"></div>
 
   <script type="module" src="review.ts"></script>
 </body>

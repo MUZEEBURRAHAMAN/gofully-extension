@@ -10,8 +10,11 @@
  * chrome.storage.local only.
  */
 
-const FONT_STACK =
-  "'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+import { T, FONT_FAMILY, applyOverlayTheme, alpha } from "../ui/overlay-kit";
+import { LIGHT } from "../ui/ds/tokens";
+import { icon as dsIcon, type IconName } from "../ui/ds/icons";
+
+const FONT_STACK = FONT_FAMILY;
 const Z = "2147483645"; // under the capture overlays (…46 / …47) so pickers still win
 const HOST_ID = "gofully-annotate-host";
 const STORAGE_PREFIX = "gf_annot:";
@@ -26,25 +29,11 @@ type Item =
   | { id: string; k: "text" | "note"; c: string; x: number; y: number; t: string }
   | { id: string; k: "texthl"; c: string; rs: number[][] };
 
-const ICON: Record<string, string> = {
-  "cursor": "M168,132.69,214.08,115l.33-.13A16,16,0,0,0,213,85.07L52.92,32.8A15.95,15.95,0,0,0,32.8,52.92L85.07,213a15.82,15.82,0,0,0,14.41,11l.78,0a15.84,15.84,0,0,0,14.61-9.59l.13-.33L132.69,168,184,219.31a16,16,0,0,0,22.63,0l12.68-12.68a16,16,0,0,0,0-22.63ZM195.31,208,144,156.69a16,16,0,0,0-26,4.93c0,.11-.09.22-.13.32l-17.65,46L48,48l159.85,52.2-45.95,17.64-.32.13a16,16,0,0,0-4.93,26h0L208,195.31Z",
-  "pencil-simple": "M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z",
-  "highlighter": "M253.66,106.34a8,8,0,0,0-11.32,0L192,156.69,107.31,72l50.35-50.34a8,8,0,1,0-11.32-11.32L96,60.69A16,16,0,0,0,93.18,79.5L72,100.69a16,16,0,0,0,0,22.62L76.69,128,18.34,186.34a8,8,0,0,0,3.13,13.25l72,24A7.88,7.88,0,0,0,96,224a8,8,0,0,0,5.66-2.34L136,187.31l4.69,4.69a16,16,0,0,0,22.62,0l21.19-21.18A16,16,0,0,0,203.31,168l50.35-50.34A8,8,0,0,0,253.66,106.34ZM93.84,206.85l-55-18.35L88,139.31,124.69,176ZM152,180.69,83.31,112,104,91.31,172.69,160Z",
-  "arrow-up-right": "M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z",
-  "rectangle": "M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,160H40V56H216V200Z",
-  "text-t": "M208,56V88a8,8,0,0,1-16,0V64H136V192h24a8,8,0,0,1,0,16H96a8,8,0,0,1,0-16h24V64H64V88a8,8,0,0,1-16,0V56a8,8,0,0,1,8-8H200A8,8,0,0,1,208,56Z",
-  "trash": "M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z",
-  "undo": "M224,128a96,96,0,0,1-94.71,96H128A95.38,95.38,0,0,1,62.1,197.8a8,8,0,0,1,11-11.63A80,80,0,1,0,71.43,71.39a3.07,3.07,0,0,1-.26.25L44.59,96H72a8,8,0,0,1,0,16H24a8,8,0,0,1-8-8V56a8,8,0,0,1,16,0V85.8L60.25,60A96,96,0,0,1,224,128Z",
-  "x": "M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z",
-  "monitor": "M208,40H48A24,24,0,0,0,24,64V176a24,24,0,0,0,24,24H208a24,24,0,0,0,24-24V64A24,24,0,0,0,208,40Zm8,136a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V64a8,8,0,0,1,8-8H208a8,8,0,0,1,8,8Zm-48,48a8,8,0,0,1-8,8H96a8,8,0,0,1,0-16h64A8,8,0,0,1,168,224Z",
-  "browser": "M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,16V88H40V56Zm0,144H40V104H216v96Z",
-  "text-aa": "M87,57.61a8,8,0,0,0-14,0l-56,120a8,8,0,0,0,14.5,6.78L52.37,152H107.63l9,19.38A8,8,0,0,0,131.1,164.6ZM60,136,80,93.12,100,136Zm172-40a40,40,0,0,0-59.5-35,8,8,0,0,0,7.9,13.9,24,24,0,1,1-4.4,3.8,8,8,0,1,0-12.5-9.9A40,40,0,1,0,232,96Z",
-  "eraser": "M225,80.4,183.6,39a24,24,0,0,0-33.94,0L31,157.66a24,24,0,0,0,0,33.94l30.06,30.06A8,8,0,0,0,66.74,224H216a8,8,0,0,0,0-16h-84.7L225,114.34A24,24,0,0,0,225,80.4ZM108.68,208H70.05L42.33,180.28a8,8,0,0,1,0-11.31L96,115.31,148.69,168Zm105-105L160,156.69,107.31,104,161,50.34a8,8,0,0,1,11.32,0l41.38,41.38A8,8,0,0,1,213.65,103.4Z",
-  "note": "M216,40H40A16,16,0,0,0,24,56V176a8,8,0,0,0,2.34,5.66l48,48A8,8,0,0,0,80,232H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40ZM40,56H216V168H176a8,8,0,0,0-8,8v40H88V176a8,8,0,0,0-8-8H40Z",
-  "circle": "M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Z",
-};
 
-const COLORS = ["#1667F2", "#1d1f20", "#E5484D", "#16A34A", "#F59E0B", "#FFFFFF"];
+/** Annotation ink: fixed DS colours (they mark the page, so they don't flip with the theme). Figma: Overlay / Draw on page · colour and size. */
+const COLORS = [LIGHT.error, LIGHT.warning, LIGHT.success, LIGHT.sky, LIGHT.navy, LIGHT.ink, LIGHT.white];
+const INK = LIGHT.ink;
+const PAPER = LIGHT.white;
 const WIDTHS = [2, 4, 8];
 
 declare global {
@@ -168,8 +157,8 @@ function styleTextBox(d: HTMLElement, it: Extract<Item, { k: "text" | "note" }>)
   d.style.cssText = `
     position:absolute; left:${it.x}px; top:${it.y}px; max-width:320px; min-width:24px;
     font:${isNote ? "500 14px" : "600 20px"} ${FONT_STACK}; line-height:1.35; white-space:pre-wrap; word-break:break-word;
-    color:${isNote ? "#1d1f20" : it.c}; outline:none; pointer-events:auto;
-    ${isNote ? `background:#fff; border:1px solid #E3E8EF; border-top:4px solid ${it.c}; padding:10px 12px; box-shadow:0 4px 6px -2px rgba(22,103,242,.08), 0 12px 16px -4px rgba(22,103,242,.14); min-width:140px; min-height:48px;` : "padding:2px 4px; text-shadow:0 0 3px rgba(255,255,255,.7);"}
+    color:${isNote ? INK : it.c}; outline:none; pointer-events:auto;
+    ${isNote ? `background:${LIGHT["tint-peach-bg"]}; border:1px solid ${alpha(INK, 0.08)}; border-top:4px solid ${it.c}; border-radius:6px; padding:10px 12px; box-shadow:${T.shadowLg}; min-width:140px; min-height:48px;` : `padding:2px 4px; text-shadow:0 0 3px ${alpha(PAPER, 0.7)};`}
   `;
 }
 
@@ -366,28 +355,27 @@ function onSelectionEnd(): void {
     rects.push([r.left + window.scrollX, r.top + window.scrollY, r.width, r.height]);
   }
   if (!rects.length) return;
-  const it: Item = { id: uid(), k: "texthl", c: color === "#1d1f20" || color === "#FFFFFF" ? "#F59E0B" : color, rs: rects };
+  const it: Item = { id: uid(), k: "texthl", c: color === INK || color === PAPER ? LIGHT.warning : color, rs: rects };
   mount(it);
   addItem(it);
   sel.removeAllRanges();
 }
 
 // ── UI ───────────────────────────────────────────────────────────────────────
-const TOOLS: { id: Tool; icon: string; label: string; key: string }[] = [
-  { id: "browse", icon: "cursor", label: "Browse page", key: "V" },
-  { id: "pen", icon: "pencil-simple", label: "Pen", key: "P" },
+const TOOLS: { id: Tool; icon: IconName; label: string; key: string }[] = [
+  { id: "browse", icon: "select", label: "Browse page", key: "V" },
+  { id: "pen", icon: "draw", label: "Pen", key: "P" },
   { id: "marker", icon: "highlighter", label: "Highlighter", key: "H" },
-  { id: "texthl", icon: "text-aa", label: "Highlight text", key: "T" },
-  { id: "arrow", icon: "arrow-up-right", label: "Arrow", key: "A" },
-  { id: "rect", icon: "rectangle", label: "Rectangle", key: "R" },
+  { id: "texthl", icon: "text-ocr", label: "Highlight text", key: "T" },
+  { id: "arrow", icon: "arrow", label: "Arrow", key: "A" },
+  { id: "rect", icon: "square", label: "Rectangle", key: "R" },
   { id: "ellipse", icon: "circle", label: "Ellipse", key: "O" },
-  { id: "text", icon: "text-t", label: "Text", key: "X" },
-  { id: "note", icon: "note", label: "Sticky note", key: "N" },
+  { id: "text", icon: "text", label: "Text", key: "X" },
+  { id: "note", icon: "sticky", label: "Sticky note", key: "N" },
   { id: "eraser", icon: "eraser", label: "Eraser", key: "E" },
 ];
 
-const icon = (n: string, s = 18) =>
-  `<svg width="${s}" height="${s}" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="${ICON[n]}"/></svg>`;
+const icon = (n: IconName, s = 18) => dsIcon(n, s);
 
 function buildUi(): void {
   host = document.createElement("div");
@@ -401,29 +389,29 @@ function buildUi(): void {
     * { box-sizing: border-box; }
     #svg-layer, #html-layer { position:absolute; left:0; top:0; }
     #html-layer { overflow:visible; pointer-events:none; }
+    /* Figma: Overlay / Draw on page · drawing (light), · Dark UI */
     #bar { position:fixed; left:50%; bottom:20px; transform:translateX(-50%); z-index:${Z};
-      display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:2px; padding:5px; width:max-content; max-width:calc(100vw - 24px);
-      background:#fff; border:1px solid #E3E8EF; color:#344054; font:600 12px ${FONT_STACK};
-      box-shadow:0 8px 10px -4px rgba(22,103,242,.08), 0 24px 32px -6px rgba(22,103,242,.18); }
-    #bar.dark { background:#232529; border-color:#33383F; color:#C5CAD3; }
-    #bar button { all:unset; box-sizing:border-box; width:34px; height:34px; display:grid; place-items:center; cursor:pointer; color:inherit; position:relative; flex:none; }
-    #bar button:hover:not(:disabled) { background:rgba(22,103,242,.1); color:#1667F2; }
+      display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:2px; padding:6px; width:max-content; max-width:calc(100vw - 24px);
+      background:${T.surface}; border:1px solid ${T.border}; border-radius:999px; color:${T.textMuted}; font:500 13px ${FONT_STACK};
+      box-shadow:${T.shadowLg}; }
+    #bar button { all:unset; box-sizing:border-box; width:34px; height:34px; border-radius:999px; display:grid; place-items:center; cursor:pointer; color:inherit; position:relative; flex:none; transition:background .15s, color .15s; }
+    #bar button:hover:not(:disabled) { background:${T.surfaceAlt}; color:${T.text}; }
     #bar button:disabled { opacity:.35; cursor:default; }
-    #bar button.on { background:#1667F2; color:#fff; }
-    #bar button:focus-visible { box-shadow:0 0 0 3px rgba(22,103,242,.35); }
-    #bar .sep { width:1px; align-self:stretch; background:rgba(128,128,128,.28); margin:5px 4px; flex:none; }
-    #bar .sw { width:22px; height:22px; margin:0 2px; border:1px solid rgba(128,128,128,.4); cursor:pointer; flex:none; }
-    #bar .sw.on { box-shadow:0 0 0 2px #fff, 0 0 0 4px #1667F2; }
+    #bar button.on { background:${T.accentBg}; color:${T.accent}; }
+    #bar button:focus-visible { box-shadow:0 0 0 3px ${T.focus}; }
+    #bar .sep { width:1px; align-self:stretch; background:${T.border}; margin:6px 4px; flex:none; }
+    #bar .sw { width:20px; height:20px; margin:0 3px; border-radius:50%; border:1px solid ${alpha(INK, 0.16)}; cursor:pointer; flex:none; }
+    #bar .sw.on { box-shadow:0 0 0 2px ${T.surface}, 0 0 0 4px ${T.focus}; }
     #bar .wd { width:30px; }
-    #bar .wd i { display:block; width:16px; background:currentColor; }
-    #bar button.cap { width:auto; padding:0 12px; gap:7px; display:flex; align-items:center; background:#1667F2; color:#fff; font:700 12px ${FONT_STACK}; }
-    #bar button.cap:hover:not(:disabled) { background:#1257D8; color:#fff; }
-    #bar button.cap.sec { background:transparent; color:inherit; box-shadow:inset 0 0 0 1px rgba(128,128,128,.4); }
-    #bar button.cap.sec:hover:not(:disabled) { background:rgba(22,103,242,.1); color:#1667F2; }
+    #bar .wd i { display:block; width:16px; border-radius:4px; background:currentColor; }
+    #bar button.cap { width:auto; padding:0 14px; gap:6px; display:flex; align-items:center; background:${T.accent}; color:${T.onAccent}; font:500 13px ${FONT_STACK}; }
+    #bar button.cap:hover:not(:disabled) { background:${T.accentHover}; color:${T.onAccent}; }
+    #bar button.cap.sec { background:${T.surface}; color:${T.text}; box-shadow:inset 0 0 0 1px ${T.borderStrong}; }
+    #bar button.cap.sec:hover:not(:disabled) { background:${T.surfaceAlt}; color:${T.text}; }
     #bar button[data-tip]:hover::after { content:attr(data-tip); position:absolute; bottom:calc(100% + 10px); left:50%; transform:translateX(-50%);
-      background:#1d1f20; color:#fff; font:500 11px ${FONT_STACK}; padding:3px 8px; white-space:nowrap; pointer-events:none; }
-    #hint { position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:${Z}; background:rgba(16,24,40,.92); color:#fff;
-      font:500 12px ${FONT_STACK}; padding:8px 16px; opacity:0; transition:opacity .15s; pointer-events:none; white-space:nowrap; }
+      background:${T.text}; color:${T.surface}; font:400 11px/16px ${FONT_STACK}; padding:4px 8px; border-radius:6px; white-space:nowrap; pointer-events:none; }
+    #hint { position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:${Z}; background:${T.text}; color:${T.surface};
+      font:500 13px/20px ${FONT_STACK}; padding:8px 14px; border-radius:999px; box-shadow:${T.shadowLg}; opacity:0; transition:opacity .15s; pointer-events:none; white-space:nowrap; }
     @media (prefers-reduced-motion: reduce) { #hint { transition:none; } }
   `;
   root.appendChild(style);
@@ -438,7 +426,6 @@ function buildUi(): void {
   barEl.id = "bar";
   barEl.setAttribute("role", "toolbar");
   barEl.setAttribute("aria-label", "GoFully page annotation");
-  if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) barEl.classList.add("dark");
   barEl.innerHTML =
     TOOLS.map((t) => `<button data-tool="${t.id}" data-tip="${t.label} (${t.key})" aria-label="${t.label}">${icon(t.icon)}</button>`).join("") +
     `<span class="sep"></span>` +
@@ -447,11 +434,11 @@ function buildUi(): void {
     WIDTHS.map((w) => `<button class="wd" data-width="${w}" aria-label="Stroke ${w}px"><i style="height:${w}px"></i></button>`).join("") +
     `<span class="sep"></span>` +
     `<button data-act="undo" data-tip="Undo (Ctrl/Cmd+Z)" aria-label="Undo">${icon("undo")}</button>` +
-    `<button data-act="clear" data-tip="Clear all marks" aria-label="Clear all marks">${icon("trash")}</button>` +
+    `<button data-act="clear" data-tip="Clear all marks" aria-label="Clear all marks">${icon("delete")}</button>` +
     `<span class="sep"></span>` +
-    `<button class="cap sec" data-act="cap-visible" aria-label="Capture visible area">${icon("monitor", 16)}Visible</button>` +
-    `<button class="cap" data-act="cap-full" aria-label="Capture full page">${icon("browser", 16)}Full page</button>` +
-    `<button data-act="close" data-tip="Done (Esc)" aria-label="Exit annotation mode">${icon("x")}</button>`;
+    `<button class="cap sec" data-act="cap-visible" aria-label="Capture visible area">${icon("visible", 16)}Visible</button>` +
+    `<button class="cap" data-act="cap-full" aria-label="Capture full page">${icon("full-page", 16)}Full page</button>` +
+    `<button data-act="close" data-tip="Done (Esc)" aria-label="Exit annotation mode">${icon("close")}</button>`;
   root.appendChild(barEl);
 
   hint = document.createElement("div");
@@ -589,6 +576,7 @@ function onKeyDown(e: KeyboardEvent): void {
 async function start(): Promise<void> {
   if (active) return;
   active = true;
+  await applyOverlayTheme();
   buildUi();
   items = await loadSaved();
   for (const it of items) {

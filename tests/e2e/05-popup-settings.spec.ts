@@ -86,16 +86,15 @@ test.describe("05 - Popup & Options Settings Suite", () => {
     await expect(visibleKbd).toBeAttached();
     await expect(selectedKbd).toBeAttached();
 
-    const fullPageText = await fullPageKbd.textContent();
-    const visibleText = await visibleKbd.textContent();
-    const selectedText = await selectedKbd.textContent();
+    // Each badge is one <kbd class="gf-kbd"> per key; the full combo is the accessible name.
+    await expect(fullPageKbd.locator("kbd.gf-kbd")).toHaveCount(3);
+    const fullPageText = await fullPageKbd.getAttribute("aria-label");
+    const visibleText = await visibleKbd.getAttribute("aria-label");
+    const selectedText = await selectedKbd.getAttribute("aria-label");
 
-    expect(fullPageText).toMatch(/(Cmd|Ctrl)\+Shift\+F/i);
-    expect(visibleText).toMatch(/(Cmd|Ctrl)\+Shift\+V/i);
-    expect(selectedText).toMatch(/(Cmd|Ctrl)\+Shift\+A/i);
-    expect(fullPageText).not.toContain("&#x2325;");
-    expect(visibleText).not.toContain("&#x2325;");
-    expect(selectedText).not.toContain("&#x2325;");
+    expect(fullPageText).toMatch(/(Cmd|Ctrl) \+ Shift \+ F/i);
+    expect(visibleText).toMatch(/(Cmd|Ctrl) \+ Shift \+ V/i);
+    expect(selectedText).toMatch(/(Cmd|Ctrl) \+ Shift \+ A/i);
 
     await page.close();
   });

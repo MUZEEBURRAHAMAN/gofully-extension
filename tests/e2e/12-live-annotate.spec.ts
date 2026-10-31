@@ -104,12 +104,12 @@ test.describe("12 - Draw on live pages", () => {
     await expect(page.locator("#bar")).toBeVisible({ timeout: 8000 });
 
     // pick a colour that does not occur on the page or in the toolbar, then draw
-    await page.locator('[data-color="#E5484D"]').click();
+    await page.locator('[data-color="#B3261E"]').click(); // DS status/error ink
     await page.locator('[data-width="8"]').click();
     await drawLine(page, 300);
     await page.locator('[data-act="cap-visible"]').click();
 
-    await expect(page.locator("#gofully-quick-toast")).toBeVisible({ timeout: 15000 });
+    await expect(page.locator("#gofully-result-card-host")).toBeAttached({ timeout: 15000 });
     await expect(page.locator("#bar")).toBeVisible(); // comes back after capture
 
     const helper = await context.newPage();
@@ -130,8 +130,9 @@ test.describe("12 - Draw on live pages", () => {
         for (let x = 0; x < c.width; x++) {
           const i = (y * c.width + x) * 4;
           const r = data[i], g = data[i + 1], b = data[i + 2];
-          if (r > 200 && g < 110 && b < 120) red++;
-          if (y > toolbarTop && b > 220 && r < 60 && g > 80 && g < 130) toolbarBlue++;
+          if (r > 150 && g < 70 && b < 70) red++; // #B3261E stroke
+          // the toolbar's Navy capture button (#014073) must not be in the image
+          if (y > toolbarTop && r < 20 && g > 50 && g < 80 && b > 100 && b < 130) toolbarBlue++;
         }
       }
       return { red, toolbarBlue };

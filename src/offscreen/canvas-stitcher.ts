@@ -1,10 +1,31 @@
 import type { CaptureFrame } from "../types";
 import { loadImage, canvasToBlob, needsTiling, computeTiles } from "../utils/image";
 import { createWorker } from "tesseract.js";
+import { scanCodes } from "../utils/codes";
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.type === "OFFSCREEN_PING") {
     sendResponse({ ok: true });
+    return true;
+  }
+  // Named apart from the service worker's SCAN_CODES: pages send that one to the worker, and the
+  // offscreen document hears every runtime message, so a shared name would answer first with nothing.
+  if (message.type === "OFFSCREEN_SCAN_CODES") {
+    const dataUrl = message.payload?.dataUrl;
+    if (typeof dataUrl !== "string" || !dataUrl.startsWith("data:image/")) {
+      sendResponse({ codes: [] });
+      return false;
+    }
+    (async () => {
+      try {
+        const bitmap = await createImageBitmap(await (await fetch(dataUrl)).blob());
+        const codes = await scanCodes(bitmap);
+        bitmap.close();
+        sendResponse({ codes });
+      } catch {
+        sendResponse({ codes: [] });
+      }
+    })();
     return true;
   }
   if (message.type === "PERFORM_OCR") {

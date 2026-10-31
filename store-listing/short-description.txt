@@ -1,1 +1,1 @@
-Full page screenshots with annotation, auto-redact, on-device OCR, backgrounds and PDF export. Free, offline, no account.
+Full page screenshots with redact-before-capture, measure, delay, QR reading, OCR, editing and PDF. Free, offline, no account.

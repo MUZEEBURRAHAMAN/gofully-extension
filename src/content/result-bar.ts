@@ -1,8 +1,29 @@
+import { T, FONT_FAMILY, applyOverlayTheme, alpha } from "../ui/overlay-kit";
+import { icon } from "../ui/ds/icons";
+import { isSafeImageDataUrl } from "../utils/safe-image";
+import { codeKind, safeLink, CODE_LABEL, type DecodedCode } from "../utils/code-links";
 import { claimPendingRateNudge, markRatedYes, markDismissed } from "../utils/rate-nudge";
 
 /** Kept in step with src/ui/overlay-kit.ts — this file styles a shadow root. */
-const FONT_STACK =
-  `'GoFully Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif`;
+const FONT_STACK = FONT_FAMILY;
+
+/** GoFully DS v2 roles as CSS variables on a shadow host (see src/ui/overlay-kit.ts). */
+function setOverlayVars(el: HTMLElement): void {
+  const v: Record<string, string> = {
+    "--gf-bg-surface": T.surface, "--gf-bg-sunken": T.surfaceSunken, "--gf-bg-hover": T.surfaceAlt,
+    "--gf-border": T.border, "--gf-border-strong": T.borderStrong,
+    "--gf-text": T.text, "--gf-text-2": T.textMuted, "--gf-text-3": T.textFaint,
+    "--gf-brand": T.accent, "--gf-brand-hover": T.accentHover, "--gf-on-brand": T.onAccent,
+    "--gf-success": T.success, "--gf-warning": T.warn, "--gf-warning-bg": T.warnBg, "--gf-error": T.danger,
+    "--gf-focus": T.focus, "--gf-shadow-lg": T.shadowLg,
+  };
+  for (const [k, val] of Object.entries(v)) el.style.setProperty(k, val);
+}
+
+function overlayFontFace(): string {
+  const src = chrome.runtime.getURL("assets/inter-latin-wght-normal.woff2");
+  return `@font-face { font-family: 'GoFully Inter'; src: url('${src}') format('woff2'); font-weight: 100 900; font-display: swap; }`;
+}
 
 function playShutterSound(): void {
   try {
@@ -56,14 +77,15 @@ async function upscaleToUHD(blob: Blob): Promise<Blob> {
   }
 }
 
-// ─── Result card (Selected Area) ─────────────────────────────────────────────
-// Selected-area's popup closes itself before the user draws the region, so it
-// can't show its own confirmation UI. This mirrors that same #resultBar card
-// (popup.html) in-page via a shadow-DOM overlay, with export buttons
-// delegating to the background service worker (chrome.downloads isn't
-// available from a content script).
+// ─── Capture stack ───────────────────────────────────────────────────────────
+// Quick captures (visible area, selected area, element, delayed) land here, top right, newest on top.
+// The newest is open with every action; earlier ones fold into rows you can reopen, copy or drag out.
+// After a few idle seconds the stack tucks into a small tab at the edge so it stops covering the page.
+// Each capture keeps its own id, so a button on an older card acts on that capture, not the newest.
+// GoFully hides this whole stack before every photo (see utils/progress-overlay.ts).
 
 interface ResultCardPayload {
+  captureId?: string;
   width: number;
   height: number;
   mode: string;
@@ -74,246 +96,501 @@ interface ResultCardPayload {
   dataUrl: string;
 }
 
-let resultCardHost: HTMLDivElement | null = null;
+interface StackItem {
+  key: string;
+  payload: ResultCardPayload;
+  blobUrl: string | null;
+  codes: DecodedCode[];
+}
 
-function dismissResultCard(): void {
-  if (!resultCardHost) return;
-  const host = resultCardHost;
-  resultCardHost = null;
-  const shadow = host.shadowRoot;
-  const card = shadow?.querySelector(".res-card") as HTMLElement | null;
-  if (card) {
-    card.classList.remove("show");
-    setTimeout(() => host.remove(), 180);
-  } else {
-    host.remove();
+const STACK_LIMIT = 5;
+const STACK_IDLE_MS = 12000;
+const MODE_NAME: Record<string, string> = {
+  "visible-area": "Visible area",
+  "selected-area": "Selected area",
+  "full-page": "Full page",
+  "scrolling-area": "Scrolling area",
+};
+
+let stackHost: HTMLDivElement | null = null;
+let stackRoot: HTMLDivElement | null = null;
+let stackItems: StackItem[] = [];
+let openKey: string | null = null;
+let stackTucked = false;
+let stackIdleTimer: ReturnType<typeof setTimeout> | undefined;
+let stackPointerInside = false;
+
+function stackStyles(): string {
+  return `
+    ${overlayFontFace()}
+    :host { all: initial; }
+    * { box-sizing: border-box; }
+    .stack {
+      position: fixed; top: 16px; right: 16px; width: 328px; max-height: calc(100vh - 32px);
+      display: flex; flex-direction: column; gap: 8px; overflow-y: auto; overscroll-behavior: contain;
+      pointer-events: auto; font: 400 14px/20px ${FONT_STACK}; color: var(--gf-text);
+      -webkit-font-smoothing: antialiased; scrollbar-width: none; /* still scrolls on short screens, without a bar beside the cards */
+    }
+    .stack::-webkit-scrollbar { display: none; }
+    .stack[hidden], .peek[hidden] { display: none; }
+    /* Figma: Overlay / Result card (light), Result card · Dark UI */
+    .res-card {
+      display: flex; flex-direction: column; gap: 10px; padding: 12px; flex: none;
+      background: var(--gf-bg-surface); border: 1px solid var(--gf-border); border-radius: 12px; box-shadow: var(--gf-shadow-lg);
+      animation: gf-in .2s cubic-bezier(0.16,1,0.3,1);
+    }
+    @keyframes gf-in { from { opacity: 0; transform: translateY(-8px) scale(.98); } }
+    @media (prefers-reduced-motion: reduce) { .res-card, .row { animation: none; } }
+    .res-status { display: flex; align-items: center; gap: 8px; }
+    .res-check { color: var(--gf-success); flex-shrink: 0; display: flex; }
+    .res-title { font-weight: 500; flex: 1; min-width: 0; }
+    .icon-btn {
+      border: none; background: none; cursor: pointer; color: var(--gf-text-3);
+      width: 28px; height: 28px; flex-shrink: 0; padding: 0; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .icon-btn:hover { background: var(--gf-bg-hover); color: var(--gf-text); }
+    .res-preview {
+      position: relative; width: 100%; height: 160px; overflow: hidden;
+      background: var(--gf-bg-sunken); border: 1px solid var(--gf-border); border-radius: 8px;
+      display: flex; align-items: flex-start; justify-content: center; cursor: grab;
+    }
+    .res-preview:active { cursor: grabbing; }
+    .res-preview img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: top center; }
+    .res-preview-fade {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 48px;
+      background: linear-gradient(to bottom, transparent, var(--gf-bg-sunken));
+      display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px; pointer-events: none;
+    }
+    .res-preview-pill {
+      font: 500 11px/16px ${FONT_STACK}; color: var(--gf-text-2);
+      background: var(--gf-bg-surface); border: 1px solid var(--gf-border); border-radius: 999px; padding: 2px 8px;
+    }
+    .res-dim { font-size: 12px; line-height: 16px; color: var(--gf-text-3); font-variant-numeric: tabular-nums; }
+    .res-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .res-btn {
+      min-width: 0; height: 32px; display: flex; align-items: center; justify-content: center; gap: 4px;
+      border: 1px solid var(--gf-border-strong); border-radius: 999px; background: var(--gf-bg-surface); cursor: pointer;
+      font: 500 12px/1 ${FONT_STACK}; color: var(--gf-text); white-space: nowrap;
+      transition: background .15s, border-color .15s, opacity .15s;
+    }
+    .res-btn:hover { background: var(--gf-bg-hover); }
+    .res-btn:focus-visible, .icon-btn:focus-visible, .row:focus-visible, .peek:focus-visible, .code-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--gf-focus); }
+    .res-btn.prim { grid-column: 1 / -1; height: 36px; font-size: 14px; background: var(--gf-brand); border-color: var(--gf-brand); color: var(--gf-on-brand); }
+    .res-btn.prim:hover { background: var(--gf-brand-hover); }
+    .codes { display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: 8px; background: var(--gf-bg-sunken); border: 1px solid var(--gf-border); }
+    .code { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .code-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+    .code-kind { font: 500 11px/16px ${FONT_STACK}; color: var(--gf-text-3); }
+    .code-value { font: 500 12px/16px ${FONT_STACK}; color: var(--gf-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .code-btn { height: 26px; padding: 0 10px; border: 1px solid var(--gf-border-strong); border-radius: 999px; background: var(--gf-bg-surface); color: var(--gf-text); font: 500 12px/1 ${FONT_STACK}; cursor: pointer; flex: none; }
+    .code-btn:hover { background: var(--gf-bg-hover); }
+    .res-footer { display: flex; align-items: center; justify-content: space-between; font-size: 11px; line-height: 16px; color: var(--gf-text-3); padding-top: 2px; }
+    .res-ftr-left { display: flex; align-items: center; gap: 6px; }
+    .res-ftr-dot { width: 6px; height: 6px; background: var(--gf-success); border-radius: 50%; }
+    .row {
+      display: flex; align-items: center; gap: 10px; padding: 8px; flex: none; cursor: pointer;
+      background: var(--gf-bg-surface); border: 1px solid var(--gf-border); border-radius: 12px; box-shadow: var(--gf-shadow-lg);
+      animation: gf-in .2s cubic-bezier(0.16,1,0.3,1); text-align: left; font: inherit; color: inherit; width: 100%;
+    }
+    .row:hover { border-color: var(--gf-border-strong); }
+    .row img { width: 56px; height: 40px; flex: none; object-fit: cover; object-position: top; border-radius: 6px; border: 1px solid var(--gf-border); background: var(--gf-bg-sunken); }
+    .row-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+    .row-name { font-weight: 500; font-size: 13px; line-height: 18px; display: flex; gap: 6px; align-items: center; }
+    .row-meta { font-size: 12px; line-height: 16px; color: var(--gf-text-3); font-variant-numeric: tabular-nums; }
+    .qr-tag { font: 600 10px/14px ${FONT_STACK}; padding: 0 6px; border-radius: 999px; background: var(--gf-bg-sunken); color: var(--gf-text-2); border: 1px solid var(--gf-border); }
+    .bar { display: flex; justify-content: flex-end; gap: 6px; flex: none; }
+    .bar .res-btn { height: 28px; padding: 0 12px; box-shadow: var(--gf-shadow-lg); }
+    .peek {
+      position: fixed; top: 16px; right: 0; display: flex; align-items: center; gap: 8px; padding: 6px 10px 6px 6px;
+      pointer-events: auto; cursor: pointer; border: 1px solid var(--gf-border); border-right: none; border-radius: 12px 0 0 12px;
+      background: var(--gf-bg-surface); color: var(--gf-text); box-shadow: var(--gf-shadow-lg); font: 500 12px/16px ${FONT_STACK};
+    }
+    .peek img { width: 36px; height: 26px; object-fit: cover; object-position: top; border-radius: 4px; border: 1px solid var(--gf-border); }
+  `;
+}
+
+function ensureStackHost(): void {
+  if (stackHost && stackHost.isConnected) return;
+  stackHost = document.createElement("div");
+  stackHost.id = "gofully-result-card-host";
+  stackHost.style.cssText = "all:initial; position:fixed; inset:0; z-index:2147483647; pointer-events:none;";
+  const shadow = stackHost.attachShadow({ mode: "closed" });
+  setOverlayVars(stackHost);
+  void applyOverlayTheme().then(() => { if (stackHost) setOverlayVars(stackHost); });
+  const style = document.createElement("style");
+  style.textContent = stackStyles();
+  stackRoot = document.createElement("div");
+  shadow.append(style, stackRoot);
+  stackRoot.addEventListener("pointerenter", () => { stackPointerInside = true; clearTimeout(stackIdleTimer); }, true);
+  stackRoot.addEventListener("pointerleave", () => { stackPointerInside = false; armStackIdle(); }, true);
+  stackRoot.addEventListener("focusin", () => clearTimeout(stackIdleTimer));
+  (document.body || document.documentElement).appendChild(stackHost);
+}
+
+function armStackIdle(): void {
+  clearTimeout(stackIdleTimer);
+  stackIdleTimer = setTimeout(() => {
+    if (stackPointerInside || !stackItems.length) return;
+    stackTucked = true;
+    renderStack();
+  }, STACK_IDLE_MS);
+}
+
+function removeStackItem(key: string): void {
+  const i = stackItems.findIndex((it) => it.key === key);
+  if (i < 0) return;
+  const [gone] = stackItems.splice(i, 1);
+  if (gone.blobUrl) URL.revokeObjectURL(gone.blobUrl);
+  if (openKey === key) openKey = stackItems[0]?.key ?? null;
+  renderStack();
+}
+
+function clearStack(): void {
+  for (const it of stackItems) if (it.blobUrl) URL.revokeObjectURL(it.blobUrl);
+  stackItems = [];
+  openKey = null;
+  clearTimeout(stackIdleTimer);
+  stackHost?.remove();
+  stackHost = stackRoot = null;
+}
+
+function timeAgo(ts: number): string {
+  const s = Math.max(0, Math.round((Date.now() - ts) / 1000));
+  if (s < 45) return "just now";
+  const m = Math.round(s / 60);
+  return m < 60 ? `${m} min ago` : `${Math.round(m / 60)} h ago`;
+}
+
+function fileName(p: ResultCardPayload): string {
+  const host = (() => { try { return new URL(p.url).hostname.replace(/^www\./, ""); } catch { return "capture"; } })();
+  return `gofully-${host.replace(/[^a-z0-9.-]/gi, "")}-${p.timestamp}.png`;
+}
+
+/** Dragging a preview out hands over the PNG as a file: drop it on the desktop, in a folder, or in an app that accepts files. */
+function makeDraggable(img: HTMLImageElement, item: StackItem): void {
+  img.draggable = true;
+  img.addEventListener("dragstart", (e) => {
+    if (!e.dataTransfer) return;
+    if (item.blobUrl) e.dataTransfer.setData("DownloadURL", `image/png:${fileName(item.payload)}:${item.blobUrl}`);
+    e.dataTransfer.effectAllowed = "copy";
+  });
+}
+
+function flash(btn: HTMLElement, text: string): void {
+  const label = btn.querySelector("span");
+  if (!label) return;
+  const orig = label.textContent ?? "";
+  label.textContent = text;
+  btn.style.opacity = "0.75";
+  setTimeout(() => { label.textContent = orig; btn.style.opacity = ""; }, 1800);
+}
+
+function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: string): HTMLElementTagNameMap[K] {
+  const node = document.createElement(tag);
+  if (cls) node.className = cls;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+function actionButton(id: string, label: string, iconName?: Parameters<typeof icon>[0], prim = false): HTMLButtonElement {
+  const b = el("button", prim ? "res-btn prim" : "res-btn");
+  b.type = "button";
+  b.dataset.act = id;
+  if (iconName) b.insertAdjacentHTML("beforeend", icon(iconName, prim ? 16 : 14));
+  b.append(el("span", undefined, label));
+  return b;
+}
+
+function codesBox(item: StackItem): HTMLElement | null {
+  if (!item.codes.length) return null;
+  const box = el("div", "codes");
+  box.setAttribute("aria-label", "Codes found in this capture");
+  for (const c of item.codes.slice(0, 3)) {
+    const row = el("div", "code");
+    const text = el("div", "code-text");
+    const kind = codeKind(c.value);
+    text.append(el("span", "code-kind", `${c.format === "qr_code" ? "QR code" : "Barcode"} · ${CODE_LABEL[kind]}`), el("span", "code-value", c.value));
+    (text.lastChild as HTMLElement).title = c.value;
+    row.append(text);
+    const link = safeLink(c.value);
+    if (link) {
+      const open = el("button", "code-btn", "Open");
+      open.type = "button";
+      open.addEventListener("click", () => window.open(link, "_blank", "noopener,noreferrer"));
+      row.append(open);
+    }
+    const copy = el("button", "code-btn", "Copy");
+    copy.type = "button";
+    copy.addEventListener("click", async () => {
+      try { await navigator.clipboard.writeText(c.value); copy.textContent = "Copied"; } catch { copy.textContent = "Failed"; }
+      setTimeout(() => { copy.textContent = "Copy"; }, 1600);
+    });
+    row.append(copy);
+    box.append(row);
+  }
+  return box;
+}
+
+function openCard(item: StackItem): HTMLElement {
+  const p = item.payload;
+  const w = Math.round(p.width), h = Math.round(p.height);
+  const card = el("div", "res-card");
+  card.setAttribute("role", "group");
+  card.setAttribute("aria-label", "Screenshot captured");
+
+  const status = el("div", "res-status");
+  const check = el("div", "res-check");
+  check.innerHTML = icon("success", 18);
+  const close = el("button", "icon-btn");
+  close.type = "button";
+  close.setAttribute("aria-label", "Dismiss this capture");
+  close.innerHTML = icon("close", 16);
+  close.addEventListener("click", () => removeStackItem(item.key));
+  status.append(check, el("span", "res-title", "Screenshot captured"), close);
+
+  const preview = el("div", "res-preview");
+  preview.title = "Drag the image onto your desktop or into a folder";
+  const img = el("img");
+  img.alt = "Capture preview";
+  img.src = p.dataUrl;
+  makeDraggable(img, item);
+  preview.append(img);
+  if (p.mode === "full-page" || p.mode === "scrolling-area" || h > 800) {
+    const fade = el("div", "res-preview-fade");
+    fade.append(el("span", "res-preview-pill", "Scroll the full image in the editor"));
+    preview.append(fade);
+  }
+
+  const dim = el("span", "res-dim", `${w} × ${h} px · ${MODE_NAME[p.mode] ?? "Capture"}`);
+  const actions = el("div", "res-actions");
+  actions.append(
+    actionButton("copy", "Copy", "copy", true),
+    actionButton("png", "PNG"), actionButton("jpg", "JPG"), actionButton("webp", "WebP"), actionButton("pdf", "PDF"),
+    actionButton("edit", "Edit", "edit"), actionButton("pin", "Pin", "pin"), actionButton("guide", "Guide", "guide"),
+  );
+  actions.addEventListener("click", (e) => {
+    const b = (e.target as HTMLElement).closest("button") as HTMLButtonElement | null;
+    if (b?.dataset.act) void runCardAction(b.dataset.act, b, item);
+  });
+
+  const footer = el("div", "res-footer");
+  const left = el("div", "res-ftr-left");
+  left.append(el("div", "res-ftr-dot"), el("span", undefined, "Runs on your device"));
+  footer.append(left, el("span", undefined, `v${chrome.runtime.getManifest().version}`));
+
+  card.append(status, preview, dim);
+  const codes = codesBox(item);
+  if (codes) card.append(codes);
+  card.append(actions, footer);
+  return card;
+}
+
+function foldedRow(item: StackItem): HTMLElement {
+  const p = item.payload;
+  const row = el("button", "row");
+  row.type = "button";
+  row.setAttribute("aria-label", `Open the ${MODE_NAME[p.mode] ?? "capture"} capture from ${timeAgo(p.timestamp)}`);
+  const img = el("img");
+  img.alt = "";
+  img.src = p.dataUrl;
+  makeDraggable(img, item);
+  const text = el("span", "row-text");
+  const name = el("span", "row-name", MODE_NAME[p.mode] ?? "Capture");
+  if (item.codes.length) name.append(el("span", "qr-tag", item.codes[0].format === "qr_code" ? "QR" : "Code"));
+  text.append(name, el("span", "row-meta", `${Math.round(p.width)} × ${Math.round(p.height)} · ${timeAgo(p.timestamp)}`));
+  const copy = el("span", "icon-btn");
+  copy.setAttribute("role", "button");
+  copy.setAttribute("aria-label", "Copy this capture");
+  copy.tabIndex = 0;
+  copy.innerHTML = icon("copy", 16);
+  const close = el("span", "icon-btn");
+  close.setAttribute("role", "button");
+  close.setAttribute("aria-label", "Dismiss this capture");
+  close.tabIndex = 0;
+  close.innerHTML = icon("close", 16);
+  row.append(img, text, copy, close);
+  row.addEventListener("click", async (e) => {
+    const t = e.target as HTMLElement;
+    if (close.contains(t)) { e.stopPropagation(); removeStackItem(item.key); return; }
+    if (copy.contains(t)) {
+      e.stopPropagation();
+      try { await copyImageFromDataUrl(p.dataUrl); copy.innerHTML = icon("check", 16); } catch { /* clipboard blocked */ }
+      setTimeout(() => { copy.innerHTML = icon("copy", 16); }, 1500);
+      return;
+    }
+    openKey = item.key;
+    renderStack();
+  });
+  return row;
+}
+
+async function runCardAction(act: string, btn: HTMLButtonElement, item: StackItem): Promise<void> {
+  const captureId = item.payload.captureId;
+  // The card sends its own image with each action: the background page may have been stopped since the capture.
+  const snapshot = item.payload;
+  if (act === "copy") {
+    try {
+      const blob = await (await fetch(item.payload.dataUrl)).blob();
+      const png = blob.type === "image/png" ? blob : await convertToPng(blob);
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": await upscaleToUHD(png) })]);
+      flash(btn, "Copied!");
+    } catch {
+      flash(btn, "Failed");
+    }
+    return;
+  }
+  if (act === "png" || act === "jpg" || act === "webp" || act === "pdf") {
+    if (act === "pdf") btn.querySelector("span")!.textContent = "Making PDF…";
+    const resp = await chrome.runtime.sendMessage({ type: "EXPORT_CAPTURE", payload: { format: act, captureId, snapshot } }).catch(() => null);
+    if (act === "pdf") btn.querySelector("span")!.textContent = "PDF";
+    flash(btn, resp?.success ? "Saved!" : "Failed");
+    return;
+  }
+  if (act === "guide") {
+    const resp = await chrome.runtime.sendMessage({ type: "GUIDE_ADD_LAST_CAPTURE", payload: { captureId, snapshot } }).catch(() => null);
+    flash(btn, resp?.ok ? `Step ${resp.count}` : "Failed");
+    return;
+  }
+  if (act === "pin") {
+    const resp = await chrome.runtime.sendMessage({ type: "PIN_LAST_CAPTURE", payload: { captureId, snapshot } }).catch(() => null);
+    flash(btn, resp?.ok ? "Pinned" : "Failed");
+    return;
+  }
+  if (act === "edit") {
+    chrome.runtime.sendMessage({ type: "OPEN_EDITOR", payload: { captureId, snapshot } }).then((resp) => {
+      if (resp?.opened === false) flash(btn, "Take it again");
+      else removeStackItem(item.key);
+    }).catch(() => flash(btn, "Failed"));
   }
 }
 
+function renderStack(): void {
+  if (!stackItems.length) { clearStack(); return; }
+  ensureStackHost();
+  const root = stackRoot!;
+  root.replaceChildren();
+
+  if (stackTucked) {
+    const peek = el("button", "peek");
+    peek.type = "button";
+    peek.setAttribute("aria-label", `Show ${stackItems.length} recent ${stackItems.length === 1 ? "capture" : "captures"}`);
+    const img = el("img");
+    img.alt = "";
+    img.src = stackItems[0].payload.dataUrl;
+    peek.append(img, el("span", undefined, stackItems.length === 1 ? "1 capture" : `${stackItems.length} captures`));
+    peek.addEventListener("click", () => { stackTucked = false; renderStack(); armStackIdle(); });
+    root.append(peek);
+    return;
+  }
+
+  const stack = el("div", "stack");
+  stack.setAttribute("role", "region");
+  stack.setAttribute("aria-label", "Recent captures");
+  for (const item of stackItems) stack.append(item.key === openKey ? openCard(item) : foldedRow(item));
+  const bar = el("div", "bar");
+  const hide = el("button", "res-btn", "Hide");
+  hide.type = "button";
+  hide.addEventListener("click", () => { stackTucked = true; renderStack(); });
+  bar.append(hide);
+  if (stackItems.length > 1) {
+    const clear = el("button", "res-btn", "Clear all");
+    clear.type = "button";
+    clear.addEventListener("click", clearStack);
+    bar.append(clear);
+  }
+  stack.append(bar);
+  root.append(stack);
+}
+
 function showResultCard(payload: ResultCardPayload): void {
-  dismissResultCard();
   playShutterSound();
+  const item: StackItem = { key: payload.captureId || `k${Date.now()}`, payload, blobUrl: null, codes: [] };
+  stackItems = [item, ...stackItems.filter((it) => it.key !== item.key)];
+  for (const old of stackItems.splice(STACK_LIMIT)) if (old.blobUrl) URL.revokeObjectURL(old.blobUrl);
+  openKey = item.key;
+  stackTucked = false;
+  renderStack();
+  armStackIdle();
 
-  const w = Math.round(payload.width);
-  const h = Math.round(payload.height);
-  const methodLabel = payload.method === "scroll-stitch" ? "Scroll-Stitch" : "Snapshot";
-  const isLongCapture = payload.mode === "full-page" || payload.mode === "scrolling-area" || h > 800;
+  // A file to drag out, made once per capture.
+  fetch(payload.dataUrl).then((r) => r.blob()).then((b) => {
+    if (stackItems.includes(item)) item.blobUrl = URL.createObjectURL(b);
+  }).catch(() => {});
 
-  resultCardHost = document.createElement("div");
-  resultCardHost.id = "gofully-result-card-host";
-  resultCardHost.style.cssText =
-    "position:fixed; inset:0; z-index:2147483647; pointer-events:none;";
-  const shadow = resultCardHost.attachShadow({ mode: "closed" });
+  // QR codes and barcodes are read on the device by the background page, from our own copy of the capture.
+  if (payload.captureId) {
+    chrome.runtime.sendMessage({ type: "SCAN_CODES", payload: { captureId: payload.captureId } }).then((resp) => {
+      const codes = (Array.isArray(resp?.codes) ? resp.codes : [])
+        .filter((c: unknown): c is DecodedCode => !!c && typeof (c as DecodedCode).value === "string" && typeof (c as DecodedCode).format === "string")
+        .map((c: DecodedCode) => ({ format: c.format.slice(0, 40), value: c.value.slice(0, 4000) }));
+      if (codes.length && stackItems.includes(item)) {
+        item.codes = codes;
+        renderStack();
+      }
+    }).catch(() => {});
+  }
+}
 
+// ─── Delay countdown ─────────────────────────────────────────────────────────
+// The popup has closed, so this pill is the only sign a capture is on its way. It ignores the
+// pointer so the person can open the menu or hover the tooltip they want in the shot. Esc cancels.
+let countdownEl: HTMLDivElement | null = null;
+let countdownTick: ReturnType<typeof setInterval> | undefined;
+
+function hideCountdown(): void {
+  clearInterval(countdownTick);
+  window.removeEventListener("keydown", onCountdownKey, true);
+  countdownEl?.remove();
+  countdownEl = null;
+}
+
+function onCountdownKey(e: KeyboardEvent): void {
+  if (e.key !== "Escape") return;
+  e.preventDefault();
+  e.stopPropagation();
+  hideCountdown();
+  chrome.runtime.sendMessage({ type: "CANCEL_DELAYED_CAPTURE" }).catch(() => {});
+}
+
+function showCountdown(seconds: number): void {
+  hideCountdown();
+  let left = Math.max(1, Math.min(10, Math.round(seconds)));
+  const host = document.createElement("div");
+  host.id = "gofully-countdown";
+  host.style.cssText = "all:initial; position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:2147483647; pointer-events:none;";
+  host.setAttribute("role", "status");
+  host.setAttribute("aria-live", "polite");
+  const shadow = host.attachShadow({ mode: "closed" });
+  setOverlayVars(host);
   const style = document.createElement("style");
   style.textContent = `
-    .res-card {
-      position: fixed; top: 16px; right: 16px;
-      width: 320px;
-      background: #ffffff;
-      border: 1px solid #E3E8EF;
-      box-shadow: 0 10px 30px rgba(16,24,40,0.08), 0 20px 24px -4px rgba(16,24,40,0.14);
-      pointer-events: auto;
-      opacity: 0; transform: translateY(-8px);
-      transition: opacity 0.18s cubic-bezier(0.16,1,0.3,1), transform 0.18s cubic-bezier(0.16,1,0.3,1);
-      font-family: ${FONT_STACK};
-      -webkit-font-smoothing: antialiased;
-    }
-    .res-card.show { opacity: 1; transform: translateY(0); }
-    .res-status {
-      display: flex; align-items: center; gap: 8px;
-      padding: 10px 12px 10px 16px;
-      background: rgba(22,103,242,.08);
-      border-bottom: 1px solid rgba(22,103,242,.12);
-    }
-    .res-check { color: #1667F2; flex-shrink: 0; display: flex; }
-    .res-title { font-size: 12px; font-weight: 600; color: #1257D8; flex: 1; }
-    .res-dim { font-size: 10.5px; font-weight: 500; color: rgba(22,103,242,.7); font-variant-numeric: tabular-nums; }
-    .res-close {
-      border: none; background: none; cursor: pointer; color: rgba(22,103,242,.6);
-      width: 20px; height: 20px; flex-shrink: 0; padding: 0;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .res-close:hover { color: #1257D8; }
-    .res-preview {
-      position: relative; width: 100%; height: 150px;
-      background: #F7F8FA;
-      border-bottom: 1px solid #E3E8EF;
-      overflow: hidden;
-      display: flex; align-items: flex-start; justify-content: center;
-    }
-    .res-preview img { width: 100%; height: auto; display: block; object-fit: cover; object-position: top center; }
-    .res-preview-fade {
-      position: absolute; bottom: 0; left: 0; right: 0; height: 48px;
-      background: linear-gradient(to bottom, rgba(241,243,247,0) 0%, rgba(241,243,247,0.92) 80%, rgba(241,243,247,1) 100%);
-      backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
-      display: flex; align-items: flex-end; justify-content: center; padding-bottom: 6px;
-    }
-    .res-preview-pill {
-      font-size: 9.5px; font-weight: 700; color: #667085;
-      background: rgba(242,242,243,.9); border: 1px solid #E3E8EF;
-      padding: 2px 10px; text-transform: uppercase; letter-spacing: 0.06em;
-    }
-    .res-actions { display: flex; flex-wrap: wrap; border-bottom: 1px solid #E3E8EF; }
-    .res-btn {
-      flex: 1 1 20%; min-width: 0; height: 40px; display: flex; align-items: center; justify-content: center; gap: 5px;
-      border: none; border-right: 1px solid #E3E8EF; background: transparent; cursor: pointer;
-      font-size: 11px; font-weight: 500; letter-spacing: 0.02em; text-transform: uppercase;
-      color: #344054; font-family: ${FONT_STACK};
-      transition: background .08s, color .08s;
-    }
-    .res-btn:last-child { border-right: none; }
-    .res-btn:hover { background: #F7F8FA; color: #101828; }
-    .res-btn:active { background: #F1F3F7; }
-    /* Copy gets its own full-width row — both the emphasis a primary action
-       deserves and the simplest fix for 5 format/edit buttons no longer
-       fitting next to it on one line now that JPG joined PNG/WebP/PDF/Edit. */
-    .res-btn.prim { flex-basis: 100%; background: #1667F2; border-right: none; border-bottom: 1px solid #1257D8; color: #f2f2f3; font-weight: 600; }
-    .res-btn.prim:hover { background: #1257D8; }
-    .res-footer {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 8px 14px; font-size: 10px; color: #98A2B3;
-    }
-    .res-ftr-left { display: flex; align-items: center; gap: 6px; }
-    .res-ftr-dot { width: 5px; height: 5px; background: #16B364; border-radius: 50%; }
+    ${overlayFontFace()}
+    .pill { display:flex; align-items:center; gap:10px; padding:6px 14px 6px 6px; border-radius:999px; background:${T.text}; color:${T.surface};
+      font:500 13px/20px ${FONT_STACK}; box-shadow:${T.shadowLg}; white-space:nowrap; -webkit-font-smoothing:antialiased; }
+    .num { width:28px; height:28px; border-radius:50%; display:grid; place-items:center; background:${T.focus}; color:${T.accent === T.focus ? T.surface : T.accent};
+      font:600 14px/1 ${FONT_STACK}; font-variant-numeric:tabular-nums; }
+    .soft { color:${alpha(T.surface, 0.72)}; }
+    kbd { font:500 11px/16px ${FONT_STACK}; padding:1px 6px; border-radius:4px; background:${alpha(T.surface, 0.16)}; }
   `;
-
-  const card = document.createElement("div");
-  card.className = "res-card";
-  card.innerHTML = `
-    <div class="res-status">
-      <div class="res-check">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
-      </div>
-      <span class="res-title">Screenshot captured</span>
-      <span class="res-dim">${w}×${h}px captured via ${methodLabel}</span>
-      <button class="res-close" id="gf-res-close" aria-label="Dismiss">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="res-preview">
-      <img src="${payload.dataUrl}" alt="Capture Preview" />
-      <div class="res-preview-fade" style="display:${isLongCapture ? "flex" : "none"};">
-        <span class="res-preview-pill">Selected Area</span>
-      </div>
-    </div>
-    <div class="res-actions">
-      <button class="res-btn prim" id="gf-res-copy">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="1"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-        <span>Copy</span>
-      </button>
-      <button class="res-btn" id="gf-res-png">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        <span>PNG</span>
-      </button>
-      <button class="res-btn" id="gf-res-webp">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        <span>WebP</span>
-      </button>
-      <button class="res-btn" id="gf-res-jpg">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        <span>JPG</span>
-      </button>
-      <button class="res-btn" id="gf-res-pdf">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13h6M9 17h3"/></svg>
-        <span>PDF</span>
-      </button>
-      <button class="res-btn" id="gf-res-guide">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6h11M10 12h11M10 18h11"/><path d="M4 6h1v4M4 10h2M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
-        <span>Guide</span>
-      </button>
-      <button class="res-btn" id="gf-res-pin">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 3h6l-1 6 3 3v2H7v-2l3-3z"/></svg>
-        <span>Pin</span>
-      </button>
-      <button class="res-btn" id="gf-res-edit">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
-        <span>Edit</span>
-      </button>
-    </div>
-    <div class="res-footer">
-      <div class="res-ftr-left"><div class="res-ftr-dot"></div><span>GoFully v${chrome.runtime.getManifest().version}</span></div>
-      <span>100% Offline</span>
-    </div>
-  `;
-
-  shadow.appendChild(style);
-  shadow.appendChild(card);
-  (document.body || document.documentElement).appendChild(resultCardHost);
-  requestAnimationFrame(() => card.classList.add("show"));
-
-  const setBtnBusy = (btn: HTMLElement, busyLabel: string, doneLabel: string, ok: boolean) => {
-    const label = btn.querySelector("span");
-    if (!label) return;
-    const orig = label.textContent ?? "";
-    label.textContent = ok ? doneLabel : "Failed";
-    (btn as HTMLButtonElement).style.opacity = "0.75";
-    setTimeout(() => {
-      label.textContent = orig;
-      (btn as HTMLButtonElement).style.opacity = "";
-    }, 1800);
-  };
-
-  shadow.getElementById("gf-res-close")!.addEventListener("click", dismissResultCard);
-
-  shadow.getElementById("gf-res-copy")!.addEventListener("click", async (e) => {
-    const btn = e.currentTarget as HTMLElement;
-    try {
-      const res = await fetch(payload.dataUrl);
-      const blob = await res.blob();
-      const pngBlob = blob.type === "image/png" ? blob : await convertToPng(blob);
-      const uhdBlob = await upscaleToUHD(pngBlob);
-      await navigator.clipboard.write([new ClipboardItem({ "image/png": uhdBlob })]);
-      setBtnBusy(btn, "", "Copied!", true);
-    } catch {
-      setBtnBusy(btn, "", "Failed", false);
-    }
-  });
-
-  shadow.getElementById("gf-res-png")!.addEventListener("click", async (e) => {
-    const btn = e.currentTarget as HTMLElement;
-    const resp = await chrome.runtime.sendMessage({ type: "EXPORT_CAPTURE", payload: { format: "png" } }).catch(() => null);
-    setBtnBusy(btn, "", resp?.success ? "Saved!" : "Failed", !!resp?.success);
-  });
-
-  shadow.getElementById("gf-res-webp")!.addEventListener("click", async (e) => {
-    const btn = e.currentTarget as HTMLElement;
-    const resp = await chrome.runtime.sendMessage({ type: "EXPORT_CAPTURE", payload: { format: "webp" } }).catch(() => null);
-    setBtnBusy(btn, "", resp?.success ? "Saved!" : "Failed", !!resp?.success);
-  });
-
-  shadow.getElementById("gf-res-jpg")!.addEventListener("click", async (e) => {
-    const btn = e.currentTarget as HTMLElement;
-    const resp = await chrome.runtime.sendMessage({ type: "EXPORT_CAPTURE", payload: { format: "jpg" } }).catch(() => null);
-    setBtnBusy(btn, "", resp?.success ? "Saved!" : "Failed", !!resp?.success);
-  });
-
-  shadow.getElementById("gf-res-pdf")!.addEventListener("click", async (e) => {
-    const btn = e.currentTarget as HTMLElement;
-    const label = btn.querySelector("span");
-    const orig = label?.textContent ?? "PDF";
-    if (label) label.textContent = "Generating...";
-    const resp = await chrome.runtime.sendMessage({ type: "EXPORT_CAPTURE", payload: { format: "pdf" } }).catch(() => null);
-    if (label) label.textContent = orig;
-    setBtnBusy(btn, "", resp?.success ? "Saved!" : "Failed", !!resp?.success);
-  });
-
-  shadow.getElementById("gf-res-guide")!.addEventListener("click", async (e) => {
-    const btn = e.currentTarget as HTMLElement;
-    const resp = await chrome.runtime.sendMessage({ type: "GUIDE_ADD_LAST_CAPTURE" }).catch(() => null);
-    setBtnBusy(btn, "", resp?.ok ? `Step ${resp.count}` : "Failed", !!resp?.ok);
-  });
-
-  shadow.getElementById("gf-res-pin")!.addEventListener("click", async (e) => {
-    const btn = e.currentTarget as HTMLElement;
-    const resp = await chrome.runtime.sendMessage({ type: "PIN_LAST_CAPTURE" }).catch(() => null);
-    setBtnBusy(btn, "", resp?.ok ? "Pinned" : "Failed", !!resp?.ok);
-  });
-
-  shadow.getElementById("gf-res-edit")!.addEventListener("click", () => {
-    chrome.runtime.sendMessage({ type: "OPEN_EDITOR" }).catch(() => {});
-    dismissResultCard();
-  });
+  const pill = document.createElement("div");
+  pill.className = "pill";
+  const num = document.createElement("span");
+  num.className = "num";
+  const label = document.createElement("span");
+  label.textContent = "Capturing soon. Open the menu or hover what you need.";
+  const esc = document.createElement("span");
+  esc.className = "soft";
+  esc.append(document.createElement("kbd"), " cancel");
+  (esc.firstChild as HTMLElement).textContent = "Esc";
+  pill.append(num, label, esc);
+  shadow.append(style, pill);
+  const paint = () => { num.textContent = String(left); };
+  paint();
+  (document.body || document.documentElement).appendChild(host);
+  countdownEl = host;
+  countdownTick = setInterval(() => { left -= 1; if (left <= 0) hideCountdown(); else paint(); }, 1000);
+  window.addEventListener("keydown", onCountdownKey, true);
 }
 
 // ─── Quick-capture toast (Visible Area / Selected Area) ──────────────────────
@@ -345,20 +622,18 @@ async function showQuickCaptureToast(dataUrl: string): Promise<void> {
       z-index: 2147483647 !important;
       pointer-events: none !important;
       user-select: none !important;
-      background: rgba(16, 24, 40, 0.92) !important;
-      backdrop-filter: blur(8px) !important;
-      -webkit-backdrop-filter: blur(8px) !important;
-      color: #ffffff !important;
-      padding: 8px 16px !important;
+      background: ${T.text} !important;
+      color: ${T.surface} !important;
+      padding: 8px 14px !important;
       border-radius: 9999px !important;
       font-family: ${FONT_STACK} !important;
-      font-size: 12px !important;
+      font-size: 13px !important;
       font-weight: 500 !important;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
+      box-shadow: ${T.shadowLg} !important;
       display: flex !important;
       align-items: center !important;
       gap: 8px !important;
-      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      border: none !important;
       opacity: 0 !important;
       transition: opacity .15s !important;
     `;
@@ -366,7 +641,7 @@ async function showQuickCaptureToast(dataUrl: string): Promise<void> {
   }
 
   quickToastEl.innerHTML = copied
-    ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16B364" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>Copied to clipboard</span>`
+    ? `<span style="display:inline-flex;color:${T.focus}">${icon("success", 16)}</span><span>Copied to clipboard</span>`
     : `<span>Screenshot captured</span>`;
   quickToastEl.style.opacity = "1";
 
@@ -393,9 +668,10 @@ function showInlineNotice(msg: string, kind: "error" | "info"): void {
   }
   el.style.cssText = `
     position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-    background: ${kind === "error" ? "#B42318" : "rgba(16, 24, 40, 0.92)"}; color: #fff;
-    padding: 10px 18px; font: 600 12.5px ${FONT_STACK}; z-index: 2147483647;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.25); pointer-events: none;
+    background: ${kind === "error" ? T.danger : T.text}; color: ${T.surface};
+    padding: 10px 16px; border-radius: ${kind === "error" ? T.radiusLg : T.radiusPill};
+    font: 500 14px ${FONT_STACK}; z-index: 2147483647;
+    box-shadow: ${T.shadowLg}; pointer-events: none;
   `;
   el.textContent = msg;
   clearTimeout((el as any)._hideTimer);
@@ -414,15 +690,17 @@ function showQuickRateNudge(): void {
   rateNudgeHost.style.cssText = "position:fixed; inset:0; z-index:2147483647; pointer-events:none;";
   const shadow = rateNudgeHost.attachShadow({ mode: "closed" });
 
+  setOverlayVars(rateNudgeHost);
   const style = document.createElement("style");
   style.textContent = `
+    ${overlayFontFace()}
     .rate-nudge {
       position: fixed; bottom: 16px; right: 16px;
-      width: 280px;
-      background: #ffffff;
-      border: 1px solid #E3E8EF;
-      box-shadow: 0 10px 30px rgba(16,24,40,0.06), 0 20px 24px -4px rgba(16,24,40,0.12);
-      padding: 14px;
+      width: 296px;
+      background: var(--gf-bg-surface); color: var(--gf-text);
+      border: 1px solid var(--gf-border); border-radius: 12px;
+      box-shadow: var(--gf-shadow-lg);
+      padding: 16px;
       pointer-events: auto;
       opacity: 0; transform: translateY(12px);
       transition: opacity 0.2s cubic-bezier(0.16,1,0.3,1), transform 0.2s cubic-bezier(0.16,1,0.3,1);
@@ -432,28 +710,29 @@ function showQuickRateNudge(): void {
     .rate-nudge.show { opacity: 1; transform: translateY(0); }
     .rate-nudge-row { display: flex; align-items: flex-start; gap: 10px; }
     .rate-nudge-star {
-      width: 28px; height: 28px; flex-shrink: 0;
-      background: #FEF3C7; color: #B45309;
+      width: 32px; height: 32px; flex-shrink: 0; border-radius: 8px;
+      background: var(--gf-warning-bg); color: var(--gf-warning);
       display: flex; align-items: center; justify-content: center;
     }
-    .rate-nudge-title { font-size: 12.5px; font-weight: 700; color: #1D2939; line-height: 1.3; }
-    .rate-nudge-sub { font-size: 11px; font-weight: 500; color: #667085; margin-top: 3px; line-height: 1.4; }
+    .rate-nudge-title { font-size: 14px; font-weight: 500; line-height: 20px; }
+    .rate-nudge-sub { font-size: 13px; color: var(--gf-text-2); margin-top: 2px; line-height: 19px; }
     .rate-nudge-close {
-      border: none; background: none; cursor: pointer; color: #98A2B3;
-      width: 22px; height: 22px; flex-shrink: 0;
+      border: none; background: none; cursor: pointer; color: var(--gf-text-3); border-radius: 6px;
+      width: 24px; height: 24px; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
     }
-    .rate-nudge-close:hover { color: #475467; }
-    .rate-nudge-actions { display: flex; gap: 7px; margin-top: 12px; }
+    .rate-nudge-close:hover { background: var(--gf-bg-hover); color: var(--gf-text); }
+    .rate-nudge-actions { display: flex; gap: 8px; margin-top: 12px; }
     .rate-nudge-btn {
-      flex: 1; height: 32px; cursor: pointer;
-      font-size: 11.5px; font-weight: 600; font-family: ${FONT_STACK};
-      transition: all 0.12s;
+      flex: 1; height: 32px; cursor: pointer; border-radius: 999px;
+      font: 500 13px/1 ${FONT_STACK};
+      transition: background .15s;
     }
-    .rate-nudge-btn-primary { border: 1.5px solid #1667F2; background: #1667F2; color: #fff; }
-    .rate-nudge-btn-primary:hover { background: #1257D8; border-color: #1257D8; }
-    .rate-nudge-btn-secondary { border: 1.5px solid #E3E8EF; background: #fff; color: #475467; }
-    .rate-nudge-btn-secondary:hover { background: #F7F8FA; border-color: #C8D0D9; }
+    .rate-nudge-btn:focus-visible, .rate-nudge-close:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--gf-focus); }
+    .rate-nudge-btn-primary { border: 1px solid var(--gf-brand); background: var(--gf-brand); color: var(--gf-on-brand); }
+    .rate-nudge-btn-primary:hover { background: var(--gf-brand-hover); }
+    .rate-nudge-btn-secondary { border: 1px solid var(--gf-border-strong); background: var(--gf-bg-surface); color: var(--gf-text); }
+    .rate-nudge-btn-secondary:hover { background: var(--gf-bg-hover); }
   `;
 
   const nudge = document.createElement("div");
@@ -461,15 +740,13 @@ function showQuickRateNudge(): void {
   nudge.innerHTML = `
     <div class="rate-nudge-row">
       <div class="rate-nudge-star">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        ${icon("star", 18)}
       </div>
       <div style="flex:1">
         <div class="rate-nudge-title">Enjoying GoFully?</div>
         <div class="rate-nudge-sub">A quick rating helps others discover the extension.</div>
       </div>
-      <button class="rate-nudge-close" id="sf-rate-close">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
+      <button class="rate-nudge-close" id="sf-rate-close" aria-label="Close">${icon("close", 16)}</button>
     </div>
     <div class="rate-nudge-actions">
       <button class="rate-nudge-btn rate-nudge-btn-primary" id="sf-rate-yes">Yes, rate it</button>
@@ -583,41 +860,52 @@ export function showProgressOverlay(current: number, total: number, phase: strin
 
     const badge = document.createElement("div");
     badge.id = "gofully-progress-badge";
+    // Figma: Overlay / Capturing · badge — a light card with title, step and progress.
     badge.style.cssText = `
-      background: rgba(16, 24, 40, 0.92) !important;
-      backdrop-filter: blur(8px) !important;
-      -webkit-backdrop-filter: blur(8px) !important;
-      color: #ffffff !important;
-      padding: 8px 16px !important;
-      border-radius: 9999px !important;
+      background: ${T.surface} !important;
+      color: ${T.text} !important;
+      width: 300px !important;
+      padding: 12px 14px !important;
+      border-radius: 12px !important;
+      border: 1px solid ${T.border} !important;
       font-family: ${FONT_STACK} !important;
-      font-size: 12px !important;
-      font-weight: 500 !important;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
-      display: flex !important;
+      box-shadow: ${T.shadowLg} !important;
+      display: grid !important;
+      grid-template-columns: 32px 1fr auto !important;
+      column-gap: 10px !important;
+      row-gap: 10px !important;
       align-items: center !important;
-      gap: 8px !important;
-      border: 1px solid rgba(255, 255, 255, 0.15) !important;
     `;
 
-    const dot = document.createElement("span");
-    dot.style.cssText = `
-      width: 8px !important;
-      height: 8px !important;
-      border-radius: 50% !important;
-      background: #16B364 !important;
-      display: inline-block !important;
-    `;
-    badge.appendChild(dot);
+    const tile = document.createElement("span");
+    tile.style.cssText = `width:32px !important; height:32px !important; border-radius:8px !important; display:inline-flex !important; align-items:center !important; justify-content:center !important; background:${T.accentBg} !important; color:${T.accent} !important;`;
+    tile.innerHTML = icon("full-page", 18);
+    badge.appendChild(tile);
 
+    const textCol = document.createElement("span");
+    textCol.style.cssText = "display:flex !important; flex-direction:column !important; min-width:0 !important;";
+    const title = document.createElement("span");
+    title.style.cssText = `font:500 14px/20px ${FONT_STACK} !important; color:${T.text} !important;`;
+    title.textContent = "Capturing full page";
     s.badgeText = document.createElement("span");
-    s.badgeText.textContent = "Capturing page...";
-    badge.appendChild(s.badgeText);
+    s.badgeText.style.cssText = `font:400 12px/16px ${FONT_STACK} !important; color:${T.textFaint} !important; font-variant-numeric:tabular-nums !important;`;
+    s.badgeText.textContent = "Getting the page ready";
+    textCol.append(title, s.badgeText);
+    badge.appendChild(textCol);
 
     const escHint = document.createElement("span");
-    escHint.style.cssText = "color: #94A3B8 !important; font-size: 11px !important; margin-left: 2px !important;";
-    escHint.textContent = "(Esc to cancel)";
+    escHint.style.cssText = `font:500 11px/16px ${FONT_STACK} !important; color:${T.textMuted} !important; border:1px solid ${T.borderStrong} !important; border-radius:4px !important; padding:1px 6px !important;`;
+    escHint.textContent = "Esc";
+    escHint.title = "Press Esc to cancel";
     badge.appendChild(escHint);
+
+    const track = document.createElement("span");
+    track.style.cssText = `grid-column:1 / -1 !important; height:6px !important; border-radius:3px !important; background:${T.surfaceSunken} !important; overflow:hidden !important; display:block !important;`;
+    const fillBar = document.createElement("span");
+    fillBar.id = "gofully-progress-fill";
+    fillBar.style.cssText = `display:block !important; height:100% !important; width:100% !important; background:${T.accent} !important; transform-origin:left !important; transform:scaleX(0) !important; transition:transform .25s ease !important;`;
+    track.appendChild(fillBar);
+    badge.appendChild(track);
 
     s.overlay.appendChild(badge);
     (document.body || document.documentElement).appendChild(s.overlay);
@@ -625,8 +913,10 @@ export function showProgressOverlay(current: number, total: number, phase: strin
 
   const pct = total > 0 ? Math.min(100, Math.round((current / total) * 100)) : 0;
   if (s.badgeText) {
-    s.badgeText.textContent = phase === "stitching" ? "Stitching capture..." : `Capturing page... ${pct}%`;
+    s.badgeText.textContent = phase === "stitching" ? "Joining the screens" : `${pct}% · keep this tab open`;
   }
+  const fillBar = s.overlay?.querySelector<HTMLElement>("#gofully-progress-fill");
+  if (fillBar) fillBar.style.setProperty("transform", `scaleX(${phase === "stitching" ? 0.95 : pct / 100})`, "important");
 }
 
 export function removeProgressOverlay(): void {
@@ -643,6 +933,9 @@ export function removeProgressOverlay(): void {
 (window as any).__gofully_suppress_progress = suppressProgressOverlay;
 (window as any).__gofully_unsuppress_progress = unsuppressProgressOverlay;
 
+// Load the user's theme early so every badge, toast and card below uses it.
+void applyOverlayTheme();
+
 if (!(window as any).__snapforge_result_bar_listener_registered) {
   (window as any).__snapforge_result_bar_listener_registered = true;
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
@@ -653,11 +946,21 @@ if (!(window as any).__snapforge_result_bar_listener_registered) {
       return true;
     }
     if (message.type === "QUICK_CAPTURE_TOAST") {
-      showQuickCaptureToast(message.payload?.dataUrl).catch(() => {});
+      if (isSafeImageDataUrl(message.payload?.dataUrl)) showQuickCaptureToast(message.payload.dataUrl).catch(() => {});
       sendResponse({ shown: true });
       return true;
     }
-    if (message.type === "SHOW_RESULT_CARD") {
+    if (message.type === "SHOW_COUNTDOWN") {
+      showCountdown(Number(message.payload?.seconds) || 3);
+      sendResponse({ shown: true });
+      return true;
+    }
+    if (message.type === "HIDE_COUNTDOWN") {
+      hideCountdown();
+      sendResponse({ ok: true });
+      return true;
+    }
+    if (message.type === "SHOW_RESULT_CARD" && isSafeImageDataUrl(message.payload?.dataUrl)) {
       showResultCard(message.payload);
       sendResponse({ shown: true });
       return true;

@@ -6,9 +6,13 @@ on:
   pull_request:
     branches: [ main ]
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
-    name: Build & Validate
+    name: Build, check and package
     runs-on: ubuntu-latest
 
     steps:
@@ -24,8 +28,72 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Next.js Documentation & Site
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Design-system lint
+        run: node scripts/ds-lint.mjs
+
+      - name: Dependency audit (high and critical)
+        run: npm audit --audit-level=high
+
+      - name: Build Next.js documentation and site
         run: npm run build
 
-      - name: Build Chrome Extension (Manifest V3)
+      - name: Build the extension
         run: npm run build:extension
+
+      - name: Install the test browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Unit and security tests
+        # These read the built extension in dist/ and the site's config; a few load it in Chromium
+        run: xvfb-run --auto-servernum npx playwright test tests/unit tests/security
+
+      - name: Package the extension and verify the zip
+        # Release build, zip, then check the zip against security/package-policy.json
+        run: npm run package:extension
+
+      - name: Upload the extension zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: gofully-extension
+          path: gofully-extension.zip
+          if-no-files-found: error
+
+  e2e:
+    name: End-to-end tests (real extension)
+    runs-on: ubuntu-latest
+    # Not required to pass yet: these drive a real Chromium with the extension loaded, which has been
+    # run on a Mac. Remove this line once they have been green on GitHub's runners.
+    continue-on-error: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build the extension
+        run: npm run build:extension
+
+      - name: Install the test browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run the end-to-end tests
+        run: xvfb-run --auto-servernum npx playwright test tests/e2e
+
+      - name: Keep the report when tests fail
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results
+          path: test-results/
+          if-no-files-found: ignore

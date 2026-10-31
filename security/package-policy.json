@@ -1,0 +1,50 @@
+{
+  "_comment": "The approved security surface of the GoFully extension. scripts/verify-package.mjs and tests/security/release-gate.spec.ts both read this file. Changing a permission, host access, web-accessible resource or CSP directive in manifest.json fails them until this file is changed too, so the change shows up in code review.",
+
+  "permissions": {
+    "activeTab": "Capture the tab the person is looking at, only after they ask.",
+    "tabs": "Read the title and address of the captured tab for history and filenames; open the editor, review and welcome pages.",
+    "scripting": "Scroll the page and hide fixed headers during a full-page capture; inject the on-page tools.",
+    "offscreen": "Stitch screenshots and run the local OCR engine in a hidden extension page.",
+    "downloads": "Save PNG, JPG, WebP, PDF and Markdown files when the person chooses Save.",
+    "storage": "Keep settings, capture history and guides on this device."
+  },
+  "hostPermissions": {
+    "<all_urls>": "A screenshot tool has to be able to capture any page the person is on. Nothing is read until the person starts a capture."
+  },
+  "forbiddenPermissions": [
+    "debugger", "webRequest", "webRequestBlocking", "declarativeNetRequest", "cookies", "history", "bookmarks",
+    "management", "nativeMessaging", "proxy", "privacy", "geolocation", "clipboardRead", "identity", "downloads.open",
+    "sessions", "topSites", "pageCapture", "desktopCapture", "tabCapture", "system.storage", "enterprise.platformKeys"
+  ],
+
+  "webAccessibleResources": [
+    "assets/inter-latin-wght-normal.woff2",
+    "assets/shutter.mp3"
+  ],
+
+  "extensionPagesCsp": {
+    "required": [
+      "script-src 'self' 'wasm-unsafe-eval'",
+      "object-src 'none'",
+      "connect-src 'self' data: blob:",
+      "img-src 'self' data: blob:",
+      "font-src 'self' data:",
+      "frame-src 'none'",
+      "base-uri 'none'",
+      "form-action 'none'"
+    ],
+    "forbiddenTokens": ["'unsafe-eval'", "'unsafe-inline'", "http:", "https:", "*"]
+  },
+
+  "forbiddenManifestKeys": ["externally_connectable", "update_url", "key", "oauth2", "declarative_net_request", "devtools_page", "side_panel", "chrome_url_overrides"],
+
+  "previewOnlyFiles": [
+    "ds/chrome-stub.js",
+    "assets/onboarding-ocr.jpg",
+    "assets/onboarding-editor.jpg",
+    "assets/onboarding-export.jpg",
+    "robots.txt",
+    "sitemap.xml"
+  ]
+}

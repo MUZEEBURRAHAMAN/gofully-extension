@@ -4,7 +4,10 @@
  * memory — nothing is stored or sent anywhere.
  */
 
-const FONT_STACK = "'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+import { T, FONT_FAMILY } from "../ui/overlay-kit";
+import { icon } from "../ui/ds/icons";
+import { isSafeImageDataUrl } from "../utils/safe-image";
+const FONT_STACK = FONT_FAMILY;
 const MAX_PINS = 5;
 const MIN_W = 120;
 
@@ -29,21 +32,27 @@ function createPin(dataUrl: string, natW: number, natH: number): void {
 
   const style = document.createElement("style");
   style.textContent = `
+    @font-face { font-family:'GoFully Inter'; src:url('${chrome.runtime.getURL("assets/inter-latin-wght-normal.woff2")}') format('woff2'); font-weight:100 900; font-display:swap; }
     * { box-sizing:border-box; }
-    .frame { position:relative; width:100%; background:#fff; border:1px solid #E3E8EF; cursor:grab; user-select:none; -webkit-user-select:none;
-      box-shadow:0 12px 24px -6px rgba(22,103,242,.14), 0 32px 48px -8px rgba(22,103,242,.2); touch-action:none; }
+    /* Figma: Overlay / Pin · resting, · hover controls */
+    .frame { position:relative; width:100%; background:${T.surface}; border:1px solid ${T.borderStrong}; border-radius:12px; overflow:hidden; cursor:grab; user-select:none; -webkit-user-select:none;
+      box-shadow:${T.shadowLg}; touch-action:none; transition:border-color .15s; }
+    .frame:hover, .frame:focus-within { border-color:${T.focus}; }
     .frame.drag { cursor:grabbing; }
     img { display:block; width:100%; height:auto; pointer-events:none; }
-    .bar { position:absolute; top:0; left:0; right:0; display:flex; justify-content:space-between; align-items:center; gap:6px; padding:5px 6px;
-      background:linear-gradient(rgba(16,24,40,.72), rgba(16,24,40,0)); opacity:0; transition:opacity .12s; font:600 10.5px ${FONT_STACK}; color:#fff; }
-    .frame:hover .bar, .frame:focus-within .bar { opacity:1; }
-    .bar label { display:flex; align-items:center; gap:6px; }
-    input[type=range] { width:70px; accent-color:#1667F2; height:14px; }
-    button { all:unset; box-sizing:border-box; width:22px; height:22px; display:grid; place-items:center; cursor:pointer; background:rgba(16,24,40,.6); color:#fff; font:700 13px ${FONT_STACK}; }
-    button:hover { background:#1667F2; }
-    button:focus-visible { box-shadow:0 0 0 2px #fff, 0 0 0 4px #1667F2; }
-    .grip { position:absolute; right:0; bottom:0; width:18px; height:18px; cursor:nwse-resize; opacity:0; transition:opacity .12s; touch-action:none;
-      background:linear-gradient(135deg, transparent 50%, #1667F2 50%); }
+    .bar { position:absolute; top:0; left:0; right:0; display:flex; align-items:center; gap:8px; padding:6px 8px;
+      background:${T.surface}; border-bottom:1px solid ${T.border}; opacity:0; transform:translateY(-4px); transition:opacity .15s, transform .15s;
+      font:400 11px/16px ${FONT_STACK}; color:${T.textFaint}; }
+    .frame:hover .bar, .frame:focus-within .bar { opacity:1; transform:none; }
+    .bar .drag-ic { display:inline-flex; color:${T.textFaint}; }
+    .bar label { display:flex; align-items:center; gap:8px; flex:1; }
+    input[type=range] { flex:1; min-width:60px; accent-color:${T.accent}; height:14px; }
+    .val { font-variant-numeric:tabular-nums; color:${T.textMuted}; min-width:32px; text-align:right; }
+    button { all:unset; box-sizing:border-box; width:24px; height:24px; display:grid; place-items:center; cursor:pointer; border-radius:6px; color:${T.textMuted}; }
+    button:hover { background:${T.surfaceAlt}; color:${T.text}; }
+    button:focus-visible { box-shadow:0 0 0 3px ${T.focus}; }
+    .grip { position:absolute; right:-1px; bottom:-1px; width:12px; height:12px; cursor:nwse-resize; opacity:0; transition:opacity .15s; touch-action:none;
+      background:${T.surface}; border:2px solid ${T.focus}; border-radius:3px; }
     .frame:hover .grip { opacity:1; }
     @media (prefers-reduced-motion: reduce) { .bar, .grip { transition:none; } }
   `;
@@ -52,17 +61,24 @@ function createPin(dataUrl: string, natW: number, natH: number): void {
   const frame = document.createElement("div");
   frame.className = "frame";
   frame.innerHTML = `
-    <img alt="Pinned capture" src="${dataUrl}">
+    <img alt="Pinned capture">
     <div class="bar">
+      <span class="drag-ic">${icon("drag", 16)}</span>
       <label>Opacity <input type="range" min="25" max="100" value="100" aria-label="Pin opacity"></label>
-      <button type="button" aria-label="Close pinned image" title="Close">×</button>
+      <span class="val">100%</span>
+      <button type="button" aria-label="Close pinned image" title="Close">${icon("close", 14)}</button>
     </div>
     <div class="grip" aria-hidden="true"></div>
   `;
+  frame.querySelector("img")!.src = dataUrl;
   root.appendChild(frame);
 
   const range = frame.querySelector<HTMLInputElement>("input[type=range]")!;
-  range.addEventListener("input", () => { frame.style.opacity = String(Number(range.value) / 100); });
+  const val = frame.querySelector<HTMLSpanElement>(".val")!;
+  range.addEventListener("input", () => {
+    frame.style.opacity = String(Number(range.value) / 100);
+    val.textContent = `${range.value}%`;
+  });
   range.addEventListener("pointerdown", (e) => e.stopPropagation());
   frame.querySelector("button")!.addEventListener("click", () => host.remove());
 
@@ -109,7 +125,7 @@ function createPin(dataUrl: string, natW: number, natH: number): void {
 if (!window.__gofully_pin_registered) {
   window.__gofully_pin_registered = true;
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-    if (message.type === "PIN_IMAGE" && typeof message.payload?.dataUrl === "string" && message.payload.dataUrl.startsWith("data:image/")) {
+    if (message.type === "PIN_IMAGE" && isSafeImageDataUrl(message.payload?.dataUrl)) {
       createPin(message.payload.dataUrl, Number(message.payload.width) || 0, Number(message.payload.height) || 0);
       sendResponse({ shown: true });
       return true;

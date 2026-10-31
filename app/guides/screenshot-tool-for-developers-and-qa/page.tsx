@@ -2,12 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
-import { BlueprintFrame } from "@/components/blueprint-frame";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { RelatedGuides } from "@/components/related-guides";
-
-const CWS_URL =
-  "https://chromewebstore.google.com/detail/gofully-full-page-screens/akfbmhmdlbmljklgajkgoekobofhhofc";
+import { PageHeader, CtaBand } from "@/components/site/content";
+import { serializeJsonLd } from "@/components/json-ld";
 
 export const metadata: Metadata = {
   title: "Best Screenshot Tool for Developers & QA Teams (2026)",
@@ -53,10 +51,10 @@ const articleJsonLd = {
 function StepRow({ n, title, body }: { n: number; title: string; body: string }) {
   return (
     <div className="flex gap-3">
-      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-600 text-white font-bold text-sm flex items-center justify-center">{n}</div>
+      <div className="gf-num">{n}</div>
       <div>
-        <h3 className="font-semibold text-neutral-800 text-[15px]">{title}</h3>
-        <p className="text-[14px] text-neutral-600 mt-1">{body}</p>
+        <h3 className="gf-h3">{title}</h3>
+        <p className="gf-small">{body}</p>
       </div>
     </div>
   );
@@ -64,8 +62,8 @@ function StepRow({ n, title, body }: { n: number; title: string; body: string })
 
 function ReasonCard({ title, body }: { title: string; body: string }) {
   return (
-    <div className="border p-4 bg-neutral-50/50">
-      <h3 className="font-semibold text-neutral-800 mb-1">{title}</h3>
+    <div className="gf-tcard">
+      <h3 className="gf-h3">{title}</h3>
       <p className="text-neutral-600 text-[13.5px]">{body}</p>
     </div>
   );
@@ -74,12 +72,12 @@ function ReasonCard({ title, body }: { title: string; body: string }) {
 export default function DevelopersQAGuidePage() {
   return (
     <div className="gf-industry min-h-screen">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(articleJsonLd) }} />
       <SiteNav />
 
       {/* Breadcrumbs */}
-      <div style={{ padding: "36px 24px 0" }}>
-        <div className="mx-auto" style={{ maxWidth: 840 }}>
+      <div className="gf-crumbs">
+        <div>
           <Breadcrumbs
             items={[
               { label: "Guides", href: "/guides" },
@@ -90,40 +88,28 @@ export default function DevelopersQAGuidePage() {
       </div>
 
       {/* Header */}
-      <div className="text-center" style={{ padding: "40px 24px 44px" }}>
-        <div className="mx-auto" style={{ maxWidth: 780 }}>
-          <h1 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(28px, 6vw, 46px)", lineHeight: 1.15, letterSpacing: "-0.01em", marginTop: 12 }}>
-            The Screenshot Workflow Built for Developers & QA
-          </h1>
-          <p className="mx-auto" style={{ fontSize: "16px", lineHeight: 1.65, color: "rgba(29,31,32,.6)", maxWidth: 640, marginTop: 18 }}>
-            A bug report is only as useful as the screenshot attached to it. Here&apos;s why full-page capture, redaction, OCR, and PDF export matter for the tickets you actually file.
-          </p>
-          <div className="flex items-center justify-center gap-4 text-[12px] text-neutral-400 mt-6">
-            <span>By GoFully Engineering</span>
-            <span>·</span>
-            <span>Published September 2026</span>
-            <span>·</span>
-            <span>5 min read</span>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        title="The Screenshot Workflow Built for Developers & QA"
+        lede="A bug report is only as useful as the screenshot attached to it. Here’s why full-page capture, redaction, OCR, and PDF export matter for the tickets you actually file."
+        meta={["By GoFully Engineering", "Published September 2026", "5 min read"]}
+      />
 
       {/* Article Body */}
-      <div style={{ padding: "0 24px 80px" }}>
-        <div className="mx-auto" style={{ maxWidth: 840 }}>
-          <BlueprintFrame className="bg-white p-8 md:p-12 space-y-10">
+      <div className="gf-article-wrap">
+        <div>
+          <article className="gf-article">
 
-            <div className="bg-blue-50/70 border border-blue-200/80 p-5">
-              <h2 className="gf-heading-font font-semibold text-[16px] text-blue-900 mb-2">
+            <div className="gf-callout">
+              <h2>
                 The problem with a normal screenshot in a bug report
               </h2>
               <p className="text-[14px] leading-relaxed text-blue-950">
-                A plain <kbd className="bg-white border px-1.5 py-0.5 text-xs font-mono">PrtScn</kbd> or Cmd+Shift+4 only captures what&apos;s visible in the viewport. If the bug is in a long dashboard, a scrolling table, or a stack trace that runs off-screen, whoever reads the ticket doesn&apos;t see the whole picture — and now they&apos;re asking you to reproduce it and send a better one.
+                A plain <kbd>PrtScn</kbd> or Cmd+Shift+4 only captures what&apos;s visible in the viewport. If the bug is in a long dashboard, a scrolling table, or a stack trace that runs off-screen, whoever reads the ticket doesn&apos;t see the whole picture — and now they&apos;re asking you to reproduce it and send a better one.
               </p>
             </div>
 
             <section className="space-y-4">
-              <h2 className="gf-heading-font font-semibold text-[24px] text-[var(--gf-color-text)]">
+              <h2>
                 What actually matters for a dev/QA screenshot
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
@@ -146,8 +132,8 @@ export default function DevelopersQAGuidePage() {
               </div>
             </section>
 
-            <section className="space-y-4 pt-4 border-t border-neutral-200">
-              <h2 className="gf-heading-font font-semibold text-[24px] text-[var(--gf-color-text)]">
+            <section className="gf-sep">
+              <h2>
                 A typical bug-report workflow with GoFully
               </h2>
               <div className="space-y-4 pt-2">
@@ -160,7 +146,7 @@ export default function DevelopersQAGuidePage() {
             </section>
 
             <section className="space-y-3 pt-4 border-t border-neutral-200">
-              <h2 className="gf-heading-font font-semibold text-[20px] text-[var(--gf-color-text)]">
+              <h2>
                 Quick questions
               </h2>
               <div className="space-y-3">
@@ -179,30 +165,17 @@ export default function DevelopersQAGuidePage() {
               </div>
             </section>
 
-          </BlueprintFrame>
+          </article>
         </div>
       </div>
 
       <RelatedGuides currentSlug="screenshot-tool-for-developers-and-qa" />
 
       {/* CTA */}
-      <div className="text-center" style={{ background: "#1d1f20", padding: "64px 24px" }}>
-        <h2 className="gf-heading-font font-semibold" style={{ fontSize: 28, color: "#fff", letterSpacing: "-0.01em" }}>
-          Better bug reports start with a better screenshot
-        </h2>
-        <p className="mx-auto" style={{ fontSize: "14.5px", color: "rgba(255,255,255,.55)", maxWidth: 460, marginTop: 12, lineHeight: 1.6 }}>
-          Full-page capture, redaction, OCR, and PDF export — free, on-device, no account.
-        </p>
-        <a
-          href={CWS_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gf-heading-font font-semibold"
-          style={{ height: 44, padding: "0 24px", background: "var(--gf-color-accent)", color: "#fff", fontSize: 13, letterSpacing: "0.02em", marginTop: 22 }}
-        >
-          Add to Chrome — It&apos;s Free
-        </a>
-      </div>
+      <CtaBand
+        title="Better bug reports start with a better screenshot"
+        sub="Full-page capture, redaction, OCR, and PDF export — free, on-device, no account."
+      />
 
       <SiteFooterIndustry activeHref="/guides" />
     </div>

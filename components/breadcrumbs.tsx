@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { serializeJsonLd } from "@/components/json-ld";
 
 export interface BreadcrumbItem {
   label: string;
@@ -34,11 +35,11 @@ export function Breadcrumbs({
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
       <nav
         aria-label="Breadcrumb"
-        className={`flex items-center text-[12px] text-neutral-500 ${className}`}
+        className={`gf-bc ${className}`}
       >
         <ol className="flex items-center flex-wrap gap-1.5 list-none m-0 p-0">
           {allItems.map((item, index) => {
@@ -46,20 +47,18 @@ export function Breadcrumbs({
             return (
               <li key={item.label} className="flex items-center gap-1.5">
                 {index > 0 && (
-                  <span className="text-neutral-400 select-none" aria-hidden="true">
-                    /
-                  </span>
+                  <span className="gf-bc-sep" aria-hidden="true">/</span>
                 )}
                 {item.href && !isLast ? (
                   <Link
                     href={item.href}
-                    className="hover:text-[var(--gf-color-accent)] transition-colors underline-offset-2 hover:underline"
+                    className="gf-bc-link"
                   >
                     {item.label}
                   </Link>
                 ) : (
                   <span
-                    className="font-medium text-neutral-700 dark:text-neutral-300 truncate max-w-[280px] sm:max-w-md"
+                    className="gf-bc-current"
                     aria-current={isLast ? "page" : undefined}
                   >
                     {item.label}

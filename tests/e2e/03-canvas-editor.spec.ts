@@ -128,7 +128,7 @@ test.describe("03 - Canvas Visual Editor Suite", () => {
     }
 
     // Select Green swatch (#10B981)
-    const greenSwatch = page.locator('.color-swatch[data-color="#10B981"]');
+    const greenSwatch = page.locator('.color-swatch[data-color="#17744A"]') /* DS status/success */;
     await greenSwatch.click();
     await expect(greenSwatch).toHaveClass(/active/);
 
@@ -165,7 +165,7 @@ test.describe("03 - Canvas Visual Editor Suite", () => {
 
     // The default red preset must still be the active/selected color — the
     // stale custom color must not have silently become the current color.
-    const redSwatch = page.locator('.color-swatch[data-color="#EF4444"]');
+    const redSwatch = page.locator('.color-swatch[data-color="#B3261E"]') /* DS status/error, the default ink */;
     await expect(redSwatch).toHaveClass(/active/);
     await expect(customSwatch).not.toHaveClass(/active/);
 

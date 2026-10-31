@@ -2,11 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
-import { BlueprintFrame } from "@/components/blueprint-frame";
 import { Breadcrumbs } from "@/components/breadcrumbs";
-
-const CWS_URL =
-  "https://chromewebstore.google.com/detail/gofully-full-page-screens/akfbmhmdlbmljklgajkgoekobofhhofc";
+import { PageHeader, CtaBand } from "@/components/site/content";
+import { serializeJsonLd } from "@/components/json-ld";
 
 export const metadata: Metadata = {
   title: "GoFully vs GoFullPage — Free Full Page Screenshot Comparison (2026)",
@@ -65,9 +63,9 @@ const ROWS: { feature: string; gofully: string; gofullpage: string; gofullyYes: 
 
 function Check({ yes }: { yes: boolean }) {
   return yes ? (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gf-color-accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="gf-yes" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
   ) : (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(29,31,32,.3)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="gf-no" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
   );
 }
 
@@ -76,13 +74,13 @@ export default function GoFullPageAlternativePage() {
     <div className="gf-industry min-h-screen">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(articleJsonLd) }}
       />
       <SiteNav />
 
       {/* Breadcrumbs */}
-      <div style={{ padding: "36px 24px 0" }}>
-        <div className="mx-auto" style={{ maxWidth: 880 }}>
+      <div className="gf-crumbs">
+        <div>
           <Breadcrumbs
             items={[
               { label: "Alternatives", href: "/alternatives" },
@@ -93,93 +91,69 @@ export default function GoFullPageAlternativePage() {
       </div>
 
       {/* Hero */}
-      <div className="text-center" style={{ padding: "40px 24px 56px" }}>
-        <div className="mx-auto" style={{ maxWidth: 720 }}>
-          <h1 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(28px, 7vw, 44px)", lineHeight: 1.1, letterSpacing: "-0.01em", marginTop: 16 }}>
-            GoFully vs GoFullPage
-          </h1>
-          <p className="mx-auto" style={{ fontSize: "15.5px", lineHeight: 1.6, color: "rgba(29,31,32,.55)", maxWidth: 600, marginTop: 18 }}>
-            Both capture full-length webpage screenshots in one click. The difference is what happens after the capture — GoFully adds local OCR, annotation, redaction, and beautify tools free, with no premium tier and no account.
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title="GoFully vs GoFullPage"
+        lede="Both capture full-length webpage screenshots in one click. The difference is what happens after the capture — GoFully adds local OCR, annotation, redaction, and beautify tools free, with no premium tier and no account."
+      />
 
       {/* Timely context — factual and cited */}
-      <div style={{ padding: "0 24px 56px" }}>
-        <BlueprintFrame className="mx-auto bg-white" style={{ maxWidth: 880, padding: "22px 28px" }}>
-          <p style={{ fontSize: "13px", lineHeight: 1.7, color: "rgba(29,31,32,.6)" }}>
-            <strong style={{ color: "var(--gf-color-text)" }}>Note:</strong> GoFullPage&apos;s Chrome Web Store listing was temporarily removed on{" "}
-            <a href="https://blog.gofullpage.com/2026/08/11/gofullpage-chrome-update/" target="_blank" rel="noopener noreferrer" style={{ color: "var(--gf-color-accent)", fontWeight: 600 }}>
+      <div className="gf-sec-plain">
+        <div className="gf-callout gf-callout--neutral gf-narrow">
+          <p>
+            <strong>Note:</strong> GoFullPage&apos;s Chrome Web Store listing was temporarily removed on{" "}
+            <a href="https://blog.gofullpage.com/2026/08/11/gofullpage-chrome-update/" target="_blank" rel="noopener noreferrer">
               August 11, 2026
             </a>
             {" "}over a copyright dispute involving one design element — the developers were explicit that it was{" "}
-            <a href="https://blog.gofullpage.com/2026/08/14/gofullpage-chrome-update-a-progress-report/" target="_blank" rel="noopener noreferrer" style={{ color: "var(--gf-color-accent)", fontWeight: 600 }}>
+            <a href="https://blog.gofullpage.com/2026/08/14/gofullpage-chrome-update-a-progress-report/" target="_blank" rel="noopener noreferrer">
               not a security issue
             </a>
             . It was restored by late August 2026, though GoFullPage&apos;s own homepage still noted a beta-build workaround as of early September. GoFully has always shipped as a single, directly-installable Chrome Web Store listing with no removal history.
           </p>
-        </BlueprintFrame>
+        </div>
       </div>
 
       {/* Comparison table */}
-      <div className="border-t" style={{ padding: "64px 24px 24px", borderColor: "rgba(29,31,32,.08)", background: "rgba(29,31,32,.02)" }}>
-        <div className="mx-auto text-center" style={{ maxWidth: 640, marginBottom: 44 }}>
-          <h2 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(24px, 6vw, 32px)", letterSpacing: "-0.01em" }}>
+      <div className="gf-sec gf-sec--sunken">
+        <div className="gf-sec-head">
+          <h2>
             Feature by feature comparison
           </h2>
         </div>
-        <div className="mx-auto overflow-x-auto" style={{ maxWidth: 880 }}>
-          <table className="w-full bg-white border" style={{ borderColor: "rgba(29,31,32,.12)", borderCollapse: "collapse", fontSize: "13.5px" }}>
+        <div className="gf-table-wrap">
+          <table className="gf-compare">
             <thead>
-              <tr style={{ borderBottom: "1px solid rgba(29,31,32,.12)" }}>
-                <th className="text-left gf-heading-font font-semibold" style={{ padding: "16px 20px", color: "rgba(29,31,32,.5)", fontSize: 11, letterSpacing: "0.04em", textTransform: "uppercase" }}>Feature</th>
-                <th className="text-left gf-heading-font font-semibold" style={{ padding: "16px 20px", color: "var(--gf-color-accent)", fontSize: 11, letterSpacing: "0.04em", textTransform: "uppercase" }}>GoFully</th>
-                <th className="text-left gf-heading-font font-semibold" style={{ padding: "16px 20px", color: "rgba(29,31,32,.5)", fontSize: 11, letterSpacing: "0.04em", textTransform: "uppercase" }}>GoFullPage</th>
+              <tr>
+                <th>Feature</th>
+                <th className="gf-col-us">GoFully</th>
+                <th>GoFullPage</th>
               </tr>
             </thead>
             <tbody>
               {ROWS.map((r, i) => (
-                <tr key={r.feature} style={{ borderBottom: i < ROWS.length - 1 ? "1px solid rgba(29,31,32,.08)" : undefined }}>
-                  <td style={{ padding: "14px 20px", color: "var(--gf-color-text)" }}>{r.feature}</td>
-                  <td style={{ padding: "14px 20px" }}>
-                    <div className="flex items-center gap-2"><Check yes={r.gofullyYes} /><span style={{ color: "rgba(29,31,32,.65)" }}>{r.gofully}</span></div>
+                <tr key={r.feature}>
+                  <td>{r.feature}</td>
+                  <td>
+                    <div className="flex items-center gap-2"><Check yes={r.gofullyYes} /><span>{r.gofully}</span></div>
                   </td>
-                  <td style={{ padding: "14px 20px" }}>
-                    <div className="flex items-center gap-2"><Check yes={r.gofullpageYes} /><span style={{ color: "rgba(29,31,32,.5)" }}>{r.gofullpage}</span></div>
+                  <td>
+                    <div className="flex items-center gap-2"><Check yes={r.gofullpageYes} /><span>{r.gofullpage}</span></div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <p className="mx-auto text-center" style={{ maxWidth: 640, fontSize: 11.5, color: "rgba(29,31,32,.4)", marginTop: 16, padding: "0 24px 40px" }}>
+        <p className="gf-footnote">
           Comparison based on GoFullPage&apos;s public website and Chrome Web Store listing as of September 2026. GoFullPage is a product of Full Page, LLC and is not affiliated with GoFully.
         </p>
       </div>
 
       {/* CTA */}
-      <div className="text-center" style={{ background: "#1d1f20", padding: "64px 24px" }}>
-        <h2 className="gf-heading-font font-semibold" style={{ fontSize: 28, color: "#fff", letterSpacing: "-0.01em" }}>
-          Try GoFully free
-        </h2>
-        <p className="mx-auto" style={{ fontSize: "14.5px", color: "rgba(255,255,255,.55)", maxWidth: 460, marginTop: 12, lineHeight: 1.6 }}>
-          No account, no premium tier, no catch. Every capture mode, OCR, annotation, and export format is included.
-        </p>
-        <a
-          href={CWS_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gf-heading-font font-semibold"
-          style={{ height: 44, padding: "0 24px", background: "var(--gf-color-accent)", color: "#fff", fontSize: 13, letterSpacing: "0.02em", marginTop: 22 }}
-        >
-          Add to Chrome — it&apos;s free
-        </a>
-        <p style={{ marginTop: 18 }}>
-          <Link href="/faq" className="underline" style={{ color: "rgba(255,255,255,.5)", fontSize: 12.5 }}>
-            Have questions? See the FAQ
-          </Link>
-        </p>
-      </div>
+      <CtaBand
+        title="Try GoFully free"
+        sub="No account, no premium tier, no catch. Every capture mode, OCR, annotation, and export format is included."
+      />
 
       <SiteFooterIndustry activeHref="/alternatives/gofullpage" />
     </div>

@@ -1,3 +1,4 @@
+import { icon, type IconName } from "../ui/ds/icons";
 import { applyTheme, watchTheme } from "../utils/theme";
 import { clearGuide, getGuide, saveGuide, MAX_STEPS, type Guide } from "../utils/guide";
 import { buildGuideMarkdown, buildGuidePdf, guideSlug, guideTitle } from "../export/guide-export";
@@ -19,7 +20,7 @@ let guide: Guide = { title: "", steps: [] };
 let toastTimer: number | undefined;
 
 function toast(msg: string): void {
-  toastEl.textContent = msg;
+  toastEl.innerHTML = icon("success", 18); toastEl.append(msg);
   toastEl.classList.add("show");
   window.clearTimeout(toastTimer);
   toastTimer = window.setTimeout(() => toastEl.classList.remove("show"), 2200);
@@ -37,6 +38,10 @@ function render(): void {
   const n = guide.steps.length;
   emptyEl.hidden = n > 0;
   countEl.textContent = n ? `${n} of ${MAX_STEPS} steps` : "";
+  countEl.hidden = n === 0;
+  countEl.classList.toggle("gf-tag--peach", n >= MAX_STEPS);
+  const limit = document.getElementById("limit");
+  if (limit) limit.hidden = n < MAX_STEPS;
   exportPdf.disabled = exportMd.disabled = clearBtn.disabled = n === 0;
   stepsEl.innerHTML = "";
 
@@ -67,6 +72,7 @@ function render(): void {
     img.src = s.img;
     img.alt = s.caption || `Screenshot for step ${i + 1}`;
     body.append(ta, img);
+    img.loading = "lazy";
     if (s.url) {
       const src = document.createElement("div");
       src.className = "src";
@@ -79,8 +85,8 @@ function render(): void {
     const mk = (label: string, text: string, disabled: boolean, cls: string, fn: () => void) => {
       const b = document.createElement("button");
       b.type = "button";
-      b.textContent = text;
-      b.className = cls;
+      b.innerHTML = icon(text as IconName, 16);
+      b.className = ("gf-icon-btn " + cls).trim();
       b.disabled = disabled;
       b.setAttribute("aria-label", label);
       b.title = label;
@@ -88,12 +94,17 @@ function render(): void {
       return b;
     };
     ctl.append(
-      mk("Move up", "↑", i === 0, "", () => move(i, -1)),
-      mk("Move down", "↓", i === guide.steps.length - 1, "", () => move(i, 1)),
-      mk("Delete step", "×", false, "del", () => remove(i))
+      mk("Move up", "chevron-down", i === 0, "up", () => move(i, -1)),
+      mk("Move down", "chevron-down", i === guide.steps.length - 1, "", () => move(i, 1)),
+      mk("Delete step", "close", false, "del", () => remove(i))
     );
 
-    el.append(num, body, ctl);
+    // Figma: Guide / Filled — header (number, source, controls), screenshot, caption.
+    const head = document.createElement("div");
+    head.className = "step-head";
+    const srcEl = body.querySelector(".src") ?? Object.assign(document.createElement("div"), { className: "src" });
+    head.append(num, srcEl, ctl);
+    el.append(head, img, ta);
     stepsEl.appendChild(el);
   });
 }

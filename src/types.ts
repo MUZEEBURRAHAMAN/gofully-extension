@@ -5,7 +5,9 @@ export type CaptureMode =
   | "scrolling-area"
   | "capture-text"
   | "annotate-page"
-  | "capture-element";
+  | "capture-element"
+  | "measure-page"
+  | "redact-page";
 
 export type CaptureMethod = "scroll-stitch" | "visible-tab";
 
@@ -71,6 +73,8 @@ export interface CaptureResult {
   timestamp: number;
   url: string;
   title: string;
+  /** How a full-page capture was stitched, and why (absent for other capture modes). */
+  stitch?: { mode: "standard" | "landing"; reasons: string[] };
 }
 
 export interface CaptureProgress {
@@ -102,7 +106,8 @@ export interface Message {
 }
 
 export interface Settings {
-  defaultAction: "result-bar" | "auto-copy" | "auto-save-png" | "auto-pdf";
+  /** What happens after a quick capture that has no popup to show it. */
+  defaultAction: "result-bar" | "auto-copy" | "auto-save-png" | "auto-pdf" | "open-editor" | "pin";
   pngSaveAs: boolean;
   pdfPageSize: "a4" | "letter";
   pdfWatermark: boolean;
@@ -110,8 +115,11 @@ export interface Settings {
   scrollPadding: number;
   lazyLoadWait: number;
   captureSound: boolean;
-  captureCountdown: 0 | 1 | 2 | 3;
+  /** Seconds the popup's "Capture in" timer waits. 0 is off. */
+  captureCountdown: 0 | 3 | 5 | 10;
   skipStickyHeaders: boolean;
+  /** Full-page method: "auto" uses landing-page mode for pages animated by scripts. */
+  fullPageMode: "auto" | "standard" | "landing";
   defaultExportFormat: "png" | "webp" | "jpg";
   jpgQuality: number;
   editorShortcuts: Record<string, string>;
@@ -134,6 +142,7 @@ export const DEFAULT_SETTINGS: Settings = {
   captureSound: true,
   captureCountdown: 0,
   skipStickyHeaders: true,
+  fullPageMode: "auto",
   defaultExportFormat: "png",
   jpgQuality: 0.92,
   editorShortcuts: {},

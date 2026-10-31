@@ -184,7 +184,7 @@ test.describe("08 - Sticky/Fixed Header De-duplication", () => {
     await page.close();
   });
 
-  test("TC-STICKY-003: Sticky sub-nav is also hidden during capture", async ({
+  test("TC-STICKY-003: A stuck sub-nav is put back in normal flow during capture, then restored", async ({
     context,
     extensionId,
   }) => {
@@ -224,6 +224,7 @@ test.describe("08 - Sticky/Fixed Header De-duplication", () => {
           const childSpan = subnav?.querySelector("span") as HTMLElement;
           return {
             subnavOpacity: subnav ? getComputedStyle(subnav).opacity : "missing",
+            subnavPosition: subnav ? getComputedStyle(subnav).position : "missing",
             childSpanOpacity: childSpan ? getComputedStyle(childSpan).opacity : "missing",
           };
         },
@@ -246,6 +247,7 @@ test.describe("08 - Sticky/Fixed Header De-duplication", () => {
           const subnav = document.querySelector('[data-testid="sticky-subnav"]') as HTMLElement;
           return {
             subnavOpacity: subnav ? getComputedStyle(subnav).opacity : "missing",
+            subnavPosition: subnav ? getComputedStyle(subnav).position : "missing",
           };
         },
       });
@@ -255,10 +257,12 @@ test.describe("08 - Sticky/Fixed Header De-duplication", () => {
 
     expect(result).not.toHaveProperty("error");
     const r = result as any;
-    expect(r.during.subnavOpacity).toBe("0");
-    // Child span's own opacity is "1" but visually invisible inside
-    // the parent's opacity-0 compositing layer — same as TC-001
-    expect(r.during.childSpanOpacity).toBe("1");
+    // A sticky block is page content, so it goes back into the flow (it appears once, in its own place)
+    // instead of being hidden, which would leave a hole. Fixed headers are still hidden (TC-001).
+    expect(r.during.subnavPosition).toBe("relative");
+    expect(r.during.subnavOpacity).toBe("1");
+    // Back to normal afterwards: sticky again, still fully visible.
+    expect(r.after.subnavPosition).toBe("sticky");
     expect(r.after.subnavOpacity).toBe("1");
 
     await popupPage.close();

@@ -32,6 +32,10 @@ test.describe("20 - UI and UX edge cases", () => {
     await page.setViewportSize({ width: 380, height: 700 });
     await page.goto(`chrome-extension://${extensionId}/popup.html`);
     await page.waitForTimeout(500);
+    // Opened as a tab, the popup sees its own extension page as the active tab,
+    // which can't be captured; dismiss that notice to reach the tiles.
+    const dismiss = page.locator("#unsupportedDismissBtn");
+    if (await dismiss.isVisible()) await dismiss.click();
     for (const label of [/full page/i, /visible/i, /selected|region/i, /scrolling/i, /text/i, /element/i, /draw on page/i]) {
       const el = page.getByRole("button", { name: label }).first();
       await expect(el, String(label)).toBeVisible();
@@ -95,7 +99,7 @@ test.describe("20 - UI and UX edge cases", () => {
     await page.goto(`chrome-extension://${extensionId}/help.html`);
     const headers = page.locator(".help-header");
     expect(await headers.count()).toBeGreaterThanOrEqual(15);
-    for (const title of ["Capture Element", "Draw on Page", "Beautify", "Step-by-Step Guide", "Pin a Capture", "Find an Old Capture"]) {
+    for (const title of ["Capture one element", "Draw on Page", "Beautify", "step-by-step guide", "Pin a capture", "Find an old capture"]) {
       await expect(page.locator(".help-title", { hasText: title }).first(), title).toHaveCount(1);
     }
     const h = headers.nth(5);
@@ -134,7 +138,7 @@ test.describe("20 - UI and UX edge cases", () => {
     await search.fill("zzzzqqq");
     await page.waitForTimeout(300);
     const none = await page.locator("#historyView, body").first().innerText();
-    expect(none).toMatch(/no (captures|results|match)/i);
+    expect(none).toMatch(/nothing matches|no captures/i);
     await search.fill("invoice");
     await page.waitForTimeout(300);
     expect(await page.locator(".hist-item, .history-item, [data-history-id]").count()).toBeGreaterThanOrEqual(1);

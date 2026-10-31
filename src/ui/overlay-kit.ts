@@ -12,57 +12,69 @@
  * shape and colour vary per platform and cannot inherit weight or hue.
  */
 
-/** Distinct family name — a page may ship its own "Archivo" at another weight. */
-export const FONT_FAMILY =
-  `'GoFully Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif`;
+import { LIGHT, DARK, SHADOW, RADIUS, FONT_SANS, type Role } from "./ds/tokens";
+import { icon } from "./ds/icons";
 
+/** Inter ships with the extension under a distinct family name, so a page's own "Inter" can't override weights. */
+export const FONT_FAMILY = FONT_SANS;
+
+/** "#RRGGBB" → "rgba(r, g, b, a)" for translucent tints built from a token. */
+export function alpha(hex: string, a: number): string {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`; // ds-lint-allow: alpha of a token
+}
+
+/**
+ * Overlay colours, mapped from the GoFully DS v2 roles (src/ui/ds/tokens.ts).
+ * Mutable on purpose: applyOverlayTheme() swaps in the dark palette when the
+ * user picked dark (or the system is dark), before any panel is built.
+ */
 export const T = {
-  surface: "#FFFFFF",
-  surfaceAlt: "#F7F8FA",
-  surfaceSunken: "#F1F3F7",
+  surface: "", surfaceAlt: "", surfaceSunken: "",
+  border: "", borderStrong: "",
+  text: "", textMuted: "", textFaint: "",
+  accent: "", accentHover: "", accentBg: "", accentBorder: "", onAccent: "", focus: "",
+  success: "", successBg: "", successBorder: "",
+  danger: "", dangerHover: "", dangerBg: "", dangerBorder: "",
+  warn: "", warnBg: "", warnBorder: "",
+  /** Dim outside a selection, from the ink token. Fixed in both themes: it sits over the page, not our UI. */
+  shade: alpha(LIGHT.ink, 0.4),
+  shadow: SHADOW.sm,
+  shadowLg: SHADOW.lg,
+  radius: `${RADIUS.md}px`,
+  radiusLg: `${RADIUS.lg}px`,
+  radiusPill: `${RADIUS.pill}px`,
+};
 
-  border: "#E3E8EF",
-  borderStrong: "#C8D0D9",
+function fill(p: Record<Role, string>): void {
+  Object.assign(T, {
+    surface: p["bg-surface"], surfaceAlt: p["bg-hover"], surfaceSunken: p["bg-sunken"],
+    border: p["border"], borderStrong: p["border-strong"],
+    text: p["text"], textMuted: p["text-2"], textFaint: p["text-3"],
+    accent: p["brand"], accentHover: p["brand-hover"], accentBg: p["accent-tint"], accentBorder: p["accent"], onAccent: p["on-brand"], focus: p["focus"],
+    success: p["success"], successBg: p["success-bg"], successBorder: p["success"],
+    danger: p["error"], dangerHover: p["error-hover"], dangerBg: p["error-bg"], dangerBorder: p["error"],
+    warn: p["warning"], warnBg: p["warning-bg"], warnBorder: p["warning"],
+  });
+}
+fill(LIGHT);
 
-  text: "#101828",
-  textMuted: "#475467",
-  textFaint: "#667085",
-
-  accent: "#1667F2",
-  accentHover: "#1257D8",
-  accentBg: "#EDF1FE",
-  accentBorder: "#BDD0FB",
-
-  success: "#027A48",
-  successBg: "#ECFDF3",
-  successBorder: "#A6F4C5",
-
-  danger: "#B42318",
-  dangerBg: "#FEF3F2",
-  dangerBorder: "#FECDCA",
-
-  warn: "#B54708",
-  warnBg: "#FFFAEB",
-  warnBorder: "#FEDF89",
-
-  /** Dim applied outside a selection. Kept light so the page stays readable. */
-  shade: "rgba(16, 24, 40, 0.28)",
-
-  shadow: "0 4px 6px -2px rgba(22,103,242,0.04), 0 12px 16px -4px rgba(22,103,242,0.10)",
-  shadowLg: "0 8px 10px -4px rgba(22,103,242,0.05), 0 24px 32px -6px rgba(22,103,242,0.14)",
-
-  /** Soft, rounded, blue/white — the same language as the popup and settings
-   *  pages, not a separate "technical tool" style. Panels round generously;
-   *  buttons round enough to read as pill-ish without becoming full pills
-   *  (a true pill reads oddly on a multi-line/icon+label button). */
-  radius: "0",
-  radiusLg: "0",
-} as const;
+/** Read the user's theme (Settings › Appearance) and switch the overlay palette. */
+export async function applyOverlayTheme(): Promise<boolean> {
+  let theme = "system";
+  try {
+    const { settings } = await chrome.storage.sync.get("settings");
+    theme = (settings as { theme?: string } | undefined)?.theme ?? "system";
+  } catch { /* no extension context */ }
+  const dark = theme === "dark" || (theme === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+  fill(dark ? DARK : LIGHT);
+  return dark;
+}
 
 const FONT_STYLE_ID = "gofully-font";
 
 /**
- * Register Archivo for injected UI. The face ships with the extension, so it
+ * Register Inter for injected UI. The face ships with the extension, so it
  * resolves with no network request and survives pages whose CSP forbids remote
  * fonts. Safe to call repeatedly.
  */
@@ -70,7 +82,7 @@ export function injectOverlayFont(): void {
   if (document.getElementById(FONT_STYLE_ID)) return;
   let src: string;
   try {
-    src = chrome.runtime.getURL("assets/Archivo.woff2");
+    src = chrome.runtime.getURL("assets/inter-latin-wght-normal.woff2");
   } catch {
     return; // No extension context (e.g. unit test) — fall back to the stack.
   }
@@ -78,7 +90,7 @@ export function injectOverlayFont(): void {
   style.id = FONT_STYLE_ID;
   style.textContent = `
     @font-face {
-      font-family: 'GoFully Archivo';
+      font-family: 'GoFully Inter';
       src: url('${src}') format('woff2-variations'),
            url('${src}') format('woff2');
       font-weight: 100 900;
@@ -86,7 +98,9 @@ export function injectOverlayFont(): void {
       font-display: swap;
     }
     @keyframes gf-pulse { 0%,100% { opacity: 1 } 50% { opacity: .3 } }
-    @keyframes gf-in { from { opacity: 0; transform: translateY(4px) } to { opacity: 1; transform: none } }
+    @keyframes gf-in { from { opacity: 0; transform: translateY(6px) scale(.98) } to { opacity: 1; transform: none } }
+    @keyframes gf-spin { to { transform: rotate(360deg) } }
+    @media (prefers-reduced-motion: reduce) { @keyframes gf-in { from { opacity: 0 } to { opacity: 1 } } }
   `;
   (document.head || document.documentElement).appendChild(style);
 }
@@ -95,46 +109,38 @@ export function removeOverlayFont(): void {
   document.getElementById(FONT_STYLE_ID)?.remove();
 }
 
-// ─── Icons ────────────────────────────────────────────────────────────────────
+// ─── Icons (Hugeicons, same set as Figma Icon/*) ─────────────────────────────
 
-function svg(body: string, size = 14, width = 1.75): string {
-  return (
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="${size}" height="${size}" ` +
-    `fill="none" stroke="currentColor" stroke-width="${width}" stroke-linecap="round" ` +
-    `stroke-linejoin="round" style="display:block;flex-shrink:0" aria-hidden="true">${body}</svg>`
-  );
-}
+const glyph = (name: Parameters<typeof icon>[0]) => (s = 14) =>
+  icon(name, s).replace("<svg ", '<svg style="display:block;flex-shrink:0" ');
 
 export const Icon = {
-  play: (s = 14) => svg(`<polygon points="6 3 20 12 6 21 6 3" fill="currentColor" stroke="none"/>`, s),
-  /** Manual mode. A mouse reads unambiguously at 13px, where a hand silhouette
-   *  collapses into a blob and gets mistaken for the lock glyph. */
-  mouse: (s = 14) => svg(`<rect x="6" y="3" width="12" height="18" rx="6"/><path d="M12 7v3"/>`, s),
-  check: (s = 14) => svg(`<polyline points="20 6 9 17 4 12"/>`, s, 2.25),
-  x: (s = 14) => svg(`<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>`, s, 2),
-  stop: (s = 14) => svg(`<rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor" stroke="none"/>`, s),
-  warning: (s = 14) =>
-    svg(`<path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/>`, s),
-  crop: (s = 14) => svg(`<path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/>`, s),
-  scroll: (s = 14) =>
-    svg(`<path d="M12 5v14"/><polyline points="7 14 12 19 17 14"/><polyline points="17 10 12 5 7 10"/>`, s),
-  lock: (s = 14) =>
-    svg(`<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>`, s),
-  unlock: (s = 14) =>
-    svg(`<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.5-2"/>`, s),
+  play: glyph("play"),
+  mouse: glyph("mouse"),
+  check: glyph("check"),
+  x: glyph("close"),
+  stop: glyph("stop"),
+  warning: glyph("alert"),
+  crop: glyph("region"),
+  scroll: glyph("scrolling"),
+  lock: glyph("lock"),
+  unlock: glyph("lock"),
+  loader: glyph("loader"),
 } as const;
 
 // ─── Primitives ───────────────────────────────────────────────────────────────
 
 export type ButtonTone = "primary" | "neutral" | "success" | "danger" | "ghost";
 
-const TONES: Record<ButtonTone, { bg: string; fg: string; border: string; hover: string }> = {
-  primary: { bg: T.accent, fg: "#FFFFFF", border: T.accent, hover: T.accentHover },
-  success: { bg: T.success, fg: "#FFFFFF", border: T.success, hover: "#026A3E" },
-  danger: { bg: T.danger, fg: "#FFFFFF", border: T.danger, hover: "#9A1D14" },
-  neutral: { bg: T.surface, fg: T.text, border: T.border, hover: T.surfaceAlt },
-  ghost: { bg: "transparent", fg: T.textFaint, border: "transparent", hover: T.surfaceAlt },
-};
+// Read at call time so the theme chosen by applyOverlayTheme() applies.
+// "success" renders as the primary action: the Figma panels use one brand action per panel.
+const tones = (): Record<ButtonTone, { bg: string; fg: string; border: string; hover: string }> => ({
+  primary: { bg: T.accent, fg: T.onAccent, border: T.accent, hover: T.accentHover },
+  success: { bg: T.accent, fg: T.onAccent, border: T.accent, hover: T.accentHover },
+  danger: { bg: T.danger, fg: T.surface, border: T.danger, hover: T.dangerHover },
+  neutral: { bg: T.surface, fg: T.text, border: T.borderStrong, hover: T.surfaceAlt },
+  ghost: { bg: "transparent", fg: T.textMuted, border: "transparent", hover: T.surfaceAlt },
+});
 
 /** A button whose icon inherits the label colour, so tone changes stay in sync. */
 export function makeButton(opts: {
@@ -146,7 +152,7 @@ export function makeButton(opts: {
   block?: boolean;
   small?: boolean;
 }): HTMLButtonElement {
-  const tone = TONES[opts.tone ?? "neutral"];
+  const tone = tones()[opts.tone ?? "neutral"];
   const b = document.createElement("button");
   b.type = "button";
   if (opts.title) b.title = opts.title;
@@ -160,14 +166,16 @@ export function makeButton(opts: {
     background: tone.bg,
     color: tone.fg,
     border: `1px solid ${tone.border}`,
-    borderRadius: "0",
-    padding: opts.small ? "6px 10px" : "8px 14px",
-    font: `700 ${opts.small ? "11px" : "12px"}/1 ${FONT_FAMILY}`,
-    letterSpacing: "-0.005em",
+    borderRadius: T.radiusPill,
+    height: opts.small ? "28px" : "36px",
+    padding: opts.small ? "0 10px" : "0 14px",
+    font: `500 ${opts.small ? "12px" : "14px"}/1 ${FONT_FAMILY}`,
+    letterSpacing: "0",
     cursor: "pointer",
     width: opts.block ? "100%" : "auto",
     flexShrink: "0",
-    transition: "background .14s ease, border-color .14s ease",
+    transition: "background .15s ease, border-color .15s ease, box-shadow .15s ease",
+    outline: "none",
     boxSizing: "border-box",
     textAlign: "center",
   } as CSSStyleDeclaration);
@@ -181,6 +189,8 @@ export function makeButton(opts: {
 
   b.addEventListener("mouseenter", () => (b.style.background = tone.hover));
   b.addEventListener("mouseleave", () => (b.style.background = tone.bg));
+  b.addEventListener("focus", () => { if (b.matches(":focus-visible")) b.style.boxShadow = `0 0 0 3px ${T.focus}`; });
+  b.addEventListener("blur", () => (b.style.boxShadow = "none"));
   b.addEventListener("click", (e) => {
     e.stopPropagation();
     e.preventDefault();

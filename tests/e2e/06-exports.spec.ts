@@ -189,6 +189,9 @@ test.describe("06 - Export Engines Suite (PNG, PDF, Clipboard)", () => {
     const annotCheckbox = page.locator("#annot-toggle-check");
     await expect(annotCheckbox).toBeChecked();
     await page.locator("#save-btn").click();
+    // With marks on the canvas, Save first asks whether to keep them.
+    await expect(page.locator("#annotDialog")).toBeVisible();
+    await page.locator("#annotDialogInclude").click();
     await expect(page.locator(".toast")).toContainText("PNG saved", { timeout: 10000 });
 
     const sizeWithAnnotations: number = await page.evaluate(() => {

@@ -1,7 +1,7 @@
 import { test, expect } from "../fixtures/extension";
 
 test.describe("11 - Keyboard Shortcuts & Debounce Engine", () => {
-  test("TC-SHORTCUT-001: In-page Cmd/Ctrl+Shift+V captures visible area and shows quick toast", async ({
+  test("TC-SHORTCUT-001: In-page Cmd/Ctrl+Shift+V captures visible area and shows the capture card", async ({
     context,
   }) => {
     const page = await context.newPage();
@@ -11,9 +11,8 @@ test.describe("11 - Keyboard Shortcuts & Debounce Engine", () => {
     // Press Cmd/Ctrl+Shift+V directly on the webpage
     await page.keyboard.press("Control+Shift+V");
 
-    // Quick toast should appear on the webpage with capture confirmation
-    const toast = page.locator("#gofully-quick-toast, .toast");
-    await expect(toast.first()).toBeVisible({ timeout: 10000 });
+    // With the default "After a capture" setting, the capture card appears on the page
+    await expect(page.locator("#gofully-result-card-host")).toBeAttached({ timeout: 10000 });
 
     await page.close();
   });

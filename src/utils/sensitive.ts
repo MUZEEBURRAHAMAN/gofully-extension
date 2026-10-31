@@ -82,11 +82,34 @@ const RULES: Rule[] = [
   },
 ];
 
+export interface SensitiveRange { kind: SensitiveKind; start: number; end: number }
+
 /**
- * Words are joined per line with single spaces; matches are mapped back to the
- * words they cover. A character range claimed by an earlier (more specific)
- * rule is not claimed again, so a card number is never also reported as a phone.
+ * Character ranges of sensitive text in one string. A range claimed by an earlier
+ * (more specific) rule is not claimed again, so a card number is never also
+ * reported as a phone. Used on OCR lines and on live page text.
  */
+export function findSensitiveRanges(text: string, kinds: SensitiveKind[] = ALL_KINDS): SensitiveRange[] {
+  const out: SensitiveRange[] = [];
+  const claimed: boolean[] = new Array(text.length).fill(false);
+  for (const rule of RULES) {
+    if (!kinds.includes(rule.kind)) continue;
+    rule.re.lastIndex = 0;
+    let m: RegExpExecArray | null;
+    while ((m = rule.re.exec(text))) {
+      const start = m.index;
+      const end = start + m[0].length;
+      if (m[0].length === 0) { rule.re.lastIndex++; continue; }
+      if (claimed.slice(start, end).some(Boolean)) continue;
+      if (rule.accept && !rule.accept(m[0])) continue;
+      for (let k = start; k < end; k++) claimed[k] = true;
+      out.push({ kind: rule.kind, start, end });
+    }
+  }
+  return out.sort((x, y) => x.start - y.start);
+}
+
+/** Words are joined per line with single spaces; matches are mapped back to the words they cover. */
 export function findSensitive(words: OcrWord[], kinds: SensitiveKind[] = ALL_KINDS): SensitiveHit[] {
   const hits: SensitiveHit[] = [];
   const byLine = new Map<number, number[]>();
@@ -106,23 +129,9 @@ export function findSensitive(words: OcrWord[], kinds: SensitiveKind[] = ALL_KIN
       text += words[wi].text.trim();
       spans.push({ start, end: text.length, wi });
     }
-    const claimed: boolean[] = new Array(text.length).fill(false);
-
-    for (const rule of RULES) {
-      if (!kinds.includes(rule.kind)) continue;
-      rule.re.lastIndex = 0;
-      let m: RegExpExecArray | null;
-      while ((m = rule.re.exec(text))) {
-        const start = m.index;
-        const end = start + m[0].length;
-        if (m[0].length === 0) { rule.re.lastIndex++; continue; }
-        if (claimed.slice(start, end).some(Boolean)) continue;
-        if (rule.accept && !rule.accept(m[0])) continue;
-        const covered = spans.filter((s) => s.start < end && s.end > start).map((s) => s.wi);
-        if (!covered.length) continue;
-        for (let k = start; k < end; k++) claimed[k] = true;
-        hits.push({ kind: rule.kind, words: covered });
-      }
+    for (const r of findSensitiveRanges(text, kinds)) {
+      const covered = spans.filter((s) => s.start < r.end && s.end > r.start).map((s) => s.wi);
+      if (covered.length) hits.push({ kind: r.kind, words: covered });
     }
   }
   return hits;

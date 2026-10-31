@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GoFully v1.2 fixture</title>
+<style>
+  body { margin: 0; font: 16px/1.5 Arial, sans-serif; background: #ffffff; color: #111111; }
+  .wrap { padding: 24px 40px; }
+  #qr { display: block; width: 264px; height: 264px; image-rendering: pixelated; }
+  #private p { margin: 6px 0; }
+  #box { position: absolute; left: 400px; top: 40px; width: 120px; height: 80px; padding: 20px; margin: 30px; background: #00a0ff; }
+  #box2 { position: absolute; left: 650px; top: 70px; width: 100px; height: 100px; background: #ff8800; }
+  .menu { position: absolute; left: 400px; top: 300px; }
+  .menu button { width: 160px; height: 40px; font: inherit; }
+  .dropdown { display: none; position: absolute; top: 40px; left: 0; width: 220px; height: 140px; background: #dd00ff; }
+  .menu:hover .dropdown { display: block; }
+  .tall { height: 2400px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <img id="qr" alt="QR code" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASgAAAEoAQAAAADDfFG0AAABv0lEQVR4nO1a0Y7DMAiL0f7/lzlhIO1Ou24vV5gE27q084NlgUOSQdcHIZ+A1qAyBpUxqIxB/QfqYRf4WLGUN3vAp43ZS41ei6aPpTCxODg9bcxeqlAwpRY0cgsumD/tz/72/IqgSpZf38JeavVa2YypZVopL+mtl/IaNk8bO542Zi9FeiHuFPZiYeJcl13Zy+0oPBceohSnHq9QYCqxmbDsQjQUNpx+4jk8m5ab1f6OmnQ3a8xeavxLqRClY7fKHj++Jr9e1CM8qdTK0RVjXZpm2p59AUo9x2xo5uUqUa7xr9f1uE7rxnQ0Zl1r9lKDQrq95RanSPev3bK2Zl/Sf8EXQf7+9Vtf9lK1HsKuwWhac2Z00bqyl9tRcJPXnWfej2VNeqW2ZS9l+6uaK8foULNxnfnxnX+tPdzKtWUvdeshZRH6juHRSESddmUvt6Nw3oiAl1/k2M60vuyl9nxoufGHjXl/X8RLvuN8SO2zNdtSdmUvhf2XHieQWyno9PdX5x3wZRDP1WIfcfz+bxS4cR8TJZ1/+q+r8yHlJWdF7oBNPV6cDyHarzCzsLDG7OV2FOb/chGDyhhUxqAyuqJ+ADHwrGaUqejUAAAAAElFTkSuQmCC">
+  <section id="private">
+    <p>Contact: <span id="email">maya.okafor@example.com</span></p>
+    <p>Card: <span id="card">4242 4242 4242 4242</span></p>
+    <p>Phone: <span id="phone">+1 415 555 0134</span></p>
+    <p>Key: <span id="key">eyJhbGciOiJub25lIn0.eyJkZW1vIjoiZ29mdWxseSJ9.ZGVtby1zaWc</span></p>
+    <p id="safe">Plain words with nothing private in them.</p>
+    <input id="field" value="billing@example.com" style="width:260px">
+  </section>
+  <div id="box"></div>
+  <div id="box2"></div>
+  <div class="menu"><button type="button">Hover me</button><div class="dropdown" id="dropdown"></div></div>
+  <div class="tall"></div>
+  <p id="late-slot"></p>
+</div>
+<script>
+  // Content that arrives after load, like a lazy section.
+  setTimeout(() => { document.getElementById("late-slot").textContent = "Late: late.person@example.org"; }, 1500);
+</script>
+</body>
+</html>

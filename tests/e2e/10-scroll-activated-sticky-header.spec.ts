@@ -1,4 +1,5 @@
 import { test, expect } from "../fixtures/extension";
+import { matchViewportToWindow } from "../fixtures/viewport";
 
 // Reproduces the bug report: on some real sites the header only becomes
 // position:fixed after the page has scrolled past a threshold (the common
@@ -20,6 +21,8 @@ test.describe("09 - Scroll-Activated Sticky Header De-duplication", () => {
     const popupPage = await context.newPage();
     await popupPage.goto(`chrome-extension://${extensionId}/popup.html`);
     await popupPage.waitForLoadState("domcontentloaded");
+    // Tile boundaries sit at multiples of the viewport height; make the test browser's viewport match the tab.
+    const tileHeight = await matchViewportToWindow(page, popupPage, "http://localhost:8085/test-page-scroll-activated-header.html");
 
     const result = await popupPage.evaluate(async () => {
       const [targetTab] = await chrome.tabs.query({
@@ -45,7 +48,7 @@ test.describe("09 - Scroll-Activated Sticky Header De-duplication", () => {
     // 08-sticky-header-fix.spec.ts: the header is dark (#1e293b) and content
     // sections are light. If the header repeats, dark pixels appear at
     // viewport-height intervals down the stitched image.
-    const pixelCheck = await popupPage.evaluate(async (dataUrl: string) => {
+    const pixelCheck = await popupPage.evaluate(async ({ dataUrl, tileHeight }: { dataUrl: string; tileHeight: number }) => {
       const img = new Image();
       await new Promise<void>((resolve, reject) => {
         img.onload = () => resolve();
@@ -59,7 +62,7 @@ test.describe("09 - Scroll-Activated Sticky Header De-duplication", () => {
       const ctx = canvas.getContext("2d")!;
       ctx.drawImage(img, 0, 0);
 
-      const vpHeight = window.innerHeight || 600;
+      const vpHeight = tileHeight;
       const samples: { y: number; r: number; g: number; b: number; isDark: boolean }[] = [];
 
       for (let mult = 1; mult <= 3; mult++) {
@@ -76,7 +79,7 @@ test.describe("09 - Scroll-Activated Sticky Header De-duplication", () => {
       }
 
       return { imageHeight: img.height, imageWidth: img.width, samples };
-    }, result.payload.dataUrl);
+    }, { dataUrl: result.payload.dataUrl as string, tileHeight });
 
     for (const sample of pixelCheck.samples) {
       expect(

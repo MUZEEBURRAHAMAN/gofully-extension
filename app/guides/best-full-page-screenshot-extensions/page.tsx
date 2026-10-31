@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
-import { BlueprintFrame } from "@/components/blueprint-frame";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { RelatedGuides } from "@/components/related-guides";
+import { PageHeader, CtaBand } from "@/components/site/content";
+import { serializeJsonLd } from "@/components/json-ld";
 
 const CWS_URL =
   "https://chromewebstore.google.com/detail/gofully-full-page-screens/akfbmhmdlbmljklgajkgoekobofhhofc";
@@ -64,8 +65,8 @@ const itemListJsonLd = {
 
 function Pro({ children }: { children: React.ReactNode }) {
   return (
-    <li className="flex gap-2 text-[13px] leading-[1.55]" style={{ color: "rgba(29,31,32,.7)" }}>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gf-color-accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 mt-[3px]"><path d="M20 6 9 17l-5-5" /></svg>
+    <li>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="gf-yes"><path d="M20 6 9 17l-5-5" /></svg>
       <span>{children}</span>
     </li>
   );
@@ -73,8 +74,8 @@ function Pro({ children }: { children: React.ReactNode }) {
 
 function Con({ children }: { children: React.ReactNode }) {
   return (
-    <li className="flex gap-2 text-[13px] leading-[1.55]" style={{ color: "rgba(29,31,32,.5)" }}>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(29,31,32,.35)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 mt-[3px]"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+    <li>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="gf-no"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
       <span>{children}</span>
     </li>
   );
@@ -100,50 +101,34 @@ function ToolCard({
   highlight?: boolean;
 }) {
   return (
-    <BlueprintFrame
-      className="bg-white p-6 md:p-8"
-      style={highlight ? { borderColor: "var(--gf-color-accent)", borderWidth: 1.5 } : undefined}
-    >
-      <div className="flex items-start justify-between gap-4 mb-3">
-        <div className="flex items-center gap-3">
-          <span
-            className="gf-heading-font font-semibold flex items-center justify-center flex-shrink-0"
-            style={{ width: 30, height: 30, background: highlight ? "var(--gf-color-accent)" : "rgba(29,31,32,.06)", color: highlight ? "#fff" : "rgba(29,31,32,.5)", fontSize: 14 }}
-          >
-            {rank}
-          </span>
-          <h2 className="gf-heading-font font-semibold" style={{ fontSize: 20 }}>{name}</h2>
-        </div>
-        {highlight && (
-          <span className="inline-block border gf-heading-font font-semibold uppercase" style={{ borderColor: "rgba(22,103,242,.25)", background: "rgba(22,103,242,.06)", color: "var(--gf-color-accent)", fontSize: 10, letterSpacing: "0.05em", padding: "4px 10px" }}>
-            Our pick
-          </span>
-        )}
+    <article className={`gf-tool${highlight ? " gf-tool--pick" : ""}`}>
+      <header className="gf-tool-head">
+        <span className="gf-tool-rank">{rank}</span>
+        <h2>{name}</h2>
+        {highlight && <span className="gf-badge gf-badge--blue">Our pick</span>}
+      </header>
+      <p className="gf-small">{tagline}</p>
+      <div className="gf-tool-cols">
+        <ul className="gf-checks" aria-label="Strengths">{pros.map((p) => <Pro key={p}>{p}</Pro>)}</ul>
+        <ul className="gf-checks" aria-label="Weaknesses">{cons.map((c) => <Con key={c}>{c}</Con>)}</ul>
       </div>
-      <p style={{ fontSize: "13.5px", lineHeight: 1.6, color: "rgba(29,31,32,.6)", marginBottom: 18 }}>{tagline}</p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <ul className="flex flex-col gap-1.5">{pros.map((p) => <Pro key={p}>{p}</Pro>)}</ul>
-        <ul className="flex flex-col gap-1.5">{cons.map((c) => <Con key={c}>{c}</Con>)}</ul>
-      </div>
-      <div className="mt-5 pt-4 border-t" style={{ borderColor: "rgba(29,31,32,.08)" }}>
-        <Link href={link} target={link.startsWith("http") ? "_blank" : undefined} rel={link.startsWith("http") ? "noopener noreferrer" : undefined} className="inline-flex items-center gap-1.5 gf-heading-font font-semibold text-[13px] hover:underline" style={{ color: "var(--gf-color-accent)" }}>
-          {linkLabel} →
-        </Link>
-      </div>
-    </BlueprintFrame>
+      <Link href={link} target={link.startsWith("http") ? "_blank" : undefined} rel={link.startsWith("http") ? "noopener noreferrer" : undefined} className="gf-link-arrow gf-tool-link">
+        {linkLabel} <span className="gf-arrow" aria-hidden="true">→</span>
+      </Link>
+    </article>
   );
 }
 
 export default function BestFullPageScreenshotExtensionsPage() {
   return (
     <div className="gf-industry min-h-screen">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(articleJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(itemListJsonLd) }} />
       <SiteNav />
 
       {/* Breadcrumbs */}
-      <div style={{ padding: "36px 24px 0" }}>
-        <div className="mx-auto" style={{ maxWidth: 840 }}>
+      <div className="gf-crumbs">
+        <div>
           <Breadcrumbs
             items={[
               { label: "Guides", href: "/guides" },
@@ -154,36 +139,24 @@ export default function BestFullPageScreenshotExtensionsPage() {
       </div>
 
       {/* Header */}
-      <div className="text-center" style={{ padding: "40px 24px 44px" }}>
-        <div className="mx-auto" style={{ maxWidth: 780 }}>
-          <h1 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(28px, 6vw, 46px)", lineHeight: 1.15, letterSpacing: "-0.01em", marginTop: 12 }}>
-            Best Full Page Screenshot Extensions for Chrome
-          </h1>
-          <p className="mx-auto" style={{ fontSize: "16px", lineHeight: 1.65, color: "rgba(29,31,32,.6)", maxWidth: 640, marginTop: 18 }}>
-            Five extensions compared on what actually matters: capture modes, whether OCR exists at all, what&apos;s free versus paywalled, and what happens to your screenshot after you take it.
-          </p>
-          <div className="flex items-center justify-center gap-4 text-[12px] text-neutral-400 mt-6">
-            <span>By GoFully Engineering</span>
-            <span>·</span>
-            <span>Updated September 2026</span>
-            <span>·</span>
-            <span>6 min read</span>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        title="Best Full Page Screenshot Extensions for Chrome"
+        lede="Five extensions compared on what actually matters: capture modes, whether OCR exists at all, what’s free versus paywalled, and what happens to your screenshot after you take it."
+        meta={["By GoFully Engineering", "Updated September 2026", "6 min read"]}
+      />
 
       {/* Disclosure */}
-      <div style={{ padding: "0 24px 40px" }}>
-        <div className="mx-auto" style={{ maxWidth: 840 }}>
-          <div className="bg-blue-50/70 border border-blue-200/80 p-4" style={{ fontSize: "12.5px", lineHeight: 1.6, color: "rgba(29,31,32,.6)" }}>
-            <strong style={{ color: "#1d1f20" }}>Disclosure:</strong> we make GoFully, so take our #1 ranking with that in mind. Every claim below about the other four tools is sourced from their own public websites and Chrome Web Store listings as of September 2026, with dedicated fact-checked comparisons linked for each one — check those against the live product yourself before deciding.
+      <div className="gf-sec-plain gf-sec-plain--sm">
+        <div className="gf-narrow">
+          <div className="gf-callout gf-callout--neutral">
+            <p><strong>Disclosure:</strong> we make GoFully, so take our #1 ranking with that in mind. Every claim below about the other four tools is sourced from their own public websites and Chrome Web Store listings as of September 2026, with dedicated fact-checked comparisons linked for each one — check those against the live product yourself before deciding.</p>
           </div>
         </div>
       </div>
 
       {/* Tool cards */}
-      <div style={{ padding: "0 24px 60px" }}>
-        <div className="mx-auto flex flex-col gap-6" style={{ maxWidth: 840 }}>
+      <div className="gf-sec-plain">
+        <div className="gf-narrow gf-tool-list">
           <ToolCard
             rank={1}
             name="GoFully"
@@ -242,12 +215,12 @@ export default function BestFullPageScreenshotExtensionsPage() {
       </div>
 
       {/* Quick answer */}
-      <div className="border-t" style={{ padding: "56px 24px", borderColor: "rgba(29,31,32,.08)", background: "rgba(29,31,32,.02)" }}>
-        <div className="mx-auto" style={{ maxWidth: 840 }}>
-          <h2 className="gf-heading-font font-semibold" style={{ fontSize: 22, marginBottom: 16 }}>
+      <div className="gf-sec gf-sec--sunken">
+        <div className="gf-narrow gf-quick">
+          <h2>
             Quick answer, by what you need
           </h2>
-          <ul className="flex flex-col gap-2.5">
+          <ul className="gf-list">
             <Bullet><strong>Need OCR / text extraction?</strong> Only GoFully offers this, free and on-device. None of the other four have it at any price.</Bullet>
             <Bullet><strong>Want to never create an account?</strong> GoFully and GoFullPage&apos;s core capture both work with zero sign-up; Awesome Screenshot and Nimbus push accounts early.</Bullet>
             <Bullet><strong>Editing sensitive screenshots for compliance or legal use?</strong> GoFully&apos;s free built-in redaction is the only option that&apos;s both free and doesn&apos;t require a paid tier.</Bullet>
@@ -259,23 +232,10 @@ export default function BestFullPageScreenshotExtensionsPage() {
       <RelatedGuides currentSlug="best-full-page-screenshot-extensions" />
 
       {/* CTA */}
-      <div className="text-center" style={{ background: "#1d1f20", padding: "64px 24px" }}>
-        <h2 className="gf-heading-font font-semibold" style={{ fontSize: 28, color: "#fff", letterSpacing: "-0.01em" }}>
-          Try the free option first
-        </h2>
-        <p className="mx-auto" style={{ fontSize: "14.5px", color: "rgba(255,255,255,.55)", maxWidth: 460, marginTop: 12, lineHeight: 1.6 }}>
-          No account, no premium tier — every feature above is included from install.
-        </p>
-        <a
-          href={CWS_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gf-heading-font font-semibold"
-          style={{ height: 44, padding: "0 24px", background: "var(--gf-color-accent)", color: "#fff", fontSize: 13, letterSpacing: "0.02em", marginTop: 22 }}
-        >
-          Add GoFully to Chrome — It&apos;s Free
-        </a>
-      </div>
+      <CtaBand
+        title="Try the free option first"
+        sub="No account, no premium tier — every feature above is included from install."
+      />
 
       <SiteFooterIndustry activeHref="/guides" />
     </div>
@@ -284,9 +244,6 @@ export default function BestFullPageScreenshotExtensionsPage() {
 
 function Bullet({ children }: { children: React.ReactNode }) {
   return (
-    <li className="flex gap-3 text-[13.5px] leading-[1.6]" style={{ color: "rgba(29,31,32,.65)" }}>
-      <span className="mt-[8px] h-[5px] w-[5px] flex-shrink-0" style={{ background: "var(--gf-color-accent)" }} />
-      <span>{children}</span>
-    </li>
+    <li>{children}</li>
   );
 }

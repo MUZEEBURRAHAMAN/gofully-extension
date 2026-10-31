@@ -23,12 +23,22 @@ export async function hideProgressInTab(tabId: number): Promise<void> {
     target: { tabId },
     func: () => {
       return new Promise<void>((resolve) => {
-        const el = document.getElementById("gofully-progress-overlay");
-        if (!el) {
+        // GoFully's own on-page UI never belongs in a photo: the progress badge, the capture
+        // stack, toasts, notices and the delay countdown. Marked so unsuppress can bring them back.
+        // (Draw on Page marks, measurements, redaction covers and pinned images are content, so they stay.)
+        const ids = ["gofully-progress-overlay", "gofully-result-card-host", "gofully-quick-toast", "gofully-inline-notice", "gofully-countdown", "gofully-rate-nudge-host", "gofully-measure-bar", "gofully-live-redact"];
+        let hid = false;
+        for (const id of ids) {
+          const el = document.getElementById(id);
+          if (!el) continue;
+          if (id !== "gofully-progress-overlay") el.setAttribute("data-gf-shutter-hidden", el.style.getPropertyValue("visibility"));
+          el.style.setProperty(id === "gofully-progress-overlay" ? "display" : "visibility", id === "gofully-progress-overlay" ? "none" : "hidden", "important");
+          hid = true;
+        }
+        if (!hid) {
           resolve();
           return;
         }
-        el.style.setProperty("display", "none", "important");
         requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
       });
     },
@@ -69,6 +79,12 @@ export async function unsuppressProgressInTab(tabId: number): Promise<void> {
     func: () => {
       if (typeof (window as any).__gofully_unsuppress_progress === "function") {
         (window as any).__gofully_unsuppress_progress();
+      }
+      for (const el of Array.from(document.querySelectorAll<HTMLElement>("[data-gf-shutter-hidden]"))) {
+        const prev = el.getAttribute("data-gf-shutter-hidden") || "";
+        el.removeAttribute("data-gf-shutter-hidden");
+        if (prev) el.style.setProperty("visibility", prev);
+        else el.style.removeProperty("visibility");
       }
     },
   }).catch(() => {});

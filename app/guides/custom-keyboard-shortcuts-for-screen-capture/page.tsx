@@ -2,12 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
-import { BlueprintFrame } from "@/components/blueprint-frame";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { RelatedGuides } from "@/components/related-guides";
-
-const CWS_URL =
-  "https://chromewebstore.google.com/detail/gofully-full-page-screens/akfbmhmdlbmljklgajkgoekobofhhofc";
+import { PageHeader, CtaBand } from "@/components/site/content";
+import { serializeJsonLd } from "@/components/json-ld";
 
 export const metadata: Metadata = {
   title: "How to Set Custom Keyboard Shortcuts for Screen Capture",
@@ -55,13 +53,13 @@ export default function CustomShortcutsGuidePage() {
     <div className="gf-industry min-h-screen">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(articleJsonLd) }}
       />
       <SiteNav />
 
       {/* Breadcrumbs */}
-      <div style={{ padding: "36px 24px 0" }}>
-        <div className="mx-auto" style={{ maxWidth: 840 }}>
+      <div className="gf-crumbs">
+        <div>
           <Breadcrumbs
             items={[
               { label: "Guides", href: "/guides" },
@@ -72,46 +70,25 @@ export default function CustomShortcutsGuidePage() {
       </div>
 
       {/* Header */}
-      <div className="text-center" style={{ padding: "36px 24px 44px" }}>
-        <div className="mx-auto" style={{ maxWidth: 780 }}>
-          <div className="inline-flex items-center gap-2 border border-emerald-300 bg-emerald-50/80 px-3 py-1 text-[11px] font-semibold text-emerald-700 tracking-wide uppercase">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Available Now
-          </div>
-          <h1
-            className="gf-heading-font font-semibold"
-            style={{ fontSize: "clamp(28px, 6vw, 44px)", lineHeight: 1.15, letterSpacing: "-0.01em", marginTop: 16 }}
-          >
-            How to Set Custom Keyboard Shortcuts for Fast Screen Capture
-          </h1>
-          <p
-            className="mx-auto"
-            style={{ fontSize: "16px", lineHeight: 1.65, color: "rgba(29,31,32,.6)", maxWidth: 640, marginTop: 18 }}
-          >
-            Never break your development flow to click an extension icon. Trigger scrolling capture, regional snapshots, or instant OCR with one seamless keystroke.
-          </p>
-          <div className="flex items-center justify-center gap-4 text-[12px] text-neutral-400 mt-6">
-            <span>By GoFully Engineering</span>
-            <span>·</span>
-            <span>Updated September 2026</span>
-            <span>·</span>
-            <span>4 min read</span>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        eyebrow="Available Now"
+        title="How to Set Custom Keyboard Shortcuts for Fast Screen Capture"
+        lede="Never break your development flow to click an extension icon. Trigger scrolling capture, regional snapshots, or instant OCR with one seamless keystroke."
+        meta={["By GoFully Engineering", "Updated September 2026", "4 min read"]}
+      />
 
       {/* Article Body */}
-      <div style={{ padding: "0 24px 80px" }}>
-        <div className="mx-auto" style={{ maxWidth: 840 }}>
-          <BlueprintFrame className="bg-white p-8 md:p-12 space-y-10">
+      <div className="gf-article-wrap">
+        <div>
+          <article className="gf-article">
 
             {/* Feature Status Callout */}
-            <div className="border border-emerald-200 bg-emerald-50/50 p-5 rounded-none">
-              <h2 className="gf-heading-font font-semibold text-[16px] text-emerald-900 mb-2">
+            <div className="gf-callout gf-callout--green">
+              <h2>
                 Native Keyboard Shortcuts Available Now
               </h2>
               <p className="text-[14px] leading-relaxed text-emerald-800/90">
-                GoFully supports native Chrome shortcut commands out of the box (<kbd className="border bg-white px-1 py-0.5 text-xs font-mono">Alt+S</kbd> to open popup, <kbd className="border bg-white px-1 py-0.5 text-xs font-mono">Ctrl+Shift+F</kbd> for Full Page, <kbd className="border bg-white px-1 py-0.5 text-xs font-mono">Ctrl+Shift+V</kbd> for Visible Area, and <kbd className="border bg-white px-1 py-0.5 text-xs font-mono">Ctrl+Shift+A</kbd> for Selected Area). You can customize or rebind any of these commands anytime via Chrome&apos;s native shortcut manager. Check out our{" "}
+                GoFully supports native Chrome shortcut commands out of the box (<kbd>Alt+S</kbd> to open popup, <kbd>Ctrl+Shift+F</kbd> for Full Page, <kbd>Ctrl+Shift+V</kbd> for Visible Area, and <kbd>Ctrl+Shift+A</kbd> for Selected Area). You can customize or rebind any of these commands anytime via Chrome&apos;s native shortcut manager. Check out our{" "}
                 <Link href="/roadmap" className="underline font-semibold hover:text-emerald-950">
                   roadmap timeline
                 </Link>{" "}
@@ -121,19 +98,19 @@ export default function CustomShortcutsGuidePage() {
 
             {/* Why Shortcuts Matter for Power Users */}
             <section className="space-y-4">
-              <h2 className="gf-heading-font font-semibold text-[24px] text-[var(--gf-color-text)]">
+              <h2>
                 Why Keyboard Hotkeys Are Essential for QA &amp; Dev Workflows
               </h2>
-              <p className="text-[15px] leading-relaxed text-neutral-600">
+              <p className="gf-p">
                 When filing high-volume bug reports or documenting UI behavior across multiple viewport breakpoints, reaching for the mouse to click an extension icon causes micro-interruptions. Even worse: clicking the browser toolbar causes dropdown menus, hover tooltips, and modal states to immediately dismiss.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 text-[13.5px]">
-                <div className="border p-4 bg-neutral-50/70">
-                  <h3 className="font-semibold text-neutral-800 mb-1">Hover &amp; Flyout Preservation</h3>
+                <div className="gf-tcard">
+                  <h3 className="gf-h3">Hover &amp; Flyout Preservation</h3>
                   <p className="text-neutral-600">Keyboard shortcuts capture the screen immediately without modifying DOM focus or closing active flyouts.</p>
                 </div>
-                <div className="border p-4 bg-neutral-50/70">
-                  <h3 className="font-semibold text-neutral-800 mb-1">Single-Handed Repeat Captures</h3>
+                <div className="gf-tcard">
+                  <h3 className="gf-h3">Single-Handed Repeat Captures</h3>
                   <p className="text-neutral-600">Capture successive user flows, animation states, and checkout funnels in rapid succession without mouse travel.</p>
                 </div>
               </div>
@@ -141,10 +118,10 @@ export default function CustomShortcutsGuidePage() {
 
             {/* Default Shortcuts Table */}
             <section className="space-y-4">
-              <h2 className="gf-heading-font font-semibold text-[24px] text-[var(--gf-color-text)]">
+              <h2>
                 Default Keybindings in GoFully
               </h2>
-              <p className="text-[15px] leading-relaxed text-neutral-600">
+              <p className="gf-p">
                 In GoFully, you can remap each of these commands to any key combination or single modifier you prefer via Chrome&apos;s native shortcut manager:
               </p>
 
@@ -161,26 +138,26 @@ export default function CustomShortcutsGuidePage() {
                   <tbody className="divide-y divide-neutral-200 text-neutral-600">
                     <tr>
                       <td className="p-3 font-medium text-neutral-800">Full Page Screenshot</td>
-                      <td className="p-3"><kbd className="border bg-neutral-50 px-2 py-0.5 font-mono text-xs">Ctrl + Shift + F</kbd></td>
-                      <td className="p-3"><kbd className="border bg-neutral-50 px-2 py-0.5 font-mono text-xs">⌘ ⇧ F</kbd></td>
+                      <td className="p-3"><kbd>Ctrl + Shift + F</kbd></td>
+                      <td className="p-3"><kbd>⌘ ⇧ F</kbd></td>
                       <td className="p-3 text-emerald-600 font-semibold">Yes</td>
                     </tr>
                     <tr>
                       <td className="p-3 font-medium text-neutral-800">Visible Viewport Only</td>
-                      <td className="p-3"><kbd className="border bg-neutral-50 px-2 py-0.5 font-mono text-xs">Ctrl + Shift + V</kbd></td>
-                      <td className="p-3"><kbd className="border bg-neutral-50 px-2 py-0.5 font-mono text-xs">⌘ ⇧ V</kbd></td>
+                      <td className="p-3"><kbd>Ctrl + Shift + V</kbd></td>
+                      <td className="p-3"><kbd>⌘ ⇧ V</kbd></td>
                       <td className="p-3 text-emerald-600 font-semibold">Yes</td>
                     </tr>
                     <tr>
                       <td className="p-3 font-medium text-neutral-800">Selected Area Capture</td>
-                      <td className="p-3"><kbd className="border bg-neutral-50 px-2 py-0.5 font-mono text-xs">Ctrl + Shift + A</kbd></td>
-                      <td className="p-3"><kbd className="border bg-neutral-50 px-2 py-0.5 font-mono text-xs">⌘ ⇧ A</kbd></td>
+                      <td className="p-3"><kbd>Ctrl + Shift + A</kbd></td>
+                      <td className="p-3"><kbd>⌘ ⇧ A</kbd></td>
                       <td className="p-3 text-emerald-600 font-semibold">Yes</td>
                     </tr>
                     <tr>
                       <td className="p-3 font-medium text-neutral-800">Open GoFully Popup</td>
-                      <td className="p-3"><kbd className="border bg-neutral-50 px-2 py-0.5 font-mono text-xs">Alt + S</kbd></td>
-                      <td className="p-3"><kbd className="border bg-neutral-50 px-2 py-0.5 font-mono text-xs">⌥ S</kbd></td>
+                      <td className="p-3"><kbd>Alt + S</kbd></td>
+                      <td className="p-3"><kbd>⌥ S</kbd></td>
                       <td className="p-3 text-emerald-600 font-semibold">Yes</td>
                     </tr>
                   </tbody>
@@ -190,35 +167,35 @@ export default function CustomShortcutsGuidePage() {
 
             {/* How to Configure in Chrome */}
             <section className="space-y-4">
-              <h2 className="gf-heading-font font-semibold text-[24px] text-[var(--gf-color-text)]">
+              <h2>
                 How to Rebind Shortcuts in Google Chrome
               </h2>
-              <p className="text-[15px] leading-relaxed text-neutral-600">
+              <p className="gf-p">
                 Chrome provides a dedicated, native settings page for managing extension commands. You can configure your bindings in four steps:
               </p>
               
               <div className="space-y-4">
-                <div className="border-l-2 border-blue-600 pl-4 py-1">
-                  <h3 className="font-semibold text-neutral-800 text-[15px]">1. Navigate to Extensions Shortcuts</h3>
-                  <p className="text-[14px] text-neutral-600 mt-1">
-                    Enter <code className="bg-neutral-100 px-1.5 py-0.5 rounded text-xs font-mono text-blue-600">chrome://extensions/shortcuts</code> in your Chrome address bar.
+                <div className="gf-step">
+                  <h3 className="gf-h3">Navigate to Extensions Shortcuts</h3>
+                  <p className="gf-small">
+                    Enter <code>chrome://extensions/shortcuts</code> in your Chrome address bar.
                   </p>
                 </div>
-                <div className="border-l-2 border-blue-600 pl-4 py-1">
-                  <h3 className="font-semibold text-neutral-800 text-[15px]">2. Locate GoFully</h3>
-                  <p className="text-[14px] text-neutral-600 mt-1">
+                <div className="gf-step">
+                  <h3 className="gf-h3">Locate GoFully</h3>
+                  <p className="gf-small">
                     Scroll to GoFully. You will see all 4 granular capture commands listed.
                   </p>
                 </div>
-                <div className="border-l-2 border-blue-600 pl-4 py-1">
-                  <h3 className="font-semibold text-neutral-800 text-[15px]">3. Record Your Custom Key Combo</h3>
-                  <p className="text-[14px] text-neutral-600 mt-1">
-                    Click the pencil icon next to any command and press your desired key combination (e.g. <kbd className="border bg-neutral-100 px-1.5 py-0.5 text-xs font-mono">Ctrl+Shift+1</kbd>).
+                <div className="gf-step">
+                  <h3 className="gf-h3">Record Your Custom Key Combo</h3>
+                  <p className="gf-small">
+                    Click the pencil icon next to any command and press your desired key combination (e.g. <kbd>Ctrl+Shift+1</kbd>).
                   </p>
                 </div>
-                <div className="border-l-2 border-blue-600 pl-4 py-1">
-                  <h3 className="font-semibold text-neutral-800 text-[15px]">4. Choose Scope: &apos;In Chrome&apos; or &apos;Global&apos;</h3>
-                  <p className="text-[14px] text-neutral-600 mt-1">
+                <div className="gf-step">
+                  <h3 className="gf-h3">Choose Scope: &apos;In Chrome&apos; or &apos;Global&apos;</h3>
+                  <p className="gf-small">
                     Set the scope dropdown to &apos;In Chrome&apos; to avoid conflict with operating system desktop shortcuts.
                   </p>
                 </div>
@@ -226,23 +203,23 @@ export default function CustomShortcutsGuidePage() {
             </section>
 
             {/* Related Guides & Early Access */}
-            <section className="pt-6 border-t border-neutral-200">
-              <h2 className="gf-heading-font font-semibold text-[20px] text-neutral-900 mb-3">
+            <section className="gf-sep">
+              <h2>
                 Have Shortcut Suggestions?
               </h2>
               <p className="text-[14.5px] text-neutral-600 mb-6">
                 Tell us which keybindings you use most often in CleanShot X, Snipping Tool, or DevTools so we can set the best defaults for developers.
               </p>
-              <div className="flex flex-wrap gap-4">
+              <div className="gf-btn-row">
                 <Link
                   href="/roadmap"
-                  className="inline-flex items-center justify-center font-semibold text-sm px-5 py-2.5 bg-neutral-900 text-white hover:bg-neutral-800 transition-colors"
+                  className="gf-btn-p"
                 >
                   Request Shortcuts on Roadmap →
                 </Link>
                 <Link
                   href="/guides/how-to-take-full-page-screenshot-chrome"
-                  className="inline-flex items-center justify-center font-semibold text-sm px-5 py-2.5 border border-neutral-300 text-neutral-700 hover:bg-neutral-50 transition-colors"
+                  className="gf-btn-s"
                 >
                   Read Chrome Capture Guide →
                 </Link>
@@ -250,55 +227,42 @@ export default function CustomShortcutsGuidePage() {
             </section>
 
             <section className="space-y-4">
-              <div className="inline-flex items-center border border-blue-300 bg-blue-50/80 px-3 py-1 text-[11px] font-semibold text-blue-700 tracking-wide uppercase">New in v1.1.3</div>
-              <h2 className="gf-heading-font font-semibold text-[24px] text-[var(--gf-color-text)]">
+              <div className="gf-badge gf-badge--blue">New in v1.1.3</div>
+              <h2>
                 Shortcut changes in v1.1.3
               </h2>
-              <p className="text-[15px] leading-relaxed text-neutral-600">Chrome allows an extension four default shortcuts. GoFully handles the rest so nothing is lost.</p>
+              <p className="gf-p">Chrome allows an extension four default shortcuts. GoFully handles the rest so nothing is lost.</p>
               <div className="space-y-3 pt-2">
-                <div className="border border-neutral-200 p-4 bg-neutral-50/50">
-                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">Draw on Page</h3>
-                  <p className="text-[14px] text-neutral-600">Press Cmd/Ctrl+Shift+H on a site, or use the popup tile. Assign your own key in Chrome if you want one.</p>
+                <div className="gf-tcard">
+                  <h3 className="gf-h3">Draw on Page</h3>
+                  <p className="gf-small">Press Cmd/Ctrl+Shift+H on a site, or use the popup tile. Assign your own key in Chrome if you want one.</p>
                 </div>
-                <div className="border border-neutral-200 p-4 bg-neutral-50/50">
-                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">In-page defaults</h3>
-                  <p className="text-[14px] text-neutral-600">On a normal web page the capture keys also work through GoFully itself: Cmd/Ctrl+Shift+F, V, A and H.</p>
+                <div className="gf-tcard">
+                  <h3 className="gf-h3">In-page defaults</h3>
+                  <p className="gf-small">On a normal web page the capture keys also work through GoFully itself: Cmd/Ctrl+Shift+F, V, A and H.</p>
                 </div>
-                <div className="border border-neutral-200 p-4 bg-neutral-50/50">
-                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">See what is bound</h3>
-                  <p className="text-[14px] text-neutral-600">Settings lists the key Chrome has bound to each GoFully command. It flags any key another extension took and links to chrome://extensions/shortcuts so you can pick a new one.</p>
+                <div className="gf-tcard">
+                  <h3 className="gf-h3">See what is bound</h3>
+                  <p className="gf-small">Settings lists the key Chrome has bound to each GoFully command. It flags any key another extension took and links to chrome://extensions/shortcuts so you can pick a new one.</p>
                 </div>
-                <div className="border border-neutral-200 p-4 bg-neutral-50/50">
-                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">Clear messages</h3>
-                  <p className="text-[14px] text-neutral-600">If a shortcut cannot run, GoFully now says why. On pages that cannot show a message, the toolbar icon shows a badge.</p>
+                <div className="gf-tcard">
+                  <h3 className="gf-h3">Clear messages</h3>
+                  <p className="gf-small">If a shortcut cannot run, GoFully now says why. On pages that cannot show a message, the toolbar icon shows a badge.</p>
                 </div>
               </div>
             </section>
 
-          </BlueprintFrame>
+          </article>
         </div>
       </div>
 
       <RelatedGuides currentSlug="custom-keyboard-shortcuts-for-screen-capture" />
 
       {/* Global CTA */}
-      <div className="text-center" style={{ background: "#1d1f20", padding: "64px 24px" }}>
-        <h2 className="gf-heading-font font-semibold" style={{ fontSize: 28, color: "#fff", letterSpacing: "-0.01em" }}>
-          Capture web pages at the speed of thought
-        </h2>
-        <p className="mx-auto" style={{ fontSize: "14.5px", color: "rgba(255,255,255,.55)", maxWidth: 500, marginTop: 12, lineHeight: 1.6 }}>
-          100% free, on-device, and private. Install GoFully now to capture full pages with zero hassle.
-        </p>
-        <a
-          href={CWS_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gf-heading-font font-semibold"
-          style={{ height: 44, padding: "0 24px", background: "var(--gf-color-accent)", color: "#fff", fontSize: 13, letterSpacing: "0.02em", marginTop: 22 }}
-        >
-          Add GoFully to Chrome — It&apos;s Free
-        </a>
-      </div>
+      <CtaBand
+        title="Capture web pages at the speed of thought"
+        sub="100% free, on-device, and private. Install GoFully now to capture full pages with zero hassle."
+      />
 
       <SiteFooterIndustry activeHref="/guides" />
     </div>

@@ -2,12 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
-import { BlueprintFrame } from "@/components/blueprint-frame";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { RelatedGuides } from "@/components/related-guides";
-
-const CWS_URL =
-  "https://chromewebstore.google.com/detail/gofully-full-page-screens/akfbmhmdlbmljklgajkgoekobofhhofc";
+import { PageHeader, CtaBand } from "@/components/site/content";
+import { serializeJsonLd } from "@/components/json-ld";
 
 export const metadata: Metadata = {
   title: "How to Beautify Screenshots for Social Media & Presentations (Free)",
@@ -55,12 +53,12 @@ export default function BeautifyScreenshotsGuide() {
     <div className="gf-industry min-h-screen">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(articleJsonLd) }}
       />
       <SiteNav />
 
-      <div style={{ padding: "36px 24px 0" }}>
-        <div className="mx-auto" style={{ maxWidth: 840 }}>
+      <div className="gf-crumbs">
+        <div>
           <Breadcrumbs
             items={[
               { label: "Guides", href: "/guides" },
@@ -70,48 +68,36 @@ export default function BeautifyScreenshotsGuide() {
         </div>
       </div>
 
-      <div className="text-center" style={{ padding: "40px 24px 44px" }}>
-        <div className="mx-auto" style={{ maxWidth: 780 }}>
-          <h1 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(28px, 6vw, 46px)", lineHeight: 1.15, letterSpacing: "-0.01em", marginTop: 12 }}>
-            How to Beautify Screenshots for Social Media &amp; Presentations
-          </h1>
-          <p className="mx-auto" style={{ fontSize: "16px", lineHeight: 1.65, color: "rgba(29,31,32,.6)", maxWidth: 640, marginTop: 18 }}>
-            Raw browser screenshots look like raw browser screenshots. Here&apos;s how to transform them into polished, share-ready images in seconds — without Photoshop, Figma, or a paid subscription to CleanShot.
-          </p>
-          <div className="flex items-center justify-center gap-4 text-[12px] text-neutral-400 mt-6">
-            <span>By GoFully Team</span>
-            <span>·</span>
-            <span>Published September 2026</span>
-            <span>·</span>
-            <span>4 min read</span>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        title="How to Beautify Screenshots for Social Media & Presentations"
+        lede="Raw browser screenshots look like raw browser screenshots. Here’s how to transform them into polished, share-ready images in seconds — without Photoshop, Figma, or a paid subscription to CleanShot."
+        meta={["By GoFully Team", "Published September 2026", "4 min read"]}
+      />
 
-      <div style={{ padding: "0 24px 80px" }}>
-        <div className="mx-auto" style={{ maxWidth: 840 }}>
-          <BlueprintFrame className="bg-white p-8 md:p-12 space-y-10">
+      <div className="gf-article-wrap">
+        <div>
+          <article className="gf-article">
 
             <section className="space-y-4">
-              <h2 className="gf-heading-font font-semibold text-[24px] text-[var(--gf-color-text)]">
+              <h2>
                 Why Beautified Screenshots Matter
               </h2>
-              <p className="text-[15px] leading-relaxed text-neutral-600">
+              <p className="gf-p">
                 A raw screenshot of a product dashboard dropped into a pitch deck, blog post, or tweet looks unfinished. It screams &ldquo;I didn&apos;t care enough to make this look good.&rdquo; Beautified screenshots with backgrounds, frames, and shadows signal professionalism and draw attention to the content, not the browser chrome around it.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                <div className="border p-4 bg-neutral-50">
-                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">Without beautification</h3>
-                  <ul className="text-[13px] text-neutral-500 space-y-1 list-disc pl-4">
+                <div className="gf-tcard">
+                  <h3 className="gf-h3">Without beautification</h3>
+                  <ul className="gf-list gf-list--sm gf-list--muted">
                     <li>Bare browser toolbar and tabs visible</li>
                     <li>Hard edges with no padding</li>
                     <li>Flat, no depth or visual hierarchy</li>
                     <li>Looks like a dev screenshot, not a product image</li>
                   </ul>
                 </div>
-                <div className="border p-4" style={{ background: "rgba(22,103,242,.04)" }}>
-                  <h3 className="font-semibold text-[15px] mb-1" style={{ color: "var(--gf-color-accent)" }}>With GoFully Beautify</h3>
-                  <ul className="text-[13px] space-y-1 list-disc pl-4" style={{ color: "rgba(29,31,32,.6)" }}>
+                <div className="gf-tcard gf-tcard--accent">
+                  <h3>With GoFully Beautify</h3>
+                  <ul className="gf-list gf-list--sm">
                     <li>Clean browser frame with your real URL</li>
                     <li>Custom gradient or solid background</li>
                     <li>Adjustable padding and rounded corners</li>
@@ -121,37 +107,37 @@ export default function BeautifyScreenshotsGuide() {
               </div>
             </section>
 
-            <section id="capture" className="space-y-4 pt-4 border-t border-neutral-200">
-              <h2 className="gf-heading-font font-semibold text-[24px] text-[var(--gf-color-text)]">
+            <section id="capture" className="gf-sep">
+              <h2>
                 Step-by-Step: From Raw to Polished in 4 Steps
               </h2>
 
               <div className="space-y-4 pt-2">
                 <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-600 text-white font-bold text-sm flex items-center justify-center">1</div>
+                  <div className="gf-num">1</div>
                   <div>
-                    <h3 className="font-semibold text-neutral-800 text-[15px]">Capture Your Screenshot</h3>
-                    <p className="text-[14px] text-neutral-600 mt-1">
+                    <h3 className="gf-h3">Capture Your Screenshot</h3>
+                    <p className="gf-small">
                       Click the GoFully icon and choose your capture mode. For product screenshots and landing pages, <strong>Visible Area</strong> usually works best. For full documentation pages, use <strong>Full Page</strong>.
                     </p>
                   </div>
                 </div>
 
                 <div className="flex gap-3" id="beautify">
-                  <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-600 text-white font-bold text-sm flex items-center justify-center">2</div>
+                  <div className="gf-num">2</div>
                   <div>
-                    <h3 className="font-semibold text-neutral-800 text-[15px]">Open the Beautify Tab</h3>
-                    <p className="text-[14px] text-neutral-600 mt-1">
+                    <h3 className="gf-h3">Open the Beautify Tab</h3>
+                    <p className="gf-small">
                       In the result bar, click <strong>Edit</strong> to open the visual editor. Then switch to the <strong>Beautify</strong> tab on the right panel. Your screenshot immediately previews with the default styling applied.
                     </p>
                   </div>
                 </div>
 
                 <div className="flex gap-3" id="customize">
-                  <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-600 text-white font-bold text-sm flex items-center justify-center">3</div>
+                  <div className="gf-num">3</div>
                   <div>
-                    <h3 className="font-semibold text-neutral-800 text-[15px]">Customize the Look</h3>
-                    <p className="text-[14px] text-neutral-600 mt-1">
+                    <h3 className="gf-h3">Customize the Look</h3>
+                    <p className="gf-small">
                       Fine-tune these controls to match your brand or content style:
                     </p>
                     <ul className="text-[14px] text-neutral-600 mt-2 space-y-1.5 list-disc pl-5">
@@ -165,10 +151,10 @@ export default function BeautifyScreenshotsGuide() {
                 </div>
 
                 <div className="flex gap-3" id="export">
-                  <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-600 text-white font-bold text-sm flex items-center justify-center">4</div>
+                  <div className="gf-num">4</div>
                   <div>
-                    <h3 className="font-semibold text-neutral-800 text-[15px]">Export &amp; Share</h3>
-                    <p className="text-[14px] text-neutral-600 mt-1">
+                    <h3 className="gf-h3">Export &amp; Share</h3>
+                    <p className="gf-small">
                       Click <strong>Copy</strong> to paste directly into Notion, Google Slides, or Twitter/X. Or download as PNG for the highest quality, WebP for smaller file sizes, or JPG with adjustable quality for blog posts.
                     </p>
                   </div>
@@ -176,103 +162,87 @@ export default function BeautifyScreenshotsGuide() {
               </div>
             </section>
 
-            <section className="space-y-4 pt-4 border-t border-neutral-200">
-              <h2 className="gf-heading-font font-semibold text-[22px] text-[var(--gf-color-text)]">
+            <section className="gf-sep">
+              <h2>
                 Use Cases for Beautified Screenshots
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="border p-4 bg-neutral-50">
-                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">Product Marketing</h3>
-                  <p className="text-[13px] text-neutral-600">
+                <div className="gf-tcard">
+                  <h3 className="gf-h3">Product Marketing</h3>
+                  <p className="gf-small">
                     Landing pages, Product Hunt launches, and investor decks. A gradient background with a browser frame makes your product look like it belongs in an App Store feature.
                   </p>
                 </div>
-                <div className="border p-4 bg-neutral-50">
-                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">Blog Posts &amp; Documentation</h3>
-                  <p className="text-[13px] text-neutral-600">
+                <div className="gf-tcard">
+                  <h3 className="gf-h3">Blog Posts &amp; Documentation</h3>
+                  <p className="gf-small">
                     Tutorial screenshots with consistent styling. The browser frame adds context about what page the reader is looking at, and the background creates visual separation from your article text.
                   </p>
                 </div>
-                <div className="border p-4 bg-neutral-50">
-                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">Social Media</h3>
-                  <p className="text-[13px] text-neutral-600">
+                <div className="gf-tcard">
+                  <h3 className="gf-h3">Social Media</h3>
+                  <p className="gf-small">
                     Twitter/X threads, LinkedIn posts, and Instagram carousels. Beautified screenshots stop the scroll — a raw browser window doesn&apos;t.
                   </p>
                 </div>
-                <div className="border p-4 bg-neutral-50">
-                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">Presentations</h3>
-                  <p className="text-[13px] text-neutral-600">
+                <div className="gf-tcard">
+                  <h3 className="gf-h3">Presentations</h3>
+                  <p className="gf-small">
                     Google Slides and Keynote decks. A shadowed screenshot on a gradient background matches your slide aesthetic without switching to Figma.
                   </p>
                 </div>
               </div>
             </section>
 
-            <section className="space-y-4 pt-4 border-t border-neutral-200">
-              <h2 className="gf-heading-font font-semibold text-[22px] text-[var(--gf-color-text)]">
+            <section className="gf-sep">
+              <h2>
                 GoFully vs. Paid Alternatives
               </h2>
-              <p className="text-[15px] leading-relaxed text-neutral-600">
+              <p className="gf-p">
                 Tools like CleanShot X ($29 one-time), Screely (freemium with watermarks), and Shots.so (subscription) all offer screenshot beautification. GoFully includes the same core features — background gradients, browser frames, padding, corners, and shadows — built directly into the capture extension, completely free. No separate app, no watermark, no subscription.
               </p>
             </section>
 
             <section className="space-y-4">
-              <div className="inline-flex items-center border border-blue-300 bg-blue-50/80 px-3 py-1 text-[11px] font-semibold text-blue-700 tracking-wide uppercase">New in v1.1.3</div>
-              <h2 className="gf-heading-font font-semibold text-[24px] text-[var(--gf-color-text)]">
+              <div className="gf-badge gf-badge--blue">New in v1.1.3</div>
+              <h2>
                 More backgrounds, 3D mockups and progressive blur
               </h2>
-              <p className="text-[15px] leading-relaxed text-neutral-600">Version 1.1.3 adds the controls that make a screenshot look designed.</p>
+              <p className="gf-p">Version 1.1.3 adds the controls that make a screenshot look designed.</p>
               <div className="space-y-3 pt-2">
-                <div className="border border-neutral-200 p-4 bg-neutral-50/50">
-                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">Wallpapers and your own image</h3>
-                  <p className="text-[14px] text-neutral-600">Pick one of eight built-in wallpapers or choose + Your image to use your own.</p>
+                <div className="gf-tcard">
+                  <h3 className="gf-h3">Wallpapers and your own image</h3>
+                  <p className="gf-small">Pick one of eight built-in wallpapers or choose + Your image to use your own.</p>
                 </div>
-                <div className="border border-neutral-200 p-4 bg-neutral-50/50">
-                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">Border, watermark and alignment</h3>
-                  <p className="text-[14px] text-neutral-600">Set a border width and colour, add a text watermark with size, opacity and position, and place the screenshot with a nine-point grid.</p>
+                <div className="gf-tcard">
+                  <h3 className="gf-h3">Border, watermark and alignment</h3>
+                  <p className="gf-small">Set a border width and colour, add a text watermark with size, opacity and position, and place the screenshot with a nine-point grid.</p>
                 </div>
-                <div className="border border-neutral-200 p-4 bg-neutral-50/50">
-                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">3D mockups</h3>
-                  <p className="text-[14px] text-neutral-600">Tilt, rotate, zoom and pan the screenshot in perspective. Six presets run from Flat to Hero.</p>
+                <div className="gf-tcard">
+                  <h3 className="gf-h3">3D mockups</h3>
+                  <p className="gf-small">Tilt, rotate, zoom and pan the screenshot in perspective. Six presets run from Flat to Hero.</p>
                 </div>
-                <div className="border border-neutral-200 p-4 bg-neutral-50/50">
-                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">Progressive blur</h3>
-                  <p className="text-[14px] text-neutral-600">Blur grows toward an edge or away from the centre. Apply it to the screenshot only or to the whole scene.</p>
+                <div className="gf-tcard">
+                  <h3 className="gf-h3">Progressive blur</h3>
+                  <p className="gf-small">Blur grows toward an edge or away from the centre. Apply it to the screenshot only or to the whole scene.</p>
                 </div>
-                <div className="border border-neutral-200 p-4 bg-neutral-50/50">
-                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">Preset files</h3>
-                  <p className="text-[14px] text-neutral-600">Export your presets as a .gofullypreset file. A teammate imports it and gets the same look. A custom background image stays on your device and does not travel inside a preset.</p>
+                <div className="gf-tcard">
+                  <h3 className="gf-h3">Preset files</h3>
+                  <p className="gf-small">Export your presets as a .gofullypreset file. A teammate imports it and gets the same look. A custom background image stays on your device and does not travel inside a preset.</p>
                 </div>
               </div>
             </section>
 
-          </BlueprintFrame>
+          </article>
         </div>
       </div>
 
       <RelatedGuides currentSlug="how-to-beautify-screenshots" />
 
-      <div className="text-center" style={{ background: "var(--gf-color-text)", padding: "56px 24px" }}>
-        <h2 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(20px, 5vw, 28px)", color: "#fff", letterSpacing: "-0.01em" }}>
-          Make every screenshot share-ready
-        </h2>
-        <p style={{ fontSize: 14, color: "rgba(255,255,255,.5)", marginTop: 10 }}>
-          Free forever. No account. Works offline.
-        </p>
-        <div style={{ marginTop: 24 }}>
-          <a
-            href={CWS_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center justify-center gap-2 gf-heading-font font-semibold"
-            style={{ height: 48, padding: "0 26px", background: "var(--gf-color-accent)", color: "#fff", fontSize: 14, letterSpacing: "0.02em" }}
-          >
-            Add to Chrome — It&apos;s Free
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
-          </a>
-        </div>
-      </div>
+      <CtaBand
+        title="Make every screenshot share-ready"
+        sub="Free forever. No account. Works offline."
+      />
 
       <SiteFooterIndustry activeHref="/guides" />
     </div>

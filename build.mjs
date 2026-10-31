@@ -24,6 +24,8 @@ const contentScripts = [
   "live-annotate",
   "pin-overlay",
   "element-picker",
+  "measure-overlay",
+  "live-redact",
 ];
 
 for (const name of contentScripts) {
@@ -92,7 +94,7 @@ if (existsSync(resolve(__dirname, "assets/Archivo.woff2"))) {
     resolve(dist, "assets/Archivo.woff2")
   );
 }
-for (const name of ["onboarding-ocr.jpg", "onboarding-editor.jpg", "onboarding-export.jpg"]) {
+for (const name of ["gofully-symbol.png", "onboarding-ocr.jpg", "onboarding-editor.jpg", "onboarding-export.jpg"]) {
   if (existsSync(resolve(__dirname, `assets/${name}`))) {
     cpSync(resolve(__dirname, `assets/${name}`), resolve(dist, `assets/${name}`));
   }
@@ -186,5 +188,53 @@ const guideFixed = guideHtml.replace(
   '<script type="module" src="guide.js"></script>'
 );
 writeFileSync(resolve(dist, "guide.html"), guideFixed);
+
+// Step 6: Design system (Figma "GoFully DS v2"): tokens, components, fonts, icons
+console.log("Step 6: Design system...");
+execSync("node scripts/ds-build.mjs", { stdio: "inherit", cwd: __dirname });
+mkdirSync(resolve(dist, "ds/fonts"), { recursive: true });
+for (const f of ["tokens.css", "components.css", "chrome-stub.js"]) {
+  cpSync(resolve(__dirname, `src/ui/ds/${f}`), resolve(dist, `ds/${f}`));
+}
+for (const [pkg, file] of [
+  ["@fontsource-variable/inter", "inter-latin-wght-normal.woff2"],
+  ["@fontsource-variable/inter", "inter-latin-ext-wght-normal.woff2"],
+  ["@fontsource/instrument-serif", "instrument-serif-latin-400-normal.woff2"],
+]) {
+  cpSync(resolve(__dirname, `node_modules/${pkg}/files/${file}`), resolve(dist, `ds/fonts/${file}`));
+}
+// Injected overlays load Inter from assets/* (web-accessible in manifest.json).
+cpSync(resolve(__dirname, "node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2"), resolve(dist, "assets/inter-latin-wght-normal.woff2"));
+// <i class="gf-icon" data-icon="name" data-size="20"></i> → inline SVG, so pages
+// carry no runtime icon code and glyphs inherit currentColor.
+const icons = JSON.parse(readFileSync(resolve(__dirname, "src/ui/ds/icons.source.json"), "utf8"));
+const ills = JSON.parse(readFileSync(resolve(__dirname, "src/ui/ds/illustrations.json"), "utf8"));
+for (const page of ["popup", "editor", "settings", "help", "welcome", "review", "guide"]) {
+  const file = resolve(dist, `${page}.html`);
+  const html = readFileSync(file, "utf8").replace(
+    /<i class="gf-ill([^"]*)" data-ill="([a-z0-9-]+)"(?: data-width="(\d+)")?><\/i>/g,
+    (_, extra, name, width = "160") => {
+      if (!ills[name]) throw new Error(`${page}.html: unknown illustration "${name}"`);
+      const svg = ills[name].replace('width="240" height="192"', `width="${width}" height="${Math.round(width * 0.8)}" aria-hidden="true" focusable="false"`);
+      return `<span class="gf-ill${extra}">${svg}</span>`;
+    }
+  ).replace(
+    /<i class="gf-icon([^"]*)" data-icon="([a-z0-9-]+)"(?: data-size="(\d+)")?><\/i>/g,
+    (_, extra, name, size = "20") => {
+      if (!icons[name]) throw new Error(`${page}.html: unknown icon "${name}"`);
+      const svg = icons[name].replace('width="24" height="24"', `width="${size}" height="${size}" aria-hidden="true" focusable="false"`);
+      return `<span class="gf-icon${extra}">${svg}</span>`;
+    }
+  );
+  writeFileSync(file, html);
+}
+
+// Release builds (npm run package:extension) drop the design-preview shim and website-only files.
+if (process.env.GF_RELEASE) {
+  const { stripPreviewOnly } = await import("./scripts/release-clean.mjs");
+  const policy = JSON.parse(readFileSync(resolve(__dirname, "security/package-policy.json"), "utf8"));
+  stripPreviewOnly(dist, policy);
+  console.log("Release build: preview-only files removed.");
+}
 
 console.log("\nBuild complete! Load dist/ as unpacked extension in Chrome.");

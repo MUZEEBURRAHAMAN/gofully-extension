@@ -3,496 +3,157 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GoFully — Screenshot Capture Help & Guide</title>
+  <title>GoFully Help</title>
+  <!-- Design: Figma "Extension UI v2" › Help / * (see .claude/skills/gofully-ui/references/screens.md) -->
+  <script src="ds/chrome-stub.js"></script>
+  <link rel="stylesheet" href="ds/tokens.css">
+  <link rel="stylesheet" href="ds/components.css">
   <style>
-    @font-face {
-      font-family: "Archivo";
-      font-style: normal;
-      font-weight: 100 900;
-      font-display: swap;
-      src: url("assets/Archivo.woff2") format("woff2");
-    }
-  </style>
-  <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-    /* Reserve the scrollbar gutter up front — expanding an accordion item
-       can push the page past one viewport, and without this the scrollbar
-       that then appears narrows the content area and visibly shifts every
-       card sideways ("shaking"). */
-    html { scrollbar-gutter: stable; }
-
-    :root {
-      --ink:       29,31,32;
-      --bg:        #e9e9ea;
-      --blue:      #1667F2;
-      --blue-h:    #1257D8;
-      --blue-bg:   rgba(22,103,242,.08);
-      --blue-bd:   rgba(22,103,242,.25);
-
-      --text:      #1d1f20;
-      --text-2:    rgba(var(--ink),.6);
-      --text-3:    rgba(var(--ink),.45);
-      --text-4:    rgba(var(--ink),.35);
-
-      --border:    rgba(var(--ink),.12);
-      --border-h:  rgba(var(--ink),.25);
-      --surface:   #f2f2f3;
-      --white:     #f2f2f3;
-
-      --green:     #027A48;
-      --green-bg:  rgba(2,122,72,.08);
-      --green-bd:  rgba(2,122,72,.25);
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root:not([data-theme="light"]) {
-        --ink:      255,255,255;
-        --blue:     #4C8DFF;
-        --blue-h:   #6BA0FF;
-        --blue-bg:  rgba(76,141,255,.14);
-        --blue-bd:  rgba(76,141,255,.4);
-        --bg:       #131314;
-        --text:     #F2F2F3;
-        --surface:  #1c1c1e;
-        --green:    #2FBE79;
-        --green-bg: rgba(47,190,121,.14);
-        --green-bd: rgba(47,190,121,.4);
-      }
-    }
-    :root[data-theme="dark"] {
-      --ink:      255,255,255;
-      --bg:       #131314;
-      --blue:     #4C8DFF;
-      --blue-h:   #6BA0FF;
-      --blue-bg:  rgba(76,141,255,.14);
-      --blue-bd:  rgba(76,141,255,.4);
-      --text:     #F2F2F3;
-      --surface:  #1c1c1e;
-      --green:    #2FBE79;
-      --green-bg: rgba(47,190,121,.14);
-      --green-bd: rgba(47,190,121,.4);
-    }
-
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      font-family: 'Barlow', 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      line-height: 1.5;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* ─── BLUEPRINT FRAME ─── */
-    .bp { position: relative; }
-    .bp > .cm { position: absolute; width: 8px; height: 8px; color: rgba(var(--ink),.2); }
-    .bp > .cm::before { content: ""; position: absolute; left: 3px; top: 0; width: 1px; height: 100%; background: currentColor; }
-    .bp > .cm::after  { content: ""; position: absolute; top: 3px; left: 0; width: 100%; height: 1px; background: currentColor; }
-    .bp > .cm.tl { top: -4px; left: -4px; }
-    .bp > .cm.tr { top: -4px; right: -4px; }
-    .bp > .cm.bl { bottom: -4px; left: -4px; }
-    .bp > .cm.br { bottom: -4px; right: -4px; }
-
-    /* ─── GOFULLY HEADER ─── */
-    .top-nav {
-      background: var(--surface);
-      height: 56px;
-      padding: 0 32px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .nav-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-      color: var(--text);
-    }
-
-    .brand-logo-wrap {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-    }
-
-    .logo-img {
-      width: 28px;
-      height: 28px;
-      display: block;
-      object-fit: contain;
-      border-radius: 0;
-    }
-
-    .wm {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 17px;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-      line-height: 1;
-    }
-    .wm-go   { color: var(--text); font-weight: 500; }
-    .wm-full { color: var(--blue); font-weight: 600; }
-    .wm-y    { color: var(--blue); opacity: 0.7; font-weight: 600; }
-
-    .nav-tag {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 11px;
-      background: transparent;
-      border: 1px solid var(--border);
-      padding: 4px 10px;
-      border-radius: 0;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-      text-transform: uppercase;
-      color: var(--text-3);
-    }
-
-    /* ─── MAIN CONTAINER ─── */
-    .main-container {
-      max-width: 820px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 40px 20px 60px;
-      flex: 1;
-    }
-
-    .hero-section {
-      text-align: left;
-      margin-bottom: 28px;
-    }
-
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 10.5px;
-      font-weight: 600;
-      color: var(--blue);
-      background: var(--blue-bg);
-      border: 1px solid var(--blue-bd);
-      padding: 5px 10px;
-      border-radius: 0;
-      margin-bottom: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-
-    .page-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 30px;
-      font-weight: 600;
-      color: var(--text);
-      letter-spacing: -0.01em;
-      margin-bottom: 6px;
-    }
-
-    .page-subtitle {
-      font-size: 13.5px;
-      color: var(--text-3);
-      line-height: 1.5;
-    }
-
-    /* ─── ACCORDION CARDS ─── */
-    .help-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .help-accordion {
-      background: var(--surface);
-      border-radius: 0;
-      border: 1px solid var(--border);
-      transition: border-color 0.15s ease;
-      overflow: hidden;
-    }
-
-    .help-accordion:hover { border-color: var(--border-h); }
-
-    .help-accordion.open { border-color: var(--blue-bd); }
-
-    .help-header {
-      width: 100%;
-      padding: 15px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      text-align: left;
-      font-family: inherit;
-    }
-
-    .help-title-wrap {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .help-num-badge {
-      width: 22px;
-      height: 22px;
-      border-radius: 0;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text-2);
-      font-size: 11px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      transition: background 0.15s, color 0.15s, border-color 0.15s;
-    }
-
-    .help-accordion.open .help-num-badge {
-      background: var(--blue);
-      color: var(--white);
-      border-color: var(--blue);
-    }
-
-    .help-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 15px;
-      font-weight: 600;
-      letter-spacing: 0.01em;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .help-icon-toggle {
-      width: 24px;
-      height: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-3);
-      border-radius: 0;
-      transition: transform 0.2s ease, color 0.15s, background 0.15s;
-    }
-
-    .help-header:hover .help-icon-toggle {
-      color: var(--text-2);
-      background: var(--surface);
-    }
-
-    .help-accordion.open .help-icon-toggle {
-      transform: rotate(45deg);
-      color: var(--blue);
-    }
-
-    .help-content {
-      display: none;
-      padding: 0 20px 18px 54px;
-      color: var(--text-2);
-      font-size: 12.5px;
-      line-height: 1.65;
-      border-top: 1px solid var(--surface);
-      padding-top: 14px;
-    }
-
-    .help-accordion.open .help-content {
-      display: block;
-    }
-
-    .help-content p {
-      margin-bottom: 10px;
-    }
-
-    .help-content ol, .help-content ul {
-      padding-left: 18px;
-      margin-bottom: 12px;
-    }
-
-    .help-content li {
-      margin-bottom: 6px;
-    }
-
-    .help-content strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    .help-tag {
-      display: inline-block;
-      background: var(--blue-bg);
-      color: var(--blue);
-      border: 1px solid var(--blue-bd);
-      padding: 1px 6px;
-      border-radius: 0;
-      font-size: 10.5px;
-      font-weight: 600;
-      margin-left: 6px;
-    }
-
-    .help-tag.green {
-      background: var(--green-bg);
-      color: var(--green);
-      border-color: var(--green-bd);
-    }
-
-    .help-shortcut {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 2px 5px;
-      font-family: inherit;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-2);
-      border-radius: 0;
-    }
-
-    .help-tip-box {
-      background: var(--blue-bg);
-      border: 1px solid var(--blue-bd);
-      padding: 10px 12px;
-      margin-top: 12px;
-      font-size: 12px;
-      color: var(--text-2);
-      border-radius: 0;
-    }
-
-    /* ─── FOOTER ─── */
-    .footer {
-      text-align: center;
-      padding: 20px;
-      color: var(--text-4);
-      font-size: 11.5px;
-      border-top: 1px solid var(--border);
-      background: var(--surface);
-    }
-
-    /* ─── REDUCED MOTION ─── */
-    /* The chevron rotation communicates expanded/collapsed state, so it
-       stays — only its transition speed is removed for vestibular safety. */
-    @media (prefers-reduced-motion: reduce) {
-      .help-icon-toggle { transition: color .15s, background .15s; }
-    }
-
-    /* Section headings sit inside the accordion trigger button (WAI-ARIA
-       disclosure pattern); reset the heading's own box model so it doesn't
-       add spacing on top of .help-header's own layout. */
-    .help-accordion h2 { margin: 0; font: inherit; font-weight: inherit; }
+    html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    body { min-height: 100vh; }
+    .top-nav { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 10px; padding: 14px var(--gf-s-6); background: var(--gf-bg-surface); border-bottom: 1px solid var(--gf-border); }
+    .top-nav img { width: 28px; height: 28px; border-radius: var(--gf-r-sm); }
+    .crumb { color: var(--gf-text-placeholder); }
+    .top-nav .push { margin-left: auto; display: flex; align-items: center; gap: var(--gf-s-3); }
+    .layout { display: grid; grid-template-columns: 288px minmax(0, 820px); gap: var(--gf-s-8); padding: var(--gf-s-6) var(--gf-s-6) var(--gf-s-12); max-width: 1240px; margin: 0 auto; justify-content: center; }
+    .toc { position: sticky; top: 88px; align-self: start; display: flex; flex-direction: column; gap: var(--gf-s-3); max-height: calc(100vh - 104px); }
+    .toc-list { display: flex; flex-direction: column; gap: 1px; overflow-y: auto; padding-right: 4px; }
+    .toc-list a { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border: 1px solid transparent; border-radius: var(--gf-r-md); color: var(--gf-text-2); text-decoration: none; }
+    .toc-list a:hover { background: var(--gf-bg-hover); color: var(--gf-text); text-decoration: none; }
+    .toc-list a.active { background: var(--gf-bg-surface); border-color: var(--gf-border); color: var(--gf-text); font-weight: 500; }
+    .toc-list a span:first-child { flex: 1; min-width: 0; }
+    .toc-list a[hidden] { display: none; }
+    .hero-section h1 { margin: 0 0 6px; }
+    .hero-section p { margin: 0 0 var(--gf-s-5); color: var(--gf-text-2); }
+    .help-list { display: flex; flex-direction: column; gap: var(--gf-s-3); }
+    .help-accordion { border: 1px solid var(--gf-border); border-radius: var(--gf-r-lg); background: var(--gf-bg-surface); overflow: hidden; transition: border-color .15s, box-shadow .15s; }
+    .help-accordion.open { border-color: var(--gf-border-strong); box-shadow: var(--gf-shadow-sm); }
+    .help-accordion h2 { margin: 0; font: inherit; }
+    .help-header { display: flex; align-items: center; justify-content: space-between; gap: var(--gf-s-3); width: 100%; padding: 14px var(--gf-s-4); border: 0; background: transparent; color: var(--gf-text); text-align: left; cursor: pointer; }
+    .help-header:hover { background: var(--gf-bg-hover); }
+    .help-title-wrap { display: flex; align-items: center; gap: var(--gf-s-3); min-width: 0; }
+    .help-num-badge { width: 24px; height: 24px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--gf-accent-tint); color: var(--gf-brand); font-size: 12px; font-weight: 500; }
+    .help-title { display: block; font: 600 16px/22px var(--gf-font-sans); letter-spacing: -0.005em; }
+    .help-title .gf-tag { margin-left: 8px; vertical-align: 2px; }
+    .help-icon-toggle { display: inline-flex; color: var(--gf-text-3); transition: transform .2s; }
+    .help-accordion.open .help-icon-toggle { transform: rotate(180deg); }
+    .help-content { display: none; padding: 0 var(--gf-s-5) var(--gf-s-5) 52px; color: var(--gf-text-2); font-size: 14px; line-height: 21px; }
+    .help-accordion.open .help-content { display: block; }
+    .help-content p { margin: 0 0 var(--gf-s-3); }
+    .help-content ol, .help-content ul { margin: 0 0 var(--gf-s-3); padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+    .help-content strong { color: var(--gf-text); font-weight: 500; }
+    .help-content h3 { margin: var(--gf-s-4) 0 6px; font: 600 14px/20px var(--gf-font-sans); color: var(--gf-text); }
+    .help-content code { padding: 1px 6px; border-radius: var(--gf-r-xs); background: var(--gf-bg-sunken); color: var(--gf-text); font-size: 12.5px; }
+    .help-content .gf-banner { margin: var(--gf-s-3) 0; }
+    .help-content .gf-banner strong { color: inherit; }
+    mark.hit { background: var(--gf-accent-tint); color: inherit; border-radius: 2px; }
+    #noResults { display: none; flex-direction: column; align-items: center; gap: var(--gf-s-3); padding: var(--gf-s-12) var(--gf-s-4); text-align: center; }
+    #noResults.show { display: flex; }
+    #noResults p { margin: 0; color: var(--gf-text-2); max-width: 400px; }
+    #noResults .row { display: flex; gap: var(--gf-s-2); }
+    .footer { padding: var(--gf-s-6); text-align: center; color: var(--gf-text-3); font-size: 12px; }
+    @media (max-width: 600px) { .top-nav { padding: 12px var(--gf-s-4); } .top-nav .crumb, .top-nav #navVersionTag { display: none; } .layout { padding: var(--gf-s-4); } .help-header { padding: 12px var(--gf-s-3); } .help-title { font-size: 15px; } .help-content { padding: 0 var(--gf-s-4) var(--gf-s-4); } }
+    @media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr); gap: var(--gf-s-4); } .toc { position: static; max-height: none; } .toc-list { display: none; } .help-content { padding-left: var(--gf-s-5); } }
   </style>
 </head>
-<body>
-
-  <!-- GOFULLY THEMED NAVBAR -->
+<body class="gf">
   <header class="top-nav">
-    <div class="nav-brand">
-      <img src="assets/icon-48.png" alt="GoFully" style="width:28px; height:28px; flex-shrink:0; object-fit:contain; display:block;">
-      <span class="wm">Go<span class="accent" style="color:var(--blue);">Fully</span></span>
-    </div>
-    <div style="display:flex; align-items:center; gap:10px;">
-      <a href="https://gofully-extension.vercel.app/uninstall-feedback" target="_blank" style="display:inline-flex; align-items:center; gap:5px; font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:600; letter-spacing:0.02em; text-transform:uppercase; color:var(--text-2); background:transparent; border:1px solid var(--border); padding:6px 12px; border-radius:0; text-decoration:none;">
-        <!-- Hugeicons: message-01 -->
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-        </svg>
-        Send Feedback
-      </a>
-      <div class="nav-tag" id="navVersionTag">Help &amp; Guides</div>
+    <img src="assets/gofully-symbol.png" alt="">
+    <span class="gf-t-heading">GoFully</span>
+    <span class="crumb">/</span>
+    <span class="gf-t-body-medium gf-muted">Help</span>
+    <div class="push">
+      <span class="gf-tag" id="navVersionTag">Help and guides</span>
+      <a class="gf-btn gf-btn--secondary" href="https://gofully-extension.vercel.app/uninstall-feedback" target="_blank" rel="noopener">Send feedback</a>
     </div>
   </header>
 
-  <!-- MAIN CONTAINER -->
-  <main class="main-container">
-    <div class="hero-section">
-      <div class="hero-badge">Documentation</div>
-      <h1 class="page-title">Screenshot Capture Help</h1>
-      <p class="page-subtitle">Learn how to capture full pages, extract text with OCR, annotate, and export.</p>
-    </div>
+  <div class="layout">
+    <nav class="toc" aria-label="Help topics">
+      <label class="gf-search">
+        <i class="gf-icon" data-icon="search" data-size="16"></i>
+        <input class="gf-input" id="helpSearch" type="search" placeholder="Search help" aria-label="Search help" autocomplete="off" spellcheck="false">
+      </label>
+      <div class="toc-list" id="tocList"></div>
+    </nav>
 
-    <div class="help-list">
+    <main class="main-container">
+      <div class="hero-section">
+        <h1 class="gf-t-display-m">Help</h1>
+        <p class="gf-t-body-l">Learn how to capture full pages, extract text with OCR, annotate, and export.</p>
+      </div>
+      <div class="help-list">
 
-      <!-- 1. Full Page -->
-      <div class="help-accordion open bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+
+
+      <div class="help-accordion open" id="topic-1">
         <h2><button class="help-header" aria-expanded="true">
           <div class="help-title-wrap">
-            <div class="help-num-badge">1</div>
-            <span class="help-title">Capture Full-Page Screenshot</span>
+            <div class="help-num-badge" aria-hidden="true">1</div>
+            <span class="help-title">Capture a full page</span>
           </div>
-          <span class="help-icon-toggle">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </span>
+          <span class="help-icon-toggle"><i class="gf-icon" data-icon="chevron-down" data-size="18"></i></span>
         </button></h2>
         <div class="help-content">
           <p>Capture an entire webpage from top to bottom, including all content below the fold:</p>
           <ol>
             <li>Open the webpage you want to capture.</li>
-            <li>Click the GoFully extension icon and select <strong>"Full Page"</strong> (or press shortcut <span class="help-shortcut">Cmd/Ctrl+Shift+F</span>).</li>
+            <li>Click the GoFully extension icon and select <strong>"Full Page"</strong> (or press shortcut <kbd class="gf-kbd">Cmd/Ctrl+Shift+F</kbd>).</li>
             <li>GoFully automatically manages sticky navigation bars, pre-triggers lazy-loaded media, and produces a pixel-perfect, seamless capture.</li>
             <li>The captured screenshot opens in the in-page action bar and annotation studio for instant editing or saving.</li>
           </ol>
-          <div class="help-tip-box">
+          <div class="gf-banner">
             <strong>Pro Tip:</strong> GoFully scrolls the page, captures each screen and checks every seam. If two pieces do not line up, it captures that part again.
           </div>
         </div>
       </div>
 
-      <!-- 2. Visible Area -->
-      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+
+      <div class="help-accordion" id="topic-2">
         <h2><button class="help-header" aria-expanded="false">
           <div class="help-title-wrap">
-            <div class="help-num-badge">2</div>
-            <span class="help-title">Capture Visible Area</span>
+            <div class="help-num-badge" aria-hidden="true">2</div>
+            <span class="help-title">Capture the visible area</span>
           </div>
-          <span class="help-icon-toggle">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </span>
+          <span class="help-icon-toggle"><i class="gf-icon" data-icon="chevron-down" data-size="18"></i></span>
         </button></h2>
         <div class="help-content">
           <p>Instantly grab whatever is currently in your viewport without scrolling:</p>
           <ol>
-            <li>Click the GoFully icon and click <strong>"Visible Area"</strong> (or press <span class="help-shortcut">Cmd/Ctrl+Shift+V</span>).</li>
-            <li>Your screenshot is immediately available on the page for copying, saving as PNG/PDF, or editing.</li>
+            <li>Click the GoFully icon and click <strong>"Visible Area"</strong> (or press <kbd class="gf-kbd">Cmd/Ctrl+Shift+V</kbd>).</li>
+            <li>The capture appears in a card at the top right of the page, ready to copy, save, edit or pin. See <strong>Recent captures</strong> below, or choose a different action in Settings.</li>
           </ol>
         </div>
       </div>
 
-      <!-- 3. Selected Area -->
-      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+
+      <div class="help-accordion" id="topic-3">
         <h2><button class="help-header" aria-expanded="false">
           <div class="help-title-wrap">
-            <div class="help-num-badge">3</div>
-            <span class="help-title">Capture Selected Area (Region)</span>
+            <div class="help-num-badge" aria-hidden="true">3</div>
+            <span class="help-title">Capture a selected area</span>
           </div>
-          <span class="help-icon-toggle">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </span>
+          <span class="help-icon-toggle"><i class="gf-icon" data-icon="chevron-down" data-size="18"></i></span>
         </button></h2>
         <div class="help-content">
           <p>Drag to frame any rectangular section of the screen:</p>
           <ol>
             <li>Click the GoFully icon and select <strong>"Selected Area"</strong>.</li>
             <li>Click and drag on the webpage to define your capture area. Live pixel dimensions and resize handles appear automatically.</li>
-            <li>Click <strong>"Capture"</strong> (or press <span class="help-shortcut">Enter</span>) to finish, or <span class="help-shortcut">Esc</span> to cancel.</li>
+            <li>Click <strong>"Capture"</strong> (or press <kbd class="gf-kbd">Enter</kbd>) to finish, or <kbd class="gf-kbd">Esc</kbd> to cancel.</li>
           </ol>
         </div>
       </div>
 
-      <!-- 4. Scrolling Area -->
-      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+
+      <div class="help-accordion" id="topic-4">
         <h2><button class="help-header" aria-expanded="false">
           <div class="help-title-wrap">
-            <div class="help-num-badge">4</div>
-            <span class="help-title">Scrolling Area Capture <span class="help-tag">CleanShot X Style</span></span>
+            <div class="help-num-badge" aria-hidden="true">4</div>
+            <span class="help-title">Capture a scrolling area</span>
           </div>
-          <span class="help-icon-toggle">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </span>
+          <span class="help-icon-toggle"><i class="gf-icon" data-icon="chevron-down" data-size="18"></i></span>
         </button></h2>
         <div class="help-content">
           <p>Capture a long scrollable column (like a chat panel, article body, or feed) without grabbing the whole browser width:</p>
@@ -505,16 +166,14 @@
         </div>
       </div>
 
-      <!-- 5. Capture Text (OCR) -->
-      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+
+      <div class="help-accordion" id="topic-5">
         <h2><button class="help-header" aria-expanded="false">
           <div class="help-title-wrap">
-            <div class="help-num-badge">5</div>
-            <span class="help-title">Capture Text (On-Device OCR) <span class="help-tag green">New Feature</span></span>
+            <div class="help-num-badge" aria-hidden="true">5</div>
+            <span class="help-title">Capture text (on-device OCR) <span class="gf-tag gf-tag--sky">New</span></span>
           </div>
-          <span class="help-icon-toggle">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </span>
+          <span class="help-icon-toggle"><i class="gf-icon" data-icon="chevron-down" data-size="18"></i></span>
         </button></h2>
         <div class="help-content">
           <p>Extract unselectable text from images, locked documents, graphs, and video streams:</p>
@@ -523,76 +182,186 @@
             <li>Drag a selection box over the text on your screen.</li>
             <li>The text is recognized locally with WebAssembly OCR and automatically copied to your clipboard.</li>
           </ol>
-          <div class="help-tip-box">
+          <div class="gf-banner">
             <strong>Privacy Note:</strong> All OCR processing runs 100% locally in your browser. Zero text or images ever leave your computer.
           </div>
         </div>
       </div>
 
-      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+      <div class="help-accordion" id="topic-6">
         <h2><button class="help-header" aria-expanded="false">
           <div class="help-title-wrap">
-            <div class="help-num-badge">6</div>
-            <span class="help-title">Capture Element <span class="help-tag green">New</span></span>
+            <div class="help-num-badge" aria-hidden="true">6</div>
+            <span class="help-title">Capture one element <span class="gf-tag gf-tag--sky">New</span></span>
           </div>
-          <span class="help-icon-toggle">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </span>
+          <span class="help-icon-toggle"><i class="gf-icon" data-icon="chevron-down" data-size="18"></i></span>
         </button></h2>
         <div class="help-content">
           <p>Capture one card, table, chart or chat message without dragging a box around it.</p>
           <ol>
-            <li>Click the GoFully icon and choose <strong>"Capture Element"</strong>.</li>
+            <li>Click the GoFully icon and choose <strong>"Capture one element"</strong>.</li>
             <li>Move the pointer over the page. A blue outline follows the element under it and shows its size.</li>
-            <li>Press <span class="help-shortcut">↑</span> to select the parent element or <span class="help-shortcut">↓</span> to step back down.</li>
-            <li>Click to capture. Press <span class="help-shortcut">Esc</span> to cancel.</li>
+            <li>Press <kbd class="gf-kbd">↑</kbd> to select the parent element or <kbd class="gf-kbd">↓</kbd> to step back down.</li>
+            <li>Click to capture. Press <kbd class="gf-kbd">Esc</kbd> to cancel.</li>
           </ol>
-          <div class="help-tip-box">
+          <div class="gf-banner">
             <strong>Tall elements:</strong> GoFully scrolls the element to the middle of the screen and captures the part you can see. Use Full Page or Scrolling Area when you need the rest.
           </div>
         </div>
       </div>
 
-      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+      <div class="help-accordion" id="topic-7">
         <h2><button class="help-header" aria-expanded="false">
           <div class="help-title-wrap">
-            <div class="help-num-badge">7</div>
-            <span class="help-title">Draw on Page <span class="help-tag green">New</span></span>
+            <div class="help-num-badge" aria-hidden="true">7</div>
+            <span class="help-title">Capture after a delay <span class="gf-tag gf-tag--sky">New</span></span>
           </div>
-          <span class="help-icon-toggle">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </span>
+          <span class="help-icon-toggle"><i class="gf-icon" data-icon="chevron-down" data-size="18"></i></span>
+        </button></h2>
+        <div class="help-content">
+          <p>Capture a menu, a tooltip or a hover state that closes the moment you click somewhere else.</p>
+          <ol>
+            <li>In the popup, set <strong>Delay</strong> (next to "More ways to capture") to 3, 5 or 10 seconds.</li>
+            <li>Click <strong>Full page</strong> or <strong>Visible area</strong>. The popup closes and a countdown appears at the top of the page.</li>
+            <li>Open the menu or hover the element you want in the shot. GoFully captures when the countdown reaches zero.</li>
+          </ol>
+          <ul>
+            <li>Press <kbd class="gf-kbd">Esc</kbd> to cancel the countdown.</li>
+            <li>The countdown never appears in the image.</li>
+            <li>The same setting is in Settings as <strong>Delay before capture</strong>. Set it back to Off for instant captures.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="help-accordion" id="topic-8">
+        <h2><button class="help-header" aria-expanded="false">
+          <div class="help-title-wrap">
+            <div class="help-num-badge" aria-hidden="true">8</div>
+            <span class="help-title">Draw on Page <span class="gf-tag gf-tag--sky">New</span></span>
+          </div>
+          <span class="help-icon-toggle"><i class="gf-icon" data-icon="chevron-down" data-size="18"></i></span>
         </button></h2>
         <div class="help-content">
           <p>Mark up a live website, then capture it with your marks in place.</p>
           <ol>
-            <li>Click <strong>"Draw on Page"</strong> in the popup or press <span class="help-shortcut">Cmd/Ctrl+Shift+H</span>.</li>
+            <li>Click <strong>"Draw on Page"</strong> in the popup or press <kbd class="gf-kbd">Cmd/Ctrl+Shift+H</kbd>.</li>
             <li>Pick a tool from the bar at the bottom of the page and drag to draw.</li>
             <li>Click <strong>Visible</strong> or <strong>Full page</strong> in the bar to capture. GoFully hides the bar first, so it never appears in the image.</li>
-            <li>Press <span class="help-shortcut">Esc</span> to finish.</li>
+            <li>Press <kbd class="gf-kbd">Esc</kbd> to finish.</li>
           </ol>
           <ul>
-            <li><strong>Tools:</strong> Pen <span class="help-shortcut">P</span>, Highlighter <span class="help-shortcut">H</span>, Highlight text <span class="help-shortcut">T</span>, Arrow <span class="help-shortcut">A</span>, Rectangle <span class="help-shortcut">R</span>, Ellipse <span class="help-shortcut">O</span>, Text <span class="help-shortcut">X</span>, Sticky note <span class="help-shortcut">N</span>, Eraser <span class="help-shortcut">E</span>. Press <span class="help-shortcut">V</span> to use the page normally.</li>
+            <li><strong>Tools:</strong> Pen <kbd class="gf-kbd">P</kbd>, Highlighter <kbd class="gf-kbd">H</kbd>, Highlight text <kbd class="gf-kbd">T</kbd>, Arrow <kbd class="gf-kbd">A</kbd>, Rectangle <kbd class="gf-kbd">R</kbd>, Ellipse <kbd class="gf-kbd">O</kbd>, Text <kbd class="gf-kbd">X</kbd>, Sticky note <kbd class="gf-kbd">N</kbd>, Eraser <kbd class="gf-kbd">E</kbd>. Press <kbd class="gf-kbd">V</kbd> to use the page normally.</li>
             <li><strong>Highlight text:</strong> Select words on the page and GoFully paints a marker over them.</li>
-            <li><strong>Undo and redo:</strong> <span class="help-shortcut">Cmd/Ctrl+Z</span> and <span class="help-shortcut">Cmd/Ctrl+Shift+Z</span>.</li>
+            <li><strong>Undo and redo:</strong> <kbd class="gf-kbd">Cmd/Ctrl+Z</kbd> and <kbd class="gf-kbd">Cmd/Ctrl+Shift+Z</kbd>.</li>
           </ul>
-          <div class="help-tip-box">
+          <div class="gf-banner">
             <strong>Your marks stay:</strong> GoFully saves them for each page address on this device. Open Draw on Page there again and they come back. The trash button clears them.
           </div>
           <p>Marks sit at fixed positions on the page. They do not follow content that scrolls inside its own box, which some web apps use.</p>
         </div>
       </div>
 
-      <!-- 6. Crop, Zoom & Annotation Studio -->
-      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+
+      <div class="help-accordion" id="topic-9">
         <h2><button class="help-header" aria-expanded="false">
           <div class="help-title-wrap">
-            <div class="help-num-badge">8</div>
-            <span class="help-title">Annotation Studio (Shapes, Callouts, Blur &amp; Redact)</span>
+            <div class="help-num-badge" aria-hidden="true">9</div>
+            <span class="help-title">Redact the page before capturing <span class="gf-tag gf-tag--sky">New</span></span>
           </div>
-          <span class="help-icon-toggle">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </span>
+          <span class="help-icon-toggle"><i class="gf-icon" data-icon="chevron-down" data-size="18"></i></span>
+        </button></h2>
+        <div class="help-content">
+          <p>Hide private details on the live page, then capture it. This works at any length, including full-page captures, because the covers are part of the page while you capture.</p>
+          <ol>
+            <li>Click <strong>Redact page</strong> in the popup. GoFully covers emails, card numbers, phone numbers, ID numbers, IBANs, IP addresses and API keys in the page text and in form fields.</li>
+            <li>Check the bar at the bottom: it lists what was hidden, for example "Hidden: 2 emails, 1 card number".</li>
+            <li>Click any text or element to hide it too. Click a cover to show what is under it again. To hide part of a sentence, select it and press <kbd class="gf-kbd">H</kbd>.</li>
+            <li>Choose <strong>Black</strong> boxes or <strong>Blur</strong>, then click <strong>Capture visible</strong> or <strong>Capture full page</strong>.</li>
+            <li>Click <strong>Done</strong> or press <kbd class="gf-kbd">Esc</kbd>. The page goes back exactly as it was.</li>
+          </ol>
+          <ul>
+            <li>Text that loads while Redact page is on, such as a lazy section or the next page of a feed, is covered as it appears.</li>
+            <li>Captures from the popup or a shortcut also include the covers while Redact page is on.</li>
+            <li><strong>Show all</strong> removes every cover without leaving the mode.</li>
+          </ul>
+          <div class="gf-banner">
+            <strong>Check before you share:</strong> GoFully finds common patterns, not every private detail. Names and addresses are not found automatically, so click them to hide them. Black boxes hide text completely; blur can sometimes be read back on short words.
+          </div>
+          <p>The matching runs on the page itself. Nothing is sent anywhere.</p>
+        </div>
+      </div>
+
+      <div class="help-accordion" id="topic-10">
+        <h2><button class="help-header" aria-expanded="false">
+          <div class="help-title-wrap">
+            <div class="help-num-badge" aria-hidden="true">10</div>
+            <span class="help-title">Measure sizes, gaps and colors <span class="gf-tag gf-tag--sky">New</span></span>
+          </div>
+          <span class="help-icon-toggle"><i class="gf-icon" data-icon="chevron-down" data-size="18"></i></span>
+        </button></h2>
+        <div class="help-content">
+          <p>Check spacing and colors on a live page, in the same CSS pixels the code uses.</p>
+          <ol>
+            <li>Click <strong>Measure</strong> in the popup.</li>
+            <li>Hover any element. A card shows what it is (Button, Heading, Image and so on), its name in the code, its size, and its padding, margin and text style. Green bands on the page show padding and amber bands show margin.</li>
+            <li>Click an element to select it, then hover another one. Red lines show the gap between the two in pixels.</li>
+            <li>Drag anywhere for a free ruler. It shows the length and how far it goes across and down.</li>
+            <li>Press <kbd class="gf-kbd">C</kbd> or click <strong>Pick color</strong>, then click anywhere on screen. The hex value is copied and the color is added to the bar. Click a saved color to copy its hex again, or Shift-click it for RGB.</li>
+          </ol>
+          <ul>
+            <li>Press <kbd class="gf-kbd">Esc</kbd> once to let go of the selected element, and again to leave Measure.</li>
+            <li>Capture while Measure is on and the measurements stay in the image, which is handy for design feedback. The bar at the bottom is left out.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="help-accordion" id="topic-11">
+        <h2><button class="help-header" aria-expanded="false">
+          <div class="help-title-wrap">
+            <div class="help-num-badge" aria-hidden="true">11</div>
+            <span class="help-title">Recent captures and what happens after a capture <span class="gf-tag gf-tag--sky">New</span></span>
+          </div>
+          <span class="help-icon-toggle"><i class="gf-icon" data-icon="chevron-down" data-size="18"></i></span>
+        </button></h2>
+        <div class="help-content">
+          <p>Visible area, selected area, element and delayed captures appear in a stack at the top right of the page.</p>
+          <ul>
+            <li>The newest capture is open with <strong>Copy</strong>, <strong>PNG</strong>, <strong>JPG</strong>, <strong>WebP</strong>, <strong>PDF</strong>, <strong>Edit</strong>, <strong>Pin</strong> and <strong>Guide</strong>. Earlier ones fold into rows: click a row to open it, or use its copy button.</li>
+            <li>Each card acts on its own capture, so you can take several in a row and deal with them afterwards.</li>
+            <li>Drag a preview onto your desktop or into a folder to save the image there. Apps that accept dropped files take it too.</li>
+            <li>After a few seconds without use, the stack tucks into a small tab at the right edge. Click it to bring the stack back, or click <strong>Hide</strong> to tuck it away now. <strong>Clear all</strong> removes it.</li>
+            <li>The stack never appears in your next capture.</li>
+          </ul>
+          <p>To skip the card, open Settings and choose what happens in <strong>After a capture</strong>: copy to the clipboard, save as PNG or PDF, open the editor, or pin the image on the page. Full-page captures always open in a new tab.</p>
+        </div>
+      </div>
+
+      <div class="help-accordion" id="topic-12">
+        <h2><button class="help-header" aria-expanded="false">
+          <div class="help-title-wrap">
+            <div class="help-num-badge" aria-hidden="true">12</div>
+            <span class="help-title">Read QR codes and barcodes <span class="gf-tag gf-tag--sky">New</span></span>
+          </div>
+          <span class="help-icon-toggle"><i class="gf-icon" data-icon="chevron-down" data-size="18"></i></span>
+        </button></h2>
+        <div class="help-content">
+          <p>GoFully reads QR codes and common barcodes in your captures, on your device.</p>
+          <ul>
+            <li><strong>On the capture card:</strong> codes found in a capture are listed on its card, with <strong>Copy</strong>. Folded rows show a small QR tag.</li>
+            <li><strong>In the editor:</strong> click <strong>Find codes</strong> in the top bar to list every code in the image, including long full-page captures.</li>
+            <li><strong>Links:</strong> only web addresses (http and https) get an <strong>Open</strong> button, and they open in a new tab. Anything else, such as Wi-Fi details or plain text, can only be copied.</li>
+          </ul>
+          <p>If a code is not found, zoom the page so the code is larger, then capture again.</p>
+        </div>
+      </div>
+
+      <div class="help-accordion" id="topic-13">
+        <h2><button class="help-header" aria-expanded="false">
+          <div class="help-title-wrap">
+            <div class="help-num-badge" aria-hidden="true">13</div>
+            <span class="help-title">Annotate and redact in the editor</span>
+          </div>
+          <span class="help-icon-toggle"><i class="gf-icon" data-icon="chevron-down" data-size="18"></i></span>
         </button></h2>
         <div class="help-content">
           <p>Open the built-in editor to polish your screenshots before sharing:</p>
@@ -602,24 +371,22 @@
             <li><strong>Step Numbers:</strong> Click to place auto-incrementing numbered badges (1, 2, 3...) for reproduction steps.</li>
             <li><strong>Spotlight Mode:</strong> Darkens the page around a focal box to draw attention.</li>
             <li><strong>Glass Blur &amp; Redaction:</strong> Protect private info using Glass Smooth Blur, Mosaic Pixelate, or Blackout redaction.</li>
-            <li><strong>Auto-redact:</strong> Open the Blur menu and choose <strong>Auto-redact sensitive info</strong>. GoFully reads the screenshot on your device and covers emails, card numbers, phone numbers, ID numbers, IP addresses and API keys with black boxes. Check each box, then move or delete any you do not want. Undo removes them all.</li>
-            <li><strong>Cropping Studio:</strong> Press <span class="help-shortcut">X</span> to open the cropper. Pick Free, Original, 1:1, 4:3, 3:2, 16:9, 9:16 or other presets, and nudge the box with the arrow keys. Your annotations move with the image and stay editable. Undo and redo bring back the previous size.</li>
+            <li><strong>Auto-redact:</strong> Open the arrow next to the Blur tool and choose <strong>Auto-redact sensitive info</strong>. GoFully reads the screenshot on your device and covers emails, card numbers, phone numbers, ID numbers, IP addresses and API keys with black boxes. Check each box, then move or delete any you do not want. Undo removes them all.</li>
+            <li><strong>Cropping Studio:</strong> Press <kbd class="gf-kbd">X</kbd> to open the cropper. Pick Free, Original, 1:1, 4:3, 3:2, 16:9, 9:16 or other presets, and nudge the box with the arrow keys. Your annotations move with the image and stay editable. Undo and redo bring back the previous size.</li>
           </ul>
         </div>
       </div>
 
-      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+      <div class="help-accordion" id="topic-14">
         <h2><button class="help-header" aria-expanded="false">
           <div class="help-title-wrap">
-            <div class="help-num-badge">9</div>
-            <span class="help-title">Beautify: Wallpapers, 3D Mockups &amp; Blur</span>
+            <div class="help-num-badge" aria-hidden="true">14</div>
+            <span class="help-title">Beautify</span>
           </div>
-          <span class="help-icon-toggle">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </span>
+          <span class="help-icon-toggle"><i class="gf-icon" data-icon="chevron-down" data-size="18"></i></span>
         </button></h2>
         <div class="help-content">
-          <p>Turn a plain screenshot into an image you can post. Click the sparkle tool in the editor.</p>
+          <p>Turn a plain screenshot into an image you can post. Click <strong>Beautify</strong> in the editor’s top bar.</p>
           <ul>
             <li><strong>Backgrounds:</strong> Choose a gradient or pattern, one of eight built-in wallpapers, or your own image with <strong>+ Your image</strong>.</li>
             <li><strong>Layout:</strong> Set padding, corner radius, shadow, aspect ratio and a window frame. With an aspect ratio on, the nine-point grid decides where the screenshot sits in the extra space.</li>
@@ -629,21 +396,19 @@
             <li><strong>Progressive blur:</strong> Blur grows toward one edge, or away from the centre. Apply it to the screenshot only or to the whole scene.</li>
             <li><strong>Collage:</strong> Add more images and lay them out side by side or stacked.</li>
           </ul>
-          <h3 style="margin-top:14px; font-size:13px;">Share your look</h3>
+          <h3>Share your look</h3>
           <p><strong>Save</strong> stores your settings as a preset. <strong>Export presets</strong> writes a <code>.gofullypreset</code> file. A teammate clicks <strong>Import</strong> and gets the same presets. A custom background image stays on your device and does not travel inside a preset.</p>
         </div>
       </div>
 
-      <!-- 7. Copy & Export Options -->
-      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+
+      <div class="help-accordion" id="topic-15">
         <h2><button class="help-header" aria-expanded="false">
           <div class="help-title-wrap">
-            <div class="help-num-badge">10</div>
-            <span class="help-title">Export Options (PNG, 4K HD &amp; Multi-Page PDF)</span>
+            <div class="help-num-badge" aria-hidden="true">15</div>
+            <span class="help-title">Export options</span>
           </div>
-          <span class="help-icon-toggle">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </span>
+          <span class="help-icon-toggle"><i class="gf-icon" data-icon="chevron-down" data-size="18"></i></span>
         </button></h2>
         <div class="help-content">
           <p>Export your finished screenshots with high DPI preservation:</p>
@@ -655,15 +420,13 @@
         </div>
       </div>
 
-      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+      <div class="help-accordion" id="topic-16">
         <h2><button class="help-header" aria-expanded="false">
           <div class="help-title-wrap">
-            <div class="help-num-badge">11</div>
-            <span class="help-title">Build a Step-by-Step Guide <span class="help-tag green">New</span></span>
+            <div class="help-num-badge" aria-hidden="true">16</div>
+            <span class="help-title">Build a step-by-step guide <span class="gf-tag gf-tag--sky">New</span></span>
           </div>
-          <span class="help-icon-toggle">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </span>
+          <span class="help-icon-toggle"><i class="gf-icon" data-icon="chevron-down" data-size="18"></i></span>
         </button></h2>
         <div class="help-content">
           <p>Combine several captures into one how-to document.</p>
@@ -678,15 +441,13 @@
         </div>
       </div>
 
-      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+      <div class="help-accordion" id="topic-17">
         <h2><button class="help-header" aria-expanded="false">
           <div class="help-title-wrap">
-            <div class="help-num-badge">12</div>
-            <span class="help-title">Pin a Capture <span class="help-tag green">New</span></span>
+            <div class="help-num-badge" aria-hidden="true">17</div>
+            <span class="help-title">Pin a capture <span class="gf-tag gf-tag--sky">New</span></span>
           </div>
-          <span class="help-icon-toggle">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </span>
+          <span class="help-icon-toggle"><i class="gf-icon" data-icon="chevron-down" data-size="18"></i></span>
         </button></h2>
         <div class="help-content">
           <p>Keep a reference image on screen while you work.</p>
@@ -699,15 +460,13 @@
         </div>
       </div>
 
-      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+      <div class="help-accordion" id="topic-18">
         <h2><button class="help-header" aria-expanded="false">
           <div class="help-title-wrap">
-            <div class="help-num-badge">13</div>
-            <span class="help-title">Find an Old Capture <span class="help-tag green">New</span></span>
+            <div class="help-num-badge" aria-hidden="true">18</div>
+            <span class="help-title">Find an old capture <span class="gf-tag gf-tag--sky">New</span></span>
           </div>
-          <span class="help-icon-toggle">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </span>
+          <span class="help-icon-toggle"><i class="gf-icon" data-icon="chevron-down" data-size="18"></i></span>
         </button></h2>
         <div class="help-content">
           <p>History keeps your last 50 captures. Click the grid icon in the popup and type in the search box.</p>
@@ -721,43 +480,40 @@
         </div>
       </div>
 
-      <!-- 8. Keyboard Shortcuts -->
-      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+
+      <div class="help-accordion" id="topic-19">
         <h2><button class="help-header" aria-expanded="false">
           <div class="help-title-wrap">
-            <div class="help-num-badge">14</div>
-            <span class="help-title">Keyboard Shortcuts Quick Reference</span>
+            <div class="help-num-badge" aria-hidden="true">19</div>
+            <span class="help-title">Keyboard shortcuts</span>
           </div>
-          <span class="help-icon-toggle">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </span>
+          <span class="help-icon-toggle"><i class="gf-icon" data-icon="chevron-down" data-size="18"></i></span>
         </button></h2>
         <div class="help-content">
           <p>Accelerate your workflow with global and editor hotkeys:</p>
           <ul>
-            <li><span class="help-shortcut">Alt+S</span> — Open GoFully popup</li>
-            <li><span class="help-shortcut">Cmd/Ctrl+Shift+F</span> — Capture full page</li>
-            <li><span class="help-shortcut">Cmd/Ctrl+Shift+V</span> — Capture visible area</li>
-            <li><span class="help-shortcut">Cmd/Ctrl+Shift+A</span> — Capture selected area</li>
-            <li><span class="help-shortcut">Cmd/Ctrl+Shift+H</span> — Draw on this page (pen, highlighter, arrows, text, sticky notes) — <span class="help-shortcut">Esc</span> to finish. Assign a Chrome-wide key in chrome://extensions/shortcuts.</li>
-            <li><span class="help-shortcut">V</span> — Select tool | <span class="help-shortcut">A</span> — Arrow | <span class="help-shortcut">R</span> — Rectangle | <span class="help-shortcut">T</span> — Text</li>
-            <li><span class="help-shortcut">B</span> — Blur/Redact | <span class="help-shortcut">N</span> — Step Number | <span class="help-shortcut">S</span> — Spotlight | <span class="help-shortcut">X</span> — Crop</li>
+            <li><kbd class="gf-kbd">Alt+S</kbd> — Open GoFully popup</li>
+            <li><kbd class="gf-kbd">Cmd/Ctrl+Shift+F</kbd> — Capture full page</li>
+            <li><kbd class="gf-kbd">Cmd/Ctrl+Shift+V</kbd> — Capture visible area</li>
+            <li><kbd class="gf-kbd">Cmd/Ctrl+Shift+A</kbd> — Capture selected area</li>
+            <li><kbd class="gf-kbd">Cmd/Ctrl+Shift+H</kbd> — Draw on this page (pen, highlighter, arrows, text, sticky notes) — <kbd class="gf-kbd">Esc</kbd> to finish. Assign a Chrome-wide key at chrome://extensions/shortcuts.</li>
+            <li><strong>Measure:</strong> <kbd class="gf-kbd">C</kbd> picks a color, <kbd class="gf-kbd">Esc</kbd> lets go of the selected element, then leaves. <strong>Redact page:</strong> <kbd class="gf-kbd">H</kbd> hides the selected text, <kbd class="gf-kbd">Esc</kbd> restores the page and leaves. <strong>Delay:</strong> <kbd class="gf-kbd">Esc</kbd> cancels the countdown.</li>
+            <li><kbd class="gf-kbd">V</kbd> — Select tool | <kbd class="gf-kbd">A</kbd> — Arrow | <kbd class="gf-kbd">R</kbd> — Rectangle | <kbd class="gf-kbd">T</kbd> — Text</li>
+            <li><kbd class="gf-kbd">B</kbd> — Blur/Redact | <kbd class="gf-kbd">N</kbd> — Step Number | <kbd class="gf-kbd">S</kbd> — Spotlight | <kbd class="gf-kbd">X</kbd> — Crop</li>
             <li>Settings lists the key Chrome has bound to each command. If another extension already used one of your keys, Settings says so, and <strong>Change in Chrome</strong> opens the page where you pick a new one.</li>
-            <li><span class="help-shortcut">⌘Z</span> / <span class="help-shortcut">Ctrl+Z</span> — Undo | <span class="help-shortcut">⌘Y</span> / <span class="help-shortcut">Ctrl+Y</span> — Redo</li>
+            <li><kbd class="gf-kbd">⌘Z</kbd> / <kbd class="gf-kbd">Ctrl+Z</kbd> — Undo | <kbd class="gf-kbd">⌘Y</kbd> / <kbd class="gf-kbd">Ctrl+Y</kbd> — Redo</li>
           </ul>
         </div>
       </div>
 
-      <!-- 9. Privacy & Safety -->
-      <div class="help-accordion bp"><i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+
+      <div class="help-accordion" id="topic-20">
         <h2><button class="help-header" aria-expanded="false">
           <div class="help-title-wrap">
-            <div class="help-num-badge">15</div>
-            <span class="help-title">Privacy, Security &amp; Offline Guarantees</span>
+            <div class="help-num-badge" aria-hidden="true">20</div>
+            <span class="help-title">Privacy and offline use</span>
           </div>
-          <span class="help-icon-toggle">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </span>
+          <span class="help-icon-toggle"><i class="gf-icon" data-icon="chevron-down" data-size="18"></i></span>
         </button></h2>
         <div class="help-content">
           <p>GoFully is built from the ground up to guarantee user privacy:</p>
@@ -767,18 +523,20 @@
             <li><strong>No Tracking:</strong> Zero analytics or telemetry SDKs included.</li>
             <li><strong>Local reading:</strong> Auto-redact and History search read your screenshots with an OCR engine bundled in the extension. The text stays in your browser's storage.</li>
             <li><strong>Local storage only:</strong> Guides, saved marks and presets live in your browser and leave only when you export them.</li>
+            <li><strong>On the page, not online:</strong> Redact page, Measure and QR code reading run on your device. Redact page changes the page only while it is on, and Done restores it.</li>
           </ul>
         </div>
       </div>
-
-    </div>
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="footer">
-    GoFully © 2026 — 100% Client-Side Screenshot &amp; Annotation Studio
-  </footer>
-
+      </div>
+      <div id="noResults" role="status">
+        <i class="gf-ill" data-ill="no-search-results" data-width="180"></i>
+        <h2 class="gf-t-title" id="noResultsTitle" style="margin:0">No help articles match</h2>
+        <p class="gf-t-body">Try one word, like “redact” or “PDF”. GoFully captures images, not video.</p>
+        <div class="row"><button class="gf-btn gf-btn--secondary" id="clearSearch" type="button">Clear search</button></div>
+      </div>
+    </main>
+  </div>
+  <footer class="footer">GoFully runs on your device. No account, no uploads.</footer>
   <script src="help.ts" type="module"></script>
 </body>
 </html>

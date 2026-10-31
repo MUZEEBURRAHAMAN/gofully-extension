@@ -56,7 +56,7 @@ test.describe("Content and manifest lint", () => {
 
   test("help page: badges count 1..N with no gaps and every accordion has a panel", () => {
     const h = read("src/help/help.html");
-    const nums = [...h.matchAll(/<div class="help-num-badge">(\d+)<\/div>/g)].map((m) => +m[1]);
+    const nums = [...h.matchAll(/<div class="help-num-badge"[^>]*>(\d+)<\/div>/g)].map((m) => +m[1]);
     expect(nums.length).toBeGreaterThanOrEqual(15);
     expect(nums).toEqual(nums.map((_, i) => i + 1));
     expect((h.match(/class="help-header"/g) || []).length).toBe(nums.length);
@@ -65,7 +65,7 @@ test.describe("Content and manifest lint", () => {
 
   test("build config: every content script and page is wired", () => {
     const b = read("build.mjs");
-    for (const s of ["live-annotate", "pin-overlay", "element-picker"]) expect(b).toContain(s);
+    for (const s of ["live-annotate", "pin-overlay", "element-picker", "measure-overlay", "live-redact"]) expect(b).toContain(s);
     expect(read("vite.config.ts")).toContain("guide");
   });
 });

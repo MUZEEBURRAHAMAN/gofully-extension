@@ -2,7 +2,7 @@
 
 > The modern, high-performance Chrome extension for full-page scrolling screenshots, on-device WebAssembly OCR text extraction in 6 languages, CleanShot-grade visual annotations, and PDF/4K export — 100% free, private & offline.
 
-Current version: v1.1.2 (live on the Chrome Web Store). Everything listed below ships in v1.1.2.
+Status: v1.1.2 is live on the Chrome Web Store. v1.1.3 is the biggest release so far and publishes next: Draw on Page, Capture Element, Auto-redact, Redact page, Measure, delayed capture, the capture stack, QR code reading, Beautify, step-by-step guides and history search. It adds no new permissions. See the roadmap for details.
 
 ## Core Features & Capabilities
 
@@ -17,6 +17,14 @@ Current version: v1.1.2 (live on the Chrome Web Store). Everything listed below 
 - [Screenshot Beautifier & Mockups](https://gofully-extension.vercel.app/guides/how-to-beautify-screenshots): Add customizable gradient backgrounds, realistic window frames with live page URLs and lock icons, padding, shadows, and multi-image collages.
 - [Flexible High-Resolution Export](https://gofully-extension.vercel.app/guides/how-to-save-webpage-as-pdf): Export to paginated A4 PDF, PNG, WebP, JPG with unified quality control, and 4K UHD.
 - [Local Screenshot History](https://gofully-extension.vercel.app/): Rolling history of your last 50 captures stored only in browser local storage, searchable by the text inside each screenshot, with optional full-image reopening for the last 10.
+
+## New in v1.1.3 (publishing next)
+
+- Redact page: covers emails, card numbers, phone numbers, ID numbers, IBANs, IP addresses and API keys on the live page, in text and form fields, plus anything the user clicks. It keeps covering text that loads later, so full-page captures stay covered. Done restores the page. Runs on the device.
+- Measure: hover any element to see what it is, its size, padding, margin and text style; click one and hover another for the gap; drag a free ruler; pick any color on screen as hex.
+- Delayed capture: 3, 5 or 10 seconds, with a countdown on the page that is left out of the image, so menus and tooltips can be captured. Esc cancels.
+- Capture stack: quick captures stay in the corner of the page with their own Copy, Save, Edit and Pin buttons, and can be dragged into other apps. Settings chooses what happens after a capture.
+- QR codes and barcodes: read on the device from any capture and listed on its card, and in the editor with Find codes. Only http and https links get an Open button.
 
 ## Comparison & Alternatives
 

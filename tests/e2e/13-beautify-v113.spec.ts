@@ -1,5 +1,11 @@
 import { test, expect } from "../fixtures/extension";
 
+/** Beautify keeps advanced controls in collapsed groups; open them like a person would. */
+async function expandBeautifyGroups(page: any) {
+  const closed = page.locator("details.bf-group:not([open]) > summary");
+  while (await closed.count()) await closed.first().click();
+}
+
 async function seedTestScreenshot(serviceWorker: any, width = 500, height = 300) {
   await serviceWorker.evaluate(async ({ w, h }: { w: number; h: number }) => {
     const c = new OffscreenCanvas(w, h);
@@ -27,6 +33,7 @@ async function openBeautify(context: any, serviceWorker: any, extensionId: strin
   await page.waitForTimeout(500);
   await page.locator("#tool-beautify").click();
   await expect(page.locator("#beautifyPanel")).toHaveClass(/open/);
+  await expandBeautifyGroups(page);
   return page;
 }
 

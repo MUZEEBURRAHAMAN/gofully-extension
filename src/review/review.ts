@@ -1,3 +1,4 @@
+import { icon } from "../ui/ds/icons";
 import { generatePDF } from "../export/pdf-generator";
 import { applyTheme, watchTheme } from "../utils/theme";
 import { claimPendingRateNudge, markRatedYes, markDismissed } from "../utils/rate-nudge";
@@ -231,15 +232,13 @@ async function maybeShowRateNudge(): Promise<void> {
   nudge.innerHTML = `
     <div class="gf-rn-row">
       <div class="gf-rn-star">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        ${icon("star", 18)}
       </div>
       <div style="flex:1">
         <div class="gf-rn-title">Enjoying GoFully?</div>
         <div class="gf-rn-sub">A quick rating helps others discover the extension.</div>
       </div>
-      <button class="gf-rn-close" id="gf-rn-close-btn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
+      <button class="gf-rn-close" id="gf-rn-close-btn" aria-label="Close">${icon("close", 16)}</button>
     </div>
     <div class="gf-rn-actions">
       <button class="gf-rn-btn gf-rn-btn-primary" id="gf-rn-yes-btn">Yes, rate it</button>

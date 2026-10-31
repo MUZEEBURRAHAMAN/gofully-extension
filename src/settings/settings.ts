@@ -9,7 +9,7 @@ initI18n();
 watchLanguage(() => {});
 
 const settingsVersion = document.getElementById("settingsVersion");
-if (settingsVersion) settingsVersion.textContent = `GoFully v${chrome.runtime.getManifest().version}`;
+if (settingsVersion) settingsVersion.textContent = `Version ${chrome.runtime.getManifest().version} · Stored on this device`;
 
 let currentTheme: Settings["theme"] = DEFAULT_SETTINGS.theme;
 
@@ -28,8 +28,17 @@ const SHORTCUT_LABELS: Record<string, string> = {
 
 let editorShortcuts: Record<string, string> = { ...DEFAULT_EDITOR_SHORTCUTS };
 
+
+/** Older versions offered 1 to 3 seconds; those now mean the shortest choice, 3. */
+function normalizeDelay(v: unknown): Settings["captureCountdown"] {
+  const n = Number(v);
+  if (!n || n <= 0) return 0;
+  if (n <= 3) return 3;
+  return n <= 5 ? 5 : 10;
+}
 const elements = {
   defaultAction: document.getElementById("defaultAction") as HTMLSelectElement,
+  fullPageMode: document.getElementById("fullPageMode") as HTMLSelectElement,
   captureDelay: document.getElementById("captureDelay") as HTMLInputElement,
   lazyLoadWait: document.getElementById("lazyLoadWait") as HTMLInputElement,
   pngSaveAs: document.getElementById("pngSaveAs") as HTMLSelectElement,
@@ -60,14 +69,16 @@ async function loadSettings(): Promise<void> {
   };
 
   elements.defaultAction.value = settings.defaultAction;
+  if (elements.defaultAction.selectedIndex < 0) elements.defaultAction.value = DEFAULT_SETTINGS.defaultAction;
   elements.captureDelay.value = String(settings.captureDelay);
   elements.lazyLoadWait.value = String(settings.lazyLoadWait);
   elements.pngSaveAs.value = String(settings.pngSaveAs);
   elements.pdfPageSize.value = settings.pdfPageSize;
   elements.pdfWatermark.checked = settings.pdfWatermark;
   elements.captureSound.checked = settings.captureSound;
-  elements.captureCountdown.value = String(settings.captureCountdown);
+  elements.captureCountdown.value = String(normalizeDelay(settings.captureCountdown));
   elements.skipStickyHeaders.checked = settings.skipStickyHeaders;
+  elements.fullPageMode.value = settings.fullPageMode;
   elements.defaultExportFormat.value = settings.defaultExportFormat;
   elements.captureStamp.checked = settings.captureStamp;
   elements.indexCaptureText.checked = settings.indexCaptureText !== false;
@@ -95,8 +106,9 @@ async function saveSettings(): Promise<void> {
     pdfWatermark: elements.pdfWatermark.checked,
     scrollPadding: 0,
     captureSound: elements.captureSound.checked,
-    captureCountdown: parseInt(elements.captureCountdown.value) as 0 | 1 | 2 | 3,
+    captureCountdown: normalizeDelay(parseInt(elements.captureCountdown.value)),
     skipStickyHeaders: elements.skipStickyHeaders.checked,
+    fullPageMode: elements.fullPageMode.value as Settings["fullPageMode"],
     defaultExportFormat: elements.defaultExportFormat.value as "png" | "webp" | "jpg",
     jpgQuality: 0.92,
     editorShortcuts,
@@ -232,6 +244,7 @@ const inputs = [
   elements.captureSound,
   elements.captureCountdown,
   elements.skipStickyHeaders,
+  elements.fullPageMode,
   elements.defaultExportFormat,
   elements.captureStamp,
   elements.indexCaptureText,
@@ -293,3 +306,15 @@ document.getElementById("changeChromeShortcutsBtn")?.addEventListener("click", (
 void renderChromeShortcuts();
 // coming back from chrome://extensions/shortcuts should show the new bindings
 window.addEventListener("focus", () => void renderChromeShortcuts());
+
+// Section nav: highlight the card in view (Figma: Settings / *).
+const navLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>(".nav a[href^='#']"));
+if (navLinks.length && "IntersectionObserver" in window) {
+  const byId = new Map(navLinks.map((a) => [a.getAttribute("href")!.slice(1), a]));
+  const io = new IntersectionObserver((entries) => {
+    const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+    if (!visible) return;
+    navLinks.forEach((a) => a.classList.toggle("active", a === byId.get(visible.target.id)));
+  }, { rootMargin: "-80px 0px -60% 0px" });
+  byId.forEach((_a, id) => { const el = document.getElementById(id); if (el) io.observe(el); });
+}

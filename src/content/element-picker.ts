@@ -6,7 +6,8 @@
 
 import type { CaptureRegion } from "../types";
 
-const FONT_STACK = "'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+import { T, FONT_FAMILY, applyOverlayTheme, alpha } from "../ui/overlay-kit";
+const FONT_STACK = FONT_FAMILY;
 
 declare global {
   interface Window { __gofully_element_picker_registered?: boolean }
@@ -115,23 +116,28 @@ async function capture(el: Element): Promise<void> {
   }).catch(() => {});
 }
 
-function start(): void {
+async function start(): Promise<void> {
   stop();
+  await applyOverlayTheme();
   host = document.createElement("div");
   host.id = "gofully-element-picker";
   host.style.cssText = "all:initial; position:fixed; inset:0; z-index:2147483646; pointer-events:none;";
   const root = host.attachShadow({ mode: "open" });
   const style = document.createElement("style");
   style.textContent = `
-    .box { position:fixed; display:none; border:2px solid #1667F2; background:rgba(22,103,242,.12); pointer-events:none; box-shadow:0 0 0 1px rgba(255,255,255,.7); }
-    .lab { position:fixed; display:none; background:#1667F2; color:#fff; font:600 11px ${FONT_STACK}; padding:3px 8px; white-space:nowrap; pointer-events:none; }
-    .tip { position:fixed; left:50%; bottom:20px; transform:translateX(-50%); background:rgba(16,24,40,.92); color:#fff; font:500 12px ${FONT_STACK}; padding:8px 14px; pointer-events:none; }
+    @font-face { font-family:'GoFully Inter'; src:url('${chrome.runtime.getURL("assets/inter-latin-wght-normal.woff2")}') format('woff2'); font-weight:100 900; font-display:swap; }
+    /* Figma: Overlay / Element · hover */
+    .box { position:fixed; display:none; border:2px solid ${T.focus}; border-radius:6px; background:${alpha(T.focus, 0.12)}; pointer-events:none; box-shadow:0 0 0 1px ${alpha(T.surface, 0.7)}; }
+    .lab { position:fixed; display:none; background:${T.focus}; color:${T.accent === T.focus ? T.surface : T.accent}; font:500 11px/16px ${FONT_STACK}; padding:2px 8px; border-radius:6px; white-space:nowrap; pointer-events:none; font-variant-numeric:tabular-nums; }
+    .tip { position:fixed; left:50%; top:16px; transform:translateX(-50%); display:flex; align-items:center; gap:8px; white-space:nowrap; background:${T.text}; color:${T.surface}; font:500 13px/20px ${FONT_STACK}; padding:8px 14px; border-radius:999px; box-shadow:${T.shadowLg}; pointer-events:none; }
+    .tip kbd { font:500 11px/16px ${FONT_STACK}; padding:1px 6px; border-radius:4px; background:${alpha(T.surface, 0.16)}; }
+    .tip .soft { color:${alpha(T.surface, 0.72)}; }
   `;
   root.appendChild(style);
   box = document.createElement("div"); box.className = "box";
   label = document.createElement("div"); label.className = "lab";
   const tip = document.createElement("div"); tip.className = "tip";
-  tip.textContent = "Click an element to capture it · ↑ parent · ↓ child · Esc cancel";
+  tip.innerHTML = `<span>Click an element to capture it</span><kbd>↑</kbd><span class="soft">parent</span><kbd>↓</kbd><span class="soft">child</span><kbd>Esc</kbd><span class="soft">cancel</span>`;
   root.append(box, label, tip);
   document.documentElement.appendChild(host);
 

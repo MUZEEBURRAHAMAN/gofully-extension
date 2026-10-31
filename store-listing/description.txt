@@ -1,6 +1,6 @@
-GoFully is a free full page screenshot extension for Chrome. Capture a whole page, one element or a scrolling panel. Draw on a live site, hide sensitive text, make the image presentable, and export it. Everything runs on your device. No account, no uploads.
+GoFully is a free full page screenshot extension for Chrome. Capture a whole page, one element or a scrolling panel. Draw on a live site, hide sensitive text before you capture, measure spacing and colors, make the image presentable, and export it. Everything runs on your device. No account, no uploads.
 
-Annotate with arrows and callouts. Auto-redact emails, card numbers and API keys. Pull text out of images with on-device OCR. Add wallpapers, 3D mockups and watermarks. Export to PNG, JPG, WebP or PDF, or string several captures into a step-by-step guide.
+Annotate with arrows and callouts. Cover emails, card numbers and API keys on the live page, or auto-redact them in the editor. Wait a few seconds to capture a menu or tooltip. Pull text and QR codes out of images with on-device reading. Add wallpapers, 3D mockups and watermarks. Export to PNG, JPG, WebP or PDF, or string several captures into a step-by-step guide.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📸 7 WAYS TO CAPTURE
@@ -28,6 +28,29 @@ Hover over the page and a blue outline follows the element under your pointer. P
 Mark up a live website before you capture it. Pen, highlighter, text highlight, arrow, rectangle, ellipse, text and sticky notes, with undo and redo. Capture the visible area or the full page with your marks in place. GoFully saves your marks per page address on your device, and they come back when you reopen Draw on Page there.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🧰 PAGE TOOLS: REDACT, MEASURE & DELAY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+REDACT PAGE
+Hide private details on the live page, then capture it. GoFully covers emails, card numbers, phone numbers, ID numbers, IBANs, IP addresses and API keys in the page text and in form fields, and keeps covering text that loads later, so long full-page captures stay covered. Click any text or element to hide it too. Choose black boxes or blur. Done puts the page back exactly as it was. The matching runs on the page itself, and nothing is sent anywhere.
+
+MEASURE
+Hover any element to see what it is, its size, padding, margin and text style in CSS pixels. Click one and hover another to see the gap between them, or drag a free ruler. Pick any color on screen and copy it as hex. Measurements stay in your capture, so they work as design feedback.
+
+DELAYED CAPTURE
+Set a delay of 3, 5 or 10 seconds. The popup closes, a countdown shows on the page, and you open the menu or hover the tooltip you want before GoFully captures. The countdown never appears in the image, and Esc cancels.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📚 AFTER A CAPTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Quick captures stack in the top right corner of the page. The newest is open with Copy, PNG, JPG, WebP, PDF, Edit, Pin and Guide, and earlier ones fold into rows you can reopen. Each card acts on its own capture, and you can drag a preview onto your desktop or into a folder. The stack tucks away when you stop using it and never appears in your next capture.
+
+In Settings, choose what happens after a capture instead: copy, save as PNG or PDF, open the editor, or pin it on the page.
+
+QR codes and common barcodes in a capture are read on your device and listed on its card. In the editor, Find codes lists every code in a long capture. Only web links get an Open button.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🎨 BUILT-IN ANNOTATION & MARKUP STUDIO
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -52,6 +75,7 @@ Protect private information before sharing screenshots:
 • Mosaic Pixelate: Pixelation filter for avatars or user IDs
 • Redact Blackout: Solid black box redaction for credentials and private data
 • Auto-redact: One click finds emails, card numbers, phone numbers, ID numbers, IP addresses and API keys, and covers each with a black box. Review every box before you export
+• Redact page: Cover private text on the live page before you capture, at any length (see Page Tools above)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✨ BEAUTIFY: BACKGROUNDS, 3D MOCKUPS & BLUR
@@ -104,6 +128,7 @@ Float a screenshot over any page as a reference. Drag it, resize it and fade it 
 • No Cloud Uploads: Screenshots and extracted text are never transmitted to external servers.
 • No Account Required: Install and use immediately without signups or tracking.
 • Local Storage Only: Guides, saved marks, presets and search text stay in your browser until you export them.
+• On the page, not online: Redact page, Measure and QR reading all run on your device. Redact page changes the page only while it is on, and Done restores it.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⌨️ KEYBOARD SHORTCUTS
@@ -135,7 +160,8 @@ P Pen · T Text · S Spotlight · B Blur · N Step · X Crop · H Highlight
 Compared to GoFullPage, FireShot, Awesome Screenshot, and Nimbus Screenshot:
 ✅ Free on-device OCR text extraction, with search across your past captures
 ✅ Draw on a live website, then capture it
-✅ Auto-redact for emails, card numbers and API keys
+✅ Auto-redact for emails, card numbers and API keys, plus Redact page to cover them on the live page before you capture
+✅ Measure sizes, spacing and colors on any page, and capture menus and tooltips with a delay
 ✅ Wallpapers, 3D mockups and progressive blur, built in
 ✅ Free scrolling-area capture for chat boxes, code panels, and data tables
 ✅ Free annotation editor with real blur, pixelate, and blackout redaction
@@ -173,6 +199,15 @@ A: Yes. Draw on Page adds a toolbar to the site. Mark it up, then capture the vi
 
 Q: Does Auto-redact catch everything?
 A: It finds emails, card numbers, phone numbers, ID numbers, IP addresses and API keys that OCR can read. Check each black box before you share. Text that OCR misses stays visible.
+
+Q: Can I hide private details before I capture a page?
+A: Yes. Redact page covers emails, card numbers, phone numbers, ID numbers, IBANs, IP addresses and API keys on the live page, plus anything you click, and keeps covering text that loads later. Names and addresses are not found automatically, so click them to hide them. Done puts the page back.
+
+Q: Can GoFully capture a dropdown menu or a tooltip?
+A: Yes. Set a delay of 3, 5 or 10 seconds in the popup. The popup closes and a countdown shows on the page while you open the menu. Esc cancels.
+
+Q: Can GoFully read QR codes?
+A: Yes. QR codes and common barcodes in a capture are read on your device. Only web links (http and https) get an Open button; anything else can only be copied.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🔗 LINKS

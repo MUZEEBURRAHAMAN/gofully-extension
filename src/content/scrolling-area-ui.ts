@@ -4,11 +4,14 @@ import {
   Icon,
   T,
   injectOverlayFont,
+  applyOverlayTheme,
+  alpha,
   makeButton,
   makePanel,
   makeText,
   removeOverlayFont,
 } from "../ui/overlay-kit";
+import { SHADOW } from "../ui/ds/tokens";
 
 // ─── Messages ─────────────────────────────────────────────────────────────────
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
@@ -84,11 +87,12 @@ function stopKeepAlivePort(): void {
   keepAlivePort = null;
 }
 
-function startScrollingAreaUI(tid: number): void {
+async function startScrollingAreaUI(tid: number): Promise<void> {
   cleanup();
   tabId = tid;
   phase = "selecting";
   injectOverlayFont();
+  await applyOverlayTheme();
   buildCrosshair();
 }
 
@@ -121,16 +125,18 @@ function buildCrosshair(): void {
     background: "transparent",
   });
 
+  // Figma: Overlays · Scroll capture › 1 Drag over the area — an ink pill at the top, clear of the content.
   const hint = makePanel({
-    position: "absolute", top: "50%", left: "50%",
-    transform: "translate(-50%,-50%)",
-    padding: "14px 20px", textAlign: "center", pointerEvents: "none",
+    position: "absolute", top: "16px", left: "50%", transform: "translateX(-50%)",
+    padding: "8px 14px", pointerEvents: "none", background: T.text, border: "none",
+    borderRadius: T.radiusPill, display: "flex", alignItems: "center", gap: "10px", whiteSpace: "nowrap",
   });
   hint.id = "gf-hint";
-  const title = makeText("Drag to select the scroll region", { size: "13px", weight: "600", color: T.text });
-  const sub = makeText("Esc to cancel", { size: "11px", color: T.textFaint });
-  Object.assign(hint.style, { display: "flex", flexDirection: "column", gap: "3px", alignItems: "center" });
-  hint.append(title, sub);
+  const title = makeText("Drag over the part of the page that scrolls", { size: "13px", weight: "500", color: T.surface });
+  const key = makeText("Esc", { size: "11px", weight: "500", color: T.surface });
+  Object.assign(key.style, { padding: "1px 6px", borderRadius: "4px", background: alpha(T.surface, 0.16) });
+  const sub = makeText("cancel", { size: "13px", color: alpha(T.surface, 0.72) });
+  hint.append(title, key, sub);
   crosshair.appendChild(hint);
 
   crosshair.addEventListener("mousedown", onDown);
@@ -147,8 +153,8 @@ function drawSelection(x: number, y: number, w: number, h: number): void {
     selBox = document.createElement("div");
     Object.assign(selBox.style, {
       position: "fixed", zIndex: "2147483641", boxSizing: "border-box",
-      border: `1.5px solid ${T.accent}`,
-      boxShadow: "0 0 0 1px rgba(255,255,255,0.85)",
+      border: `2px solid ${T.focus}`,
+      boxShadow: `0 0 0 1px ${alpha(T.surface, 0.85)}`,
       pointerEvents: "none",
     });
     document.body.appendChild(selBox);
@@ -186,10 +192,10 @@ function showSizeBadge(x: number, y: number, w: number, h: number): void {
     sizeBadge = document.createElement("div");
     Object.assign(sizeBadge.style, {
       position: "fixed", zIndex: "2147483642", pointerEvents: "none",
-      background: T.accent, color: "#FFFFFF",
-      font: `600 11px/1 ${FONT_FAMILY}`,
+      background: T.accent, color: T.onAccent,
+      font: `500 11px/1 ${FONT_FAMILY}`,
       fontVariantNumeric: "tabular-nums",
-      padding: "4px 7px", borderRadius: "8px", whiteSpace: "nowrap",
+      padding: "4px 8px", borderRadius: "6px", whiteSpace: "nowrap",
       boxShadow: T.shadow,
     });
     document.body.appendChild(sizeBadge);
@@ -211,8 +217,8 @@ function buildReadyUI(): void {
   // A sibling of the selection box, never a child: selBox is pointer-events:none,
   // which would make every control inside it unclickable.
   const panel = makePanel({
-    padding: "14px", display: "flex", flexDirection: "column",
-    gap: "12px", minWidth: "268px", zIndex: "2147483643",
+    padding: "16px", display: "flex", flexDirection: "column",
+    gap: "12px", width: "330px", zIndex: "2147483643",
     pointerEvents: "auto", visibility: "hidden",
   });
 
@@ -221,32 +227,33 @@ function buildReadyUI(): void {
   const mark = document.createElement("span");
   Object.assign(mark.style, {
     display: "inline-flex", alignItems: "center", justifyContent: "center",
-    width: "26px", height: "26px", borderRadius: "8px",
+    width: "32px", height: "32px", borderRadius: "8px",
     background: T.accentBg, color: T.accent, flexShrink: "0",
   });
-  mark.innerHTML = Icon.scroll(15);
-  const heading = makeText("Scroll Capture", { size: "13px", weight: "700", color: T.text });
+  mark.innerHTML = Icon.scroll(18);
+  const heading = makeText("Scroll capture", { size: "16px", weight: "600", color: T.text });
+  head.style.gap = "10px";
   head.append(mark, heading);
 
   const desc = makeText("Auto scrolls for you. Manual follows your own scrolling.", {
-    size: "11px", color: T.textFaint,
+    size: "13px", color: T.textMuted,
   });
 
   // Speed only affects Auto, so it is grouped and labelled as such.
   const speedRow = document.createElement("div");
   Object.assign(speedRow.style, {
     display: "flex", alignItems: "center", gap: "6px",
-    padding: "8px", borderRadius: T.radius,
-    background: T.surfaceAlt, border: `1px solid ${T.border}`,
+    padding: "6px 6px 6px 12px", borderRadius: T.radius,
+    background: T.surfaceSunken,
   });
-  const speedLbl = makeText("Auto speed", { size: "11px", weight: "600", color: T.textMuted });
+  const speedLbl = makeText("Auto speed", { size: "12px", weight: "500", color: T.textMuted });
   speedLbl.style.marginRight = "auto";
   speedRow.appendChild(speedLbl);
 
   const segment = document.createElement("div");
   Object.assign(segment.style, {
-    display: "flex", gap: "2px", padding: "2px",
-    background: T.surfaceSunken, borderRadius: "10px",
+    display: "flex", gap: "2px", padding: "0",
+    background: "transparent", borderRadius: "6px",
   });
   const speeds: Array<{ label: string; value: "slow" | "medium" | "fast" }> = [
     { label: "Slow", value: "slow" },
@@ -259,8 +266,8 @@ function buildReadyUI(): void {
     b.type = "button";
     b.textContent = label;
     Object.assign(b.style, {
-      border: "none", cursor: "pointer", borderRadius: "7px",
-      padding: "4px 10px", font: `600 11px/1 ${FONT_FAMILY}`,
+      border: "none", cursor: "pointer", borderRadius: "6px",
+      padding: "5px 10px", font: `500 12px/1 ${FONT_FAMILY}`,
       background: "transparent", color: T.textMuted, transition: "background .14s, color .14s",
     });
     b.addEventListener("click", (e) => {
@@ -276,7 +283,7 @@ function buildReadyUI(): void {
       const on = speeds[i].value === selectedSpeed;
       b.style.background = on ? T.surface : "transparent";
       b.style.color = on ? T.text : T.textMuted;
-      b.style.boxShadow = on ? "0 1px 2px rgba(16,24,40,0.06)" : "none";
+      b.style.boxShadow = on ? SHADOW.xs : "none";
     });
   };
   paintSegment();
@@ -284,8 +291,8 @@ function buildReadyUI(): void {
 
   const actions = document.createElement("div");
   Object.assign(actions.style, { display: "flex", gap: "8px" });
-  const autoB = makeButton({ label: "Auto", icon: Icon.play(13), tone: "primary", onClick: startAuto });
-  const manB = makeButton({ label: "Manual", icon: Icon.mouse(13), tone: "neutral", onClick: startManual });
+  const autoB = makeButton({ label: "Auto", icon: Icon.play(16), tone: "primary", onClick: startAuto });
+  const manB = makeButton({ label: "Manual", icon: Icon.mouse(16), tone: "neutral", onClick: startManual });
   autoB.style.flex = "1";
   manB.style.flex = "1";
   const cancelB = makeButton({ icon: Icon.x(14), tone: "ghost", onClick: cleanup, title: "Cancel" });
@@ -320,20 +327,24 @@ function startAuto(): void {
 
   const panel = makePanel({
     padding: "12px 14px", display: "flex", flexDirection: "column",
-    gap: "10px", minWidth: "196px", zIndex: "2147483647", pointerEvents: "auto",
+    gap: "12px", width: "300px", zIndex: "2147483647", pointerEvents: "auto",
   });
 
   const row = document.createElement("div");
   Object.assign(row.style, { display: "flex", alignItems: "center", gap: "8px" });
-  statusEl = makeText("Auto-scrolling…", { size: "12px", weight: "600", color: T.text });
-  frameCountEl = makeText("0", { size: "12px", weight: "600", color: T.textFaint });
+  const spin = document.createElement("span");
+  Object.assign(spin.style, { display: "inline-flex", color: T.accent, animation: "gf-spin 1s linear infinite" });
+  spin.innerHTML = Icon.loader(18);
+  statusEl = makeText("Auto-scrolling…", { size: "14px", weight: "500", color: T.text });
+  frameCountEl = makeText("0", { size: "14px", weight: "500", color: T.textFaint });
+  row.appendChild(spin);
   frameCountEl.style.marginLeft = "auto";
   frameCountEl.style.fontVariantNumeric = "tabular-nums";
   row.append(statusEl, frameCountEl);
 
   const track = document.createElement("div");
   Object.assign(track.style, {
-    height: "5px", borderRadius: "3px", background: T.surfaceSunken, overflow: "hidden",
+    height: "6px", borderRadius: "3px", background: T.surfaceSunken, overflow: "hidden",
   });
   autoProgressEl = document.createElement("div");
   Object.assign(autoProgressEl.style, {
@@ -343,9 +354,9 @@ function startAuto(): void {
   });
   track.appendChild(autoProgressEl);
 
-  const stopB = makeButton({ label: "Stop", icon: Icon.stop(12), tone: "danger", onClick: cleanup, block: true });
+  const stopB = makeButton({ label: "Stop", icon: Icon.stop(16), tone: "danger", onClick: cleanup, block: true });
 
-  panel.append(row, track, stopB);
+  panel.append(row, track, stopB, shortcutHints([["Esc", "Stop"]]));
   placePanelClearOfRegion(panel, 210);
   document.body.appendChild(panel);
   capturePanel = panel;
@@ -392,7 +403,7 @@ function startManual(): void {
   });
 }
 
-const PANEL_W = 132;
+const PANEL_W = 208;
 const PANEL_MARGIN = 14;
 
 /**
@@ -439,7 +450,7 @@ function placePanelClearOfRegion(panel: HTMLElement, panelH: number): number {
 
 function buildCapturePanel(): void {
   const panel = makePanel({
-    width: `${PANEL_W}px`, padding: "12px", display: "flex",
+    width: `${PANEL_W}px`, padding: "16px", display: "flex",
     flexDirection: "column", gap: "10px",
     zIndex: "2147483647", pointerEvents: "auto",
     // Safety net for the rare case a small browser window still can't fit
@@ -453,30 +464,28 @@ function buildCapturePanel(): void {
   Object.assign(head.style, { display: "flex", alignItems: "center", gap: "6px" });
   const dot = document.createElement("span");
   Object.assign(dot.style, {
-    width: "7px", height: "7px", borderRadius: "50%",
+    width: "8px", height: "8px", borderRadius: "50%",
     background: T.danger, flexShrink: "0", animation: "gf-pulse 1.2s infinite",
   });
-  const recLbl = makeText("Recording", { size: "10px", weight: "700", color: T.danger });
-  recLbl.style.letterSpacing = "0.02em";
+  const recLbl = makeText("Recording", { size: "12px", weight: "500", color: T.danger });
   head.append(dot, recLbl);
 
   const stats = document.createElement("div");
   Object.assign(stats.style, { display: "flex", flexDirection: "column", gap: "1px" });
-  frameCountEl = makeText("Starting…", { size: "13px", weight: "700", color: T.text });
+  frameCountEl = makeText("Starting…", { size: "20px", weight: "600", color: T.text });
   frameCountEl.style.fontVariantNumeric = "tabular-nums";
-  heightEl = makeText("", { size: "10px", color: T.textFaint });
+  heightEl = makeText("", { size: "13px", color: T.textMuted });
   heightEl.style.fontVariantNumeric = "tabular-nums";
-  statusEl = makeText("Scroll to capture", { size: "10px", color: T.textFaint });
+  statusEl = makeText("Scroll to capture", { size: "13px", color: T.textMuted });
   stats.append(frameCountEl, heightEl, statusEl);
 
   speedWarnEl = document.createElement("div");
   Object.assign(speedWarnEl.style, {
     display: "none", alignItems: "flex-start", gap: "5px",
-    padding: "6px 7px", borderRadius: "8px",
-    background: T.warnBg, border: `1px solid ${T.warnBorder}`,
-    color: T.warn, font: `600 10px/1.35 ${FONT_FAMILY}`,
+    padding: "8px 10px", borderRadius: "8px",
+    background: T.warnBg, color: T.warn, font: `500 12px/1.4 ${FONT_FAMILY}`,
   });
-  speedWarnEl.innerHTML = `${Icon.warning(12)}<span>Scroll more slowly</span>`;
+  speedWarnEl.innerHTML = `${Icon.warning(16)}<span>Scroll more slowly</span>`;
 
   // The thumbnail is a scaled preview of the *entire* capture so far, so its
   // height grows with every frame — on a long scroll it was pushing Done/
@@ -487,7 +496,7 @@ function buildCapturePanel(): void {
   Object.assign(shot.style, {
     borderRadius: "8px", overflow: "hidden", border: `1px solid ${T.border}`,
     background: T.surfaceSunken, display: "none",
-    maxHeight: "150px", flexShrink: "0",
+    maxHeight: "140px", flexShrink: "0",
   });
   previewImg = document.createElement("img");
   Object.assign(previewImg.style, { width: "100%", display: "block" });
@@ -495,13 +504,13 @@ function buildCapturePanel(): void {
   (previewImg as any).__wrap = shot;
 
   const footer = document.createElement("div");
-  Object.assign(footer.style, { display: "flex", flexDirection: "column", gap: "5px", flexShrink: "0" });
+  Object.assign(footer.style, { display: "flex", flexDirection: "column", gap: "4px", flexShrink: "0" });
   footer.append(
-    makeButton({ label: "Done", icon: Icon.check(13), tone: "success", onClick: finishManual, block: true }),
+    makeButton({ label: "Done", icon: Icon.check(16), tone: "primary", onClick: finishManual, block: true }),
     makeButton({ label: "Cancel", tone: "ghost", onClick: cancelManual, block: true, small: true })
   );
 
-  panel.append(head, stats, shortcutHints([["↵", "Done"], ["Esc", "Cancel"]]), speedWarnEl, shot, footer);
+  panel.append(head, stats, speedWarnEl, shot, footer, shortcutHints([["Enter", "Done"], ["Esc", "Cancel"]]));
   document.body.appendChild(panel);
   capturePanel = panel;
 }
@@ -516,12 +525,12 @@ function shortcutHints(pairs: Array<[string, string]>): HTMLDivElement {
     Object.assign(item.style, { display: "inline-flex", alignItems: "center", gap: "4px" });
     const kbd = document.createElement("span");
     Object.assign(kbd.style, {
-      font: `700 9px/1 ${FONT_FAMILY}`, color: T.textMuted,
-      background: T.surfaceSunken, border: `1px solid ${T.border}`,
-      padding: "2px 4px", borderRadius: "5px", minWidth: "13px", textAlign: "center",
+      font: `500 11px/16px ${FONT_FAMILY}`, color: T.textMuted,
+      background: T.surface, border: `1px solid ${T.borderStrong}`,
+      padding: "1px 6px", borderRadius: "4px", minWidth: "20px", textAlign: "center",
     });
     kbd.textContent = key;
-    item.append(kbd, makeText(label, { size: "9.5px", color: T.textFaint }));
+    item.append(kbd, makeText(label, { size: "11px", color: T.textFaint }));
     row.appendChild(item);
   }
   return row;
@@ -541,7 +550,7 @@ function updateManualProgress(payload: {
   if (heightEl) heightEl.textContent = `${Math.round(totalHeight / window.devicePixelRatio)}px tall`;
   if (statusEl) {
     statusEl.textContent = atLimit ? "Maximum height reached" : tooFast ? "" : "Scroll to capture";
-    statusEl.style.color = atLimit ? T.warn : T.textFaint;
+    statusEl.style.color = atLimit ? T.warn : T.textMuted;
   }
   if (speedWarnEl) speedWarnEl.style.display = tooFast && !atLimit ? "flex" : "none";
   if (atLimit) stopPoll();
@@ -650,9 +659,9 @@ function showInlineError(msg: string): void {
     el.id = "gofully-inline-notice";
     el.style.cssText = `
       position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-      background: #B42318; color: #fff; padding: 10px 18px;
-      font: 600 12.5px ${FONT_FAMILY}; z-index: 2147483647;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.25); pointer-events: none;
+      background: ${T.danger}; color: ${T.surface}; padding: 10px 16px; border-radius: ${T.radiusLg};
+      font: 500 14px ${FONT_FAMILY}; z-index: 2147483647;
+      box-shadow: ${T.shadowLg}; pointer-events: none;
     `;
     document.body.appendChild(el);
   }

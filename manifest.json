@@ -26,7 +26,7 @@
     "type": "module"
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'none'; connect-src 'self' data: blob:; img-src 'self' data: blob:; font-src 'self' data:; frame-src 'none'; base-uri 'none'; form-action 'none';"
   },
   "permissions": [
     "activeTab",
@@ -41,7 +41,9 @@
   ],
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": [
+        "<all_urls>"
+      ],
       "js": [
         "page-analyzer.js",
         "sticky-manager.js",
@@ -88,21 +90,13 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "offscreen.html",
-        "editor.html",
-        "review.html",
-        "help.html",
-        "assets/*",
-        "scrolling-area-ui.js",
-        "region-selector.js",
-        "page-analyzer.js",
-        "sticky-manager.js",
-        "lazy-loader.js",
-        "result-bar.js",
-        "ocr-overlay.js",
-        "chunks/*.js"
+        "assets/inter-latin-wght-normal.woff2",
+        "assets/shutter.mp3"
       ],
-      "matches": ["<all_urls>"]
+      "matches": [
+        "<all_urls>"
+      ],
+      "use_dynamic_url": true
     }
   ]
 }

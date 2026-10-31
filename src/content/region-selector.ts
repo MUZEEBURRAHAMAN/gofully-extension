@@ -1,8 +1,22 @@
 import type { CaptureRegion } from "../types";
+import { T, FONT_FAMILY, applyOverlayTheme, alpha } from "../ui/overlay-kit";
+import { icon } from "../ui/ds/icons";
 
-/** Kept in step with src/ui/overlay-kit.ts — this file styles a shadow root. */
-const FONT_STACK =
-  `'GoFully Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif`;
+/** Same family as src/ui/overlay-kit.ts — this file styles a shadow root. */
+const FONT_STACK = FONT_FAMILY;
+
+/** GoFully DS v2 roles as CSS variables on the shadow host (Figma: Overlay / Region · *). */
+function setVars(el: HTMLElement): void {
+  const v: Record<string, string> = {
+    "--gf-bg-surface": T.surface, "--gf-bg-sunken": T.surfaceSunken, "--gf-bg-hover": T.surfaceAlt,
+    "--gf-border": T.border, "--gf-border-strong": T.borderStrong,
+    "--gf-text": T.text, "--gf-text-2": T.textMuted, "--gf-text-3": T.textFaint,
+    "--gf-brand": T.accent, "--gf-brand-hover": T.accentHover, "--gf-on-brand": T.onAccent,
+    "--gf-focus": T.focus, "--gf-shade": T.shade, "--gf-shadow-lg": T.shadowLg,
+    "--gf-ink-key": alpha(T.surface, 0.16), "--gf-ink-soft": alpha(T.surface, 0.72),
+  };
+  for (const [k, val] of Object.entries(v)) el.style.setProperty(k, val);
+}
 
 let activeTabId: number | null = null;
 
@@ -50,9 +64,9 @@ function showInlineError(msg: string): void {
     el.id = "gofully-inline-notice";
     el.style.cssText = `
       position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-      background: #B42318; color: #fff; padding: 10px 18px;
-      font: 600 12.5px ${FONT_STACK}; z-index: 2147483647;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.25); pointer-events: none;
+      background: ${T.danger}; color: ${T.surface}; padding: 10px 16px; border-radius: ${T.radiusLg};
+      font: 500 14px ${FONT_STACK}; z-index: 2147483647;
+      box-shadow: ${T.shadowLg}; pointer-events: none;
     `;
     document.body.appendChild(el);
   }
@@ -108,14 +122,16 @@ function createUI(): void {
   host.id = "snapforge-region-host";
   shadow = host.attachShadow({ mode: "open" });
 
+  setVars(host);
+  // Re-read the user's theme; the palette swaps in place once storage answers.
+  void applyOverlayTheme().then(() => { if (host) setVars(host); });
+
   const style = document.createElement("style");
   style.textContent = `
-    /* Declared inside the shadow root so the face resolves even when the host
-       page's CSP or a missing document-level rule would otherwise block it. */
     @font-face {
-      font-family: 'GoFully Archivo';
-      src: url('${chrome.runtime.getURL("assets/Archivo.woff2")}') format('woff2-variations'),
-           url('${chrome.runtime.getURL("assets/Archivo.woff2")}') format('woff2');
+      font-family: 'GoFully Inter';
+      src: url('${chrome.runtime.getURL("assets/inter-latin-wght-normal.woff2")}') format('woff2-variations'),
+           url('${chrome.runtime.getURL("assets/inter-latin-wght-normal.woff2")}') format('woff2');
       font-weight: 100 900;
       font-display: swap;
     }
@@ -123,120 +139,94 @@ function createUI(): void {
     .overlay {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       z-index: 2147483646; cursor: crosshair;
-      /* Light dim: enough to read the marquee, not so much that the page
-         content being selected goes murky. */
-      background: rgba(16, 24, 40, 0.28);
+      background: var(--gf-shade);
       transition: background 0.15s ease;
       user-select: none;
     }
     .overlay.active { background: transparent; }
 
+    /* Figma: Overlay / Region · hint — an ink pill at the top, clear of what you are selecting. */
     .hint {
-      position: fixed; top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      display: flex; flex-direction: column; align-items: center; gap: 14px;
+      position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 10px; white-space: nowrap;
       pointer-events: none; z-index: 2147483647;
       animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      background: #ffffff;
-      padding: 22px 30px;
-      border-radius: 0;
-      border: 1px solid #E3E8EF;
-      box-shadow: 0 8px 8px -4px rgba(16,24,40,0.04), 0 20px 24px -4px rgba(16,24,40,0.10);
+      background: var(--gf-text); color: var(--gf-bg-surface);
+      padding: 8px 14px; border-radius: 999px; box-shadow: var(--gf-shadow-lg);
+      font: 500 13px/20px ${FONT_STACK};
     }
-    .hint-icon {
-      width: 44px; height: 44px; border-radius: 0;
-      background: #EDF1FE; border: 1.5px solid #1667F2;
-      display: flex; align-items: center; justify-content: center;
-      color: #1667F2;
+    .hint-icon { display: inline-flex; color: var(--gf-focus); }
+    .hint kbd {
+      font: 500 11px/16px ${FONT_STACK}; padding: 1px 6px; border-radius: 4px;
+      background: var(--gf-ink-key); color: var(--gf-bg-surface);
     }
-    .hint-text {
-      color: #101828; font: 600 14px/1.4 ${FONT_STACK};
-      letter-spacing: -0.01em;
-    }
-    .hint-sub {
-      color: #667085; font: 400 12px/1.4 ${FONT_STACK};
-      display: flex; gap: 10px;
-    }
-    .hint-sub kbd {
-      background: #F1F3F7;
-      padding: 2px 6px;
-      border-radius: 0;
-      border: 1px solid #E3E8EF;
-      color: #344054;
-      font-weight: 600;
-      font-size: 11px;
-    }
-    @keyframes fadeIn { from { opacity: 0; transform: translate(-50%, -46%); } to { opacity: 1; transform: translate(-50%, -50%); } }
+    .hint .soft { color: var(--gf-ink-soft); }
+    @keyframes fadeIn { from { opacity: 0; transform: translate(-50%, -6px); } to { opacity: 1; transform: translate(-50%, 0); } }
+    @media (prefers-reduced-motion: reduce) { .hint { animation: none; } }
 
     .selection {
       position: fixed; z-index: 2147483647;
-      border: 1.5px solid #1667F2;
-      box-shadow: 0 0 0 99999px rgba(16, 24, 40, 0.28);
+      border: 2px solid var(--gf-focus);
+      box-shadow: 0 0 0 99999px var(--gf-shade);
       display: none;
       box-sizing: border-box;
       cursor: move;
-      border-radius: 0;
+      border-radius: 2px;
     }
 
     /* Handles */
     .handle {
-      position: absolute; width: 8px; height: 8px;
-      background: #FFFFFF;
-      border: 1.5px solid #1667F2;
-      border-radius: 0;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      position: absolute; width: 10px; height: 10px;
+      background: var(--gf-bg-surface);
+      border: 2px solid var(--gf-focus);
+      border-radius: 50%;
+      box-shadow: var(--gf-shadow-lg);
       z-index: 2;
     }
-    .handle-nw { top: -5px; left: -5px; cursor: nwse-resize; }
-    .handle-ne { top: -5px; right: -5px; cursor: nesw-resize; }
-    .handle-sw { bottom: -5px; left: -5px; cursor: nesw-resize; }
-    .handle-se { bottom: -5px; right: -5px; cursor: nwse-resize; }
-    .handle-n  { top: -5px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
-    .handle-s  { bottom: -5px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
-    .handle-w  { top: 50%; left: -5px; transform: translateY(-50%); cursor: ew-resize; }
-    .handle-e  { top: 50%; right: -5px; transform: translateY(-50%); cursor: ew-resize; }
+    .handle-nw { top: -6px; left: -6px; cursor: nwse-resize; }
+    .handle-ne { top: -6px; right: -6px; cursor: nesw-resize; }
+    .handle-sw { bottom: -6px; left: -6px; cursor: nesw-resize; }
+    .handle-se { bottom: -6px; right: -6px; cursor: nwse-resize; }
+    .handle-n  { top: -6px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+    .handle-s  { bottom: -6px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+    .handle-w  { top: 50%; left: -6px; transform: translateY(-50%); cursor: ew-resize; }
+    .handle-e  { top: 50%; right: -6px; transform: translateY(-50%); cursor: ew-resize; }
 
     /* Dimensions badge */
     .badge {
-      position: absolute; top: -30px; left: 50%; transform: translateX(-50%);
-      background: #ffffff; color: #101828;
-      font: 600 11px/1 ${FONT_STACK};
-      padding: 5px 10px; border-radius: 0;
-      border: 1px solid #E3E8EF;
+      position: absolute; top: -28px; left: 0;
+      background: var(--gf-brand); color: var(--gf-on-brand);
+      font: 500 11px/16px ${FONT_STACK};
+      padding: 2px 8px; border-radius: 6px;
       white-space: nowrap; pointer-events: none;
-      box-shadow: 0 4px 6px -2px rgba(16,24,40,0.03), 0 12px 16px -4px rgba(16,24,40,0.08);
       display: none;
       font-variant-numeric: tabular-nums;
-      letter-spacing: 0.02em;
     }
-    .badge.bottom {
-      top: auto;
-      bottom: -30px;
-    }
+    .badge.bottom { top: auto; bottom: -28px; }
 
-    /* Actions Bar — inside selection at bottom-center */
+    /* Actions bar — inside the selection, bottom-centre */
     .actions-bar {
-      position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+      position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
       display: none; align-items: center; gap: 6px;
-      background: #FFFFFF;
+      background: var(--gf-bg-surface);
       padding: 6px;
-      border-radius: 0;
-      border: 1px solid #E3E8EF;
-      box-shadow: 0 8px 8px -4px rgba(16,24,40,0.04), 0 20px 24px -4px rgba(16,24,40,0.10);
+      border-radius: 999px;
+      border: 1px solid var(--gf-border);
+      box-shadow: var(--gf-shadow-lg);
       z-index: 3; white-space: nowrap;
     }
     .action-btn {
-      height: 28px; padding: 0 12px; border-radius: 0;
-      font: 600 11px/1 ${FONT_STACK};
-      letter-spacing: -0.005em;
+      height: 32px; padding: 0 14px; border-radius: 999px;
+      font: 500 13px/1 ${FONT_STACK};
       border: 1px solid transparent; cursor: pointer;
-      display: flex; align-items: center; gap: 5px;
-      transition: background .14s ease, border-color .14s ease;
+      display: flex; align-items: center; gap: 6px;
+      transition: background .15s ease, border-color .15s ease;
     }
-    .action-btn.primary { background: #1667F2; color: #fff; border-color: #1667F2; }
-    .action-btn.primary:hover { background: #1257D8; }
-    .action-btn.cancel { background: #FFFFFF; color: #344054; border-color: #E3E8EF; }
-    .action-btn.cancel:hover { background: #F7F8FA; color: #101828; }
+    .action-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--gf-focus); }
+    .action-btn.primary { background: var(--gf-brand); color: var(--gf-on-brand); }
+    .action-btn.primary:hover { background: var(--gf-brand-hover); }
+    .action-btn.cancel { background: transparent; color: var(--gf-text-2); }
+    .action-btn.cancel:hover { background: var(--gf-bg-hover); color: var(--gf-text); }
   `;
 
   overlay = document.createElement("div");
@@ -245,17 +235,10 @@ function createUI(): void {
   hint = document.createElement("div");
   hint.className = "hint";
   hint.innerHTML = `
-    <div class="hint-icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M6 2v14a2 2 0 0 0 2 2h14"></path>
-        <path d="M18 22V8a2 2 0 0 0-2-2H2"></path>
-      </svg>
-    </div>
-    <div class="hint-text">Click and drag to select capture area</div>
-    <div class="hint-sub">
-      <span><kbd>Enter</kbd> Capture</span>
-      <span><kbd>Esc</kbd> Cancel</span>
-    </div>
+    <span class="hint-icon">${icon("region", 16)}</span>
+    <span>Drag to select an area</span>
+    <kbd>Enter</kbd><span class="soft">capture</span>
+    <kbd>Esc</kbd><span class="soft">cancel</span>
   `;
 
   selection = document.createElement("div");
@@ -278,12 +261,7 @@ function createUI(): void {
   actionsBar.className = "actions-bar";
   actionsBar.innerHTML = `
     <button class="action-btn cancel" id="sf-cancel-btn">Cancel</button>
-    <button class="action-btn primary" id="sf-capture-btn">
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="20 6 9 17 4 12"></polyline>
-      </svg>
-      Capture
-    </button>
+    <button class="action-btn primary" id="sf-capture-btn">${icon("check", 16)}Capture</button>
   `;
   selection.appendChild(actionsBar);
 

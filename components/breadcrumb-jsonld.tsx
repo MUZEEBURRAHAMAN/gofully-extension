@@ -1,4 +1,5 @@
-export function BreadcrumbJsonLd({ name, path }: { name: string; path: string }) {
+
+import { serializeJsonLd } from "@/components/json-ld";export function BreadcrumbJsonLd({ name, path }: { name: string; path: string }) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -11,7 +12,7 @@ export function BreadcrumbJsonLd({ name, path }: { name: string; path: string })
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
     />
   );
 }

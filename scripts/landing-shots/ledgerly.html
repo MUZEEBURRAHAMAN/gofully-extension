@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ledgerly · Maya Okafor</title>
+<style>
+  /* A made-up billing dashboard used for the landing-page screenshots. Every detail is fake. */
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 14px/20px "Inter", system-ui, -apple-system, "Segoe UI", sans-serif; color: #1c1b1a; background: #f7f6f4; -webkit-font-smoothing: antialiased; }
+  .app { display: grid; grid-template-columns: 218px 1fr; min-height: 100vh; }
+  aside { background: #fbfaf9; border-right: 1px solid #e7e4e0; padding: 24px 16px; display: flex; flex-direction: column; gap: 6px; }
+  .logo { display: flex; align-items: center; gap: 10px; font: 600 19px/24px inherit; margin: 0 8px 18px; }
+  .logo i { width: 18px; height: 18px; border-radius: 50%; background: #1e6b43; }
+  .nav { display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 8px; color: #44413d; }
+  .nav.on { background: #efedea; color: #1c1b1a; font-weight: 500; }
+  .nav b { width: 16px; height: 16px; border: 1.5px solid #8a857e; border-radius: 4px; }
+  main { padding: 24px 32px; display: flex; flex-direction: column; gap: 18px; }
+  .head { display: flex; align-items: flex-end; justify-content: space-between; }
+  .crumb { color: #6f6a64; font-size: 13px; }
+  h1 { margin: 2px 0 0; font-size: 19px; line-height: 26px; font-weight: 600; }
+  .right { display: flex; align-items: center; gap: 10px; }
+  .pill { background: #e2f3e9; color: #1e6b43; font-size: 12px; font-weight: 500; padding: 1px 9px; border-radius: 999px; }
+  .menu { position: relative; }
+  .btn { height: 34px; padding: 0 14px; border: 1px solid #d9d5cf; border-radius: 8px; background: #fff; font: 500 13px inherit; color: #1c1b1a; display: flex; align-items: center; gap: 6px; }
+  .btn.dark { background: #1c1b1a; color: #fff; border-color: #1c1b1a; }
+  .drop { display: none; position: absolute; right: 0; top: 40px; width: 220px; padding: 6px; background: #fff; border: 1px solid #e3dfda; border-radius: 10px; box-shadow: 0 12px 32px rgba(28,27,26,.14); z-index: 5; }
+  .menu:hover .drop, .menu.open .drop { display: block; }
+  .drop div { padding: 8px 10px; border-radius: 6px; display: flex; justify-content: space-between; color: #2d2a27; }
+  .drop div:first-child { background: #f1efec; }
+  .drop span { color: #8a857e; font-size: 12px; }
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .card { background: #fff; border: 1px solid #e7e4e0; border-radius: 12px; padding: 18px 20px; }
+  .card h2 { margin: 0 0 12px; font-size: 15px; font-weight: 600; }
+  .row { display: flex; justify-content: space-between; padding: 5px 0; color: #6f6a64; font-size: 13px; }
+  .row b { font-weight: 500; color: #1c1b1a; }
+  .lower { display: grid; grid-template-columns: 1fr 236px; gap: 20px; }
+  .chart { height: 196px; display: flex; flex-direction: column; }
+  .chart .top { display: flex; justify-content: space-between; }
+  .chart .top span { color: #6f6a64; font-size: 13px; }
+  .bars { flex: 1; display: flex; align-items: flex-end; gap: 22px; padding-top: 10px; }
+  .bars i { flex: 1; background: #dcefe4; border-radius: 6px 6px 0 0; position: relative; }
+  .bars i:last-child { background: #1e6b43; }
+  .bars i::before { content: attr(data-v); position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font: 11px inherit; color: #6f6a64; font-style: normal; }
+  .qr { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+  .qr img { width: 112px; height: 112px; image-rendering: pixelated; }
+  .qr p { margin: 0; color: #6f6a64; font-size: 12px; line-height: 16px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="logo"><i></i>Ledgerly</div>
+    <div class="nav"><b></b>Overview</div>
+    <div class="nav"><b></b>Invoices</div>
+    <div class="nav on"><b></b>Customers</div>
+    <div class="nav"><b></b>Payouts</div>
+    <div class="nav"><b></b>Settings</div>
+  </aside>
+  <main>
+    <div class="head">
+      <div><div class="crumb">Customers / Maya Okafor</div><h1 id="name">Maya Okafor</h1></div>
+      <div class="right">
+        <span class="pill">Active</span>
+        <div class="menu" id="export"><button class="btn" type="button">Export ▾</button>
+          <div class="drop"><div>PDF statement <span>⌘P</span></div><div>CSV of invoices <span>⌘E</span></div><div>Share read-only link</div></div>
+        </div>
+        <button class="btn dark" type="button">New invoice</button>
+      </div>
+    </div>
+    <div class="cards">
+      <section class="card" id="contact">
+        <h2>Contact</h2>
+        <div class="row">Email<b>maya.okafor@example.com</b></div>
+        <div class="row">Phone<b>+1 415 555 0134</b></div>
+        <div class="row">Company<b id="company">Okafor Studio</b></div>
+      </section>
+      <section class="card" id="payment">
+        <h2>Payment method</h2>
+        <div class="row">Card<b>Visa 4242 4242 4242 4242</b></div>
+        <div class="row">Expires<b>08 / 28</b></div>
+        <div class="row">API key<b>sk_live_51HxQ2pLk8aT9fQ2</b></div>
+      </section>
+    </div>
+    <div class="lower">
+      <section class="card chart" id="chart">
+        <div class="top"><h2>Monthly revenue</h2><span>Total 2026: $84,210</span></div>
+        <div class="bars">
+          <i data-v="$5,100" style="height:42%"></i><i data-v="$4,800" style="height:38%"></i><i data-v="$6,200" style="height:52%"></i><i data-v="$6,900" style="height:58%"></i>
+          <i data-v="$7,300" style="height:62%"></i><i data-v="$8,000" style="height:70%"></i><i data-v="$8,800" style="height:78%"></i><i data-v="$7,400" style="height:64%"></i><i data-v="$9,200" style="height:84%"></i>
+        </div>
+      </section>
+      <section class="card qr" id="paylink">
+        <h2 style="margin:0">Payment link</h2>
+        <img src="pay-qr.png" alt="QR code for the invoice payment link">
+        <p>Invoice 2026-0142<br>Scan to pay $1,240.00</p>
+      </section>
+    </div>
+  </main>
+</div>
+</body>
+</html>

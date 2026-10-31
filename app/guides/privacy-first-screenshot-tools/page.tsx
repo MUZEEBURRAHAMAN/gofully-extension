@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
-import { BlueprintFrame } from "@/components/blueprint-frame";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { RelatedGuides } from "@/components/related-guides";
+import { PageHeader, CtaBand } from "@/components/site/content";
+import { serializeJsonLd } from "@/components/json-ld";
 
 const CWS_URL =
   "https://chromewebstore.google.com/detail/gofully-full-page-screens/akfbmhmdlbmljklgajkgoekobofhhofc";
@@ -40,12 +41,12 @@ export default function PrivacyFirstScreenshotToolsGuide() {
     <div className="gf-industry min-h-screen">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(articleJsonLd) }}
       />
       <SiteNav />
 
-      <div style={{ padding: "36px 24px 0" }}>
-        <div className="mx-auto" style={{ maxWidth: 840 }}>
+      <div className="gf-crumbs">
+        <div>
           <Breadcrumbs
             items={[
               { label: "Guides", href: "/guides" },
@@ -55,36 +56,24 @@ export default function PrivacyFirstScreenshotToolsGuide() {
         </div>
       </div>
 
-      <div className="text-center" style={{ padding: "40px 24px 44px" }}>
-        <div className="mx-auto" style={{ maxWidth: 780 }}>
-          <h1 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(28px, 6vw, 46px)", lineHeight: 1.15, letterSpacing: "-0.01em", marginTop: 12 }}>
-            Privacy-First Screenshot Tools: Why Offline Capture Matters
-          </h1>
-          <p className="mx-auto" style={{ fontSize: "16px", lineHeight: 1.65, color: "rgba(29,31,32,.6)", maxWidth: 640, marginTop: 18 }}>
-            Your screenshots contain more sensitive data than you think. Passwords, API keys, internal dashboards, customer PII, financial data — all visible in a single capture. Where that image goes next matters.
-          </p>
-          <div className="flex items-center justify-center gap-4 text-[12px] text-neutral-400 mt-6">
-            <span>By GoFully Security Team</span>
-            <span>·</span>
-            <span>Published September 2026</span>
-            <span>·</span>
-            <span>6 min read</span>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        title="Privacy-First Screenshot Tools: Why Offline Capture Matters"
+        lede="Your screenshots contain more sensitive data than you think. Passwords, API keys, internal dashboards, customer PII, financial data — all visible in a single capture. Where that image goes next matters."
+        meta={["By GoFully Security Team", "Published September 2026", "6 min read"]}
+      />
 
-      <div style={{ padding: "0 24px 80px" }}>
-        <div className="mx-auto" style={{ maxWidth: 840 }}>
-          <BlueprintFrame className="bg-white p-8 md:p-12 space-y-10">
+      <div className="gf-article-wrap">
+        <div>
+          <article className="gf-article">
 
             <section className="space-y-4">
-              <h2 className="gf-heading-font font-semibold text-[24px] text-[var(--gf-color-text)]">
+              <h2>
                 The Hidden Risk in Screenshot Extensions
               </h2>
-              <p className="text-[15px] leading-relaxed text-neutral-600">
+              <p className="gf-p">
                 Most popular screenshot extensions require you to create an account, upload your screenshots to their cloud, or both. This means every time you capture a page, a copy of your screen — including everything visible on it — potentially leaves your machine and lands on someone else&apos;s server.
               </p>
-              <p className="text-[15px] leading-relaxed text-neutral-600">
+              <p className="gf-p">
                 For a personal blog post, that&apos;s probably fine. But for these everyday scenarios, it&apos;s a real risk:
               </p>
               <ul className="space-y-2 text-[14px] text-neutral-600 list-disc pl-5">
@@ -96,50 +85,50 @@ export default function PrivacyFirstScreenshotToolsGuide() {
               </ul>
             </section>
 
-            <section className="space-y-4 pt-4 border-t border-neutral-200">
-              <h2 className="gf-heading-font font-semibold text-[24px] text-[var(--gf-color-text)]">
+            <section className="gf-sep">
+              <h2>
                 Cloud vs. Offline: What Actually Happens to Your Screenshots
               </h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-px border" style={{ background: "rgba(29,31,32,.1)", borderColor: "rgba(29,31,32,.1)" }}>
-                <div className="bg-white p-5">
-                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-3">Cloud-Based Extensions</h3>
-                  <ul className="space-y-2 text-[13.5px] text-neutral-500">
+              <div className="gf-vs">
+                <div className="gf-tcard">
+                  <h3>Cloud-Based Extensions</h3>
+                  <ul className="gf-checks">
                     <li className="flex items-start gap-2">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(239,68,68,.7)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 mt-[2px]"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="gf-no-red flex-shrink-0 mt-[2px]"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
                       Screenshots uploaded to external servers
                     </li>
                     <li className="flex items-start gap-2">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(239,68,68,.7)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 mt-[2px]"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="gf-no-red flex-shrink-0 mt-[2px]"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
                       Account required — email and usage tracked
                     </li>
                     <li className="flex items-start gap-2">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(239,68,68,.7)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 mt-[2px]"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="gf-no-red flex-shrink-0 mt-[2px]"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
                       OCR and annotation processed server-side
                     </li>
                     <li className="flex items-start gap-2">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(239,68,68,.7)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 mt-[2px]"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="gf-no-red flex-shrink-0 mt-[2px]"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
                       Data retention policies vary and can change
                     </li>
                   </ul>
                 </div>
-                <div className="p-5" style={{ background: "rgba(22,103,242,.03)" }}>
-                  <h3 className="font-semibold text-[15px] mb-3" style={{ color: "var(--gf-color-accent)" }}>Offline-First Extensions</h3>
-                  <ul className="space-y-2 text-[13.5px]" style={{ color: "rgba(29,31,32,.6)" }}>
+                <div className="gf-tcard gf-tcard--accent">
+                  <h3>Offline-First Extensions</h3>
+                  <ul className="gf-checks">
                     <li className="flex items-start gap-2">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gf-color-accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 mt-[2px]"><path d="M20 6 9 17l-5-5" /></svg>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="gf-yes flex-shrink-0 mt-[2px]"><path d="M20 6 9 17l-5-5" /></svg>
                       All processing happens in the browser tab
                     </li>
                     <li className="flex items-start gap-2">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gf-color-accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 mt-[2px]"><path d="M20 6 9 17l-5-5" /></svg>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="gf-yes flex-shrink-0 mt-[2px]"><path d="M20 6 9 17l-5-5" /></svg>
                       No account, no tracking, no telemetry
                     </li>
                     <li className="flex items-start gap-2">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gf-color-accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 mt-[2px]"><path d="M20 6 9 17l-5-5" /></svg>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="gf-yes flex-shrink-0 mt-[2px]"><path d="M20 6 9 17l-5-5" /></svg>
                       OCR runs via local WebAssembly — no server
                     </li>
                     <li className="flex items-start gap-2">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gf-color-accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 mt-[2px]"><path d="M20 6 9 17l-5-5" /></svg>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="gf-yes flex-shrink-0 mt-[2px]"><path d="M20 6 9 17l-5-5" /></svg>
                       Nothing to retain — data never leaves the device
                     </li>
                   </ul>
@@ -147,24 +136,24 @@ export default function PrivacyFirstScreenshotToolsGuide() {
               </div>
             </section>
 
-            <section className="space-y-4 pt-4 border-t border-neutral-200">
-              <h2 className="gf-heading-font font-semibold text-[24px] text-[var(--gf-color-text)]">
+            <section className="gf-sep">
+              <h2>
                 How Popular Extensions Handle Your Data
               </h2>
               <div className="overflow-x-auto">
-                <table className="w-full text-[13.5px]" style={{ borderCollapse: "collapse" }}>
+                <table className="gf-compare">
                   <thead>
                     <tr>
-                      <th className="text-left p-3 border-b-2 border-neutral-200 font-semibold text-neutral-500" style={{ fontSize: 12 }}>Extension</th>
-                      <th className="text-center p-3 border-b-2 border-neutral-200 font-semibold text-neutral-500" style={{ fontSize: 12 }}>Account Required</th>
-                      <th className="text-center p-3 border-b-2 border-neutral-200 font-semibold text-neutral-500" style={{ fontSize: 12 }}>Cloud Upload</th>
-                      <th className="text-center p-3 border-b-2 border-neutral-200 font-semibold text-neutral-500" style={{ fontSize: 12 }}>Works Offline</th>
-                      <th className="text-center p-3 border-b-2 border-neutral-200 font-semibold text-neutral-500" style={{ fontSize: 12 }}>Local OCR</th>
+                      <th>Extension</th>
+                      <th>Account Required</th>
+                      <th>Cloud Upload</th>
+                      <th>Works Offline</th>
+                      <th>Local OCR</th>
                     </tr>
                   </thead>
                   <tbody className="text-neutral-600">
-                    <tr style={{ background: "rgba(22,103,242,.04)" }}>
-                      <td className="p-3 font-semibold" style={{ color: "var(--gf-color-accent)" }}>GoFully</td>
+                    <tr>
+                      <td className="p-3 font-semibold">GoFully</td>
                       <td className="p-3 text-center font-medium text-green-600">No</td>
                       <td className="p-3 text-center font-medium text-green-600">Never</td>
                       <td className="p-3 text-center font-medium text-green-600">Yes</td>
@@ -206,8 +195,8 @@ export default function PrivacyFirstScreenshotToolsGuide() {
               </p>
             </section>
 
-            <section className="space-y-4 pt-4 border-t border-neutral-200">
-              <h2 className="gf-heading-font font-semibold text-[24px] text-[var(--gf-color-text)]">
+            <section className="gf-sep">
+              <h2>
                 What to Look for in a Privacy-Respecting Screenshot Tool
               </h2>
               <div className="space-y-3">
@@ -221,22 +210,22 @@ export default function PrivacyFirstScreenshotToolsGuide() {
                   <div key={item.title} className="flex gap-3">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gf-color-accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 mt-0.5"><path d="M20 6 9 17l-5-5" /></svg>
                     <div>
-                      <h3 className="font-semibold text-neutral-800 text-[15px]">{item.title}</h3>
-                      <p className="text-[14px] text-neutral-600 mt-1">{item.desc}</p>
+                      <h3 className="gf-h3">{item.title}</h3>
+                      <p className="gf-small">{item.desc}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </section>
 
-            <section className="space-y-4 pt-4 border-t border-neutral-200">
-              <h2 className="gf-heading-font font-semibold text-[22px] text-[var(--gf-color-text)]">
+            <section className="gf-sep">
+              <h2>
                 How GoFully Handles Privacy
               </h2>
-              <p className="text-[15px] leading-relaxed text-neutral-600">
+              <p className="gf-p">
                 GoFully is built on a zero-upload architecture. Every feature — scroll capture, annotation, redaction, OCR text extraction, beautification, and PDF export — runs entirely within your browser tab using client-side JavaScript and WebAssembly. The extension declares only the minimum required Chrome permissions and makes no network requests during any operation.
               </p>
-              <p className="text-[15px] leading-relaxed text-neutral-600">
+              <p className="gf-p">
                 There is no account system, no cloud storage, no analytics SDK, and no telemetry. Your screenshots exist only in your browser&apos;s local memory until you choose to save or copy them. When you close the tab, they&apos;re gone — unless you explicitly downloaded them.
               </p>
               <p className="text-[14px] text-neutral-500">
@@ -244,32 +233,16 @@ export default function PrivacyFirstScreenshotToolsGuide() {
               </p>
             </section>
 
-          </BlueprintFrame>
+          </article>
         </div>
       </div>
 
       <RelatedGuides currentSlug="privacy-first-screenshot-tools" />
 
-      <div className="text-center" style={{ background: "var(--gf-color-text)", padding: "56px 24px" }}>
-        <h2 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(20px, 5vw, 28px)", color: "#fff", letterSpacing: "-0.01em" }}>
-          Your screenshots should stay yours
-        </h2>
-        <p style={{ fontSize: 14, color: "rgba(255,255,255,.5)", marginTop: 10 }}>
-          Free forever. No account. 100% offline.
-        </p>
-        <div style={{ marginTop: 24 }}>
-          <a
-            href={CWS_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center justify-center gap-2 gf-heading-font font-semibold"
-            style={{ height: 48, padding: "0 26px", background: "var(--gf-color-accent)", color: "#fff", fontSize: 14, letterSpacing: "0.02em" }}
-          >
-            Add to Chrome — It&apos;s Free
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
-          </a>
-        </div>
-      </div>
+      <CtaBand
+        title="Your screenshots should stay yours"
+        sub="Free forever. No account. 100% offline."
+      />
 
       <SiteFooterIndustry activeHref="/guides" />
     </div>

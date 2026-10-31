@@ -37,7 +37,7 @@ test.describe("17 - Search past captures by their text", () => {
 
     await popup.locator("#historySearch").fill("zebra giraffe");
     await expect(popup.locator("#historyGrid .hist-item")).toHaveCount(0);
-    await expect(popup.locator("#historyGrid .hist-empty")).toHaveText("No captures match that search");
+    await expect(popup.locator("#historyGrid .hist-empty")).toContainText("Nothing matches “zebra giraffe”");
 
     // the URL is searchable too
     await popup.locator("#historySearch").fill("localhost");

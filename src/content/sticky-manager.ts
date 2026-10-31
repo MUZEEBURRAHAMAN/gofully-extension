@@ -117,6 +117,8 @@ export function restoreFrozenElements(): void {
 interface HiddenSticky {
   el: HTMLElement;
   originalOpacity: string;
+  /** Set when a position:sticky element was put back into normal flow instead of being hidden. */
+  unstuck?: { position: [string, string]; top: [string, string]; bottom: [string, string] };
 }
 
 let hiddenStickyElements: HiddenSticky[] = [];
@@ -140,6 +142,24 @@ export function hideStickyElements(): StickyElement[] {
     if (alreadyHidden.has(el)) continue;
 
     alreadyHidden.add(el);
+
+    // A pinned block (position: sticky) is page content: it belongs at its natural place in the flow. Hiding
+    // it would leave an empty hole where it should be. Putting it back into flow changes nothing about the
+    // layout (sticky takes the same space as relative), it only stops it following the viewport.
+    // Fixed elements (headers, floating buttons) are not part of the flow, so those are hidden as before.
+    if (getComputedStyle(el).position === "sticky") {
+      const keep = (prop: string): [string, string] => [el.style.getPropertyValue(prop), el.style.getPropertyPriority(prop)];
+      hiddenStickyElements.push({
+        el,
+        originalOpacity: el.style.opacity,
+        unstuck: { position: keep("position"), top: keep("top"), bottom: keep("bottom") },
+      });
+      el.style.setProperty("position", "relative", "important");
+      el.style.setProperty("top", "auto", "important");
+      el.style.setProperty("bottom", "auto", "important");
+      continue;
+    }
+
     hiddenStickyElements.push({
       el,
       originalOpacity: el.style.opacity,
@@ -162,6 +182,14 @@ export function hideStickyElements(): StickyElement[] {
 export function restoreStickyElements(): void {
   for (const saved of hiddenStickyElements) {
     try {
+      if (saved.unstuck) {
+        for (const prop of ["position", "top", "bottom"] as const) {
+          const [value, priority] = saved.unstuck[prop];
+          if (value) saved.el.style.setProperty(prop, value, priority);
+          else saved.el.style.removeProperty(prop);
+        }
+        continue;
+      }
       if (saved.originalOpacity) {
         saved.el.style.setProperty("opacity", saved.originalOpacity);
       } else {

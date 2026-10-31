@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooterIndustry } from "@/components/site-footer-industry";
-import { BlueprintFrame } from "@/components/blueprint-frame";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { RelatedGuides } from "@/components/related-guides";
+import { PageHeader, CtaBand } from "@/components/site/content";
+import { serializeJsonLd } from "@/components/json-ld";
 
 const CWS_URL =
   "https://chromewebstore.google.com/detail/gofully-full-page-screens/akfbmhmdlbmljklgajkgoekobofhhofc";
@@ -55,12 +56,12 @@ export default function SaveWebpageAsPdfGuide() {
     <div className="gf-industry min-h-screen">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(articleJsonLd) }}
       />
       <SiteNav />
 
-      <div style={{ padding: "36px 24px 0" }}>
-        <div className="mx-auto" style={{ maxWidth: 840 }}>
+      <div className="gf-crumbs">
+        <div>
           <Breadcrumbs
             items={[
               { label: "Guides", href: "/guides" },
@@ -70,33 +71,21 @@ export default function SaveWebpageAsPdfGuide() {
         </div>
       </div>
 
-      <div className="text-center" style={{ padding: "40px 24px 44px" }}>
-        <div className="mx-auto" style={{ maxWidth: 780 }}>
-          <h1 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(28px, 6vw, 46px)", lineHeight: 1.15, letterSpacing: "-0.01em", marginTop: 12 }}>
-            How to Save a Full Webpage as PDF in Chrome
-          </h1>
-          <p className="mx-auto" style={{ fontSize: "16px", lineHeight: 1.65, color: "rgba(29,31,32,.6)", maxWidth: 640, marginTop: 18 }}>
-            Chrome&apos;s built-in &ldquo;Save as PDF&rdquo; cuts off content, breaks layouts, and strips interactive elements. Here are three better approaches — and the one that actually works for long, dynamic pages.
-          </p>
-          <div className="flex items-center justify-center gap-4 text-[12px] text-neutral-400 mt-6">
-            <span>By GoFully Team</span>
-            <span>·</span>
-            <span>Published September 2026</span>
-            <span>·</span>
-            <span>5 min read</span>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        title="How to Save a Full Webpage as PDF in Chrome"
+        lede="Chrome’s built-in &ldquo;Save as PDF&rdquo; cuts off content, breaks layouts, and strips interactive elements. Here are three better approaches — and the one that actually works for long, dynamic pages."
+        meta={["By GoFully Team", "Published September 2026", "5 min read"]}
+      />
 
-      <div style={{ padding: "0 24px 80px" }}>
-        <div className="mx-auto" style={{ maxWidth: 840 }}>
-          <BlueprintFrame className="bg-white p-8 md:p-12 space-y-10">
+      <div className="gf-article-wrap">
+        <div>
+          <article className="gf-article">
 
             <section className="space-y-4">
-              <h2 id="problem" className="gf-heading-font font-semibold text-[24px] text-[var(--gf-color-text)]">
+              <h2 id="problem">
                 Why &ldquo;Print &rarr; Save as PDF&rdquo; Fails on Modern Websites
               </h2>
-              <p className="text-[15px] leading-relaxed text-neutral-600">
+              <p className="gf-p">
                 When you press Ctrl+P (Cmd+P on Mac) and select &ldquo;Save as PDF,&rdquo; Chrome renders the page through its print stylesheet. This causes several problems:
               </p>
               <ul className="space-y-2 text-[14px] text-neutral-600 list-disc pl-5">
@@ -108,19 +97,19 @@ export default function SaveWebpageAsPdfGuide() {
             </section>
 
             <section id="methods" className="space-y-6 pt-4 border-t border-neutral-200">
-              <h2 className="gf-heading-font font-semibold text-[24px] text-[var(--gf-color-text)]">
+              <h2>
                 Three Methods Compared
               </h2>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-[13.5px]" style={{ borderCollapse: "collapse" }}>
+                <table className="gf-compare">
                   <thead>
                     <tr>
-                      <th className="text-left p-3 border-b-2 border-neutral-200 font-semibold text-neutral-500" style={{ fontSize: 12 }}>Method</th>
-                      <th className="text-center p-3 border-b-2 border-neutral-200 font-semibold text-neutral-500" style={{ fontSize: 12 }}>Lazy Images</th>
-                      <th className="text-center p-3 border-b-2 border-neutral-200 font-semibold text-neutral-500" style={{ fontSize: 12 }}>Pagination</th>
-                      <th className="text-center p-3 border-b-2 border-neutral-200 font-semibold text-neutral-500" style={{ fontSize: 12 }}>Annotations</th>
-                      <th className="text-center p-3 border-b-2 border-neutral-200 font-semibold text-neutral-500" style={{ fontSize: 12 }}>Difficulty</th>
+                      <th>Method</th>
+                      <th>Lazy Images</th>
+                      <th>Pagination</th>
+                      <th>Annotations</th>
+                      <th>Difficulty</th>
                     </tr>
                   </thead>
                   <tbody className="text-neutral-600">
@@ -138,59 +127,59 @@ export default function SaveWebpageAsPdfGuide() {
                       <td className="p-3 text-center">None</td>
                       <td className="p-3 text-center">Medium</td>
                     </tr>
-                    <tr style={{ background: "rgba(22,103,242,.04)" }}>
-                      <td className="p-3 font-semibold" style={{ color: "var(--gf-color-accent)" }}>GoFully Extension</td>
-                      <td className="p-3 text-center font-medium" style={{ color: "var(--gf-color-accent)" }}>Loaded</td>
-                      <td className="p-3 text-center font-medium" style={{ color: "var(--gf-color-accent)" }}>Auto A4 pages</td>
-                      <td className="p-3 text-center font-medium" style={{ color: "var(--gf-color-accent)" }}>Full editor</td>
-                      <td className="p-3 text-center font-medium" style={{ color: "var(--gf-color-accent)" }}>1 click</td>
+                    <tr>
+                      <td className="p-3 font-semibold">GoFully Extension</td>
+                      <td className="p-3 text-center font-medium">Loaded</td>
+                      <td className="p-3 text-center font-medium">Auto A4 pages</td>
+                      <td className="p-3 text-center font-medium">Full editor</td>
+                      <td className="p-3 text-center font-medium">1 click</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
             </section>
 
-            <section id="capture" className="space-y-4 pt-4 border-t border-neutral-200">
-              <h2 className="gf-heading-font font-semibold text-[24px] text-[var(--gf-color-text)]">
+            <section id="capture" className="gf-sep">
+              <h2>
                 Step-by-Step: Full Page to PDF in Under 30 Seconds
               </h2>
 
               <div className="space-y-4 pt-2">
                 <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-600 text-white font-bold text-sm flex items-center justify-center">1</div>
+                  <div className="gf-num">1</div>
                   <div>
-                    <h3 className="font-semibold text-neutral-800 text-[15px]">Install GoFully (2 seconds)</h3>
-                    <p className="text-[14px] text-neutral-600 mt-1">
+                    <h3 className="gf-h3">Install GoFully (2 seconds)</h3>
+                    <p className="gf-small">
                       Add GoFully from the <a href={CWS_URL} target="_blank" rel="noreferrer" className="text-blue-600 underline">Chrome Web Store</a>. No account needed — it works immediately.
                     </p>
                   </div>
                 </div>
 
                 <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-600 text-white font-bold text-sm flex items-center justify-center">2</div>
+                  <div className="gf-num">2</div>
                   <div>
-                    <h3 className="font-semibold text-neutral-800 text-[15px]">Capture the Full Page</h3>
-                    <p className="text-[14px] text-neutral-600 mt-1">
+                    <h3 className="gf-h3">Capture the Full Page</h3>
+                    <p className="gf-small">
                       Click the GoFully icon in your toolbar and select <strong>Full Page</strong>. The extension automatically scrolls through the entire page, waits for lazy-loaded images and iframes, then stitches everything into a single high-resolution image.
                     </p>
                   </div>
                 </div>
 
                 <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-600 text-white font-bold text-sm flex items-center justify-center">3</div>
+                  <div className="gf-num">3</div>
                   <div>
-                    <h3 className="font-semibold text-neutral-800 text-[15px]">Annotate If Needed (Optional)</h3>
-                    <p className="text-[14px] text-neutral-600 mt-1">
+                    <h3 className="gf-h3">Annotate If Needed (Optional)</h3>
+                    <p className="gf-small">
                       Click <strong>Edit</strong> to open the visual editor. Add arrows, callouts, or blur sensitive content before exporting. Everything stays local.
                     </p>
                   </div>
                 </div>
 
                 <div className="flex gap-3" id="export">
-                  <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-600 text-white font-bold text-sm flex items-center justify-center">4</div>
+                  <div className="gf-num">4</div>
                   <div>
-                    <h3 className="font-semibold text-neutral-800 text-[15px]">Export as PDF</h3>
-                    <p className="text-[14px] text-neutral-600 mt-1">
+                    <h3 className="gf-h3">Export as PDF</h3>
+                    <p className="gf-small">
                       Click the <strong>PDF</strong> button in the result bar. GoFully splits the screenshot into properly paginated A4 pages with margins — ready to attach to an email, upload to a CMS, or archive.
                     </p>
                   </div>
@@ -198,26 +187,26 @@ export default function SaveWebpageAsPdfGuide() {
               </div>
             </section>
 
-            <section className="space-y-4 pt-4 border-t border-neutral-200">
-              <h2 className="gf-heading-font font-semibold text-[22px] text-[var(--gf-color-text)]">
+            <section className="gf-sep">
+              <h2>
                 When to Use Each Format
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="border p-4 bg-neutral-50">
-                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">PDF</h3>
-                  <p className="text-[13px] text-neutral-600">
+                <div className="gf-tcard">
+                  <h3 className="gf-h3">PDF</h3>
+                  <p className="gf-small">
                     Best for archival, legal documentation, client deliverables, and pages you need to print. Properly paginated with margins.
                   </p>
                 </div>
-                <div className="border p-4 bg-neutral-50">
-                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">PNG</h3>
-                  <p className="text-[13px] text-neutral-600">
+                <div className="gf-tcard">
+                  <h3 className="gf-h3">PNG</h3>
+                  <p className="gf-small">
                     Best for bug reports, design reviews, and Slack/Teams sharing. Lossless quality, large file size for long pages.
                   </p>
                 </div>
-                <div className="border p-4 bg-neutral-50">
-                  <h3 className="font-semibold text-neutral-800 text-[15px] mb-1">WebP / JPG</h3>
-                  <p className="text-[13px] text-neutral-600">
+                <div className="gf-tcard">
+                  <h3 className="gf-h3">WebP / JPG</h3>
+                  <p className="gf-small">
                     Best for blog posts, social media, and documentation sites. Smaller file sizes with adjustable quality.
                   </p>
                 </div>
@@ -225,7 +214,7 @@ export default function SaveWebpageAsPdfGuide() {
             </section>
 
             <section className="space-y-3 pt-4 border-t border-neutral-200">
-              <h2 className="gf-heading-font font-semibold text-[22px] text-[var(--gf-color-text)]">
+              <h2>
                 FAQ
               </h2>
               <details className="text-[14px] text-neutral-600 border-b border-neutral-100 pb-3">
@@ -242,32 +231,16 @@ export default function SaveWebpageAsPdfGuide() {
               </details>
             </section>
 
-          </BlueprintFrame>
+          </article>
         </div>
       </div>
 
       <RelatedGuides currentSlug="how-to-save-webpage-as-pdf" />
 
-      <div className="text-center" style={{ background: "var(--gf-color-text)", padding: "56px 24px" }}>
-        <h2 className="gf-heading-font font-semibold" style={{ fontSize: "clamp(20px, 5vw, 28px)", color: "#fff", letterSpacing: "-0.01em" }}>
-          Ready to save full pages as clean PDFs?
-        </h2>
-        <p style={{ fontSize: 14, color: "rgba(255,255,255,.5)", marginTop: 10 }}>
-          Free forever. No account. Works offline.
-        </p>
-        <div style={{ marginTop: 24 }}>
-          <a
-            href={CWS_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center justify-center gap-2 gf-heading-font font-semibold"
-            style={{ height: 48, padding: "0 26px", background: "var(--gf-color-accent)", color: "#fff", fontSize: 14, letterSpacing: "0.02em" }}
-          >
-            Add to Chrome — It&apos;s Free
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
-          </a>
-        </div>
-      </div>
+      <CtaBand
+        title="Ready to save full pages as clean PDFs?"
+        sub="Free forever. No account. Works offline."
+      />
 
       <SiteFooterIndustry activeHref="/guides" />
     </div>
