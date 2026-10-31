@@ -1,5 +1,5 @@
 dist/
 .originkit/
 src/site/
-site.css
-index.html
+/site.css
+/index.html
