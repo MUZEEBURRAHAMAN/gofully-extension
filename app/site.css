@@ -368,7 +368,7 @@
 .gf-form-foot button { cursor: pointer; border: 0; }
 .gf-form-done { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 32px 0; text-align: center; animation: gf-enter .4s cubic-bezier(.16, 1, .3, 1); }
 .gf-form-done h3 { margin: 0; font-size: 20px; }
-.gf-form-done button { cursor: pointer; margin-top: 8px; }
+.gf-form-done > button { cursor: pointer; margin-top: 8px; }
 .gf-form-done-ico { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 50%; corner-shape: round; background: var(--gf-success-bg); color: var(--gf-success); }
 .gf-channels { display: flex; flex-direction: column; gap: 12px; }
 .gf-channel { display: flex; gap: 14px; padding: 20px 22px; border: 1px solid var(--gf-border); border-radius: var(--gf-r-lg); background: var(--gf-bg-surface); color: var(--gf-text); text-decoration: none; transition: border-color .2s, transform .2s cubic-bezier(.16,1,.3,1), box-shadow .2s; }
@@ -409,6 +409,13 @@
 .gf-reason:has(input:focus-visible) { box-shadow: var(--gf-ring); }
 .gf-btn-p:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
 .gf-bye-note { margin: 0; text-align: left; }
+.gf-bye-done { align-items: center; gap: 14px; text-align: center; }
+.gf-bye-done .gf-small { max-width: 38ch; margin: 0; text-wrap: pretty; }
+.gf-bye-art { width: min(240px, 70%); margin: -8px 0 4px; }
+.gf-bye-again { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 10px; padding-top: 22px; border-top: 1px solid var(--gf-border); }
+.gf-bye-again-label { margin: 0; font-size: 13px; font-weight: 500; color: var(--gf-text-3); }
+.gf-bye-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; }
+@media (max-width: 420px) { .gf-bye-actions { width: 100%; flex-direction: column; align-items: stretch; } .gf-bye-actions > * { justify-content: center; } }
 
 /* ── Guide extras ── */
 .gf-callout--danger { background: var(--gf-error-bg); color: var(--gf-text); }
