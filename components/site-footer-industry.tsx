@@ -35,6 +35,7 @@ const COLUMNS: Array<{ title: string; links: Array<{ label: string; href: string
 const REPO_URL = "https://github.com/MUZEEBURRAHAMAN/gofully-extension";
 
 const BADGES = [
+  { href: "https://www.producthunt.com/products/gofully?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-gofully", src: "/badges/producthunt.svg", alt: "GoFully - The screenshot studio that stays on your device | Product Hunt", w: 250, h: 54 },
   { href: "https://dofollow.tools", src: "/badges/dofollow-tools.svg", alt: "Featured on Dofollow.Tools", w: 200, h: 54 },
   { href: "https://alternativeto.net/software/gofully/about/?utm_source=badge&utm_medium=referral", src: "/badges/alternativeto.svg", alt: "GoFully on AlternativeTo", w: 166, h: 54 },
   { href: "https://ufind.best/products/gofully", src: "/badges/ufind-best.svg", alt: "Featured on ufind.best", w: 150, h: 48 },

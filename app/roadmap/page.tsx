@@ -24,11 +24,15 @@ export const metadata: Metadata = {
   },
 };
 
-type Status = "next" | "upcoming" | "later" | "shipped" | "origin";
+type Status = "latest" | "next" | "upcoming" | "later" | "shipped" | "origin";
 type Group = { title?: string; items: React.ReactNode[]; shots?: { src: string; alt: string; w: number; h: number; fit?: "cover" | "contain" }[] };
-type Release = { id: string; tag: string; status: Status; title: string; summary: string; groups: Group[]; note?: React.ReactNode };
+type Shot = { src: string; alt: string; w: number; h: number };
+/** A headline change: a heading, a short paragraph and a real screenshot of it (the changelog pattern). */
+type Highlight = { title: string; body: string; shot?: Shot };
+type Release = { id: string; tag: string; status: Status; date?: string; title: string; summary: string; highlights?: Highlight[]; groups: Group[]; note?: React.ReactNode };
 
 const STATUS: Record<Status, { label: string; tone: string }> = {
+  latest: { label: "Latest", tone: "new" },
   next: { label: "In testing", tone: "new" },
   upcoming: { label: "Upcoming", tone: "blue" },
   later: { label: "Not scheduled", tone: "neutral" },
@@ -38,11 +42,56 @@ const STATUS: Record<Status, { label: string; tone: string }> = {
 
 const RELEASES: Release[] = [
   {
+    id: "v1-2-0",
+    tag: "v1.2.0",
+    status: "upcoming",
+    title: "A more personal editor",
+    summary: "Next, in planning.",
+    groups: [
+      { title: "Editor tools", items: ["Upgraded text tool with color, font and size controls.", "Custom keyboard shortcuts for editor tools."] },
+      { title: "Export & workflow", items: ["Export a capture with its OCR’d text as Markdown."] },
+    ],
+  },
+  {
+    id: "later",
+    tag: "Later",
+    status: "later",
+    title: "Bigger bets, not scheduled yet",
+    summary: "On the list, but further out.",
+    groups: [
+      {
+        items: [
+          <><strong>Multi-tab batch capture</strong> — capture several open tabs in one action, export as one file.</>,
+          <><strong>Structured table extraction</strong> — detect tables in a capture and export as CSV, not just flat text.</>,
+          <><strong>Screen recording</strong> — capture short clips, not just stills.</>,
+          <><strong>GoFully Studio</strong> — a standalone workspace for organizing and editing captures beyond the popup.</>,
+          <><strong>Video annotation</strong> — the same arrows, callouts, and blur tools, extended to recordings.</>,
+        ],
+      },
+    ],
+    note: (
+      <>
+        <strong>Have a request?</strong> This list is still forming. <Link href="/support">Tell us what you’d use next</Link>.
+      </>
+    ),
+  },
+  {
     id: "v1-1-3",
     tag: "v1.1.3",
-    status: "next",
-    title: "Draw, redact and measure on the live page, then finish with Beautify",
-    summary: "The biggest release so far. Built, tested and packaged. Publishing to the Chrome Web Store next, with no new permissions.",
+    status: "latest",
+    date: "November 2026",
+    title: "Redact, measure and draw on the live page, and a full redesign",
+    summary: "The biggest release so far, now on the Chrome Web Store. New tools that work on the live page, a new after-capture stack, a stronger editor and a new look, with no new permissions.",
+    highlights: [
+      { title: "Redact page", body: "Hide emails, card numbers, phone numbers, ID numbers and API keys on the live page before you capture. Click anything else to hide it too, and Done puts the page back.", shot: { src: "/landing/redact-page-3.webp", alt: "Emails, a card number and an API key covered on a live billing page", w: 2560, h: 1680 } },
+      { title: "Measure", body: "Hover any element to see what it is, its size, padding, margin and text style. Click one to see the gap to another, drag for a free ruler, and pick any colour on screen.", shot: { src: "/landing/measure-3.webp", alt: "Two cards measured with the 20 px gap between them", w: 2560, h: 1680 } },
+      { title: "Delayed capture", body: "Wait 3, 5 or 10 seconds before a full-page or visible capture, so you can open a menu or hover a tooltip first. The countdown never shows up in the image.", shot: { src: "/landing/delay-3.webp", alt: "A countdown on the page while the Export menu is open", w: 2560, h: 1680 } },
+      { title: "Capture Element", body: "Hover any card, table or section, use the arrow keys to pick its parent or child, and click to capture just that part.", shot: { src: "/landing/element-4.webp", alt: "A payment card captured as an element, copied to the clipboard", w: 2560, h: 1680 } },
+      { title: "Draw on page", body: "Pen, highlighter, arrows, shapes, text and sticky notes right on a website, then capture it with your marks in place. Marks are saved for each page on your device.", shot: { src: "/landing/draw-4.webp", alt: "Arrows and a note drawn on a live article, captured with the marks", w: 2560, h: 1680 } },
+      { title: "The capture stack", body: "Recent captures stay in a small stack on the page. Copy, save, edit or pin any of them, or drag one straight onto your desktop.", shot: { src: "/landing/stack-1.webp", alt: "The capture stack on the page with actions for each capture", w: 2560, h: 1680 } },
+      { title: "Beautify", body: "Put a capture on a gradient, your own image or a generated wallpaper, add a border, a watermark or a 3D mockup, and save it all as a preset you can share.", shot: { src: "/landing/beautify-4.webp", alt: "A capture on a blue gradient, saved as the preset Launch post", w: 2560, h: 1680 } },
+      { title: "A full redesign", body: "Every surface rebuilt on one design system: Navy and Sky, Inter with Instrument Serif, squircle corners and one icon set across the popup, the editor, settings and the website.", shot: { src: "/roadmap/popup-before-after.webp", alt: "The popup before, in 1.1.2, and after, in 1.1.3", w: 1361, h: 1130 } },
+    ],
     groups: [
       {
         title: "Work on the live page",
@@ -103,43 +152,10 @@ const RELEASES: Release[] = [
     ],
   },
   {
-    id: "v1-2-0",
-    tag: "v1.2.0",
-    status: "upcoming",
-    title: "A more personal editor",
-    summary: "The next release after 1.1.3, in planning.",
-    groups: [
-      { title: "Editor tools", items: ["Upgraded text tool with color, font and size controls.", "Custom keyboard shortcuts for editor tools."] },
-      { title: "Export & workflow", items: ["Export a capture with its OCR’d text as Markdown."] },
-    ],
-  },
-  {
-    id: "later",
-    tag: "Later",
-    status: "later",
-    title: "Bigger bets, not scheduled yet",
-    summary: "On the list, but further out.",
-    groups: [
-      {
-        items: [
-          <><strong>Multi-tab batch capture</strong> — capture several open tabs in one action, export as one file.</>,
-          <><strong>Structured table extraction</strong> — detect tables in a capture and export as CSV, not just flat text.</>,
-          <><strong>Screen recording</strong> — capture short clips, not just stills.</>,
-          <><strong>GoFully Studio</strong> — a standalone workspace for organizing and editing captures beyond the popup.</>,
-          <><strong>Video annotation</strong> — the same arrows, callouts, and blur tools, extended to recordings.</>,
-        ],
-      },
-    ],
-    note: (
-      <>
-        <strong>Have a request?</strong> This list is still forming. <Link href="/support">Tell us what you’d use next</Link>.
-      </>
-    ),
-  },
-  {
     id: "v1-1-2",
     tag: "v1.1.2",
     status: "shipped",
+    date: "September 2026",
     title: "Capture reliability, history, and a better homepage",
     summary: "Competitive improvements across the extension and website — more reliable captures, a redesigned export flow, and a complete homepage overhaul.",
     groups: [
@@ -203,6 +219,7 @@ const RELEASES: Release[] = [
     id: "v1-1-1",
     tag: "v1.1.1",
     status: "shipped",
+    date: "September 2026",
     title: "A complete redesign, top to bottom",
     summary: "Every screen rebuilt on one consistent design system, refreshed onboarding, and export bugs that had been broken for a while.",
     groups: [
@@ -246,6 +263,7 @@ const RELEASES: Release[] = [
     id: "v1-0-0",
     tag: "v1.0.0",
     status: "shipped",
+    date: "August 2026",
     title: "Capture, read, and mark it up — all on-device",
     summary: "The first release shipped the whole workflow at once: capture a page, pull text out of it, mark it up, and export — with zero server round-trip at any step.",
     groups: [
@@ -286,74 +304,56 @@ const RELEASES: Release[] = [
   },
 ];
 
-const SPOTLIGHT: Array<{ title: string; body: string; items: string[] }> = [
-  { title: "Five new ways to work on the page", body: "Tools that act on the live page before you capture.", items: ["Draw on Page", "Redact page", "Measure", "Capture Element", "Delayed capture"] },
-  { title: "A better after-capture", body: "Every capture stays one click away.", items: ["Capture stack with per-capture actions", "Your choice of after-capture action", "QR codes and barcodes read on device", "Pin, history search, guides"] },
-  { title: "A stronger editor", body: "From raw screenshot to something worth posting.", items: ["Beautify with 3D mockups and presets", "Auto-redact with review", "Crop keeps annotations editable"] },
-  { title: "A smarter capture engine", body: "Pages that animate as you scroll now capture cleanly.", items: ["Landing-page mode", "Animations settled before each photo", "Zoom to 1000% on tall pages"] },
-  { title: "One design system", body: "The extension and the website now look and behave as one product.", items: ["Shared colors, type and icons", "Full-width Settings and Help", "Confirm before saving annotations"] },
-  { title: "Hardened and tested", body: "Reviewed for security and tested against hostile input.", items: ["Locked permission list, no new permissions", "No remote code, no network from extension pages", "No known dependency vulnerabilities", "Hostile-content tests included"] },
-];
-
-function Spotlight() {
-  return (
-    <section className="gf-rm-spot" id="v1-1-3-overview" aria-labelledby="spot-title">
-      <div className="gf-rm-spot-head">
-        <span className="gf-badge gf-badge--new">Publishing next</span>
-        <h2 id="spot-title">1.1.3 is the biggest release so far</h2>
-        <p>Live-page tools, a new after-capture experience, a stronger editor, a smarter capture engine, a full redesign and a security review, all in one update. It adds no new permissions, and everything still runs on your device.</p>
-      </div>
-      <div className="gf-rm-spot-grid">
-        {SPOTLIGHT.map((c) => (
-          <article key={c.title} className="gf-rm-spot-card">
-            <h3>{c.title}</h3>
-            <p>{c.body}</p>
-            <ul className="gf-list">
-              {c.items.map((it) => (<li key={it}>{it}</li>))}
-            </ul>
-          </article>
-        ))}
-      </div>
-      <a className="gf-rm-spot-link" href="#v1-1-3">See every change in the 1.1.3 entry below</a>
-    </section>
-  );
-}
-
-function ReleaseCard({ r }: { r: Release }) {
+function ReleaseEntry({ r }: { r: Release }) {
   const s = STATUS[r.status];
+  const hasHighlights = !!r.highlights?.length;
   return (
-    <li className={`gf-rm-item gf-rm-item--${r.status}`} id={r.id}>
-      <div className="gf-rm-rail" aria-hidden="true">
-        <span className="gf-rm-dot" />
-      </div>
-      <div className="gf-rm-meta">
-        <span className="gf-rm-tag">{r.tag}</span>
+    <li className={`gf-cl-item gf-cl-item--${r.status}`} id={r.id}>
+      <aside className="gf-cl-meta">
+        <span className="gf-cl-tag">{r.tag}</span>
+        {r.date && <span className="gf-cl-date">{r.date}</span>}
         <span className={`gf-badge gf-badge--sm gf-badge--${s.tone}`}>{s.label}</span>
-      </div>
-      <article className="gf-rm-card">
+      </aside>
+      <article className="gf-cl-body">
         <header>
-          <h2>{r.title}</h2>
-          <p className="gf-small">{r.summary}</p>
+          <h2 className="gf-cl-title">{r.title}</h2>
+          <p className="gf-cl-sum">{r.summary}</p>
         </header>
-        {r.groups.map((g, i) => (
-          <section key={i} className="gf-rm-group">
-            {g.title && <h3>{g.title}</h3>}
-            <ul className="gf-list">
-              {g.items.map((it, j) => (
-                <li key={j}>{it}</li>
-              ))}
-            </ul>
-            {g.shots && (
-              <div className={`gf-rm-shots gf-rm-shots--${g.shots.length}`}>
-                {g.shots.map((sh) => (
-                  <div key={sh.src} className={`gf-rm-shot${sh.fit === "contain" ? " gf-rm-shot--contain" : ""}`}>
-                    <Image src={sh.src} alt={sh.alt} width={sh.w} height={sh.h} sizes="(max-width: 768px) 100vw, 640px" loading="lazy" />
-                  </div>
-                ))}
-              </div>
+        {r.highlights?.map((h) => (
+          <section key={h.title} className="gf-cl-feat">
+            <h3>{h.title}</h3>
+            <p>{h.body}</p>
+            {h.shot && (
+              <figure className="gf-cl-shot">
+                <Image src={h.shot.src} alt={h.shot.alt} width={h.shot.w} height={h.shot.h} sizes="(max-width: 900px) 100vw, 760px" loading="lazy" />
+              </figure>
             )}
           </section>
         ))}
+        {r.groups.length > 0 && (
+          <div className={hasHighlights ? "gf-cl-more" : "gf-cl-groups"}>
+            {hasHighlights && <h3>Everything else in {r.tag}</h3>}
+            {r.groups.map((g, i) => (
+              <section key={i} className="gf-cl-group">
+                {g.title && <h4>{g.title}</h4>}
+                <ul className="gf-list">
+                  {g.items.map((it, j) => (
+                    <li key={j}>{it}</li>
+                  ))}
+                </ul>
+                {g.shots && (
+                  <div className={`gf-cl-shots gf-cl-shots--${g.shots.length}`}>
+                    {g.shots.map((sh) => (
+                      <figure key={sh.src} className="gf-cl-shot">
+                        <Image src={sh.src} alt={sh.alt} width={sh.w} height={sh.h} sizes="(max-width: 900px) 100vw, 760px" loading="lazy" />
+                      </figure>
+                    ))}
+                  </div>
+                )}
+              </section>
+            ))}
+          </div>
+        )}
         {r.note && <div className="gf-callout gf-rm-note"><p>{r.note}</p></div>}
       </article>
     </li>
@@ -371,8 +371,8 @@ export default function RoadmapPage() {
 
       <PageHeader
         eyebrow="Roadmap"
-        title="The Complete Journey & Roadmap"
-        lede="What’s shipping next, and the full journey that got GoFully here."
+        title="What’s new in GoFully"
+        lede="Every release with the screens that changed, and what’s coming next."
       >
         <nav className="gf-rm-jump" aria-label="Jump to release">
           {RELEASES.map((r) => (
@@ -383,11 +383,10 @@ export default function RoadmapPage() {
         </nav>
       </PageHeader>
 
-      <div className="gf-rm">
-        <Spotlight />
-        <ol className="gf-rm-list">
+      <div className="gf-cl">
+        <ol className="gf-cl-list">
           {RELEASES.map((r) => (
-            <ReleaseCard key={r.id} r={r} />
+            <ReleaseEntry key={r.id} r={r} />
           ))}
         </ol>
       </div>
