@@ -40,7 +40,7 @@ const BADGES = [
   { href: "https://alternativeto.net/software/gofully/about/?utm_source=badge&utm_medium=referral", src: "/badges/alternativeto.svg", alt: "GoFully on AlternativeTo", w: 166, h: 54 },
   { href: "https://ufind.best/products/gofully", src: "/badges/ufind-best.svg", alt: "Featured on ufind.best", w: 150, h: 48 },
   { href: "https://saasfame.com/item/gofully-gofully-extensionvercelapp", src: "/badges/saasfame.svg", alt: "Featured on SaaSFame", w: 170, h: 54 },
-  { href: "https://productfame.com", src: "/badges/productfame.svg", alt: "Featured on ProductFame", w: 195, h: 54 },
+  { href: "https://productfame.com/", src: "https://productfame.com/badges/featured-light.svg", alt: "Featured on ProductFame", w: 245, h: 54 },
   { href: "https://www.tinyshelf.co/?ref=gofully-extension.vercel.app", src: "/badges/tinyshelf.svg", alt: "Featured on TinyShelf", w: 216, h: 64 },
 ];
 
@@ -75,7 +75,14 @@ export function SiteFooterIndustry({ activeHref }: { activeHref?: string; showRo
           <span>Featured on</span>
           {BADGES.map((b) => (
             <a key={b.src} href={b.href} target="_blank" rel="noopener noreferrer">
-              <Image src={b.src} alt={b.alt} width={b.w} height={b.h} style={{ height: 30, width: "auto" }} />
+              <Image
+                src={b.src}
+                alt={b.alt}
+                width={b.w}
+                height={b.h}
+                unoptimized={b.src.startsWith("http")}
+                style={{ height: 30, width: "auto" }}
+              />
             </a>
           ))}
         </div>
