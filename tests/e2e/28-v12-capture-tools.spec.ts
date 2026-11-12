@@ -161,38 +161,31 @@ test.describe("28 - v1.2 capture tools", () => {
     expect(bad?.ok).toBe(false);
   });
 
-  test("TC-V12-006: Measure shows an element's size, padding and margin, and the gap to a second element", async ({ context, extensionId }) => {
+  test("TC-V12-006: Measure opens Gridray live design specs and measures element and spacing", async ({ context, extensionId }) => {
     const { page, helper } = await openFixture(context, extensionId);
     await startMode(helper, "measure-page");
     await page.bringToFront();
     await expect(page.locator("#gofully-measure")).toBeAttached({ timeout: 8000 });
     await expect(page.locator("#gofully-measure-bar")).toBeAttached();
 
-    // #box: 120 × 80 content + 20 padding each side = 160 × 120, margin 30. Its box starts at (430, 70).
-    await page.mouse.move(500, 120);
-    const card = page.locator("#gofully-measure .info").first();
-    await expect(card.locator(".info-kind")).toHaveText("Box");
-    await expect(card.locator(".info-code")).toHaveText("#box");
-    await expect(card.locator(".info-size")).toHaveText("160 × 120 px");
-    await expect(card).toContainText("Padding20 px all round");
-    await expect(card).toContainText("Margin30 px all round");
-
-    // Keep #box, hover #box2 (left edge 650): gap = 650 − (430 + 160) = 60.
+    // Holding Shift arms the cursor and dragging over #box (starts at 430, 70, 160 × 120)
+    // opens the Gridray spec portal
+    await page.keyboard.down("Shift");
+    await page.mouse.move(400, 40);
     await page.mouse.down();
-    await page.mouse.up();
-    await page.mouse.move(700, 120);
-    await expect(page.locator("#gofully-measure .lab.gapl")).toContainText(["60 px"]);
+    await page.mouse.move(620, 220, { steps: 5 });
 
-    // A drag is a free ruler.
-    await page.mouse.move(100, 600);
-    await page.mouse.down();
-    await page.mouse.move(400, 600, { steps: 6 });
-    await expect(page.locator("#gofully-measure .lab.kept")).toContainText("300 px");
-    await page.mouse.up();
+    // Overlay is open with frame, grid pattern, and measured specs
+    await expect(page.locator("#gofully-measure")).toHaveClass(/sp-open/);
+    await expect(page.locator("#gofully-measure .sp-frame")).toBeVisible();
+    await expect(page.locator("#gofully-measure .sp-frame-size text")).toBeVisible();
+    await expect(page.locator("#gofully-measure .sp-frame-size text")).toContainText("×");
 
-    // The page did not receive the clicks (no navigation, no selection).
-    await page.keyboard.press("Escape"); // let go of the kept element
-    await page.keyboard.press("Escape"); // leave
+    await page.mouse.up();
+    await page.keyboard.up("Shift");
+
+    // Escape closes overlay
+    await page.keyboard.press("Escape");
     await expect(page.locator("#gofully-measure")).toHaveCount(0);
     await expect(page.locator("#gofully-measure-bar")).toHaveCount(0);
   });

@@ -129,8 +129,9 @@ function buildCrosshair(): void {
   const hint = makePanel({
     position: "absolute", top: "16px", left: "50%", transform: "translateX(-50%)",
     padding: "8px 14px", pointerEvents: "none", background: T.text, border: "none",
-    borderRadius: T.radiusPill, cornerShape: "squircle", display: "flex", alignItems: "center", gap: "10px", whiteSpace: "nowrap",
+    borderRadius: T.radiusPill, display: "flex", alignItems: "center", gap: "10px", whiteSpace: "nowrap",
   });
+  (hint.style as any).cornerShape = "squircle";
   hint.id = "gf-hint";
   const title = makeText("Drag over the part of the page that scrolls", { size: "13px", weight: "500", color: T.surface });
   const key = makeText("Esc", { size: "11px", weight: "500", color: T.surface });
