@@ -57,12 +57,15 @@ export function CtaBand({
   sub,
   label,
   action,
+  from = "page-cta",
 }: {
   title: React.ReactNode;
   sub?: React.ReactNode;
   label?: string;
   /** Replaces the install button, e.g. a link to Support. */
   action?: { href: string; label: string };
+  /** Which page the install button sits on, for install attribution. */
+  from?: string;
 }) {
   return (
     <section className="gf-band-wrap">
@@ -75,7 +78,7 @@ export function CtaBand({
             {action.label} <span className="gf-arrow" aria-hidden="true">→</span>
           </Link>
         ) : (
-          <AddToChrome size="lg" tone="light" label={label} />
+          <AddToChrome size="lg" tone="light" label={label} from={from} />
         )}
       </div>
     </section>

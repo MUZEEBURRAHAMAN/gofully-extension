@@ -59,7 +59,7 @@ export default function NotFoundPage() {
             <Link href="/" className="gf-btn-p">
               <span className="gf-arrow" aria-hidden="true">←</span> Back to home
             </Link>
-            <AddToChrome />
+            <AddToChrome from="404" />
           </div>
         </div>
 

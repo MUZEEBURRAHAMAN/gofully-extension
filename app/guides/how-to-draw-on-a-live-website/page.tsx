@@ -180,7 +180,7 @@ export default function DrawOnALiveWebsiteGuidePage() {
 
       <RelatedGuides currentSlug="how-to-draw-on-a-live-website" />
 
-      <CtaBand
+      <CtaBand from="guides-how-to-draw-on-a-live-website"
         title="Capture, mark up and share. Free and on your device."
         sub="No account, no watermark, no uploads."
       />

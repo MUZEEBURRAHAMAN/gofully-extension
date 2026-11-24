@@ -178,7 +178,7 @@ export default function ExtractUnselectableTextGuidePage() {
       <RelatedGuides currentSlug="how-to-extract-unselectable-text" />
 
       {/* CTA */}
-      <CtaBand
+      <CtaBand from="guides-how-to-extract-unselectable-text"
         title="Copy unselectable text effortlessly"
         sub="No accounts, no cloud uploads, and 100% on-device OCR. Extract text from any webpage or image."
       />

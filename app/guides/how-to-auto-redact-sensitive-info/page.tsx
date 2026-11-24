@@ -161,7 +161,7 @@ export default function AutoRedactSensitiveInfoGuidePage() {
 
       <RelatedGuides currentSlug="how-to-auto-redact-sensitive-info" />
 
-      <CtaBand
+      <CtaBand from="guides-how-to-auto-redact-sensitive-info"
         title="Capture, mark up and share. Free and on your device."
         sub="No account, no watermark, no uploads."
       />

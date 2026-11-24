@@ -1,3 +1,4 @@
+import { cwsLink } from "@/components/site/chrome-button";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteNav } from "@/components/site-nav";
@@ -7,8 +8,7 @@ import { RelatedGuides } from "@/components/related-guides";
 import { PageHeader, CtaBand } from "@/components/site/content";
 import { serializeJsonLd } from "@/components/json-ld";
 
-const CWS_URL =
-  "https://chromewebstore.google.com/detail/gofully-full-page-screens/akfbmhmdlbmljklgajkgoekobofhhofc";
+const CWS_URL = cwsLink("guide-privacy-first-screenshot-tools");
 
 export const metadata: Metadata = {
   title: "Privacy-First Screenshot Tools: Why Offline Capture Matters in 2026",
@@ -239,7 +239,7 @@ export default function PrivacyFirstScreenshotToolsGuide() {
 
       <RelatedGuides currentSlug="privacy-first-screenshot-tools" />
 
-      <CtaBand
+      <CtaBand from="guides-privacy-first-screenshot-tools"
         title="Your screenshots should stay yours"
         sub="Free forever. No account. 100% offline."
       />

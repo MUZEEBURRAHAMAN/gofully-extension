@@ -239,7 +239,7 @@ export default function BeautifyScreenshotsGuide() {
 
       <RelatedGuides currentSlug="how-to-beautify-screenshots" />
 
-      <CtaBand
+      <CtaBand from="guides-how-to-beautify-screenshots"
         title="Make every screenshot share-ready"
         sub="Free forever. No account. Works offline."
       />

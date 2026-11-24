@@ -1,3 +1,4 @@
+import { cwsLink } from "@/components/site/chrome-button";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteNav } from "@/components/site-nav";
@@ -7,8 +8,7 @@ import { RelatedGuides } from "@/components/related-guides";
 import { PageHeader, CtaBand } from "@/components/site/content";
 import { serializeJsonLd } from "@/components/json-ld";
 
-const CWS_URL =
-  "https://chromewebstore.google.com/detail/gofully-full-page-screens/akfbmhmdlbmljklgajkgoekobofhhofc";
+const CWS_URL = cwsLink("guide-how-to-save-webpage-as-pdf");
 
 export const metadata: Metadata = {
   title: "How to Save a Full Webpage as PDF in Chrome (Without Cutting Off Content)",
@@ -237,7 +237,7 @@ export default function SaveWebpageAsPdfGuide() {
 
       <RelatedGuides currentSlug="how-to-save-webpage-as-pdf" />
 
-      <CtaBand
+      <CtaBand from="guides-how-to-save-webpage-as-pdf"
         title="Ready to save full pages as clean PDFs?"
         sub="Free forever. No account. Works offline."
       />

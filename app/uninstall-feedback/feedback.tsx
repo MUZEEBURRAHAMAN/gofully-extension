@@ -50,7 +50,7 @@ export function UninstallFeedback({ art }: { art: ReactNode }) {
             <div className="gf-bye-again">
               <p className="gf-bye-again-label">Changed your mind?</p>
               <div className="gf-bye-actions">
-                <AddToChrome label="Reinstall GoFully" />
+                <AddToChrome label="Reinstall GoFully" from="uninstall-reinstall" />
                 <button type="button" className="gf-btn-s" onClick={() => { setSent(false); window.scrollTo({ top: 0, behavior: "smooth" }); }}>Edit my answers</button>
               </div>
             </div>

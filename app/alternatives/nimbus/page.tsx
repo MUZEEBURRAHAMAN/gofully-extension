@@ -156,7 +156,7 @@ export default function NimbusAlternativePage() {
       </div>
 
       {/* CTA */}
-      <CtaBand
+      <CtaBand from="alternatives-nimbus"
         title="Experience fast, clean screen capture"
         sub="100% free, 100% on-device, and built for speed."
       />

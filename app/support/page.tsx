@@ -9,19 +9,19 @@ import { SupportForm } from "@/components/support-form";
 import { PageHeader } from "@/components/site/content";
 
 export const metadata: Metadata = {
-  title: "Support & Help Desk — GoFully",
+  title: "Support & Help Desk",
   description:
     "Contact GoFully support for questions, bug reports, feature suggestions, or security disclosures. We're here to help.",
   alternates: { canonical: "https://gofully-extension.vercel.app/support" },
   openGraph: {
-    title: "Support & Help Desk — GoFully",
+    title: "Support & Help Desk",
     description: "Questions, feedback, or a bug to report? Contact the GoFully team.",
     url: "https://gofully-extension.vercel.app/support",
     siteName: "GoFully",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Support & Help Desk — GoFully",
+    title: "Support & Help Desk",
     description: "Get support for the GoFully Chrome extension.",
   },
 };

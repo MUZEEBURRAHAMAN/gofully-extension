@@ -209,7 +209,7 @@ export default function HighlighterToolGuidePage() {
       <RelatedGuides currentSlug="how-to-use-highlighter-tool-in-screenshots" />
 
       {/* Global CTA */}
-      <CtaBand
+      <CtaBand from="guides-how-to-use-highlighter-tool-in-screenshots"
         title="Clean, professional annotations on any webpage"
         sub="100% free, on-device, and private. Capture, crop, annotate, and export without watermarks."
       />

@@ -50,7 +50,7 @@ export function SiteNav() {
         </nav>
 
         <div className="gf-nav-end">
-          <span className="gf-nav-cta"><AddToChrome size="md" label="Add to Chrome" /></span>
+          <span className="gf-nav-cta"><AddToChrome size="md" label="Add to Chrome" from="nav" /></span>
           <button
             type="button"
             className="gf-nav-burger"
@@ -70,7 +70,7 @@ export function SiteNav() {
               {l.label}
             </Link>
           ))}
-          <div style={{ paddingTop: 12 }}><AddToChrome size="lg" /></div>
+          <div style={{ paddingTop: 12 }}><AddToChrome size="lg" from="nav-menu" /></div>
         </div>
       )}
     </header>

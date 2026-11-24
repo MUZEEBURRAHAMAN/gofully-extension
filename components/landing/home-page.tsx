@@ -71,21 +71,21 @@ export function HomePage() {
           <div className={s.wrap}>
             <div className={`${s.eyebrow} ${s.rise}`}>
               <span className={`${s.tag} ${s.tagGreen}`}>Free</span>
-              Screenshot studio for Chrome
+              Full page screenshot extension for Chrome
             </div>
             <h1 id="hero-title" className={s.h1}>
-              <span className={s.rise} style={{ ["--d" as string]: "80ms" }}>The screenshot studio</span>
+              <span className={s.rise} style={{ ["--d" as string]: "80ms" }}>The screenshot studio</span>{" "}
               <span className={s.rise} style={{ ["--d" as string]: "180ms" }}>that stays on your device.</span>
             </h1>
             <p className={`${s.sub} ${s.rise}`} style={{ ["--d" as string]: "280ms" }}>
               Capture a whole page, one element or just the words. Hide private details before you capture, measure, mark up and share. Everything runs on your computer, with no account.
             </p>
             <div className={`${s.ctas} ${s.rise}`} style={{ ["--d" as string]: "380ms" }}>
-              <AddToChrome size="lg" />
+              <AddToChrome size="lg" from="home-hero" />
               <a href="#features" className="gf-btn-s" style={{ height: 52, padding: "0 22px", fontSize: 16 }}>See it in action</a>
             </div>
             <div className={`${s.trust} ${s.rise}`} style={{ ["--d" as string]: "460ms" }}>
-              <span><Icon name="star" size={16} />5.0 on the Chrome Web Store</span>
+              <span><Icon name="star" size={16} />4.9 on the Chrome Web Store</span>
               <span><Icon name="lock" size={16} />No sign-up</span>
               <span><Icon name="shield" size={16} />Nothing leaves your device</span>
             </div>
@@ -247,7 +247,7 @@ export function HomePage() {
                 </Reveal>
               ))}
             </div>
-            <div className={s.stepsCta}><AddToChrome size="lg" /></div>
+            <div className={s.stepsCta}><AddToChrome size="lg" from="home-steps" /></div>
           </div>
         </section>
 
@@ -294,8 +294,8 @@ export function HomePage() {
           <div className="gf-band">
             <h2 id="final-title">Take a better screenshot in the next ten seconds</h2>
             <p>Free, private, no account. Add it to Chrome and click the icon.</p>
-            <AddToChrome size="lg" tone="light" />
-            <span className="gf-band-note"><Icon name="star" size={16} />5.0 on the Chrome Web Store</span>
+            <AddToChrome size="lg" tone="light" from="home-final" />
+            <span className="gf-band-note"><Icon name="star" size={16} />4.9 on the Chrome Web Store</span>
           </div>
         </section>
       </main>

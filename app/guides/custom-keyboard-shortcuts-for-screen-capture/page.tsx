@@ -259,7 +259,7 @@ export default function CustomShortcutsGuidePage() {
       <RelatedGuides currentSlug="custom-keyboard-shortcuts-for-screen-capture" />
 
       {/* Global CTA */}
-      <CtaBand
+      <CtaBand from="guides-custom-keyboard-shortcuts-for-screen-capture"
         title="Capture web pages at the speed of thought"
         sub="100% free, on-device, and private. Install GoFully now to capture full pages with zero hassle."
       />

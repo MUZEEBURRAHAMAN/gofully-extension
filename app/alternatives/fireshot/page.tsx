@@ -156,7 +156,7 @@ export default function FireShotAlternativePage() {
       </div>
 
       {/* CTA */}
-      <CtaBand
+      <CtaBand from="alternatives-fireshot"
         title="Upgrade your screenshot workflow with GoFully"
         sub="No license keys, no $39.95 upgrades. Full page scrolling, OCR, and annotation free."
       />

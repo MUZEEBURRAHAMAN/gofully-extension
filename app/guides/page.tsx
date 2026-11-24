@@ -214,7 +214,7 @@ export default function GuidesIndexPage() {
       </div>
 
       {/* CTA */}
-      <CtaBand
+      <CtaBand from="guides"
         title="Ready to streamline your screen captures?"
         sub="100% free, 100% on-device, and zero accounts. Capture full pages, extract text, and redact in seconds."
       />

@@ -1,3 +1,4 @@
+import { cwsLink } from "@/components/site/chrome-button";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteNav } from "@/components/site-nav";
@@ -7,8 +8,7 @@ import { RelatedGuides } from "@/components/related-guides";
 import { PageHeader, CtaBand } from "@/components/site/content";
 import { serializeJsonLd } from "@/components/json-ld";
 
-const CWS_URL =
-  "https://chromewebstore.google.com/detail/gofully-full-page-screens/akfbmhmdlbmljklgajkgoekobofhhofc";
+const CWS_URL = cwsLink("guide-how-to-take-full-page-screenshot-chrome");
 
 export const metadata: Metadata = {
   title: "How to Take a Full Page Screenshot in Chrome Without Cutting Off (2026)",
@@ -196,7 +196,7 @@ export default function FullPageScreenshotGuidePage() {
       <RelatedGuides currentSlug="how-to-take-full-page-screenshot-chrome" />
 
       {/* CTA */}
-      <CtaBand
+      <CtaBand from="guides-how-to-take-full-page-screenshot-chrome"
         title="Capture entire scrolling webpages in 1 click"
         sub="GoFully handles sticky elements, lazy-loaded images, on-device OCR, and multi-page PDF export — completely free."
       />
