@@ -21,7 +21,7 @@ const REPLACEMENTS = [
 ];
 // Code the review reads as obfuscation (violation "Red Titanium", Nov 2026): core-js's ActiveX/iframe
 // Object.create polyfill, pulled in by canvg. vite.config.ts aliases canvg to a stub; this keeps it out.
-const FORBIDDEN_CODE = ["activeXDocument", "NullProtoObjectViaIFrame", "node_modules/core-js/"];
+const FORBIDDEN_CODE = ["activeXDocument", "NullProtoObjectViaIFrame", "node_modules/core-js/", "node_modules/html2canvas/", "node_modules/dompurify/"];
 const FORBIDDEN = ["cdn.jsdelivr.net", "cdnjs.cloudflare.com", "unpkg.com", "tessdata.projectnaptha.com", "esm.sh", "cdn.skypack.dev", "ajax.googleapis.com"];
 
 function files(dir) {

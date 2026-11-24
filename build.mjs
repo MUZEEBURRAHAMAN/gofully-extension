@@ -107,11 +107,12 @@ if (existsSync(resolve(__dirname, "node_modules/tesseract.js/dist/worker.min.js"
     resolve(dist, "assets/tesseract-worker.min.js")
   );
 }
-if (existsSync(resolve(__dirname, "node_modules/tesseract.js-core/tesseract-core.wasm.js"))) {
-  cpSync(
-    resolve(__dirname, "node_modules/tesseract.js-core/tesseract-core.wasm.js"),
-    resolve(dist, "assets/tesseract-core.wasm.js")
-  );
+// OCR engine: the plain loader plus the separate .wasm binary. Not tesseract-core.wasm.js, which inlines
+// the WebAssembly as one 4.6 MB base64 line that Chrome Web Store review can read as concealed code.
+for (const file of ["tesseract-core.js", "tesseract-core.wasm"]) {
+  if (existsSync(resolve(__dirname, `node_modules/tesseract.js-core/${file}`))) {
+    cpSync(resolve(__dirname, `node_modules/tesseract.js-core/${file}`), resolve(dist, `assets/${file}`));
+  }
 }
 for (const lang of ["eng", "spa", "fra", "deu", "por", "chi_sim"]) {
   if (existsSync(resolve(__dirname, `assets/${lang}.traineddata.gz`))) {

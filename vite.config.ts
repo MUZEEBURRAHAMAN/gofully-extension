@@ -42,7 +42,10 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": resolve(__dirname, "src"),
+      // jsPDF optional deps GoFully never uses (addSvgAsImage, .html()); see src/stubs/.
       canvg: resolve(__dirname, "src/stubs/canvg.ts"),
+      html2canvas: resolve(__dirname, "src/stubs/html2canvas.ts"),
+      dompurify: resolve(__dirname, "src/stubs/dompurify.ts"),
     },
   },
 });

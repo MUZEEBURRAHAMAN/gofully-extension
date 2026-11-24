@@ -35,7 +35,9 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       let worker: any = null;
       try {
         const workerPath = chrome.runtime.getURL("assets/tesseract-worker.min.js");
-        const corePath = chrome.runtime.getURL("assets/tesseract-core.wasm.js");
+        // Plain loader + separate .wasm (the worker finds it next to itself), not the build that inlines
+        // the WebAssembly as a 4.6 MB base64 string, which reads as concealed code to store review.
+        const corePath = chrome.runtime.getURL("assets/tesseract-core.js");
         const langPath = chrome.runtime.getURL("assets");
 
         // Tesseract's own worker/WASM instantiation is a black box once

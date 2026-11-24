@@ -47,7 +47,8 @@ test.describe("04 - Local Tesseract OCR Engine Suite", () => {
 
     const files = [
       "assets/tesseract-worker.min.js",
-      "assets/tesseract-core.wasm.js",
+      "assets/tesseract-core.js",
+      "assets/tesseract-core.wasm",
       "assets/eng.traineddata.gz",
     ];
 
