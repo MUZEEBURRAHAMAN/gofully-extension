@@ -188,7 +188,7 @@ export default function AlternativesIndexPage() {
       </div>
 
       {/* CTA */}
-      <CtaBand
+      <CtaBand from="alternatives"
         title="Ready for a faster, private screenshot extension?"
         sub="No accounts, no paywalled annotation tools, and 100% on-device processing."
       />

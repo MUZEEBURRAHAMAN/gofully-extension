@@ -36,6 +36,11 @@ const FAQ_GROUPS = [
         plainAnswer: "Yes — free forever, with no account required to use any feature.",
       },
       {
+        q: "Is GoFully the same as GoFullPage?",
+        a: "No. GoFully and GoFullPage are separate extensions from different developers with similar names. GoFully is a free screenshot studio: full page, element and area capture, redaction, measuring, on-device OCR, markup and PDF export, all without an account or uploads.",
+        plainAnswer: "No. GoFully and GoFullPage are separate extensions from different developers. GoFully is a free, on-device screenshot studio with full page capture, redaction, OCR, markup and PDF export, and no account.",
+      },
+      {
         q: "Which browsers does it support?",
         a: "Chrome and other Chromium-based browsers, including Edge, Brave, and Opera.",
         plainAnswer: "Chrome and other Chromium-based browsers, including Edge, Brave, and Opera.",
@@ -231,7 +236,7 @@ export default function FAQPage() {
         </div>
       </div>
 
-      <CtaBand
+      <CtaBand from="faq"
         title="Still stuck?"
         sub="Email us or open an issue on GitHub. Both are on the Support page."
         action={{ href: "/support", label: "Contact support" }}

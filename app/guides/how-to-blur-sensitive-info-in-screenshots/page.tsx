@@ -229,7 +229,7 @@ export default function RedactScreenshotGuidePage() {
       <RelatedGuides currentSlug="how-to-blur-sensitive-info-in-screenshots" />
 
       {/* CTA */}
-      <CtaBand
+      <CtaBand from="guides-how-to-blur-sensitive-info-in-screenshots"
         title="Protect your team’s data with GoFully"
         sub="100% on-device capture, instant blur redaction, and local OCR. Never leak confidential details again."
       />

@@ -157,7 +157,7 @@ export default function AwesomeScreenshotAlternativePage() {
       </div>
 
       {/* CTA */}
-      <CtaBand
+      <CtaBand from="alternatives-awesome-screenshot"
         title="Ditch the cloud subscriptions. Try GoFully free."
         sub="Zero accounts, zero cloud servers, zero watermarks. Capture, redact, annotate, and export instantly."
       />

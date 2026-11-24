@@ -7,19 +7,19 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { PageHeader, CtaBand } from "@/components/site/content";
 
 export const metadata: Metadata = {
-  title: "Product Roadmap & Changelog — GoFully",
+  title: "Product Roadmap & Changelog",
   description:
     "Explore the development roadmap and release history of GoFully: upcoming features, full-page scrolling engine enhancements, on-device OCR, and export additions.",
   alternates: { canonical: "https://gofully-extension.vercel.app/roadmap" },
   openGraph: {
-    title: "Product Roadmap & Changelog — GoFully",
+    title: "Product Roadmap & Changelog",
     description: "Follow what's shipping next and the full development journey of GoFully.",
     url: "https://gofully-extension.vercel.app/roadmap",
     siteName: "GoFully",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Product Roadmap & Changelog — GoFully",
+    title: "Product Roadmap & Changelog",
     description: "What's shipping next and recent releases for the GoFully extension.",
   },
 };
@@ -391,7 +391,7 @@ export default function RoadmapPage() {
         </ol>
       </div>
 
-      <CtaBand title="Try it on your next screenshot" sub="Free, offline, and ready in one click — no account, no setup." />
+      <CtaBand from="roadmap" title="Try it on your next screenshot" sub="Free, offline, and ready in one click — no account, no setup." />
 
       <SiteFooterIndustry activeHref="/roadmap" />
     </div>

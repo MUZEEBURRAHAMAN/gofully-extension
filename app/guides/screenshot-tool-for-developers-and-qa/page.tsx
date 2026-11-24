@@ -172,7 +172,7 @@ export default function DevelopersQAGuidePage() {
       <RelatedGuides currentSlug="screenshot-tool-for-developers-and-qa" />
 
       {/* CTA */}
-      <CtaBand
+      <CtaBand from="guides-screenshot-tool-for-developers-and-qa"
         title="Better bug reports start with a better screenshot"
         sub="Full-page capture, redaction, OCR, and PDF export — free, on-device, no account."
       />

@@ -207,7 +207,7 @@ export default function MultiLanguageOcrGuidePage() {
       <RelatedGuides currentSlug="how-to-extract-text-in-multiple-languages-ocr" />
 
       {/* Global CTA */}
-      <CtaBand
+      <CtaBand from="guides-how-to-extract-text-in-multiple-languages-ocr"
         title="Ready to capture and extract without cloud leaks?"
         sub="100% free, 100% on-device, and zero accounts. Install GoFully today to capture, redact, and extract text with v1.1.2."
       />

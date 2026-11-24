@@ -158,7 +158,7 @@ export default function CaptureASingleElementGuidePage() {
 
       <RelatedGuides currentSlug="how-to-capture-a-single-element" />
 
-      <CtaBand
+      <CtaBand from="guides-how-to-capture-a-single-element"
         title="Capture, mark up and share. Free and on your device."
         sub="No account, no watermark, no uploads."
       />

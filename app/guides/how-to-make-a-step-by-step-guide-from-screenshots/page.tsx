@@ -154,7 +154,7 @@ export default function MakeAStepByStepGuideFromScreenshotsGuidePage() {
 
       <RelatedGuides currentSlug="how-to-make-a-step-by-step-guide-from-screenshots" />
 
-      <CtaBand
+      <CtaBand from="guides-how-to-make-a-step-by-step-guide-from-screenshots"
         title="Capture, mark up and share. Free and on your device."
         sub="No account, no watermark, no uploads."
       />

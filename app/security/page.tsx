@@ -167,7 +167,7 @@ export default function SecurityPage() {
         </div>
       </section>
 
-      <CtaBand
+      <CtaBand from="security"
         title="Found a security vulnerability?"
         sub="Report it directly to our maintainers through the Support page."
         action={{ href: "/support", label: "Report it on the Support page" }}

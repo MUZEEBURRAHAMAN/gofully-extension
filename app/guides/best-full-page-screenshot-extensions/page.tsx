@@ -1,3 +1,4 @@
+import { cwsLink } from "@/components/site/chrome-button";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteNav } from "@/components/site-nav";
@@ -7,8 +8,7 @@ import { RelatedGuides } from "@/components/related-guides";
 import { PageHeader, CtaBand } from "@/components/site/content";
 import { serializeJsonLd } from "@/components/json-ld";
 
-const CWS_URL =
-  "https://chromewebstore.google.com/detail/gofully-full-page-screens/akfbmhmdlbmljklgajkgoekobofhhofc";
+const CWS_URL = cwsLink("guide-best-full-page-screenshot-extensions");
 
 export const metadata: Metadata = {
   title: "Best Full Page Screenshot Chrome Extensions (2026)",
@@ -232,7 +232,7 @@ export default function BestFullPageScreenshotExtensionsPage() {
       <RelatedGuides currentSlug="best-full-page-screenshot-extensions" />
 
       {/* CTA */}
-      <CtaBand
+      <CtaBand from="guides-best-full-page-screenshot-extensions"
         title="Try the free option first"
         sub="No account, no premium tier — every feature above is included from install."
       />

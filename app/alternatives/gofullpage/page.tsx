@@ -150,7 +150,7 @@ export default function GoFullPageAlternativePage() {
       </div>
 
       {/* CTA */}
-      <CtaBand
+      <CtaBand from="alternatives-gofullpage"
         title="Try GoFully free"
         sub="No account, no premium tier, no catch. Every capture mode, OCR, annotation, and export format is included."
       />

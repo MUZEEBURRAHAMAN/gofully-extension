@@ -8,12 +8,12 @@ import { serializeJsonLd } from "@/components/json-ld";
 export const metadata: Metadata = {
   metadataBase: new URL("https://gofully-extension.vercel.app"),
   title: {
-    default: "GoFully — The Private Screenshot Studio for Chrome",
+    default: "GoFully: Free Full Page Screenshot Extension for Chrome",
     template: "%s | GoFully",
   },
   applicationName: "GoFully",
   description:
-    "The screenshot studio that stays on your device. Full page, element and area capture, redact, measure, OCR, markup and export. Free, no account.",
+    "Free Chrome extension for full page screenshots, element and area capture, redaction, OCR and markup. Everything stays on your device, with no account.",
   keywords: [
     "full page screenshot",
     "screenshot",
@@ -85,9 +85,9 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
   },
   openGraph: {
-    title: "GoFully — The Screenshot Studio That Stays on Your Device",
+    title: "GoFully: Free Full Page Screenshot Extension for Chrome",
     description:
-      "The screenshot studio that stays on your device. Full page, element and area capture, redact, measure, OCR, markup and export. Free, no account.",
+      "Free Chrome extension for full page screenshots, element and area capture, redaction, OCR and markup. Everything stays on your device, with no account.",
     url: "https://gofully-extension.vercel.app",
     siteName: "GoFully",
     images: [
@@ -103,8 +103,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "GoFully — The Screenshot Studio That Stays on Your Device",
-    description: "The screenshot studio that stays on your device. Full page, element and area capture, redact, measure, OCR, markup and export. Free, no account.",
+    title: "GoFully: Free Full Page Screenshot Extension for Chrome",
+    description: "Free Chrome extension for full page screenshots, element and area capture, redaction, OCR and markup. Everything stays on your device, with no account.",
     images: ["https://gofully-extension.vercel.app/og-image.png"],
   },
 };
@@ -141,8 +141,8 @@ const jsonLd = {
       },
       "aggregateRating": {
         "@type": "AggregateRating",
-        "ratingValue": "5.0",
-        "ratingCount": "5",
+        "ratingValue": "4.9",
+        "ratingCount": "9",
         "bestRating": "5",
         "worstRating": "1"
       },
@@ -151,7 +151,7 @@ const jsonLd = {
       "url": "https://gofully-extension.vercel.app/",
       "image": "https://gofully-extension.vercel.app/logo.png",
       "screenshot": "https://gofully-extension.vercel.app/og-image.png",
-      "softwareVersion": "1.1.2",
+      "softwareVersion": "1.1.3",
       "installUrl": "https://chromewebstore.google.com/detail/gofully-full-page-screens/akfbmhmdlbmljklgajkgoekobofhhofc",
       "author": { "@id": "https://gofully-extension.vercel.app/#person" },
       "publisher": { "@id": "https://gofully-extension.vercel.app/#organization" },
