@@ -42,6 +42,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": resolve(__dirname, "src"),
+      canvg: resolve(__dirname, "src/stubs/canvg.ts"),
     },
   },
 });

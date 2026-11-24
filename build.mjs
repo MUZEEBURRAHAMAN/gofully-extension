@@ -237,4 +237,10 @@ if (process.env.GF_RELEASE) {
   console.log("Release build: preview-only files removed.");
 }
 
+// Chrome Web Store MV3 policy: no remotely hosted code. Blank unused CDN fallbacks and verify.
+{
+  const { stripRemoteCode } = await import("./scripts/strip-remote-code.mjs");
+  stripRemoteCode(dist);
+}
+
 console.log("\nBuild complete! Load dist/ as unpacked extension in Chrome.");
